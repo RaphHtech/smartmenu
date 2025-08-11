@@ -2,29 +2,38 @@
 @tailwind components;
 @tailwind utilities;
 
-* {
-  box-sizing: border-box;
-  padding: 0;
-  margin: 0;
+/* TOKENS THÉMATIQUES - PIZZA POWER */
+:root {
+  --theme-primary: #DC2626;
+  --theme-secondary: #F97316;
+  --theme-accent: #FCD34D;
+  --theme-gradient: linear-gradient(135deg, #DC2626 0%, #F97316 50%, #FCD34D 100%);
+  --theme-text-light: #FFFFFF;
+  --theme-shadow: 0 8px 25px rgba(220, 38, 38, 0.3);
+  --theme-shadow-xl: 0 16px 40px rgba(220, 38, 38, 0.4);
 }
 
-html,
-body {
-  max-width: 100vw;
-  overflow-x: hidden;
-}
-
-body {
-  color: rgb(var(--foreground-rgb));
-  background: linear-gradient(
-      to bottom,
-      transparent,
-      rgb(var(--background-end-rgb))
-    )
-    rgb(var(--background-start-rgb));
-}
-
-a {
-  color: inherit;
-  text-decoration: none;
+@layer utilities {
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+  .theme-gradient {
+    background: var(--theme-gradient);
+  }
+  .theme-text-accent {
+    color: var(--theme-accent);
+  }
+  .theme-bg-primary {
+    background-color: var(--theme-primary);
+  }
+  .theme-shadow {
+    box-shadow: var(--theme-shadow);
+  }
+  .theme-shadow-xl {
+    box-shadow: var(--theme-shadow-xl);
+  }
 }
