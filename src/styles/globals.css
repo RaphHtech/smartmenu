@@ -2,15 +2,14 @@
 @tailwind components;
 @tailwind utilities;
 
-/* TOKENS THÉMATIQUES - PIZZA POWER - PALETTE EXACTE */
+/* COULEURS PIZZA POWER - EXACTES comme l'HTML */
 :root {
-  --theme-primary: #DC2626;
-  --theme-secondary: #F97316;
-  --theme-accent: #FCD34D;
-  --theme-gradient: linear-gradient(135deg, #DC2626 0%, #F97316 50%, #FCD34D 100%);
-  --theme-text-light: #FFFFFF;
-  --theme-shadow: 0 8px 25px rgba(220, 38, 38, 0.3);
-  --theme-shadow-xl: 0 16px 40px rgba(220, 38, 38, 0.4);
+  --primary: #DC2626;
+  --secondary: #F97316;
+  --accent: #FCD34D;
+  --gradient: linear-gradient(135deg, #DC2626 0%, #F97316 50%, #FCD34D 100%);
+  --text-premium: #FFFFFF;
+  --shadow: 0 8px 25px rgba(220, 38, 38, 0.3);
 }
 
 @layer utilities {
@@ -22,24 +21,12 @@
     display: none;
   }
   
-  /* Classes thématiques - COULEURS EXACTES */
-  .theme-gradient {
-    background: var(--theme-gradient);
+  /* FORCER le gradient exact */
+  .pizza-gradient {
+    background: linear-gradient(135deg, #DC2626 0%, #F97316 50%, #FCD34D 100%);
   }
   
-  .theme-text-accent {
-    color: var(--theme-accent);
-  }
-  
-  .theme-bg-primary {
-    background-color: var(--theme-primary);
-  }
-  
-  .theme-shadow {
-    box-shadow: var(--theme-shadow);
-  }
-  
-  .theme-shadow-xl {
-    box-shadow: var(--theme-shadow-xl);
+  .pizza-accent {
+    color: #FCD34D;
   }
 }
