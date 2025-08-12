@@ -1,31 +1,75 @@
-// ... props identiques ...
+interface MenuCardProps {
+  name: string
+  description: string
+  price: number
+  emoji: string
+  signature?: boolean
+  quantity: number
+  onAddToCart: () => void
+  onUpdateQuantity: (quantity: number) => void
+  theme?: 'pizza' | 'falafel'
+}
 
 export function MenuCard({ 
-  name, description, price, emoji, signature, quantity, onAddToCart, onUpdateQuantity, theme = 'pizza'
+  name, 
+  description, 
+  price, 
+  emoji, 
+  signature, 
+  quantity, 
+  onAddToCart, 
+  onUpdateQuantity,
+  theme = 'pizza'
 }: MenuCardProps) {
-  
+  const themeStyles = {
+    pizza: {
+      badgeBg: 'bg-theme-accent',
+      badgeText: 'text-theme-primary',
+      imageBg: 'from-theme-primary to-theme-secondary',
+      titleColor: 'theme-text-accent',
+      priceColor: 'theme-text-accent',
+      buttonBg: 'bg-gradient-to-r from-theme-accent to-theme-secondary',
+      buttonText: 'text-theme-primary',
+      qtyButtonBg: 'bg-theme-accent',
+      qtyButtonText: 'text-theme-primary'
+    },
+    falafel: {
+      badgeBg: 'bg-yellow-400',
+      badgeText: 'text-amber-800',
+      imageBg: 'from-amber-700 to-yellow-500',
+      titleColor: 'text-yellow-400',
+      priceColor: 'text-yellow-400',
+      buttonBg: 'bg-gradient-to-r from-yellow-400 to-amber-500',
+      buttonText: 'text-amber-800',
+      qtyButtonBg: 'bg-yellow-400',
+      qtyButtonText: 'text-amber-800'
+    }
+  }
+
+  const styles = themeStyles[theme]
+
   return (
-    <article className="bg-gradient-to-br from-white/15 to-white/5 backdrop-blur-lg rounded-2xl overflow-hidden border border-white/10 hover:transform hover:-translate-y-2 hover:shadow-2xl transition-all duration-300 relative group">
+    <article className="bg-gradient-to-br from-white/15 to-white/5 backdrop-blur-lg rounded-2xl overflow-hidden border border-white/10 hover:transform hover:-translate-y-2 theme-shadow-xl transition-all duration-300 relative group">
       {signature && (
-        <div className="absolute top-4 right-4 bg-[#FCD34D] text-[#DC2626] px-3 py-1 rounded-full text-xs font-bold z-10 shadow-lg">
+        <div className={`absolute top-4 right-4 ${styles.badgeBg} ${styles.badgeText} px-3 py-1 rounded-full text-xs font-bold z-10 shadow-lg`}>
           SIGNATURE
         </div>
       )}
       
-      {/* Image avec gradient exact */}
-      <div className="h-48 bg-gradient-to-br from-[#DC2626] to-[#F97316] flex items-center justify-center relative overflow-hidden">
+      {/* Image */}
+      <div className={`h-48 bg-gradient-to-br ${styles.imageBg} flex items-center justify-center relative overflow-hidden`}>
         <div className="text-6xl drop-shadow-2xl group-hover:scale-110 transition-transform duration-300">{emoji}</div>
       </div>
       
       {/* Content */}
       <div className="p-5">
-        <h3 className="text-lg md:text-xl font-bold mb-2 text-[#FCD34D]">{name}</h3>
+        <h3 className={`text-lg md:text-xl font-bold mb-2 ${styles.titleColor}`}>{name}</h3>
         <p className="text-sm opacity-90 mb-4 leading-relaxed">{description}</p>
         
-        {/* CORRECTIF MOBILE: Copie exacte de l'HTML */}
+        {/* CORRECTIF MOBILE: Centrage exact comme HTML */}
         <div className="flex flex-col gap-3 md:flex-row md:justify-between md:items-center">
           {/* Prix CENTRÉ en mobile */}
-          <span className="text-xl font-black text-[#FCD34D] drop-shadow-md text-center md:text-left">
+          <span className={`text-xl font-black ${styles.priceColor} drop-shadow-md text-center md:text-left`}>
             ₪{price}
           </span>
           
@@ -35,16 +79,18 @@ export function MenuCard({
               <div className="flex items-center gap-3 bg-white/10 rounded-full px-4 py-2 border border-white/20">
                 <button
                   onClick={() => onUpdateQuantity(quantity - 1)}
-                  className="w-8 h-8 bg-[#FCD34D] text-[#DC2626] rounded-full font-bold flex items-center justify-center hover:scale-110 transition-transform"
+                  className={`w-8 h-8 ${styles.qtyButtonBg} ${styles.qtyButtonText} rounded-full font-bold flex items-center justify-center hover:scale-110 transition-transform focus:outline-none focus:ring-2 focus:ring-white`}
+                  aria-label={`Diminuer la quantité de ${name}`}
                 >
                   -
                 </button>
-                <span className="font-bold text-lg min-w-[20px] text-center">
+                <span className="font-bold text-lg min-w-[20px] text-center" aria-label={`Quantité: ${quantity}`}>
                   {quantity}
                 </span>
                 <button
                   onClick={() => onUpdateQuantity(quantity + 1)}
-                  className="w-8 h-8 bg-[#FCD34D] text-[#DC2626] rounded-full font-bold flex items-center justify-center hover:scale-110 transition-transform"
+                  className={`w-8 h-8 ${styles.qtyButtonBg} ${styles.qtyButtonText} rounded-full font-bold flex items-center justify-center hover:scale-110 transition-transform focus:outline-none focus:ring-2 focus:ring-white`}
+                  aria-label={`Augmenter la quantité de ${name}`}
                 >
                   +
                 </button>
@@ -52,7 +98,8 @@ export function MenuCard({
             ) : (
               <button
                 onClick={onAddToCart}
-                className="bg-gradient-to-r from-[#FCD34D] to-[#F97316] text-[#DC2626] px-5 py-3 rounded-xl font-bold hover:transform hover:-translate-y-1 hover:shadow-xl transition-all duration-300 min-h-[44px]"
+                className={`${styles.buttonBg} ${styles.buttonText} px-5 py-3 rounded-xl font-bold hover:transform hover:-translate-y-1 hover:shadow-xl transition-all duration-300 min-h-[44px] focus:outline-none focus:ring-2 focus:ring-white w-auto`}
+                aria-label={`Ajouter ${name} au panier`}
               >
                 AJOUTER
               </button>
