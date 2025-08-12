@@ -1,31 +1,32 @@
 interface HeaderProps {
   restaurantName: string
   onCallServer: () => void
-  theme: 'pizza' | 'falafel'
+  theme?: 'pizza' | 'falafel' // CORRECTIF: Optionnel avec défaut
 }
 
-export function Header({ restaurantName, onCallServer, theme }: HeaderProps) {
+export function Header({ restaurantName, onCallServer, theme = 'pizza' }: HeaderProps) {
   const themeStyles = {
-  pizza: {
-    logoColor: 'text-yellow-300',
-    buttonBg: 'bg-yellow-400', 
-    buttonText: 'text-red-600',
-    gradientText: 'from-white to-yellow-300'
-  },
-  falafel: {
-    logoColor: 'text-yellow-400',
-    buttonBg: 'bg-yellow-400',
-    buttonText: 'text-amber-800',
-    gradientText: 'from-white to-yellow-400'
+    pizza: {
+      logoColor: 'theme-text-accent',
+      buttonBg: 'bg-theme-accent',
+      buttonText: 'text-theme-primary',
+      gradientText: 'from-white to-theme-accent'
+    },
+    falafel: {
+      logoColor: 'text-yellow-400',
+      buttonBg: 'bg-yellow-400',
+      buttonText: 'text-amber-800',
+      gradientText: 'from-white to-yellow-400'
+    }
   }
-}
 
-  const styles = themeStyles[theme]
+  // CORRECTIF: Fallback + vérification existence
+  const styles = themeStyles[theme] || themeStyles.pizza
 
   return (
     <header className="sticky top-0 z-50 bg-black/20 backdrop-blur-xl border-b border-white/10 px-5 py-4">
       <div className="flex items-center justify-between">
-        {/* SmartMenu Logo - CORRECTIF: Accent doré exact */}
+        {/* SmartMenu Logo */}
         <div className={`flex items-center gap-2 font-bold text-xl ${styles.logoColor}`}>
           🍽️ SmartMenu
         </div>
