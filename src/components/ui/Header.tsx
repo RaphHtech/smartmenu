@@ -7,8 +7,7 @@ interface HeaderProps {
 export function Header({ restaurantName, onCallServer, theme }: HeaderProps) {
   const themeStyles = {
     pizza: {
-      logoColor: 'theme-text-accent', // CORRECTIF: Force l'accent doré
-      buttonBg: 'bg-theme-accent',
+      logoColor: 'text-yellow-300', // Solution temporaire      buttonBg: 'bg-theme-accent',
       buttonText: 'text-theme-primary',
       gradientText: 'from-white to-theme-accent'
     },
