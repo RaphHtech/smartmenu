@@ -6,18 +6,19 @@ interface HeaderProps {
 
 export function Header({ restaurantName, onCallServer, theme }: HeaderProps) {
   const themeStyles = {
-    pizza: {
-      logoColor: 'text-yellow-300', // Solution temporaire      buttonBg: 'bg-theme-accent',
-      buttonText: 'text-theme-primary',
-      gradientText: 'from-white to-theme-accent'
-    },
-    falafel: {
-      logoColor: 'text-yellow-400',
-      buttonBg: 'bg-yellow-400',
-      buttonText: 'text-amber-800',
-      gradientText: 'from-white to-yellow-400'
-    }
+  pizza: {
+    logoColor: 'text-yellow-300',
+    buttonBg: 'bg-yellow-400', 
+    buttonText: 'text-red-600',
+    gradientText: 'from-white to-yellow-300'
+  },
+  falafel: {
+    logoColor: 'text-yellow-400',
+    buttonBg: 'bg-yellow-400',
+    buttonText: 'text-amber-800',
+    gradientText: 'from-white to-yellow-400'
   }
+}
 
   const styles = themeStyles[theme]
 
