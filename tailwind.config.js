@@ -7,22 +7,25 @@ module.exports = {
   ],
   theme: {
     extend: {
+      colors: {
+        theme: {
+          primary: '#DC2626', // Rouge exact
+          secondary: '#F97316', // Orange exact  
+          accent: '#FCD34D',    // Doré exact
+        }
+      },
       animation: {
         'slide-in': 'slideIn 0.3s ease-out',
+        'float-up': 'floatUp 0.3s ease-out',
       },
       keyframes: {
         slideIn: {
           '0%': { transform: 'translateX(100%)', opacity: '0' },
           '100%': { transform: 'translateX(0)', opacity: '1' },
         },
-      },
-      utilities: {
-        '.scrollbar-hide': {
-          '-ms-overflow-style': 'none',
-          'scrollbar-width': 'none',
-        },
-        '.scrollbar-hide::-webkit-scrollbar': {
-          'display': 'none',
+        floatUp: {
+          '0%': { transform: 'translateY(20px)', opacity: '0' },
+          '100%': { transform: 'translateY(0)', opacity: '1' },
         },
       },
     },
