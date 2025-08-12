@@ -2,7 +2,7 @@
 @tailwind components;
 @tailwind utilities;
 
-/* TOKENS THÉMATIQUES - PIZZA POWER */
+/* TOKENS THÉMATIQUES - PIZZA POWER - PALETTE EXACTE */
 :root {
   --theme-primary: #DC2626;
   --theme-secondary: #F97316;
@@ -21,18 +21,24 @@
   .scrollbar-hide::-webkit-scrollbar {
     display: none;
   }
+  
+  /* Classes thématiques - COULEURS EXACTES */
   .theme-gradient {
     background: var(--theme-gradient);
   }
+  
   .theme-text-accent {
     color: var(--theme-accent);
   }
+  
   .theme-bg-primary {
     background-color: var(--theme-primary);
   }
+  
   .theme-shadow {
     box-shadow: var(--theme-shadow);
   }
+  
   .theme-shadow-xl {
     box-shadow: var(--theme-shadow-xl);
   }
