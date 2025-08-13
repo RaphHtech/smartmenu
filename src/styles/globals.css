@@ -22,9 +22,9 @@
     display: none;
   }
   
-  /* Classes thématiques utilisant les tokens exacts */
+  /* FORCER le gradient exact */
   .pizza-gradient {
-    background: var(--theme-gradient);
+    background: linear-gradient(135deg, #DC2626 0%, #F97316 50%, #FCD34D 100%);
   }
   
   .theme-text-accent {
