@@ -6,7 +6,7 @@ interface FloatingCartProps {
 }
 
 export function FloatingCart({ cartCount, cartTotal, onShowReview, theme = 'pizza' }: FloatingCartProps) {
-  // GUARD EXACT - Ne rien rendre si panier vide
+  // CORRECTIF: GUARD STRICT - Ne rien rendre si panier vide
   if (cartCount === 0) {
     return null
   }
@@ -34,7 +34,7 @@ export function FloatingCart({ cartCount, cartTotal, onShowReview, theme = 'pizz
       
       <button
         onClick={onShowReview}
-        className={`${styles.buttonBg} ${styles.buttonText} px-6 py-3 rounded-xl font-bold hover:transform hover:-translate-y-1 hover:shadow-xl transition-all duration-300 min-h-[48px] focus:outline-none focus:ring-2 focus:ring-white w-full sm:w-auto`}
+        className={`${styles.buttonBg} ${styles.buttonText} px-6 py-3 rounded-xl font-bold hover:transform hover:-translate-y-1 hover:shadow-xl transition-all duration-300 min-h-[48px] focus:outline-none focus:ring-4 focus:ring-white/50 w-full sm:w-auto`}
         aria-label="Réviser votre commande"
       >
         VOIR COMMANDE
