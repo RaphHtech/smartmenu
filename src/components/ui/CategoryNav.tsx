@@ -4,7 +4,7 @@ interface CategoryNavProps {
   categories: Category[]
   activeCategory: string
   onCategoryChange: (categoryId: string) => void
-  theme?: 'pizza' | 'falafel' // CORRECTIF: Optionnel
+  theme?: 'pizza' | 'falafel'
 }
 
 export function CategoryNav({ categories, activeCategory, onCategoryChange, theme = 'pizza' }: CategoryNavProps) {
@@ -19,8 +19,7 @@ export function CategoryNav({ categories, activeCategory, onCategoryChange, them
     }
   }
 
-  // CORRECTIF: Fallback
-  const styles = themeStyles[theme] || themeStyles.pizza
+  const styles = themeStyles[theme]
 
   return (
     <nav className="flex gap-3 px-5 py-5 overflow-x-auto scrollbar-hide" role="navigation" aria-label="Catégories du menu">
@@ -29,7 +28,7 @@ export function CategoryNav({ categories, activeCategory, onCategoryChange, them
           key={category.id}
           onClick={() => onCategoryChange(category.id)}
           className={`
-            px-4 md:px-6 py-3 rounded-full font-semibold text-sm whitespace-nowrap transition-all duration-300 border-2 min-h-[44px]
+            px-4 md:px-6 py-3 rounded-full font-semibold text-sm whitespace-nowrap transition-all duration-300 border-2 min-h-[44px] focus:outline-none focus:ring-4 focus:ring-white/50
             ${activeCategory === category.id
               ? `${styles.active} transform -translate-y-1`
               : styles.inactive
