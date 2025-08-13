@@ -1,7 +1,7 @@
 interface HeaderProps {
   restaurantName: string
   onCallServer: () => void
-  theme?: 'pizza' | 'falafel' // CORRECTIF: Optionnel avec défaut
+  theme?: 'pizza' | 'falafel'
 }
 
 export function Header({ restaurantName, onCallServer, theme = 'pizza' }: HeaderProps) {
@@ -20,8 +20,7 @@ export function Header({ restaurantName, onCallServer, theme = 'pizza' }: Header
     }
   }
 
-  // CORRECTIF: Fallback + vérification existence
-  const styles = themeStyles[theme] || themeStyles.pizza
+  const styles = themeStyles[theme]
 
   return (
     <header className="sticky top-0 z-50 bg-black/20 backdrop-blur-xl border-b border-white/10 px-5 py-4">
@@ -36,10 +35,10 @@ export function Header({ restaurantName, onCallServer, theme = 'pizza' }: Header
           {restaurantName}
         </h1>
 
-        {/* Server Button */}
+        {/* Server Button - FOCUS AMÉLIORÉ */}
         <button
           onClick={onCallServer}
-          className={`${styles.buttonBg} ${styles.buttonText} px-4 md:px-5 py-3 rounded-full font-bold hover:transform hover:-translate-y-1 hover:shadow-xl transition-all duration-300 min-h-[44px] text-sm md:text-base`}
+          className={`${styles.buttonBg} ${styles.buttonText} px-4 md:px-5 py-3 rounded-full font-bold hover:transform hover:-translate-y-1 hover:shadow-xl transition-all duration-300 min-h-[44px] text-sm md:text-base focus:outline-none focus:ring-4 focus:ring-white/50`}
           aria-label="Appeler le serveur"
         >
           📞 Serveur
