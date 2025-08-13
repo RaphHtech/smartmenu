@@ -66,20 +66,20 @@ export function MenuCard({
         <h3 className={`text-lg md:text-xl font-bold mb-2 ${styles.titleColor}`}>{name}</h3>
         <p className="text-sm opacity-90 mb-4 leading-relaxed">{description}</p>
         
-        {/* CORRECTIF MOBILE: Centrage exact comme HTML */}
-        <div className="flex flex-col gap-3 md:flex-row md:justify-between md:items-center">
-          {/* Prix CENTRÉ en mobile */}
-          <span className={`text-xl font-black ${styles.priceColor} drop-shadow-md text-center md:text-left`}>
+        {/* CORRECTIF MOBILE: Centrage FORCÉ */}
+        <div className="flex flex-col items-center gap-3 sm:flex-row sm:justify-between sm:items-center">
+          {/* Prix CENTRÉ FORCÉ en mobile */}
+          <span className={`text-xl font-black ${styles.priceColor} drop-shadow-md text-center sm:text-left`}>
             ₪{price}
           </span>
           
-          {/* Bouton/Controls CENTRÉS en mobile */}
-          <div className="flex justify-center md:justify-end">
+          {/* Bouton/Controls CENTRÉS FORCÉS en mobile */}
+          <div className="flex justify-center sm:justify-end">
             {quantity > 0 ? (
               <div className="flex items-center gap-3 bg-white/10 rounded-full px-4 py-2 border border-white/20">
                 <button
                   onClick={() => onUpdateQuantity(quantity - 1)}
-                  className={`w-8 h-8 ${styles.qtyButtonBg} ${styles.qtyButtonText} rounded-full font-bold flex items-center justify-center hover:scale-110 transition-transform focus:outline-none focus:ring-2 focus:ring-white`}
+                  className={`w-8 h-8 ${styles.qtyButtonBg} ${styles.qtyButtonText} rounded-full font-bold flex items-center justify-center hover:scale-110 transition-transform focus:outline-none focus:ring-4 focus:ring-white/50`}
                   aria-label={`Diminuer la quantité de ${name}`}
                 >
                   -
@@ -89,16 +89,17 @@ export function MenuCard({
                 </span>
                 <button
                   onClick={() => onUpdateQuantity(quantity + 1)}
-                  className={`w-8 h-8 ${styles.qtyButtonBg} ${styles.qtyButtonText} rounded-full font-bold flex items-center justify-center hover:scale-110 transition-transform focus:outline-none focus:ring-2 focus:ring-white`}
+                  className={`w-8 h-8 ${styles.qtyButtonBg} ${styles.qtyButtonText} rounded-full font-bold flex items-center justify-center hover:scale-110 transition-transform focus:outline-none focus:ring-4 focus:ring-white/50`}
                   aria-label={`Augmenter la quantité de ${name}`}
                 >
                   +
                 </button>
               </div>
             ) : (
+              /* CORRECTIF: Bouton CENTRÉ en mobile avec focus amélioré */
               <button
                 onClick={onAddToCart}
-                className={`${styles.buttonBg} ${styles.buttonText} px-5 py-3 rounded-xl font-bold hover:transform hover:-translate-y-1 hover:shadow-xl transition-all duration-300 min-h-[44px] focus:outline-none focus:ring-2 focus:ring-white w-auto`}
+                className={`${styles.buttonBg} ${styles.buttonText} px-5 py-3 rounded-xl font-bold hover:transform hover:-translate-y-1 hover:shadow-xl transition-all duration-300 min-h-[44px] focus:outline-none focus:ring-4 focus:ring-white/50 w-auto text-center`}
                 aria-label={`Ajouter ${name} au panier`}
               >
                 AJOUTER
