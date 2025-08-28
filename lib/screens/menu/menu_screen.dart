@@ -2,71 +2,32 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import '../../core/constants/colors.dart';
-
-// Structure de base : Scaffold → SafeArea → Container (avec gradient) → Column
-
-// decoration: const BoxDecoration(gradient: AppColors.primaryGradient, // ← LES couleurs parfaites !),
-
-// 🔍 Chaque ligne expliquée :
-// SafeArea → Évite l'encoche du téléphone
-// double.infinity → Prend toute la largeur
-// Expanded → Prend tout l'espace restant
-// mainAxisSize.min → Bouton juste la taille nécessaire
+import '../../data/menu_data.dart';
+import '../../widgets/gradient_text_widget.dart';
+import '../../widgets/category_pill_widget.dart';
+import '../../widgets/menu_item_widget.dart';
 
 class SimpleMenuScreen extends StatefulWidget {
   const SimpleMenuScreen({super.key});
 
   @override
-  State<SimpleMenuScreen> createState() => _SimpleMenuScreenState();
+  State<SimpleMenuScreen> createState() => SimpleMenuScreenState();
 }
 
-class _SimpleMenuScreenState extends State<SimpleMenuScreen> {
+class SimpleMenuScreenState extends State<SimpleMenuScreen> {
   int _cartItemCount = 0;
   double _cartTotal = 0.0;
   String _selectedCategory = 'Pizzas';
-  Map<String, int> _itemQuantities = {}; // Track quantities per item
+  Map<String, int> itemQuantities = {}; // Track quantities per item
   bool _showOrderModal = false;
-  final Map<String, List<Map<String, dynamic>>> _menuData = {
-    'Pizzas': [
-      {
-        'name': 'Margherita Royale',
-        'description': 'Mozzarella di bufala, tomates San Marzano...',
-        'price': '₪65',
-        'hasSignature': true,
-      },
-      {
-        'name': 'Diavola Infernale',
-        'description': 'Sauce tomate épicée, mozzarella...',
-        'price': '₪72',
-        'hasSignature': true,
-      },
-      // Ajoutez vos autres pizzas ici
-    ],
-    'Entrées': [
-      {
-        'name': 'Antipasti Misto',
-        'description': 'Sélection de charcuteries italiennes...',
-        'price': '₪55',
-        'hasSignature': false,
-      },
-    ],
-    'Pâtes': [
-      // Vos pâtes ici
-    ],
-    'Desserts': [
-      // Vos desserts ici
-    ],
-    'Boissons': [
-      // Vos boissons ici
-    ],
-  };
+  final Map<String, List<Map<String, dynamic>>> _menuData = menuData;
 
-  void _addToCart(String itemName, double price) {
+  void addToCart(String itemName, double price) {
     setState(() {
-      if (_itemQuantities.containsKey(itemName)) {
-        _itemQuantities[itemName] = _itemQuantities[itemName]! + 1;
+      if (itemQuantities.containsKey(itemName)) {
+        itemQuantities[itemName] = itemQuantities[itemName]! + 1;
       } else {
-        _itemQuantities[itemName] = 1;
+        itemQuantities[itemName] = 1;
       }
       _cartItemCount++;
       _cartTotal += price;
@@ -76,23 +37,23 @@ class _SimpleMenuScreenState extends State<SimpleMenuScreen> {
     _showCustomNotification(context, '✅ $itemName ajouté au panier !');
   }
 
-  void _increaseQuantity(String itemName, double price) {
+  void increaseQuantity(String itemName, double price) {
     setState(() {
-      _itemQuantities[itemName] = (_itemQuantities[itemName] ?? 0) + 1;
+      itemQuantities[itemName] = (itemQuantities[itemName] ?? 0) + 1;
       _cartItemCount++;
       _cartTotal += price;
     });
   }
 
-  void _decreaseQuantity(String itemName, double price) {
+  void decreaseQuantity(String itemName, double price) {
     setState(() {
-      int currentQty = _itemQuantities[itemName] ?? 0;
+      int currentQty = itemQuantities[itemName] ?? 0;
       if (currentQty > 1) {
-        _itemQuantities[itemName] = currentQty - 1;
+        itemQuantities[itemName] = currentQty - 1;
         _cartItemCount--;
         _cartTotal -= price;
       } else {
-        _itemQuantities.remove(itemName);
+        itemQuantities.remove(itemName);
         _cartItemCount--;
         _cartTotal -= price;
       }
@@ -218,7 +179,7 @@ class _SimpleMenuScreenState extends State<SimpleMenuScreen> {
     // Construire le récapitulatif détaillé
     String orderSummary = '🎉 COMMANDE CONFIRMÉE !\n\n📋 RÉCAPITULATIF:\n\n';
 
-    for (var entry in _itemQuantities.entries) {
+    for (var entry in itemQuantities.entries) {
       double itemPrice = 0.0;
       for (var category in _menuData.values) {
         for (var item in category) {
@@ -322,7 +283,7 @@ class _SimpleMenuScreenState extends State<SimpleMenuScreen> {
                             const Expanded(
                               flex: 2,
                               child: Center(
-                                child: _GradientText(
+                                child: GradientText(
                                   'PIZZA\nPOWER',
                                   gradient:
                                       AppColors.titleGradient, // blanc → jaune
@@ -426,7 +387,7 @@ class _SimpleMenuScreenState extends State<SimpleMenuScreen> {
                                   ),
                                   const SizedBox(width: 16),
                                   // Titre HÉRO en dégradé — 1 LIGNE
-                                  const _GradientText(
+                                  const GradientText(
                                     'PIZZA POWER',
                                     gradient: AppColors
                                         .titleGradient, // tu peux passer à un gradient plus doré si tu veux
@@ -503,28 +464,28 @@ class _SimpleMenuScreenState extends State<SimpleMenuScreen> {
                       scrollDirection: Axis.horizontal,
                       child: Row(
                         children: [
-                          _CategoryPill(
+                          CategoryPill(
                             label: '🍕 Pizzas',
                             isActive: _selectedCategory == 'Pizzas',
                             onTap: () => _selectCategory('Pizzas'),
                           ),
                           const SizedBox(width: 12),
-                          _CategoryPill(
+                          CategoryPill(
                               label: '🥗 Entrées',
                               isActive: _selectedCategory == 'Entrées',
                               onTap: () => _selectCategory('Entrées')),
                           const SizedBox(width: 12),
-                          _CategoryPill(
+                          CategoryPill(
                               label: '🍝 Pâtes',
                               isActive: _selectedCategory == 'Pâtes',
                               onTap: () => _selectCategory('Pâtes')),
                           const SizedBox(width: 12),
-                          _CategoryPill(
+                          CategoryPill(
                               label: '🍰 Desserts',
                               isActive: _selectedCategory == 'Desserts',
                               onTap: () => _selectCategory('Desserts')),
                           const SizedBox(width: 12),
-                          _CategoryPill(
+                          CategoryPill(
                               label: '🍹 Boissons',
                               isActive: _selectedCategory == 'Boissons',
                               onTap: () => _selectCategory('Boissons')),
@@ -569,7 +530,7 @@ class _SimpleMenuScreenState extends State<SimpleMenuScreen> {
                         final currentItems = _menuData[_selectedCategory] ?? [];
                         return Padding(
                           padding: const EdgeInsets.only(bottom: 20),
-                          child: _MenuItem(pizza: currentItems[index]),
+                          child: MenuItem(pizza: currentItems[index]),
                         );
                       },
                       childCount: _menuData[_selectedCategory]?.length ?? 0,
@@ -728,7 +689,7 @@ class _SimpleMenuScreenState extends State<SimpleMenuScreen> {
                         child: SingleChildScrollView(
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.stretch,
-                            children: _itemQuantities.entries.map((entry) {
+                            children: itemQuantities.entries.map((entry) {
                               // Trouver le prix de l'article dans les données
                               double itemPrice = 0.0;
                               for (var category in _menuData.values) {
@@ -798,22 +759,21 @@ class _SimpleMenuScreenState extends State<SimpleMenuScreen> {
                                         GestureDetector(
                                           onTap: () {
                                             setState(() {
-                                              if (_itemQuantities[entry.key]! >
+                                              if (itemQuantities[entry.key]! >
                                                   1) {
-                                                _itemQuantities[entry.key] =
-                                                    _itemQuantities[
-                                                            entry.key]! -
+                                                itemQuantities[entry.key] =
+                                                    itemQuantities[entry.key]! -
                                                         1;
                                                 _cartItemCount--;
                                                 _cartTotal -= itemPrice;
                                               } else {
                                                 _cartItemCount -=
-                                                    _itemQuantities[entry.key]!;
+                                                    itemQuantities[entry.key]!;
                                                 _cartTotal -= itemPrice *
-                                                    _itemQuantities[entry.key]!;
-                                                _itemQuantities
+                                                    itemQuantities[entry.key]!;
+                                                itemQuantities
                                                     .remove(entry.key);
-                                                if (_itemQuantities.isEmpty) {
+                                                if (itemQuantities.isEmpty) {
                                                   _closeOrderReview();
                                                 }
                                               }
@@ -847,8 +807,8 @@ class _SimpleMenuScreenState extends State<SimpleMenuScreen> {
                                         GestureDetector(
                                           onTap: () {
                                             setState(() {
-                                              _itemQuantities[entry.key] =
-                                                  _itemQuantities[entry.key]! +
+                                              itemQuantities[entry.key] =
+                                                  itemQuantities[entry.key]! +
                                                       1;
                                               _cartItemCount++;
                                               _cartTotal += itemPrice;
@@ -873,11 +833,11 @@ class _SimpleMenuScreenState extends State<SimpleMenuScreen> {
                                     onTap: () {
                                       setState(() {
                                         _cartItemCount -=
-                                            _itemQuantities[entry.key]!;
+                                            itemQuantities[entry.key]!;
                                         _cartTotal -= itemPrice *
-                                            _itemQuantities[entry.key]!;
-                                        _itemQuantities.remove(entry.key);
-                                        if (_itemQuantities.isEmpty) {
+                                            itemQuantities[entry.key]!;
+                                        itemQuantities.remove(entry.key);
+                                        if (itemQuantities.isEmpty) {
                                           _closeOrderReview();
                                         }
                                       });
@@ -1055,311 +1015,6 @@ class _SimpleMenuScreenState extends State<SimpleMenuScreen> {
             ),
           ),
       ],
-    );
-  }
-}
-
-// Petit helper pour le texte en dégradé (aucun autre fichier requis)
-class _GradientText extends StatelessWidget {
-  final String text;
-  final TextStyle style;
-  final Gradient gradient;
-  final TextAlign? textAlign;
-  final int? maxLines;
-
-  const _GradientText(
-    this.text, {
-    required this.gradient,
-    required this.style,
-    this.textAlign,
-    this.maxLines,
-    Key? key,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    final isSingleLine = (maxLines ?? 0) == 1;
-
-    return ShaderMask(
-      blendMode: BlendMode.srcIn,
-      shaderCallback: (bounds) => gradient
-          .createShader(Rect.fromLTWH(0, 0, bounds.width, bounds.height)),
-      child: Text(
-        text,
-        style: style,
-        textAlign: textAlign,
-        maxLines: maxLines,
-        overflow: isSingleLine ? TextOverflow.ellipsis : TextOverflow.visible,
-        softWrap: !isSingleLine,
-      ),
-    );
-  }
-}
-
-// Widget helper pour les pills de catégories
-class _CategoryPill extends StatelessWidget {
-  final String label;
-  final bool isActive;
-  final VoidCallback onTap;
-
-  const _CategoryPill({
-    required this.label,
-    required this.isActive,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-        decoration: BoxDecoration(
-          color: isActive
-              ? const Color.fromRGBO(255, 255, 255, 0.9)
-              : const Color.fromRGBO(255, 255, 255, 0.1),
-          border: Border.all(
-            color: isActive
-                ? Colors.white
-                : const Color.fromRGBO(255, 255, 255, 0.3),
-            width: 2,
-          ),
-          borderRadius: BorderRadius.circular(25),
-        ),
-        child: Text(
-          label,
-          style: TextStyle(
-            color: isActive ? AppColors.primary : Colors.white,
-            fontWeight: FontWeight.w600,
-            fontSize: 15.2, // ← 0.95rem du HTML
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-// Widget helper pour les items de menu
-class _MenuItem extends StatelessWidget {
-  final Map<String, dynamic> pizza;
-
-  const _MenuItem({required this.pizza});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        gradient: AppColors.cardGradient,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: const Color.fromRGBO(255, 255, 255, 0.1),
-          width: 1,
-        ),
-      ),
-      child: Column(
-        children: [
-          // IMAGE SECTION
-          Container(
-            height: 200,
-            decoration: const BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-                colors: [AppColors.primary, AppColors.secondary],
-              ),
-              borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(16),
-                topRight: Radius.circular(16),
-              ),
-            ),
-            child: Stack(
-              children: [
-                const Center(
-                  child: Text(
-                    '🍕',
-                    style: TextStyle(fontSize: 64),
-                  ),
-                ),
-                if (pizza['hasSignature'])
-                  Positioned(
-                    top: 15,
-                    right: 15,
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 12, vertical: 6),
-                      decoration: BoxDecoration(
-                        color: AppColors.accent,
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      child: const Text(
-                        'SIGNATURE',
-                        style: TextStyle(
-                          color: AppColors.primary,
-                          fontWeight: FontWeight.w700,
-                          fontSize: 12.8, // ← 0.8rem du HTML
-                        ),
-                      ),
-                    ),
-                  ),
-              ],
-            ),
-          ),
-
-          // CONTENT SECTION
-          Padding(
-            padding: const EdgeInsets.all(20),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  pizza['name'],
-                  style: const TextStyle(
-                    fontSize: 22.4, // ← 1.4rem du HTML
-                    fontWeight: FontWeight.w700,
-                    color: AppColors.accent,
-                  ),
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  pizza['description'],
-                  style: const TextStyle(
-                    fontSize: 15.2, // ← 0.95rem du HTML
-                    color: Color.fromRGBO(255, 255, 255, 0.9),
-                    height: 1.4,
-                  ),
-                ),
-                const SizedBox(height: 15),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      pizza['price'],
-                      style: const TextStyle(
-                        fontSize: 22.4, // ← 1.4rem du HTML
-                        fontWeight: FontWeight.w800,
-                        color: AppColors.accent,
-                      ),
-                    ),
-                    // LOGIQUE CONDITIONNELLE POUR BOUTON/CONTROLES
-                    Builder(
-                      builder: (context) {
-                        final screenState = context
-                            .findAncestorStateOfType<_SimpleMenuScreenState>()!;
-                        final quantity =
-                            screenState._itemQuantities[pizza['name']] ?? 0;
-
-                        if (quantity == 0) {
-                          // Afficher bouton AJOUTER
-                          return ElevatedButton(
-                            onPressed: () {
-                              final priceText =
-                                  pizza['price'].toString().replaceAll('₪', '');
-                              final price = double.tryParse(priceText) ?? 0.0;
-                              screenState._addToCart(pizza['name'], price);
-                            },
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: AppColors.accent,
-                              foregroundColor: AppColors.primary,
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 20, vertical: 12),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                            ),
-                            child: const Text(
-                              'AJOUTER',
-                              style: TextStyle(fontWeight: FontWeight.w700),
-                            ),
-                          );
-                        } else {
-                          // Afficher contrôles +/-
-                          return Container(
-                            decoration: BoxDecoration(
-                              color: const Color.fromRGBO(255, 255, 255, 0.1),
-                              borderRadius: BorderRadius.circular(25),
-                              border: Border.all(
-                                color: const Color.fromRGBO(255, 255, 255, 0.2),
-                                width: 1,
-                              ),
-                            ),
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 16, vertical: 8),
-                            child: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                GestureDetector(
-                                  onTap: () {
-                                    final priceText = pizza['price']
-                                        .toString()
-                                        .replaceAll('₪', '');
-                                    final price =
-                                        double.tryParse(priceText) ?? 0.0;
-                                    screenState._decreaseQuantity(
-                                        pizza['name'], price);
-                                  },
-                                  child: Container(
-                                    width: 32,
-                                    height: 32,
-                                    decoration: const BoxDecoration(
-                                      color: AppColors.accent,
-                                      shape: BoxShape.circle,
-                                    ),
-                                    child: const Icon(
-                                      Icons.remove,
-                                      color: AppColors.primary,
-                                      size: 20,
-                                    ),
-                                  ),
-                                ),
-                                Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 16),
-                                  child: Text(
-                                    '$quantity',
-                                    style: const TextStyle(
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.w700,
-                                      fontSize: 18,
-                                    ),
-                                  ),
-                                ),
-                                GestureDetector(
-                                  onTap: () {
-                                    final priceText = pizza['price']
-                                        .toString()
-                                        .replaceAll('₪', '');
-                                    final price =
-                                        double.tryParse(priceText) ?? 0.0;
-                                    screenState._increaseQuantity(
-                                        pizza['name'], price);
-                                  },
-                                  child: Container(
-                                    width: 32,
-                                    height: 32,
-                                    decoration: const BoxDecoration(
-                                      color: AppColors.accent,
-                                      shape: BoxShape.circle,
-                                    ),
-                                    child: const Icon(
-                                      Icons.add,
-                                      color: AppColors.primary,
-                                      size: 20,
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          );
-                        }
-                      },
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
     );
   }
 }
