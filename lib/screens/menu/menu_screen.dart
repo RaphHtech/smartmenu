@@ -307,13 +307,9 @@ class SimpleMenuScreenState extends State<MenuScreen> {
                                   fit: BoxFit.scaleDown,
                                   child: ElevatedButton.icon(
                                     onPressed: () {
-                                      ScaffoldMessenger.of(context)
-                                          .showSnackBar(
-                                        const SnackBar(
-                                          content: Text(
-                                              '📞 Appel envoyé au serveur'),
-                                          behavior: SnackBarBehavior.floating,
-                                        ),
+                                      _showCustomNotification(
+                                        context,
+                                        '📞 Appel du serveur...\nUn membre de notre équipe arrive à votre table !',
                                       );
                                     },
                                     icon: const Icon(Icons.phone_outlined,
