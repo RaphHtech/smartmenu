@@ -1,174 +1,172 @@
 # SmartMenu App 🍕
 
-Une application de menu digital moderne pour restaurants, développée avec Flutter.
+Une application de menu numérique moderne pour restaurants, développée avec Flutter.
 
-## 📱 À propos du projet
+## Description
 
-**SmartMenu** est une application mobile Flutter qui permet aux restaurants de proposer un menu digital interactif à leurs clients. L'application offre une interface moderne avec des dégradés, une navigation fluide par catégories et un système de panier intégré.
+SmartMenu est une solution complète de menu digital permettant aux clients de consulter le menu d'un restaurant, ajouter des articles à leur panier, et passer commande directement depuis leur smartphone. L'application reproduit l'expérience d'un restaurant italien "Pizza Power" à Tel Aviv.
 
-## ✨ Fonctionnalités actuelles
+## Fonctionnalités
 
-- 🎨 **Interface moderne** avec dégradés et design responsive
-- 📱 **Navigation par catégories** (Pizzas, Boissons, Desserts, etc.)
-- 🛒 **Panier flottant** avec compteur d'articles
-- 🎯 **Design optimisé** pour smartphone
-- 🔄 **Architecture Provider** pour la gestion d'état
-- 🌐 **Support multilingue** prévu
+### Interface utilisateur
 
-## 🎯 Fonctionnalités principales
+- **Design moderne** avec dégradés et effets visuels
+- **Navigation par catégories** (Pizzas, Entrées, Pâtes, Desserts, Boissons)
+- **Responsive design** adaptatif pour mobile et desktop
+- **Animations fluides** et transitions élégantes
 
-### 📋 Menu interactif
-- Affichage des plats par catégories
-- Cards de produits avec images et prix
-- Interface intuitive et moderne
+### Gestion de commande
 
-### 🛒 Système de panier
-- Ajout/suppression d'articles
-- Visualisation du total
-- Bouton flottant avec compteur
+- **Ajout d'articles** au panier avec contrôles +/-
+- **Modal de révision** complète avant validation
+- **Calcul automatique** des totaux et quantités
+- **Système de notifications** personnalisées
+- **Confirmation de commande** avec récapitulatif détaillé
 
-### 🎨 Design & UX
-- Dégradés colorés modernes
-- Interface responsive
-- Navigation fluide
+### Expérience restaurant
 
-## 🛠 Stack technique
+- **Thème Pizza Power** avec identité visuelle cohérente
+- **Bouton d'appel serveur** intégré
+- **Badges "Signature"** pour les spécialités
+- **Affichage des prix** en shekels (₪)
 
-- **Framework** : Flutter 3.x
-- **Langage** : Dart
-- **État management** : Provider
-- **UI** : Material Design avec thème personnalisé
-- **Architecture** : MVVM avec Provider pattern
+## Architecture technique
 
-## 📂 Structure du projet
+### Structure du projet
 
 ```
 lib/
-├── core/
-│   ├── constants/
-│   │   └── colors.dart           # Palette de couleurs et dégradés
-│   └── themes/
-│       └── app_theme.dart        # Configuration du thème global
-├── providers/
-│   ├── menu_provider.dart        # Gestion des données menu
-│   ├── cart_provider.dart        # Gestion du panier
-│   └── language_provider.dart    # Gestion des langues
-├── screens/
-│   ├── home_screen.dart          # Écran d'accueil
-│   ├── menu_screen.dart          # Écran principal du menu
-│   ├── cart_screen.dart          # Écran du panier
-│   └── qr_scanner_screen.dart    # Scanner QR (prévu)
+├── core/constants/
+│   └── colors.dart              # Palette de couleurs centralisée
+├── data/
+│   └── menu_data.dart          # Données du menu
+├── screens/menu/
+│   └── menu_screen.dart        # Écran principal (~900 lignes)
 ├── widgets/
-│   ├── menu_item_card.dart       # Card produit
-│   ├── category_chips.dart       # Puces de catégories
-│   ├── cart_floating_button.dart # Bouton panier flottant
-│   └── custom_app_bar.dart       # Barre d'application
-└── main.dart                     # Point d'entrée
+│   ├── gradient_text_widget.dart    # Texte avec dégradé
+│   ├── category_pill_widget.dart    # Pills de navigation
+│   └── menu_item_widget.dart       # Cartes d'articles
+└── main.dart                   # Point d'entrée simplifié
 ```
 
-## 🎨 Design System
+### Principes de design
 
-### Couleurs principales
-- **Dégradé primaire** : Orange vers rouge-orange
-- **Accent** : Couleurs vives pour les CTAs
-- **Background** : Dégradés fluides
-- **Cards** : Backgrounds semi-transparents
+- **Séparation des responsabilités** : Widgets modulaires réutilisables
+- **Single source of truth** : Palette de couleurs centralisée
+- **État local** : Gestion simple avec StatefulWidget
+- **Code maintenable** : Extraction des widgets complexes
 
-## 🚀 Installation et lancement
+## Refactoring réalisé
+
+Le projet a été restructuré pour améliorer la maintenabilité :
+
+- **Avant** : Fichier monolithique de 1300 lignes
+- **Après** : Architecture modulaire avec séparation claire
+- **Résultat** : Réduction de 30% de la complexité du fichier principal
+
+### Extractions effectuées
+
+1. **Données** → Fichier séparé (`menu_data.dart`)
+2. **Widgets** → Modules réutilisables
+3. **Couleurs** → Constantes centralisées
+4. **Logique métier** → Méthodes publiques accessibles
+
+## Installation
 
 ### Prérequis
-- Flutter SDK (version 3.0+)
-- VS Code ou Android Studio
-- Un émulateur ou appareil physique
 
-### Installation
+- Flutter SDK (≥3.0.0)
+- Dart SDK (≥3.0.0)
+- Android Studio / VS Code
+- Émulateur Android/iOS ou appareil physique
+
+### Commandes
+
 ```bash
 # Cloner le repository
-git clone [URL_DU_REPO]
-cd smartmenu-app
+git clone https://github.com/RaphHtech/smartmenu.git
+cd smartmenu_app
 
 # Installer les dépendances
 flutter pub get
-
-# Créer les dossiers d'assets
-mkdir -p assets/images assets/icons
 
 # Lancer l'application
 flutter run
 ```
 
-## 📱 Plateformes supportées
+## Utilisation
 
-- ✅ Android (API 21+)
-- ✅ iOS (iOS 12+)
-- 🔄 Web (en développement)
+1. **Navigation** : Utilisez les pills de catégories pour explorer le menu
+2. **Ajout au panier** : Appuyez sur "AJOUTER" puis utilisez les contrôles +/-
+3. **Révision** : Cliquez sur "VOIR COMMANDE" pour réviser votre panier
+4. **Modification** : Ajustez les quantités ou supprimez des articles
+5. **Confirmation** : Validez votre commande pour recevoir la confirmation
+6. **Assistance** : Utilisez le bouton "Serveur" pour appeler l'équipe
 
-## 🔧 Configuration
+## Données de test
 
-### Assets requis
-Créez les dossiers suivants dans votre projet :
-```
-assets/
-├── images/           # Images des plats
-└── icons/           # Icônes personnalisées
-```
+L'application inclut des données de démonstration pour :
 
-Ajoutez dans `pubspec.yaml` :
-```yaml
-flutter:
-  assets:
-    - assets/images/
-    - assets/icons/
-```
+- **6 pizzas** incluant des spécialités signature
+- **1 entrée** (Antipasti Misto)
+- **2 pâtes** (Carbonara, Penne Arrabbiata)
+- **1 dessert** (Tiramisu)
+- **1 boisson** (Chianti Classico)
 
-## 🏗 Roadmap de développement
+Prix en shekels israéliens (₪) adaptés au marché local de Tel Aviv.
 
-### Phase actuelle - MVP 
-- [x] Interface de base avec Provider
-- [x] Affichage du menu par catégories  
-- [x] Système de panier fonctionnel
-- [x] Design moderne avec dégradés
-- [ ] Corrections mineures d'UI (alignements, espacements)
+## Technologies utilisées
 
-### Phase 2 - Fonctionnalités avancées
-- [ ] Scanner QR code pour accès restaurant
-- [ ] Envoi de commandes réelles
-- [ ] Interface restaurateur
-- [ ] Notifications push
+- **Flutter** : Framework UI multiplateforme
+- **Dart** : Langage de programmation
+- **Material Design 3** : Système de design Google
+- **Git** : Contrôle de version avec commits sémantiques
 
-### Phase 3 - Optimisations
-- [ ] Système de paiement intégré
-- [ ] Mode offline
-- [ ] Analytics et métriques
+## Déploiement
+
+L'application est prête pour le déploiement sur :
+
+- **Android** : Google Play Store
+- **iOS** : App Store
+- **Web** : Hébergement statique
+
+Aucune configuration backend requise - fonctionne entièrement en local.
+
+## Roadmap
+
+### Améliorations possibles
+
+- [ ] Intégration d'images réelles
+- [ ] Système de favoris
+- [ ] Support multilingue (FR/EN/HE)
+- [ ] Gestion des allergènes
+- [ ] Intégration paiement
+- [ ] Mode sombre/clair
+- [ ] Analytics utilisateur
+
+### Architecture évoluée
+
+- [ ] State management (Bloc/Riverpod)
+- [ ] API REST / GraphQL
+- [ ] Base de données locale
 - [ ] Tests automatisés
+- [ ] CI/CD Pipeline
 
-## 🔄 État actuel
+## Contribution
 
-**Version** : MVP en développement  
-**Status** : 🚧 Interface en cours d'ajustement  
-**Focus actuel** : Perfectionnement de l'UI pour correspondre exactement au design HTML de référence
+Le projet suit les bonnes pratiques de développement :
 
-## 🛠 Dépendances principales
+- **Commits sémantiques** : feat/fix/refactor/docs
+- **Code review** : Validation avant merge
+- **Documentation** : README et commentaires
+- **Architecture** : Séparation claire des responsabilités
 
-```yaml
-dependencies:
-  flutter:
-    sdk: flutter
-  provider: ^6.0.5
-  go_router: ^10.1.2
-  # Autres dépendances à ajouter selon les besoins
-```
+## Licence
 
-## 👨‍💻 Développement
-
-**Développeur** : RaphHtech  
-**Architecture** : MVVM avec Provider  
-**Approche** : MVP itératif avec améliorations progressives
-
-## 📞 Contact
-
-Pour toute question sur le projet ou contribution, ouvrez une issue ou contactez-moi directement.
+Projet éducatif - Tous droits réservés.
 
 ---
 
-**Status** : 🚧 En développement actif - Ajustements UI en cours
+**Développé avec ❤️ en Flutter**
+
+_Application de démonstration pour portfolio technique_
