@@ -20,7 +20,7 @@ SmartMenu est une solution complète de menu digital permettant aux clients de c
 - **Ajout d'articles** au panier avec contrôles +/-
 - **Modal de révision** complète avant validation
 - **Calcul automatique** des totaux et quantités
-- **Système de notifications** personnalisées
+- **Système de notifications** personnalisées avec gestion persistante
 - **Confirmation de commande** avec récapitulatif détaillé
 
 ### Expérience restaurant
@@ -37,39 +37,60 @@ SmartMenu est une solution complète de menu digital permettant aux clients de c
 ```
 lib/
 ├── core/constants/
-│   └── colors.dart              # Palette de couleurs centralisée
+│   └── colors.dart                    # Palette de couleurs centralisée
 ├── data/
-│   └── menu_data.dart          # Données du menu
+│   └── menu_data.dart                 # Données du menu
+├── services/
+│   └── cart_service.dart              # Logique métier du panier
 ├── screens/menu/
-│   └── menu_screen.dart        # Écran principal (~900 lignes)
+│   └── menu_screen.dart               # Écran principal (~400 lignes)
 ├── widgets/
-│   ├── gradient_text_widget.dart    # Texte avec dégradé
-│   ├── category_pill_widget.dart    # Pills de navigation
-│   └── menu_item_widget.dart       # Cartes d'articles
-└── main.dart                   # Point d'entrée simplifié
+│   ├── modals/
+│   │   └── order_review_modal.dart    # Modal de révision de commande
+│   ├── notifications/
+│   │   └── custom_notification.dart   # Service de notifications
+│   ├── menu/
+│   │   ├── cart_floating_widget.dart  # Panier flottant
+│   │   └── app_header_widget.dart     # En-tête de l'application
+│   ├── gradient_text_widget.dart      # Texte avec dégradé
+│   ├── category_pill_widget.dart      # Pills de navigation
+│   └── menu_item_widget.dart          # Cartes d'articles
+└── main.dart                          # Point d'entrée simplifié
 ```
 
 ### Principes de design
 
 - **Séparation des responsabilités** : Widgets modulaires réutilisables
+- **Services centralisés** : Logique métier dans des services dédiés
 - **Single source of truth** : Palette de couleurs centralisée
 - **État local** : Gestion simple avec StatefulWidget
-- **Code maintenable** : Extraction des widgets complexes
+- **Code maintenable** : Architecture modulaire et testable
 
 ## Refactoring réalisé
 
-Le projet a été restructuré pour améliorer la maintenabilité :
+Le projet a été entièrement restructuré pour améliorer la maintenabilité :
 
-- **Avant** : Fichier monolithique de 1300 lignes
+- **Avant** : Fichier monolithique de 900 lignes
 - **Après** : Architecture modulaire avec séparation claire
-- **Résultat** : Réduction de 30% de la complexité du fichier principal
+- **Résultat** : Réduction de 56% de la complexité du fichier principal
 
 ### Extractions effectuées
 
-1. **Données** → Fichier séparé (`menu_data.dart`)
-2. **Widgets** → Modules réutilisables
-3. **Couleurs** → Constantes centralisées
-4. **Logique métier** → Méthodes publiques accessibles
+1. **Modal de révision** → Widget réutilisable (`order_review_modal.dart`)
+2. **Système de notifications** → Service centralisé (`custom_notification.dart`)
+3. **Panier flottant** → Widget modulaire (`cart_floating_widget.dart`)
+4. **En-tête** → Composant réutilisable (`app_header_widget.dart`)
+5. **Logique panier** → Service métier (`cart_service.dart`)
+6. **Données** → Fichier séparé (`menu_data.dart`)
+7. **Couleurs** → Constantes centralisées (`colors.dart`)
+
+### Bénéfices du refactoring
+
+- **Maintenabilité** : Code organisé en modules spécialisés
+- **Réutilisabilité** : Widgets extractibles pour d'autres projets
+- **Testabilité** : Services isolés facilement testables
+- **Lisibilité** : Fichier principal réduit à l'essentiel
+- **Scalabilité** : Architecture prête pour de nouvelles fonctionnalités
 
 ## Installation
 
