@@ -7,14 +7,14 @@ import '../../widgets/gradient_text_widget.dart';
 import '../../widgets/category_pill_widget.dart';
 import '../../widgets/menu_item_widget.dart';
 
-class SimpleMenuScreen extends StatefulWidget {
-  const SimpleMenuScreen({super.key});
+class MenuScreen extends StatefulWidget {
+  const MenuScreen({super.key});
 
   @override
-  State<SimpleMenuScreen> createState() => SimpleMenuScreenState();
+  State<MenuScreen> createState() => SimpleMenuScreenState();
 }
 
-class SimpleMenuScreenState extends State<SimpleMenuScreen> {
+class SimpleMenuScreenState extends State<MenuScreen> {
   int _cartItemCount = 0;
   double _cartTotal = 0.0;
   String _selectedCategory = 'Pizzas';
