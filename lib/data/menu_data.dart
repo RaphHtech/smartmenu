@@ -21,7 +21,38 @@ final Map<String, List<Map<String, dynamic>>> menuData = {
       'hasSignature': false,
     },
   ],
-  'Pâtes': [],
-  'Desserts': [],
-  'Boissons': [],
+  'Pâtes': [
+    {
+      'name': 'Carbonara Classique',
+      'description':
+          'Spaghetti, guanciale, œufs fermiers, pecorino romano, poivre noir fraîchement moulu',
+      'price': '₪62',
+      'hasSignature': false,
+    },
+    {
+      'name': 'Penne all\'Arrabbiata',
+      'description':
+          'Penne, sauce tomate épicée, ail, piments, basilic, parmesan',
+      'price': '₪58',
+      'hasSignature': false,
+    },
+  ],
+  'Desserts': [
+    {
+      'name': 'Tiramisu Maison',
+      'description':
+          'Mascarpone, café expresso, cacao pur, biscuits savoiardi, rhum arrangé',
+      'price': '₪32',
+      'hasSignature': false,
+    },
+  ],
+  'Boissons': [
+    {
+      'name': 'Chianti Classico',
+      'description':
+          'Vin rouge toscan, bouteille 750ml, notes de cerise et épices',
+      'price': '₪120',
+      'hasSignature': false,
+    },
+  ],
 };
