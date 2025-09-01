@@ -38,24 +38,23 @@ SmartMenu est une solution complète de menu digital permettant aux clients de c
 lib/
 ├── core/constants/
 │   └── colors.dart                    # Palette de couleurs centralisée
-├── data/
-│   └── menu_data.dart                 # Données du menu
 ├── services/
-│   └── cart_service.dart              # Logique métier du panier
-├── screens/menu/
-│   └── menu_screen.dart               # Écran principal (~400 lignes)
+│   ├── cart_service.dart              # Logique métier du panier
+│   └── firebase_menu_service.dart     # Interface Firestore
+├── screens/
+│   ├── home_screen.dart               # Écran d'accueil avec QR scanner
+│   ├── qr_scanner_screen.dart         # Scanner QR code
+│   └── menu/menu_screen.dart          # Écran principal (~400 lignes)
 ├── widgets/
-│   ├── modals/
-│   │   └── order_review_modal.dart    # Modal de révision de commande
-│   ├── notifications/
-│   │   └── custom_notification.dart   # Service de notifications
+│   ├── modals/order_review_modal.dart # Modal de révision de commande
+│   ├── notifications/custom_notification.dart # Service de notifications
 │   ├── menu/
 │   │   ├── cart_floating_widget.dart  # Panier flottant
 │   │   └── app_header_widget.dart     # En-tête de l'application
 │   ├── gradient_text_widget.dart      # Texte avec dégradé
 │   ├── category_pill_widget.dart      # Pills de navigation
 │   └── menu_item_widget.dart          # Cartes d'articles
-└── main.dart                          # Point d'entrée simplifié
+└── main.dart                          # Point d'entrée avec Firebase
 ```
 
 ### Principes de design
@@ -185,6 +184,38 @@ Le projet suit les bonnes pratiques de développement :
 ## Licence
 
 Projet éducatif - Tous droits réservés.
+
+## État technique actuel
+
+### Fonctionnel ✅
+
+- App Flutter complète et stable
+- Intégration Firebase opérationnelle
+- Architecture modulaire optimisée
+- Scanner QR multi-restaurant
+- États de chargement implémentés
+- Navigation fluide et optimisée
+- Système de notifications complet
+- Tests validés sur dispositif physique
+
+### Prochaine phase 🚀
+
+- Interface restaurateur web (priorité absolue)
+- Authentification restaurateurs
+- Gestion CRUD des menus
+- Upload d'images via Firebase Storage
+
+---
+
+**Status** : App client finalisée ✅  
+**Prochaine étape** : Interface web restaurateur  
+**Timeline** : 1-2 semaines pour interface restaurateur complète
+
+---
+
+**Développé avec ❤️ en Flutter**
+
+_Application de démonstration pour portfolio technique_
 
 ---
 
