@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
-import 'screens/menu/menu_screen.dart'; // Votre fichier renommé
+import 'package:smartmenu_app/screens/home_screen.dart';
 import 'core/constants/colors.dart';
+import 'package:firebase_core/firebase_core.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
   runApp(const SmartMenuApp());
 }
 
@@ -14,7 +17,7 @@ class SmartMenuApp extends StatelessWidget {
     return MaterialApp(
       title: 'SmartMenu',
       debugShowCheckedModeBanner: false,
-      home: const MenuScreen(),
+      home: HomeScreen(),
       theme: _buildTheme(),
     );
   }
