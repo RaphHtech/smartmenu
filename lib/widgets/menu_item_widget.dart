@@ -1,15 +1,46 @@
 import 'package:flutter/material.dart';
 import '../core/constants/colors.dart';
-import '../screens/menu/menu_screen.dart';
+
+// petit helper robuste
+double _parsePrice(dynamic value) {
+  if (value == null) return 0.0;
+  if (value is num) return value.toDouble();
+  final s = value
+      .toString()
+      .replaceAll(RegExp(r'[^\d,.\-]'), '') // enlève ₪ ou autres symboles
+      .replaceAll(',', '.');
+  return double.tryParse(s) ?? 0.0;
+}
 
 // Widget helper pour les items de menu
 class MenuItem extends StatelessWidget {
   final Map<String, dynamic> pizza;
+  final int quantity;
+  final Function(String itemName, double price) onAddToCart;
+  final Function(String itemName, double price) onIncreaseQuantity;
+  final Function(String itemName, double price) onDecreaseQuantity;
 
-  const MenuItem({required this.pizza, super.key});
+  const MenuItem({
+    required this.pizza,
+    required this.quantity,
+    required this.onAddToCart,
+    required this.onIncreaseQuantity,
+    required this.onDecreaseQuantity,
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {
+    final bool hasSignature =
+        (pizza['hasSignature'] == true) || (pizza['signature'] == true);
+    final String name = (pizza['name'] ?? '').toString();
+    final String description = (pizza['description'] ?? '').toString();
+// ➜ calcule 1 seule fois le prix "numérique" et la version affichée
+    final double unitPrice = _parsePrice(pizza['price']);
+    final String priceText = unitPrice % 1 == 0
+        ? '₪${unitPrice.toInt()}'
+        : '₪${unitPrice.toStringAsFixed(2)}';
+
     return Container(
       decoration: BoxDecoration(
         gradient: AppColors.cardGradient,
@@ -43,7 +74,7 @@ class MenuItem extends StatelessWidget {
                     style: TextStyle(fontSize: 64),
                   ),
                 ),
-                if (pizza['hasSignature'])
+                if (hasSignature)
                   Positioned(
                     top: 15,
                     right: 15,
@@ -75,7 +106,7 @@ class MenuItem extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  pizza['name'],
+                  name,
                   style: const TextStyle(
                     fontSize: 22.4,
                     fontWeight: FontWeight.w700,
@@ -84,7 +115,7 @@ class MenuItem extends StatelessWidget {
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  pizza['description'],
+                  description,
                   style: const TextStyle(
                     fontSize: 15.2,
                     color: Color.fromRGBO(255, 255, 255, 0.9),
@@ -96,7 +127,7 @@ class MenuItem extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
-                      pizza['price'],
+                      priceText,
                       style: const TextStyle(
                         fontSize: 22.4,
                         fontWeight: FontWeight.w800,
@@ -104,118 +135,89 @@ class MenuItem extends StatelessWidget {
                       ),
                     ),
                     // LOGIQUE CONDITIONNELLE POUR BOUTON/CONTROLES
-                    Builder(
-                      builder: (context) {
-                        final screenState = context
-                            .findAncestorStateOfType<SimpleMenuScreenState>()!;
-                        final quantity =
-                            screenState.itemQuantities[pizza['name']] ?? 0;
-
-                        if (quantity == 0) {
-                          // Afficher bouton AJOUTER
-                          return ElevatedButton(
-                            onPressed: () {
-                              final priceText =
-                                  pizza['price'].toString().replaceAll('₪', '');
-                              final price = double.tryParse(priceText) ?? 0.0;
-                              screenState.addToCart(pizza['name'], price);
-                            },
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: AppColors.accent,
-                              foregroundColor: AppColors.primary,
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 20, vertical: 12),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(12),
+                    if (quantity == 0)
+                      // Afficher bouton AJOUTER
+                      ElevatedButton(
+                        onPressed: () => onAddToCart(name, unitPrice),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppColors.accent,
+                          foregroundColor: AppColors.primary,
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 20, vertical: 12),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
+                        child: const Text(
+                          'AJOUTER',
+                          style: TextStyle(fontWeight: FontWeight.w700),
+                        ),
+                      )
+                    else
+                      // Afficher contrôles +/-
+                      Container(
+                        decoration: BoxDecoration(
+                          color: const Color.fromRGBO(255, 255, 255, 0.1),
+                          borderRadius: BorderRadius.circular(25),
+                          border: Border.all(
+                            color: const Color.fromRGBO(255, 255, 255, 0.2),
+                            width: 1,
+                          ),
+                        ),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 16, vertical: 8),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            // --- bouton moins ---
+                            GestureDetector(
+                              onTap: () => onDecreaseQuantity(name, unitPrice),
+                              child: Container(
+                                width: 32,
+                                height: 32,
+                                decoration: const BoxDecoration(
+                                  color: AppColors.accent,
+                                  shape: BoxShape.circle,
+                                ),
+                                child: const Icon(
+                                  Icons.remove,
+                                  color: AppColors.primary,
+                                  size: 20,
+                                ),
                               ),
                             ),
-                            child: const Text(
-                              'AJOUTER',
-                              style: TextStyle(fontWeight: FontWeight.w700),
-                            ),
-                          );
-                        } else {
-                          // Afficher contrôles +/-
-                          return Container(
-                            decoration: BoxDecoration(
-                              color: const Color.fromRGBO(255, 255, 255, 0.1),
-                              borderRadius: BorderRadius.circular(25),
-                              border: Border.all(
-                                color: const Color.fromRGBO(255, 255, 255, 0.2),
-                                width: 1,
+                            Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 16),
+                              child: Text(
+                                '$quantity',
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.w700,
+                                  fontSize: 18,
+                                ),
                               ),
                             ),
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 16, vertical: 8),
-                            child: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                GestureDetector(
-                                  onTap: () {
-                                    final priceText = pizza['price']
-                                        .toString()
-                                        .replaceAll('₪', '');
-                                    final price =
-                                        double.tryParse(priceText) ?? 0.0;
-                                    screenState.decreaseQuantity(
-                                        pizza['name'], price);
-                                  },
-                                  child: Container(
-                                    width: 32,
-                                    height: 32,
-                                    decoration: const BoxDecoration(
-                                      color: AppColors.accent,
-                                      shape: BoxShape.circle,
-                                    ),
-                                    child: const Icon(
-                                      Icons.remove,
-                                      color: AppColors.primary,
-                                      size: 20,
-                                    ),
-                                  ),
+                            // --- bouton plus ---
+                            GestureDetector(
+                              onTap: () => onIncreaseQuantity(name, unitPrice),
+                              child: Container(
+                                width: 32,
+                                height: 32,
+                                decoration: const BoxDecoration(
+                                  color: AppColors.accent,
+                                  shape: BoxShape.circle,
                                 ),
-                                Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 16),
-                                  child: Text(
-                                    '$quantity',
-                                    style: const TextStyle(
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.w700,
-                                      fontSize: 18,
-                                    ),
-                                  ),
+                                child: const Icon(
+                                  Icons.add,
+                                  color: AppColors.primary,
+                                  size: 20,
                                 ),
-                                GestureDetector(
-                                  onTap: () {
-                                    final priceText = pizza['price']
-                                        .toString()
-                                        .replaceAll('₪', '');
-                                    final price =
-                                        double.tryParse(priceText) ?? 0.0;
-                                    screenState.increaseQuantity(
-                                        pizza['name'], price);
-                                  },
-                                  child: Container(
-                                    width: 32,
-                                    height: 32,
-                                    decoration: const BoxDecoration(
-                                      color: AppColors.accent,
-                                      shape: BoxShape.circle,
-                                    ),
-                                    child: const Icon(
-                                      Icons.add,
-                                      color: AppColors.primary,
-                                      size: 20,
-                                    ),
-                                  ),
-                                ),
-                              ],
+                              ),
                             ),
-                          );
-                        }
-                      },
-                    ),
+                          ],
+                        ),
+                      ),
                   ],
                 ),
               ],

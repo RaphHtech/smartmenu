@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "105003020632",
+    "project_id": "smartmenu-mvp",
+    "storage_bucket": "smartmenu-mvp.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:105003020632:android:01d0340c5b33d2483b352d",
+        "android_client_info": {
+          "package_name": "com.example.smartmenu_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA8cLWiMRhi1XHQ05vNj97dxKewml0sKDI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

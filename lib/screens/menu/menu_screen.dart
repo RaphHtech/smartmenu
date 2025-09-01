@@ -2,7 +2,8 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import '../../core/constants/colors.dart';
-import '../../data/menu_data.dart';
+// import '../../data/menu_data.dart';
+import '../../services/firebase_menu_service.dart';
 import '../../widgets/gradient_text_widget.dart';
 import '../../widgets/category_pill_widget.dart';
 import '../../widgets/menu_item_widget.dart';
@@ -13,19 +14,41 @@ import '../../widgets/menu/app_header_widget.dart';
 import '../../services/cart_service.dart';
 
 class MenuScreen extends StatefulWidget {
-  const MenuScreen({super.key});
+  final String restaurantId;
+
+  const MenuScreen({super.key, this.restaurantId = 'chez-milano'});
 
   @override
   State<MenuScreen> createState() => SimpleMenuScreenState();
 }
 
 class SimpleMenuScreenState extends State<MenuScreen> {
+  bool _isLoading = true; // État initial : en chargement
   int _cartItemCount = 0;
   double _cartTotal = 0.0;
   String _selectedCategory = 'Pizzas';
-  Map<String, int> itemQuantities = {}; // Track quantities per item
+  Map<String, int> itemQuantities = {};
   bool _showOrderModal = false;
-  final Map<String, List<Map<String, dynamic>>> _menuData = menuData;
+  Map<String, List<Map<String, dynamic>>> _menuData =
+      {}; // Changé : retiré = menuData et final
+
+  @override
+  void initState() {
+    super.initState();
+    _loadMenuFromFirebase();
+  }
+
+  void _loadMenuFromFirebase() async {
+    setState(() => _isLoading = true);
+
+    final items = await FirebaseMenuService.getMenuItems(widget.restaurantId);
+    final organized = FirebaseMenuService.organizeByCategory(items);
+
+    setState(() {
+      _menuData = organized;
+      _isLoading = false; // Chargement terminé
+    });
+  }
 
   void addToCart(String itemName, double price) {
     setState(() {
@@ -264,41 +287,44 @@ class SimpleMenuScreenState extends State<MenuScreen> {
                 // ===== NAVIGATION CATÉGORIES =====
                 SliverToBoxAdapter(
                   child: Container(
-                    padding: const EdgeInsets.only(
-                        top: 20, bottom: 20, left: 20, right: 0),
+                    padding: const EdgeInsets.only(top: 20, bottom: 20),
                     child: SingleChildScrollView(
                       scrollDirection: Axis.horizontal,
-                      child: Row(
-                        children: [
-                          CategoryPill(
-                            label: '🍕 Pizzas',
-                            isActive: _selectedCategory == 'Pizzas',
-                            onTap: () => _selectCategory('Pizzas'),
-                          ),
-                          const SizedBox(width: 12),
-                          CategoryPill(
-                              label: '🥗 Entrées',
-                              isActive: _selectedCategory == 'Entrées',
-                              onTap: () => _selectCategory('Entrées')),
-                          const SizedBox(width: 12),
-                          CategoryPill(
-                              label: '🍝 Pâtes',
-                              isActive: _selectedCategory == 'Pâtes',
-                              onTap: () => _selectCategory('Pâtes')),
-                          const SizedBox(width: 12),
-                          CategoryPill(
-                              label: '🍰 Desserts',
-                              isActive: _selectedCategory == 'Desserts',
-                              onTap: () => _selectCategory('Desserts')),
-                          const SizedBox(width: 12),
-                          CategoryPill(
-                              label: '🍹 Boissons',
-                              isActive: _selectedCategory == 'Boissons',
-                              onTap: () => _selectCategory('Boissons')),
-                          const SizedBox(
-                              width:
-                                  20), // ← AJOUTE l'espacement final à la fin
-                        ],
+                      child: Padding(
+                        padding: const EdgeInsets.only(
+                            left: 20), // Padding seulement sur le contenu
+                        child: Row(
+                          children: [
+                            CategoryPill(
+                              label: '🍕 Pizzas',
+                              isActive: _selectedCategory == 'Pizzas',
+                              onTap: () => _selectCategory('Pizzas'),
+                            ),
+                            const SizedBox(width: 12),
+                            CategoryPill(
+                                label: '🥗 Entrées',
+                                isActive: _selectedCategory == 'Entrées',
+                                onTap: () => _selectCategory('Entrées')),
+                            const SizedBox(width: 12),
+                            CategoryPill(
+                                label: '🍝 Pâtes',
+                                isActive: _selectedCategory == 'Pâtes',
+                                onTap: () => _selectCategory('Pâtes')),
+                            const SizedBox(width: 12),
+                            CategoryPill(
+                                label: '🍰 Desserts',
+                                isActive: _selectedCategory == 'Desserts',
+                                onTap: () => _selectCategory('Desserts')),
+                            const SizedBox(width: 12),
+                            CategoryPill(
+                                label: '🍹 Boissons',
+                                isActive: _selectedCategory == 'Boissons',
+                                onTap: () => _selectCategory('Boissons')),
+                            const SizedBox(
+                                width:
+                                    20), // ← AJOUTE l'espacement final à la fin
+                          ],
+                        ),
                       ),
                     ),
                   ),
@@ -328,21 +354,42 @@ class SimpleMenuScreenState extends State<MenuScreen> {
                 ),
 
                 // ===== ITEMS DU MENU =====
-                SliverPadding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20),
-                  sliver: SliverList(
-                    delegate: SliverChildBuilderDelegate(
-                      (context, index) {
-                        final currentItems = _menuData[_selectedCategory] ?? [];
-                        return Padding(
-                          padding: const EdgeInsets.only(bottom: 20),
-                          child: MenuItem(pizza: currentItems[index]),
-                        );
-                      },
-                      childCount: _menuData[_selectedCategory]?.length ?? 0,
-                    ),
-                  ),
-                ),
+                _isLoading
+                    ? const SliverToBoxAdapter(
+                        child: Center(
+                          child: Padding(
+                            padding: EdgeInsets.all(40),
+                            child: CircularProgressIndicator(
+                              color: AppColors.accent,
+                            ),
+                          ),
+                        ),
+                      )
+                    : SliverPadding(
+                        padding: const EdgeInsets.symmetric(horizontal: 20),
+                        sliver: SliverList(
+                          delegate: SliverChildBuilderDelegate(
+                            (context, index) {
+                              final currentItems =
+                                  _menuData[_selectedCategory] ?? [];
+                              return Padding(
+                                padding: const EdgeInsets.only(bottom: 20),
+                                child: MenuItem(
+                                  pizza: currentItems[index],
+                                  quantity: itemQuantities[currentItems[index]
+                                          ['name']] ??
+                                      0,
+                                  onAddToCart: addToCart,
+                                  onIncreaseQuantity: increaseQuantity,
+                                  onDecreaseQuantity: decreaseQuantity,
+                                ),
+                              );
+                            },
+                            childCount:
+                                _menuData[_selectedCategory]?.length ?? 0,
+                          ),
+                        ),
+                      ),
 
                 const SliverToBoxAdapter(
                   child: SizedBox(height: 120),
@@ -359,7 +406,7 @@ class SimpleMenuScreenState extends State<MenuScreen> {
           onViewOrder: _showOrderReview,
         ),
 
-// Modal de révision de commande
+        // Modal de révision de commande
         if (_showOrderModal)
           OrderReviewModal(
             itemQuantities: itemQuantities,
