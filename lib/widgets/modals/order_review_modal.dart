@@ -290,7 +290,8 @@ class OrderReviewModal extends StatelessWidget {
                         onPressed: onClose,
                         style: OutlinedButton.styleFrom(
                           side: const BorderSide(color: Colors.white, width: 2),
-                          padding: const EdgeInsets.symmetric(vertical: 15),
+                          minimumSize: const Size(double.infinity, 48),
+                          fixedSize: const Size(double.infinity, 48),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(12),
                           ),
@@ -307,6 +308,7 @@ class OrderReviewModal extends StatelessWidget {
                     const SizedBox(width: 15),
                     Expanded(
                       child: Container(
+                        height: 48,
                         decoration: BoxDecoration(
                           gradient: const LinearGradient(
                             begin: Alignment.topLeft,
@@ -320,10 +322,8 @@ class OrderReviewModal extends StatelessWidget {
                           child: InkWell(
                             onTap: onConfirmOrder,
                             borderRadius: BorderRadius.circular(12),
-                            child: Container(
-                              padding: const EdgeInsets.symmetric(vertical: 15),
-                              alignment: Alignment.center,
-                              child: const Text(
+                            child: const Center(
+                              child: Text(
                                 'CONFIRMER',
                                 style: TextStyle(
                                   color: AppColors.primary,

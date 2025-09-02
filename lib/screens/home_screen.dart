@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'qr_scanner_screen.dart';
-import 'menu/menu_screen.dart';
 
 class HomeScreen extends StatelessWidget {
   @override
@@ -21,8 +20,8 @@ class HomeScreen extends StatelessWidget {
             ),
             const SizedBox(height: 20),
             TextButton(
-              onPressed: () => Navigator.push(context,
-                  MaterialPageRoute(builder: (_) => const MenuScreen())),
+              onPressed: () =>
+                  Navigator.pushNamed(context, '/restaurant/chez-milano'),
               child: const Text('Demo: Pizza Power'),
             ),
           ],
