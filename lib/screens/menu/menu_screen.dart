@@ -1,8 +1,8 @@
 import 'dart:ui';
 
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import '../../core/constants/colors.dart';
-// import '../../data/menu_data.dart';
 import '../../services/firebase_menu_service.dart';
 import '../../widgets/gradient_text_widget.dart';
 import '../../widgets/category_pill_widget.dart';
@@ -29,8 +29,7 @@ class SimpleMenuScreenState extends State<MenuScreen> {
   String _selectedCategory = 'Pizzas';
   Map<String, int> itemQuantities = {};
   bool _showOrderModal = false;
-  Map<String, List<Map<String, dynamic>>> _menuData =
-      {}; // Changé : retiré = menuData et final
+  Map<String, List<Map<String, dynamic>>> _menuData = {};
 
   @override
   void initState() {
@@ -290,6 +289,7 @@ class SimpleMenuScreenState extends State<MenuScreen> {
                     padding: const EdgeInsets.only(top: 20, bottom: 20),
                     child: SingleChildScrollView(
                       scrollDirection: Axis.horizontal,
+                      physics: const AlwaysScrollableScrollPhysics(),
                       child: Padding(
                         padding: const EdgeInsets.only(
                             left: 20), // Padding seulement sur le contenu

@@ -1,224 +1,120 @@
-# SmartMenu App 🍕
+SmartMenu App 🍕
 
-Une application de menu numérique moderne pour restaurants, développée avec Flutter.
+Une application de menu numérique moderne pour restaurants, développée avec Flutter (mobile & web PWA).
 
-## Description
+Description
 
-SmartMenu est une solution complète de menu digital permettant aux clients de consulter le menu d'un restaurant, ajouter des articles à leur panier, et passer commande directement depuis leur smartphone. L'application reproduit l'expérience d'un restaurant italien "Pizza Power" à Tel Aviv.
+SmartMenu est une solution SaaS complète permettant :
 
-## Fonctionnalités
+Clients : consulter le menu digital d’un restaurant via QR code, composer un panier, et passer commande.
 
-### Interface utilisateur
+Restaurateurs : gérer leurs menus via un dashboard web sécurisé.
 
-- **Design moderne** avec dégradés et effets visuels
-- **Navigation par catégories** (Pizzas, Entrées, Pâtes, Desserts, Boissons)
-- **Responsive design** adaptatif pour mobile et desktop
-- **Animations fluides** et transitions élégantes
+Fonctionnalités
+Côté Client (PWA Web)
 
-### Gestion de commande
+Navigation par catégories (Pizzas, Entrées, Pâtes, Desserts, Boissons)
 
-- **Ajout d'articles** au panier avec contrôles +/-
-- **Modal de révision** complète avant validation
-- **Calcul automatique** des totaux et quantités
-- **Système de notifications** personnalisées avec gestion persistante
-- **Confirmation de commande** avec récapitulatif détaillé
+Ajout d’articles au panier avec contrôles +/-
 
-### Expérience restaurant
+Modal de révision avant validation
 
-- **Thème Pizza Power** avec identité visuelle cohérente
-- **Bouton d'appel serveur** intégré
-- **Badges "Signature"** pour les spécialités
-- **Affichage des prix** en shekels (₪)
+Notification de commande
 
-## Architecture technique
+QR Code → URL directe (ex : /r/chez-milano)
 
-### Structure du projet
+Offline partiel via Service Worker
 
-```
+Installable comme une vraie app (manifest.json)
+
+Côté Restaurateur (Dashboard Web – en cours)
+
+Authentification Firebase (email / mot de passe)
+
+Création restaurant (onboarding propriétaire)
+
+Gestion CRUD des plats (ajouter / modifier / supprimer)
+
+Upload d’images via Firebase Storage
+
+Prévisualisation live du menu client
+
+Multi-tenant : chaque restaurant gère ses propres données isolées
+
+Architecture technique
+
+Frontend Client : Flutter Web (PWA installable)
+
+Frontend Restaurateur : Flutter Web (dashboard /admin)
+
+Backend : Firebase
+
+Firestore (NoSQL multi-tenant)
+
+Auth (gestion restaurateurs)
+
+Storage (images des plats)
+
+PWA : Service Worker + Manifest + Cache intelligent
+
+Structure projet (simplifiée)
 lib/
-├── core/constants/
-│   └── colors.dart                    # Palette de couleurs centralisée
+├── core/constants/colors.dart
 ├── services/
-│   ├── cart_service.dart              # Logique métier du panier
-│   └── firebase_menu_service.dart     # Interface Firestore
+│ ├── cart_service.dart
+│ └── firebase_menu_service.dart
 ├── screens/
-│   ├── home_screen.dart               # Écran d'accueil avec QR scanner
-│   ├── qr_scanner_screen.dart         # Scanner QR code
-│   └── menu/menu_screen.dart          # Écran principal (~400 lignes)
-├── widgets/
-│   ├── modals/order_review_modal.dart # Modal de révision de commande
-│   ├── notifications/custom_notification.dart # Service de notifications
-│   ├── menu/
-│   │   ├── cart_floating_widget.dart  # Panier flottant
-│   │   └── app_header_widget.dart     # En-tête de l'application
-│   ├── gradient_text_widget.dart      # Texte avec dégradé
-│   ├── category_pill_widget.dart      # Pills de navigation
-│   └── menu_item_widget.dart          # Cartes d'articles
-└── main.dart                          # Point d'entrée avec Firebase
-```
+│ ├── home_screen.dart # Accueil (QR / demo)
+│ ├── menu/menu_screen.dart # Menu client
+│ └── admin/ # Dashboard restaurateur
+│ ├── admin_login_screen.dart
+│ ├── admin_signup_screen.dart
+│ └── admin_dashboard_screen.dart
+└── widgets/...
+web/
+├── index.html
+├── manifest.json
+└── sw.js # Service Worker
 
-### Principes de design
+Installation
+Prérequis
 
-- **Séparation des responsabilités** : Widgets modulaires réutilisables
-- **Services centralisés** : Logique métier dans des services dédiés
-- **Single source of truth** : Palette de couleurs centralisée
-- **État local** : Gestion simple avec StatefulWidget
-- **Code maintenable** : Architecture modulaire et testable
+Flutter SDK ≥3.0
 
-## Refactoring réalisé
+Dart ≥3.0
 
-Le projet a été entièrement restructuré pour améliorer la maintenabilité :
+Firebase CLI configuré
 
-- **Avant** : Fichier monolithique de 900 lignes
-- **Après** : Architecture modulaire avec séparation claire
-- **Résultat** : Réduction de 56% de la complexité du fichier principal
+Android Studio / VS Code
 
-### Extractions effectuées
-
-1. **Modal de révision** → Widget réutilisable (`order_review_modal.dart`)
-2. **Système de notifications** → Service centralisé (`custom_notification.dart`)
-3. **Panier flottant** → Widget modulaire (`cart_floating_widget.dart`)
-4. **En-tête** → Composant réutilisable (`app_header_widget.dart`)
-5. **Logique panier** → Service métier (`cart_service.dart`)
-6. **Données** → Fichier séparé (`menu_data.dart`)
-7. **Couleurs** → Constantes centralisées (`colors.dart`)
-
-### Bénéfices du refactoring
-
-- **Maintenabilité** : Code organisé en modules spécialisés
-- **Réutilisabilité** : Widgets extractibles pour d'autres projets
-- **Testabilité** : Services isolés facilement testables
-- **Lisibilité** : Fichier principal réduit à l'essentiel
-- **Scalabilité** : Architecture prête pour de nouvelles fonctionnalités
-
-## Installation
-
-### Prérequis
-
-- Flutter SDK (≥3.0.0)
-- Dart SDK (≥3.0.0)
-- Android Studio / VS Code
-- Émulateur Android/iOS ou appareil physique
-
-### Commandes
-
-```bash
-# Cloner le repository
+Commandes
 git clone https://github.com/RaphHtech/smartmenu.git
 cd smartmenu_app
 
-# Installer les dépendances
 flutter pub get
+flutter run -d chrome # version web PWA
 
-# Lancer l'application
-flutter run
-```
+Déploiement
 
-## Utilisation
+Web PWA : Firebase Hosting
 
-1. **Navigation** : Utilisez les pills de catégories pour explorer le menu
-2. **Ajout au panier** : Appuyez sur "AJOUTER" puis utilisez les contrôles +/-
-3. **Révision** : Cliquez sur "VOIR COMMANDE" pour réviser votre panier
-4. **Modification** : Ajustez les quantités ou supprimez des articles
-5. **Confirmation** : Validez votre commande pour recevoir la confirmation
-6. **Assistance** : Utilisez le bouton "Serveur" pour appeler l'équipe
+Mobile : Android / iOS (optionnel phase 2)
 
-## Données de test
+Roadmap
 
-L'application inclut des données de démonstration pour :
+App client Flutter (MVP terminé)
 
-- **6 pizzas** incluant des spécialités signature
-- **1 entrée** (Antipasti Misto)
-- **2 pâtes** (Carbonara, Penne Arrabbiata)
-- **1 dessert** (Tiramisu)
-- **1 boisson** (Chianti Classico)
+Migration PWA Flutter Web avec Service Worker
 
-Prix en shekels israéliens (₪) adaptés au marché local de Tel Aviv.
+Routing multi-restaurant /r/{restaurantId}
 
-## Technologies utilisées
+Dashboard restaurateur /admin
 
-- **Flutter** : Framework UI multiplateforme
-- **Dart** : Langage de programmation
-- **Material Design 3** : Système de design Google
-- **Git** : Contrôle de version avec commits sémantiques
+CRUD menus + upload images
 
-## Déploiement
+Règles Firestore multi-tenant
 
-L'application est prête pour le déploiement sur :
+Déploiement Firebase Hosting (prod)
 
-- **Android** : Google Play Store
-- **iOS** : App Store
-- **Web** : Hébergement statique
-
-Aucune configuration backend requise - fonctionne entièrement en local.
-
-## Roadmap
-
-### Améliorations possibles
-
-- [ ] Intégration d'images réelles
-- [ ] Système de favoris
-- [ ] Support multilingue (FR/EN/HE)
-- [ ] Gestion des allergènes
-- [ ] Intégration paiement
-- [ ] Mode sombre/clair
-- [ ] Analytics utilisateur
-
-### Architecture évoluée
-
-- [ ] State management (Bloc/Riverpod)
-- [ ] API REST / GraphQL
-- [ ] Base de données locale
-- [ ] Tests automatisés
-- [ ] CI/CD Pipeline
-
-## Contribution
-
-Le projet suit les bonnes pratiques de développement :
-
-- **Commits sémantiques** : feat/fix/refactor/docs
-- **Code review** : Validation avant merge
-- **Documentation** : README et commentaires
-- **Architecture** : Séparation claire des responsabilités
-
-## Licence
-
-Projet éducatif - Tous droits réservés.
-
-## État technique actuel
-
-### Fonctionnel ✅
-
-- App Flutter complète et stable
-- Intégration Firebase opérationnelle
-- Architecture modulaire optimisée
-- Scanner QR multi-restaurant
-- États de chargement implémentés
-- Navigation fluide et optimisée
-- Système de notifications complet
-- Tests validés sur dispositif physique
-
-### Prochaine phase 🚀
-
-- Interface restaurateur web (priorité absolue)
-- Authentification restaurateurs
-- Gestion CRUD des menus
-- Upload d'images via Firebase Storage
-
----
-
-**Status** : App client finalisée ✅  
-**Prochaine étape** : Interface web restaurateur  
-**Timeline** : 1-2 semaines pour interface restaurateur complète
-
----
-
-**Développé avec ❤️ en Flutter**
-
-_Application de démonstration pour portfolio technique_
-
----
-
-**Développé avec ❤️ en Flutter**
-
-_Application de démonstration pour portfolio technique_
+Status : App Client finalisée ✅ – Dashboard en développement 🚧
+Prochaine étape : Auth + CRUD restaurateur
