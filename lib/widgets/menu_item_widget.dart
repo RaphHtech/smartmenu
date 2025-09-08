@@ -20,13 +20,16 @@ class MenuItem extends StatelessWidget {
   final Function(String itemName, double price) onIncreaseQuantity;
   final Function(String itemName, double price) onDecreaseQuantity;
 
+  final String currencySymbol;
+
   const MenuItem({
+    super.key,
     required this.pizza,
     required this.quantity,
     required this.onAddToCart,
     required this.onIncreaseQuantity,
     required this.onDecreaseQuantity,
-    super.key,
+    required this.currencySymbol,
   });
 
   @override
@@ -35,11 +38,14 @@ class MenuItem extends StatelessWidget {
         (pizza['hasSignature'] == true) || (pizza['signature'] == true);
     final String name = (pizza['name'] ?? '').toString();
     final String description = (pizza['description'] ?? '').toString();
-// ➜ calcule 1 seule fois le prix "numérique" et la version affichée
+
+    // ➜ calcule 1 seule fois le prix "numérique" et la version affichée
     final double unitPrice = _parsePrice(pizza['price']);
     final String priceText = unitPrice % 1 == 0
-        ? '₪${unitPrice.toInt()}'
-        : '₪${unitPrice.toStringAsFixed(2)}';
+        ? '$currencySymbol${unitPrice.toInt()}'
+        : '$currencySymbol${unitPrice.toStringAsFixed(2)}';
+    final String img =
+        (pizza['imageUrl'] ?? pizza['image'] ?? '').toString().trim();
 
     return Container(
       decoration: BoxDecoration(
@@ -53,49 +59,65 @@ class MenuItem extends StatelessWidget {
       child: Column(
         children: [
           // IMAGE SECTION
-          Container(
-            height: 200,
-            decoration: const BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-                colors: [AppColors.primary, AppColors.secondary],
-              ),
-              borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(16),
-                topRight: Radius.circular(16),
-              ),
+          ClipRRect(
+            borderRadius: const BorderRadius.only(
+              topLeft: Radius.circular(16),
+              topRight: Radius.circular(16),
             ),
-            child: Stack(
-              children: [
-                const Center(
-                  child: Text(
-                    '🍕',
-                    style: TextStyle(fontSize: 64),
-                  ),
-                ),
-                if (hasSignature)
-                  Positioned(
-                    top: 15,
-                    right: 15,
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 12, vertical: 6),
-                      decoration: BoxDecoration(
-                        color: AppColors.accent,
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      child: const Text(
-                        'SIGNATURE',
-                        style: TextStyle(
-                          color: AppColors.primary,
-                          fontWeight: FontWeight.w700,
-                          fontSize: 12.8,
-                        ),
+            child: SizedBox(
+              height: 200,
+              child: Stack(
+                fit: StackFit.expand,
+                children: [
+                  if (img.isNotEmpty)
+                    Image.network(
+                      img,
+                      fit: BoxFit.cover,
+                      errorBuilder: (_, __, ___) => const SizedBox.shrink(),
+                    )
+                  else
+                    const ColoredBox(
+                      color: Color(0x10FFFFFF),
+                      child: Center(
+                          child: Text('🍕', style: TextStyle(fontSize: 64))),
+                    ),
+
+                  // léger voile pour garder le texte lisible
+                  const DecoratedBox(
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                        colors: [Color(0x00000000), Color(0x29000000)],
                       ),
                     ),
                   ),
-              ],
+
+                  if (hasSignature)
+                    Positioned(
+                      top: 15,
+                      right: 15,
+                      child: DecoratedBox(
+                        decoration: BoxDecoration(
+                          color: AppColors.accent,
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        child: const Padding(
+                          padding:
+                              EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                          child: Text(
+                            'SIGNATURE',
+                            style: TextStyle(
+                              color: AppColors.primary,
+                              fontWeight: FontWeight.w700,
+                              fontSize: 12.8,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                ],
+              ),
             ),
           ),
 

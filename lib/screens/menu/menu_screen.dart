@@ -1,9 +1,6 @@
-import 'dart:ui';
-
-import 'package:flutter/gestures.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import '../../core/constants/colors.dart';
-import '../../services/firebase_menu_service.dart';
 import '../../widgets/gradient_text_widget.dart';
 import '../../widgets/category_pill_widget.dart';
 import '../../widgets/menu_item_widget.dart';
@@ -29,23 +26,125 @@ class SimpleMenuScreenState extends State<MenuScreen> {
   String _selectedCategory = 'Pizzas';
   Map<String, int> itemQuantities = {};
   bool _showOrderModal = false;
+  bool _promoEnabled = true;
+  String _restaurantName = '';
+  String _restaurantCurrency = 'ILS'; // <-- règle l'erreur "undefined name"
+  String _tagline = ''; // sous-titre (catch phrase)
+  String _promoText = ''; // bandeau promo
   Map<String, List<Map<String, dynamic>>> _menuData = {};
+  String _emojiFor(String cat) {
+    switch (cat) {
+      case 'Pizzas':
+        return '🍕';
+      case 'Entrées':
+        return '🥗';
+      case 'Pâtes':
+        return '🍝';
+      case 'Desserts':
+        return '🍰';
+      case 'Boissons':
+        return '🍹';
+      default:
+        return '⭐';
+    }
+  }
+
+  String _symbolFor(String code) {
+    switch (code) {
+      case 'ILS':
+        return '₪';
+      case 'EUR':
+        return '€';
+      case 'USD':
+        return '\$';
+      default:
+        return code; // fallback: affiche 'GBP', 'CAD', etc.
+    }
+  }
+
+// --- Fetch direct depuis Firestore ---
+  Future<List<Map<String, dynamic>>> _fetchMenuItems(String rid) async {
+    final snap = await FirebaseFirestore.instance
+        .collection('restaurants')
+        .doc(rid)
+        .collection('menus')
+        // pour afficher uniquement les plats visibles, laisser la ligne;
+        // sinon, la commenter.
+        .where('visible', isEqualTo: true)
+        .get();
+
+    return snap.docs.map((d) {
+      final data = d.data();
+      data['id'] = d.id;
+      return data;
+    }).toList();
+  }
+
+// --- Groupage par catégorie + tri par nom ---
+  Map<String, List<Map<String, dynamic>>> _groupByCategory(
+      List<Map<String, dynamic>> items) {
+    final Map<String, List<Map<String, dynamic>>> out = {};
+    for (final it in items) {
+      final cat = (it['category'] ?? 'Autres').toString();
+      (out[cat] ??= []).add(it);
+    }
+    // tri par nom dans chaque catégorie
+    for (final v in out.values) {
+      v.sort((a, b) =>
+          (a['name'] ?? '').toString().compareTo((b['name'] ?? '').toString()));
+    }
+    return out;
+  }
 
   @override
   void initState() {
     super.initState();
     _loadMenuFromFirebase();
+    _loadRestaurantDetails();
+  }
+
+  Future<void> _loadRestaurantDetails() async {
+    final snap = await FirebaseFirestore.instance
+        .collection('restaurants')
+        .doc(widget.restaurantId)
+        .collection('info')
+        .doc('details')
+        .get();
+
+    final data = snap.data() ?? {};
+    if (!mounted) return;
+    setState(() {
+      _restaurantName = (data['name'] ?? '').toString();
+      _restaurantCurrency = (data['currency'] ?? 'ILS').toString();
+      _tagline = (data['tagline'] ?? '').toString().trim();
+      _promoText = (data['promo_text'] ?? '').toString().trim();
+      _promoEnabled = (data['promo_enabled'] as bool?) ?? true;
+    });
   }
 
   void _loadMenuFromFirebase() async {
     setState(() => _isLoading = true);
 
-    final items = await FirebaseMenuService.getMenuItems(widget.restaurantId);
-    final organized = FirebaseMenuService.organizeByCategory(items);
+    // résout l'id effectif
+    final String rid = () {
+      // si on est sur le web et qu’un rid est fourni en query string
+      final q = Uri.base.queryParameters['rid'];
+      if (q != null && q.isNotEmpty) return q;
+      return widget.restaurantId; // sinon, on garde la prop
+    }();
+
+    // Charger le menu (remplace l'appel au service)
+    final items = await _fetchMenuItems(rid);
+    final organized = _groupByCategory(items);
 
     setState(() {
       _menuData = organized;
-      _isLoading = false; // Chargement terminé
+      // si la catégorie sélectionnée n’existe pas, prends la 1ère dispo
+      final keys = organized.keys.toList()..sort();
+      if (keys.isNotEmpty && !organized.containsKey(_selectedCategory)) {
+        _selectedCategory = keys.first;
+      }
+      _isLoading = false;
     });
   }
 
@@ -168,6 +267,7 @@ class SimpleMenuScreenState extends State<MenuScreen> {
                       '📞 Appel du serveur...\nUn membre de notre équipe arrive à votre table !',
                     );
                   },
+                  restaurantName: _restaurantName.toUpperCase(),
                 ),
 
                 // ===== SECTION HÉRO (2e “rectangle”) =====
@@ -194,32 +294,13 @@ class SimpleMenuScreenState extends State<MenuScreen> {
                                 crossAxisAlignment: CrossAxisAlignment.center,
                                 children: [
                                   // Logo "triangle" doré
-                                  ShaderMask(
-                                    shaderCallback: (r) => const LinearGradient(
-                                      begin: Alignment.topLeft,
-                                      end: Alignment.bottomRight,
-                                      colors: [
-                                        Color(0xFFF5F5F5),
-                                        Color(0xFFE3D7A3)
-                                      ], // doré clair
-                                    ).createShader(r),
-                                    child: Transform.scale(
-                                      scaleX: -1, // pointe vers la gauche
-                                      child: const Icon(
-                                        Icons.play_arrow_rounded,
-                                        size: 64, // ajuste à 68–72 si tu veux
-                                        color: Colors
-                                            .white, // remplacé par le gradient via ShaderMask
-                                      ),
-                                    ),
-                                  ),
-                                  const SizedBox(width: 16),
+                                  // Pas d'icône pour le moment
+
                                   // Titre HÉRO en dégradé — 1 LIGNE
-                                  const GradientText(
-                                    'PIZZA POWER',
-                                    gradient: AppColors
-                                        .titleGradient, // tu peux passer à un gradient plus doré si tu veux
-                                    style: TextStyle(
+                                  GradientText(
+                                    _restaurantName.toUpperCase(),
+                                    gradient: AppColors.titleGradient,
+                                    style: const TextStyle(
                                       fontSize: 56, // ≈ 3.5rem
                                       fontWeight: FontWeight.w900,
                                       height: 1.0,
@@ -242,15 +323,16 @@ class SimpleMenuScreenState extends State<MenuScreen> {
                             const SizedBox(height: 12),
 
                             // 📝 DESCRIPTION
-                            const Text(
-                              'La vraie pizza italienne à Tel Aviv',
-                              textAlign: TextAlign.center,
-                              style: TextStyle(
-                                fontSize: 20, // ≈ 1.3rem
-                                fontWeight: FontWeight.w600,
-                                color: Color.fromRGBO(255, 255, 255, 0.9),
+                            if (_tagline.isNotEmpty)
+                              Text(
+                                _tagline,
+                                textAlign: TextAlign.center,
+                                style: const TextStyle(
+                                  fontSize: 22, // ≈ 1.3rem
+                                  fontWeight: FontWeight.w600,
+                                  color: Color.fromRGBO(255, 255, 255, 0.9),
+                                ),
                               ),
-                            ),
                           ],
                         ),
                       ),
@@ -259,29 +341,36 @@ class SimpleMenuScreenState extends State<MenuScreen> {
                 ),
 
                 // ===== SECTION PROMO (glassmorphism) =====
-                SliverToBoxAdapter(
-                  child: Container(
-                    margin: const EdgeInsets.all(20),
-                    padding: const EdgeInsets.all(20),
-                    decoration: BoxDecoration(
-                      color: const Color.fromRGBO(255, 255, 255, 0.15),
-                      borderRadius: BorderRadius.circular(16),
-                      border: Border.all(
-                        color: const Color.fromRGBO(255, 255, 255, 0.2),
-                        width: 1,
-                      ),
-                    ),
-                    child: const Text(
-                      '✨ 2ème Pizza à -50% • Livraison gratuite dès 80₪ ✨',
-                      style: TextStyle(
-                        fontSize: 19,
-                        fontWeight: FontWeight.w700,
-                        color: AppColors.accent,
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-                  ),
-                ),
+                (() {
+                  if (!_promoEnabled || _promoText.isEmpty) {
+                    return const SliverToBoxAdapter(child: SizedBox.shrink());
+                  }
+                  return SliverToBoxAdapter(
+                    child: (_promoEnabled && _promoText.isNotEmpty)
+                        ? Container(
+                            margin: const EdgeInsets.all(20),
+                            padding: const EdgeInsets.all(20),
+                            decoration: BoxDecoration(
+                              color: const Color.fromRGBO(255, 255, 255, 0.15),
+                              borderRadius: BorderRadius.circular(16),
+                              border: Border.all(
+                                color: const Color.fromRGBO(255, 255, 255, 0.2),
+                                width: 1,
+                              ),
+                            ),
+                            child: Text(
+                              _promoText,
+                              style: const TextStyle(
+                                fontSize: 19,
+                                fontWeight: FontWeight.w700,
+                                color: AppColors.accent,
+                              ),
+                              textAlign: TextAlign.center,
+                            ),
+                          )
+                        : const SizedBox.shrink(),
+                  );
+                })(),
 
                 // ===== NAVIGATION CATÉGORIES =====
                 SliverToBoxAdapter(
@@ -295,34 +384,16 @@ class SimpleMenuScreenState extends State<MenuScreen> {
                             left: 20), // Padding seulement sur le contenu
                         child: Row(
                           children: [
-                            CategoryPill(
-                              label: '🍕 Pizzas',
-                              isActive: _selectedCategory == 'Pizzas',
-                              onTap: () => _selectCategory('Pizzas'),
-                            ),
-                            const SizedBox(width: 12),
-                            CategoryPill(
-                                label: '🥗 Entrées',
-                                isActive: _selectedCategory == 'Entrées',
-                                onTap: () => _selectCategory('Entrées')),
-                            const SizedBox(width: 12),
-                            CategoryPill(
-                                label: '🍝 Pâtes',
-                                isActive: _selectedCategory == 'Pâtes',
-                                onTap: () => _selectCategory('Pâtes')),
-                            const SizedBox(width: 12),
-                            CategoryPill(
-                                label: '🍰 Desserts',
-                                isActive: _selectedCategory == 'Desserts',
-                                onTap: () => _selectCategory('Desserts')),
-                            const SizedBox(width: 12),
-                            CategoryPill(
-                                label: '🍹 Boissons',
-                                isActive: _selectedCategory == 'Boissons',
-                                onTap: () => _selectCategory('Boissons')),
-                            const SizedBox(
-                                width:
-                                    20), // ← AJOUTE l'espacement final à la fin
+                            for (final cat in (_menuData.keys.toList()..sort()))
+                              Padding(
+                                padding: const EdgeInsets.only(right: 12),
+                                child: CategoryPill(
+                                  label: _emojiFor(cat) + ' ' + cat,
+                                  isActive: _selectedCategory == cat,
+                                  onTap: () => _selectCategory(cat),
+                                ),
+                              ),
+                            const SizedBox(width: 20),
                           ],
                         ),
                       ),
@@ -354,42 +425,56 @@ class SimpleMenuScreenState extends State<MenuScreen> {
                 ),
 
                 // ===== ITEMS DU MENU =====
-                _isLoading
-                    ? const SliverToBoxAdapter(
-                        child: Center(
-                          child: Padding(
-                            padding: EdgeInsets.all(40),
-                            child: CircularProgressIndicator(
-                              color: AppColors.accent,
-                            ),
-                          ),
-                        ),
-                      )
-                    : SliverPadding(
-                        padding: const EdgeInsets.symmetric(horizontal: 20),
-                        sliver: SliverList(
-                          delegate: SliverChildBuilderDelegate(
-                            (context, index) {
-                              final currentItems =
-                                  _menuData[_selectedCategory] ?? [];
-                              return Padding(
-                                padding: const EdgeInsets.only(bottom: 20),
-                                child: MenuItem(
-                                  pizza: currentItems[index],
-                                  quantity: itemQuantities[currentItems[index]
-                                          ['name']] ??
-                                      0,
-                                  onAddToCart: addToCart,
-                                  onIncreaseQuantity: increaseQuantity,
-                                  onDecreaseQuantity: decreaseQuantity,
-                                ),
-                              );
-                            },
-                            childCount:
-                                _menuData[_selectedCategory]?.length ?? 0,
+                (() {
+                  if (_isLoading) {
+                    return const SliverToBoxAdapter(
+                      child: Center(
+                        child: Padding(
+                          padding: EdgeInsets.all(40),
+                          child: CircularProgressIndicator(
+                            color: AppColors.accent,
                           ),
                         ),
                       ),
+                    );
+                  } else {
+                    final currentItems = _menuData[_selectedCategory] ??
+                        const <Map<String, dynamic>>[];
+                    return SliverPadding(
+                      padding: const EdgeInsets.symmetric(horizontal: 20),
+                      sliver: SliverList(
+                        delegate: SliverChildBuilderDelegate(
+                          (context, index) {
+                            final item = currentItems[index];
+
+                            // make sure MenuItem gets both 'image' and 'imageUrl'
+                            final adapted = {
+                              ...item,
+                              'image': item['image'] ?? item['imageUrl'] ?? '',
+                              'imageUrl':
+                                  item['imageUrl'] ?? item['image'] ?? '',
+                            };
+
+                            final nameKey = (item['name'] ?? '') as String;
+
+                            return Padding(
+                              padding: const EdgeInsets.only(bottom: 20),
+                              child: MenuItem(
+                                pizza: adapted,
+                                quantity: itemQuantities[nameKey] ?? 0,
+                                onAddToCart: addToCart,
+                                onIncreaseQuantity: increaseQuantity,
+                                onDecreaseQuantity: decreaseQuantity,
+                                currencySymbol: _symbolFor(_restaurantCurrency),
+                              ),
+                            );
+                          },
+                          childCount: currentItems.length,
+                        ),
+                      ),
+                    );
+                  }
+                })(),
 
                 const SliverToBoxAdapter(
                   child: SizedBox(height: 120),

@@ -8,6 +8,7 @@ class AppColors {
   static const Color secondary = Color(0xFFF97316);
   static const Color accent = Color(0xFFFCD34D);
   static const Color textPremium = Color(0xFFFFFFFF);
+  static const Color lightGrey = Color(0xFF3A3A3A);
 
 // // === Dégradé global du BODY (HTML: 135deg, 0%/50%/100%) ===
 //   static const LinearGradient bgGradient = LinearGradient(

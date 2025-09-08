@@ -16,6 +16,6 @@ class DefaultFirebaseOptions {
     appId: '1:105003020632:web:c019fde610fc35723b352d',
     messagingSenderId: '105003020632',
     projectId: 'smartmenu-mvp',
-    storageBucket: 'smartmenu-mvp.appspot.com',
+    storageBucket: 'smartmenu-mvp.firebasestorage.app',
   );
 }
