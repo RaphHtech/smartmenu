@@ -295,9 +295,9 @@ class _MenuItemFormScreenState extends State<MenuItemFormScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text(isEditing ? 'Modifier le plat' : 'Ajouter un plat'),
-        backgroundColor: AppColors.primary,
-        foregroundColor: Colors.white,
-        elevation: 0,
+        // backgroundColor: AppColors.primary,
+        // foregroundColor: Colors.white,
+        // elevation: 0,
       ),
       body: Form(
         key: _formKey,

@@ -1,4 +1,3 @@
-// lib/screens/admin/admin_login_screen.dart
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -7,6 +6,7 @@ import '../../core/constants/colors.dart';
 import 'admin_signup_screen.dart';
 import 'create_restaurant_screen.dart';
 import 'admin_dashboard_screen.dart';
+import '../../widgets/ui/admin_themed.dart';
 
 class AdminLoginScreen extends StatefulWidget {
   const AdminLoginScreen({super.key});
@@ -59,7 +59,9 @@ class _AdminLoginScreenState extends State<AdminLoginScreen> {
 
           Navigator.of(context).pushReplacement(
             MaterialPageRoute(
-              builder: (_) => AdminDashboardScreen(restaurantId: restaurantId),
+              builder: (_) => AdminThemed(
+                child: AdminDashboardScreen(restaurantId: restaurantId),
+              ),
             ),
           );
         } else {
@@ -95,10 +97,10 @@ class _AdminLoginScreenState extends State<AdminLoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.black,
+      // backgroundColor: AppColors.black,
       appBar: AppBar(
         title: const Text('Admin SmartMenu'),
-        backgroundColor: AppColors.primary,
+        // backgroundColor: AppColors.primary,
       ),
       body: Center(
         child: SingleChildScrollView(
@@ -131,7 +133,7 @@ class _AdminLoginScreenState extends State<AdminLoginScreen> {
                   TextFormField(
                     controller: _emailController,
                     keyboardType: TextInputType.emailAddress,
-                    style: const TextStyle(color: AppColors.white),
+                    // style: const TextStyle(color: AppColors.white),
                     decoration: const InputDecoration(
                       labelText: 'Email',
                       prefixIcon: Icon(Icons.email, color: AppColors.accent),
@@ -144,7 +146,7 @@ class _AdminLoginScreenState extends State<AdminLoginScreen> {
                   TextFormField(
                     controller: _passwordController,
                     obscureText: true,
-                    style: const TextStyle(color: AppColors.white),
+                    // style: const TextStyle(color: AppColors.white),
                     decoration: const InputDecoration(
                       labelText: 'Mot de passe',
                       prefixIcon: Icon(Icons.lock, color: AppColors.accent),

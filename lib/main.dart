@@ -11,6 +11,7 @@ import 'screens/admin/admin_signup_screen.dart';
 
 // Import core
 import 'core/constants/colors.dart';
+import 'widgets/ui/admin_themed.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -40,9 +41,9 @@ class SmartMenuApp extends StatelessWidget {
       // Route /admin
       if (segments.isNotEmpty && segments[0] == 'admin') {
         if (segments.length > 1 && segments[1] == 'signup') {
-          return const AdminSignupScreen();
+          return const AdminThemed(child: AdminSignupScreen());
         }
-        return const AdminLoginScreen();
+        return const AdminThemed(child: AdminLoginScreen());
       }
 
       // Route /r/{restaurantId}

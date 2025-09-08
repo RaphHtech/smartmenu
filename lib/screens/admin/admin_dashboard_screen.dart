@@ -7,6 +7,7 @@ import '../../core/constants/colors.dart';
 import 'menu_item_form_screen.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import '../../widgets/ui/admin_themed.dart';
 
 class AdminDashboardScreen extends StatefulWidget {
   final String restaurantId;
@@ -149,21 +150,14 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text(_restaurantName ?? 'Dashboard'),
-        backgroundColor: AppColors.primary,
-        foregroundColor: Colors.white,
-        elevation: 0,
         actions: [
           // Ouvrir la page "Infos du restaurant"
           IconButton(
             icon: const Icon(Icons.info_outline),
             tooltip: 'Infos du restaurant',
             onPressed: () {
-              Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (_) => AdminRestaurantInfoScreen(
-                    restaurantId: widget.restaurantId, // rid OK
-                  ),
-                ),
+              context.pushAdminScreen(
+                AdminRestaurantInfoScreen(restaurantId: widget.restaurantId),
               );
             },
           ),
@@ -304,12 +298,9 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                               'Modifier la description et le bandeau promo'),
                           trailing: const Icon(Icons.chevron_right),
                           onTap: () {
-                            Navigator.of(context).push(
-                              MaterialPageRoute(
-                                builder: (_) => AdminRestaurantInfoScreen(
-                                  restaurantId: widget.restaurantId,
-                                ),
-                              ),
+                            context.pushAdminScreen(
+                              AdminRestaurantInfoScreen(
+                                  restaurantId: widget.restaurantId),
                             );
                           },
                         ),
@@ -484,167 +475,8 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: _addMenuItem,
-        backgroundColor: AppColors.primary,
+        // backgroundColor: AppColors.primary,
         child: const Icon(Icons.add, color: Colors.white),
-      ),
-    );
-  }
-
-  Widget _buildMenuItemCard(String itemId, Map<String, dynamic> data) {
-    final name = data['name'] ?? '';
-    final price = (data['price'] ?? 0).toDouble();
-    final category = data['category'] ?? '';
-    final description = data['description'] ?? '';
-    final imageUrl = data['imageUrl'] as String?;
-    final signature = data['signature'] as bool? ?? false;
-
-    return Card(
-      margin: const EdgeInsets.only(bottom: 12),
-      elevation: 2,
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Row(
-          children: [
-            // Image ou placeholder
-            Container(
-              width: 80,
-              height: 80,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(8),
-                color: Colors.grey[200],
-              ),
-              child: imageUrl != null && imageUrl.isNotEmpty
-                  ? ClipRRect(
-                      borderRadius: BorderRadius.circular(8),
-                      child: Image.network(
-                        imageUrl,
-                        fit: BoxFit.cover,
-                        errorBuilder: (context, error, stackTrace) {
-                          return Icon(Icons.image_not_supported,
-                              color: Colors.grey[400]);
-                        },
-                      ),
-                    )
-                  : Icon(Icons.restaurant, color: Colors.grey[400]),
-            ),
-            const SizedBox(width: 16),
-
-            // Infos
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      Expanded(
-                        child: Text(
-                          name,
-                          style:
-                              Theme.of(context).textTheme.titleMedium?.copyWith(
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                        ),
-                      ),
-                      if (signature)
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 8, vertical: 2),
-                          decoration: BoxDecoration(
-                            color: AppColors.primary.withOpacity(0.1),
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          child: const Text(
-                            'Signature',
-                            style: TextStyle(
-                              fontSize: 12,
-                              color: AppColors.primary,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
-                    ],
-                  ),
-                  const SizedBox(height: 4),
-                  Row(
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 8, vertical: 2),
-                        decoration: BoxDecoration(
-                          color: Colors.grey[100],
-                          borderRadius: BorderRadius.circular(4),
-                        ),
-                        child: Text(
-                          category,
-                          style: TextStyle(
-                            fontSize: 12,
-                            color: Colors.grey[600],
-                          ),
-                        ),
-                      ),
-                      const SizedBox(width: 8),
-                      Text(
-                        '${price.toStringAsFixed(2)} ${_symbol(_currency)}',
-                        style:
-                            Theme.of(context).textTheme.titleMedium?.copyWith(
-                                  color: AppColors.primary,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                      ),
-                    ],
-                  ),
-                  if (description.isNotEmpty) ...[
-                    const SizedBox(height: 4),
-                    Text(
-                      description,
-                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                            color: Colors.grey[600],
-                          ),
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ],
-                ],
-              ),
-            ),
-
-            // Actions
-            PopupMenuButton<String>(
-              onSelected: (value) {
-                switch (value) {
-                  case 'edit':
-                    _editMenuItem(itemId, data);
-                    break;
-                  case 'delete':
-                    _deleteMenuItem(itemId, name);
-                    break;
-                }
-              },
-              itemBuilder: (context) => [
-                const PopupMenuItem(
-                  value: 'edit',
-                  child: Row(
-                    children: [
-                      Icon(Icons.edit, size: 18),
-                      SizedBox(width: 8),
-                      Text('Modifier'),
-                    ],
-                  ),
-                ),
-                const PopupMenuItem(
-                  value: 'delete',
-                  child: Row(
-                    children: [
-                      Icon(Icons.delete, size: 18, color: Colors.red),
-                      SizedBox(width: 8),
-                      Text('Supprimer', style: TextStyle(color: Colors.red)),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ],
-        ),
       ),
     );
   }
@@ -742,23 +574,17 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
   }
 
   void _addMenuItem() {
-    Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (context) => MenuItemFormScreen(
-          restaurantId: widget.restaurantId,
-        ),
-      ),
+    context.pushAdminScreen(
+      MenuItemFormScreen(restaurantId: widget.restaurantId),
     );
   }
 
   void _editMenuItem(String itemId, Map<String, dynamic> data) {
-    Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (context) => MenuItemFormScreen(
-          restaurantId: widget.restaurantId,
-          itemId: itemId,
-          initialData: data,
-        ),
+    context.pushAdminScreen(
+      MenuItemFormScreen(
+        restaurantId: widget.restaurantId,
+        itemId: itemId,
+        initialData: data,
       ),
     );
   }
