@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import '../../core/constants/colors.dart';
+// import '../../core/constants/colors.dart';
 
 class AdminRestaurantInfoScreen extends StatefulWidget {
   final String restaurantId; // rid
@@ -101,7 +101,6 @@ class _AdminRestaurantInfoScreenState extends State<AdminRestaurantInfoScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Infos du restaurant'),
-        backgroundColor: AppColors.primary,
       ),
       body: _loading
           ? const Center(child: CircularProgressIndicator())
