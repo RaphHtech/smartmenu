@@ -1,6 +1,12 @@
+// lib/screens/admin/admin_login_screen.dart
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 import '../../core/constants/colors.dart';
+import 'admin_signup_screen.dart';
+import 'create_restaurant_screen.dart';
+import 'admin_dashboard_screen.dart';
 
 class AdminLoginScreen extends StatefulWidget {
   const AdminLoginScreen({super.key});
@@ -10,11 +16,18 @@ class AdminLoginScreen extends StatefulWidget {
 }
 
 class _AdminLoginScreenState extends State<AdminLoginScreen> {
-  final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+  final _formKey = GlobalKey<FormState>();
   bool _isLoading = false;
   String? _errorMessage;
+
+  @override
+  void dispose() {
+    _emailController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
 
   Future<void> _login() async {
     if (!_formKey.currentState!.validate()) return;
@@ -25,36 +38,57 @@ class _AdminLoginScreenState extends State<AdminLoginScreen> {
     });
 
     try {
-      await FirebaseAuth.instance.signInWithEmailAndPassword(
+      final cred = await FirebaseAuth.instance.signInWithEmailAndPassword(
         email: _emailController.text.trim(),
         password: _passwordController.text,
       );
 
-      if (mounted) {
-        // Redirection vers dashboard (pour l'instant placeholder)
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Connexion réussie!')),
-        );
+      final user = cred.user;
+      if (user != null && mounted) {
+        // Trouver le restaurant où l'uid est membre
+        // Lecture directe du mapping user (O(1), pas d'index)
+        final userDoc = await FirebaseFirestore.instance
+            .collection('users')
+            .doc(user.uid)
+            .get();
+
+        if (userDoc.exists &&
+            userDoc.data()?['primary_restaurant_id'] != null) {
+          final restaurantId =
+              userDoc.data()!['primary_restaurant_id'] as String;
+
+          Navigator.of(context).pushReplacement(
+            MaterialPageRoute(
+              builder: (_) => AdminDashboardScreen(restaurantId: restaurantId),
+            ),
+          );
+        } else {
+          // Aucun resto : on crée le premier
+          Navigator.of(context).pushReplacement(
+            MaterialPageRoute(builder: (_) => const CreateRestaurantScreen()),
+          );
+        }
       }
     } on FirebaseAuthException catch (e) {
-      setState(() {
-        _errorMessage = _getErrorMessage(e.code);
-      });
+      setState(() => _errorMessage = _messageFromCode(e.code));
+    } catch (_) {
+      setState(() => _errorMessage = 'Une erreur est survenue. Réessayez.');
     } finally {
-      setState(() => _isLoading = false);
+      if (mounted) setState(() => _isLoading = false);
     }
   }
 
-  String _getErrorMessage(String code) {
+  String _messageFromCode(String code) {
     switch (code) {
       case 'user-not-found':
-        return 'Aucun compte trouvé avec cet email';
       case 'wrong-password':
-        return 'Mot de passe incorrect';
+        return 'Email ou mot de passe incorrect.';
       case 'invalid-email':
-        return 'Format email invalide';
+        return 'Adresse email invalide.';
+      case 'user-disabled':
+        return 'Ce compte a été désactivé.';
       default:
-        return 'Erreur de connexion';
+        return 'Erreur de connexion.';
     }
   }
 
@@ -62,131 +96,109 @@ class _AdminLoginScreenState extends State<AdminLoginScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.black,
+      appBar: AppBar(
+        title: const Text('Admin SmartMenu'),
+        backgroundColor: AppColors.primary,
+      ),
       body: Center(
-        child: Container(
-          constraints: const BoxConstraints(maxWidth: 400),
-          padding: const EdgeInsets.all(32),
-          child: Form(
-            key: _formKey,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                // Logo/Titre
-                const Text(
-                  'SmartMenu',
-                  style: TextStyle(
-                    fontSize: 32,
-                    fontWeight: FontWeight.w900,
-                    color: AppColors.accent,
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(24),
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 420),
+            child: Form(
+              key: _formKey,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  const Icon(Icons.restaurant_menu,
+                      size: 64, color: AppColors.accent),
+                  const SizedBox(height: 24),
+                  const Text(
+                    'SmartMenu Admin',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                        fontSize: 32,
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.white),
                   ),
-                ),
-                const SizedBox(height: 8),
-                const Text(
-                  'Dashboard Restaurateur',
-                  style: TextStyle(
-                    fontSize: 16,
-                    color: AppColors.white,
+                  const SizedBox(height: 8),
+                  const Text(
+                    'Connectez-vous à votre espace restaurateur',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(fontSize: 16, color: AppColors.white),
                   ),
-                ),
-                const SizedBox(height: 40),
-
-                // Email
-                TextFormField(
-                  controller: _emailController,
-                  keyboardType: TextInputType.emailAddress,
-                  style: const TextStyle(color: AppColors.white),
-                  decoration: const InputDecoration(
-                    labelText: 'Email',
-                    prefixIcon: Icon(Icons.email, color: AppColors.accent),
-                    labelStyle: TextStyle(color: AppColors.white),
-                    enabledBorder: OutlineInputBorder(
-                      borderSide: BorderSide(color: AppColors.white),
+                  const SizedBox(height: 32),
+                  TextFormField(
+                    controller: _emailController,
+                    keyboardType: TextInputType.emailAddress,
+                    style: const TextStyle(color: AppColors.white),
+                    decoration: const InputDecoration(
+                      labelText: 'Email',
+                      prefixIcon: Icon(Icons.email, color: AppColors.accent),
                     ),
-                    focusedBorder: OutlineInputBorder(
-                      borderSide: BorderSide(color: AppColors.accent),
-                    ),
+                    validator: (v) => (v == null || v.isEmpty)
+                        ? 'Veuillez saisir votre email'
+                        : null,
                   ),
-                  validator: (value) {
-                    if (value?.isEmpty ?? true) return 'Email requis';
-                    if (!value!.contains('@')) return 'Email invalide';
-                    return null;
-                  },
-                ),
-                const SizedBox(height: 20),
-
-                // Mot de passe
-                TextFormField(
-                  controller: _passwordController,
-                  obscureText: true,
-                  style: const TextStyle(color: AppColors.white),
-                  decoration: const InputDecoration(
-                    labelText: 'Mot de passe',
-                    prefixIcon: Icon(Icons.lock, color: AppColors.accent),
-                    labelStyle: TextStyle(color: AppColors.white),
-                    enabledBorder: OutlineInputBorder(
-                      borderSide: BorderSide(color: AppColors.white),
+                  const SizedBox(height: 16),
+                  TextFormField(
+                    controller: _passwordController,
+                    obscureText: true,
+                    style: const TextStyle(color: AppColors.white),
+                    decoration: const InputDecoration(
+                      labelText: 'Mot de passe',
+                      prefixIcon: Icon(Icons.lock, color: AppColors.accent),
                     ),
-                    focusedBorder: OutlineInputBorder(
-                      borderSide: BorderSide(color: AppColors.accent),
-                    ),
+                    validator: (v) => (v == null || v.isEmpty)
+                        ? 'Veuillez saisir votre mot de passe'
+                        : null,
                   ),
-                  validator: (value) {
-                    if (value?.isEmpty ?? true) return 'Mot de passe requis';
-                    if (value!.length < 6) return 'Minimum 6 caractères';
-                    return null;
-                  },
-                ),
-                const SizedBox(height: 20),
-
-                // Erreur
-                if (_errorMessage != null)
-                  Padding(
-                    padding: const EdgeInsets.only(bottom: 20),
-                    child: Text(
-                      _errorMessage!,
-                      style: const TextStyle(color: Colors.red),
+                  const SizedBox(height: 24),
+                  if (_errorMessage != null)
+                    Container(
+                      padding: const EdgeInsets.all(12),
+                      margin: const EdgeInsets.only(bottom: 16),
+                      decoration: BoxDecoration(
+                        color: Colors.red.shade50,
+                        border: Border.all(color: Colors.red.shade200),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Text(
+                        _errorMessage!,
+                        textAlign: TextAlign.center,
+                        style: TextStyle(color: Colors.red.shade700),
+                      ),
+                    ),
+                  SizedBox(
+                    height: 48,
+                    child: ElevatedButton(
+                      onPressed: _isLoading ? null : _login,
+                      child: _isLoading
+                          ? const SizedBox(
+                              height: 20,
+                              width: 20,
+                              child: CircularProgressIndicator(
+                                  strokeWidth: 2, color: AppColors.primary),
+                            )
+                          : const Text('Se connecter'),
                     ),
                   ),
-
-                // Bouton connexion
-                SizedBox(
-                  width: double.infinity,
-                  height: 48,
-                  child: ElevatedButton(
-                    onPressed: _isLoading ? null : _login,
-                    child: _isLoading
-                        ? const CircularProgressIndicator(
-                            color: AppColors.primary)
-                        : const Text('SE CONNECTER'),
+                  const SizedBox(height: 16),
+                  TextButton(
+                    onPressed: () {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                            builder: (_) => const AdminSignupScreen()),
+                      );
+                    },
+                    child: const Text('Pas encore de compte ? Créer un compte'),
                   ),
-                ),
-                const SizedBox(height: 20),
-
-                // Lien inscription
-                TextButton(
-                  onPressed: () {
-                    // Pour l'instant, message placeholder
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Inscription à venir')),
-                    );
-                  },
-                  child: const Text(
-                    'Créer un compte restaurant',
-                    style: TextStyle(color: AppColors.accent),
-                  ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ),
       ),
     );
-  }
-
-  @override
-  void dispose() {
-    _emailController.dispose();
-    _passwordController.dispose();
-    super.dispose();
   }
 }

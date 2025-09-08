@@ -5,11 +5,13 @@ import '../../widgets/gradient_text_widget.dart';
 
 class AppHeaderWidget extends StatelessWidget {
   final VoidCallback onServerCall;
+  final String restaurantName;
 
   const AppHeaderWidget({
-    Key? key,
+    super.key,
     required this.onServerCall,
-  }) : super(key: key);
+    required this.restaurantName,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -59,24 +61,39 @@ class AppHeaderWidget extends StatelessWidget {
                     ),
                   ),
                 ),
+
                 // ---- Colonne centre : 2 lignes, centrées ----
-                const Expanded(
-                  flex: 2,
-                  child: Center(
-                    child: GradientText(
-                      'PIZZA\nPOWER',
-                      gradient: AppColors.titleGradient, // blanc → jaune
-                      style: TextStyle(
-                        fontSize: 24, // 22—24 selon ton goût
-                        fontWeight: FontWeight.w800,
-                        height: 1.10, // interligne serré
-                        letterSpacing: 0.5,
+                Expanded(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      FittedBox(
+                        fit: BoxFit.scaleDown,
+                        child: GradientText(
+                          (restaurantName.isEmpty
+                                  ? 'Restaurant'
+                                  : restaurantName)
+                              .toUpperCase(),
+                          style: const TextStyle(
+                            fontSize: 28,
+                            fontWeight: FontWeight.w900,
+                            letterSpacing: 1,
+                            height: 1.05,
+                          ),
+                          gradient: const LinearGradient(
+                            colors: [
+                              Color(0xFFFFD179), // jaune clair
+                              Color(0xFFFFA45B), // orange
+                            ],
+                          ),
+                        ),
                       ),
-                      textAlign: TextAlign.center,
-                      maxLines: 2,
-                    ),
+                      const SizedBox(height: 2),
+                      // (tu gardes la petite baseline si tu veux)
+                    ],
                   ),
                 ),
+
                 // Droite : bouton "Serveur"
                 Expanded(
                   child: Align(

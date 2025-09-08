@@ -1,11 +1,16 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:smartmenu_app/screens/home_screen.dart';
-import 'package:smartmenu_app/screens/menu/menu_screen.dart';
-import 'core/constants/colors.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
-import 'package:flutter/foundation.dart';
-import 'package:smartmenu_app/screens/admin/admin_login_screen.dart';
+
+// Import screens
+import 'screens/home_screen.dart';
+import 'screens/menu/menu_screen.dart';
+import 'screens/admin/admin_login_screen.dart';
+import 'screens/admin/admin_signup_screen.dart';
+
+// Import core
+import 'core/constants/colors.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -30,49 +35,55 @@ class SmartMenuApp extends StatelessWidget {
 
   Widget _getInitialScreen() {
     if (kIsWeb) {
-      final currentUrl = Uri.base;
-      final segments = currentUrl.pathSegments;
+      final segments = Uri.base.pathSegments;
 
-      // /admin -> login placeholder
-      // /admin -> écran de login réel
+      // Route /admin
       if (segments.isNotEmpty && segments[0] == 'admin') {
-        return AdminLoginScreen();
+        if (segments.length > 1 && segments[1] == 'signup') {
+          return const AdminSignupScreen();
+        }
+        return const AdminLoginScreen();
       }
 
-      // /r/restaurant-id -> menu direct
+      // Route /r/{restaurantId}
       if (segments.length >= 2 && segments[0] == 'r') {
         return MenuScreen(restaurantId: segments[1]);
       }
     }
 
+    // Route par défaut
     return HomeScreen();
   }
 
   ThemeData _buildTheme() {
     return ThemeData(
+      colorScheme: ColorScheme.fromSeed(seedColor: AppColors.primary),
       useMaterial3: true,
-      colorScheme: ColorScheme.fromSeed(
-        seedColor: AppColors.primary,
-        brightness: Brightness.dark,
-      ).copyWith(
-        primary: AppColors.primary,
-        secondary: AppColors.secondary,
-        tertiary: AppColors.accent,
-        surface: AppColors.black,
-        onSurface: AppColors.white,
-      ),
+      fontFamily: 'Inter',
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
-          backgroundColor: AppColors.accent,
-          foregroundColor: AppColors.primary,
+          elevation: 0,
+          backgroundColor: AppColors.primary,
+          foregroundColor: Colors.white,
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(8),
           ),
-          elevation: 4,
-          minimumSize: const Size(0, 48),
         ),
       ),
-      visualDensity: VisualDensity.adaptivePlatformDensity,
+      inputDecorationTheme: InputDecorationTheme(
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8),
+          borderSide: const BorderSide(color: AppColors.lightGrey),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8),
+          borderSide: const BorderSide(color: AppColors.primary, width: 2),
+        ),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 16,
+          vertical: 14,
+        ),
+      ),
     );
   }
 }
