@@ -21,6 +21,8 @@ class AdminTokens {
   // Couleurs d'accent (pour actions, liens, états)
   static const Color primary500 = Color(0xFF6366F1); // Indigo moderne
   static const Color primary600 = Color(0xFF4F46E5); // Hover states
+  static const Color primary100 =
+      Color(0xFFE0E7FF); // Background primary très léger
   static const Color primary50 = Color(0xFFF0F1FF); // Background primary léger
 
   // Couleurs fonctionnelles
@@ -63,7 +65,7 @@ class AdminTokens {
 
   static List<BoxShadow> get shadowSm => [
         BoxShadow(
-          color: neutral900.withOpacity(0.05),
+          color: neutral900.withAlpha((255 * 0.5).round()),
           blurRadius: 6,
           offset: const Offset(0, 1),
         ),
@@ -71,12 +73,12 @@ class AdminTokens {
 
   static List<BoxShadow> get shadowMd => [
         BoxShadow(
-          color: neutral900.withOpacity(0.1),
+          color: neutral900.withAlpha((255 * 0.1).round()),
           blurRadius: 15,
           offset: const Offset(0, 4),
         ),
         BoxShadow(
-          color: neutral900.withOpacity(0.06),
+          color: neutral900.withAlpha((255 * 0.6).round()),
           blurRadius: 6,
           offset: const Offset(0, 2),
         ),
@@ -84,12 +86,12 @@ class AdminTokens {
 
   static List<BoxShadow> get shadowLg => [
         BoxShadow(
-          color: neutral900.withOpacity(0.15),
+          color: neutral900.withAlpha((255 * 0.15).round()),
           blurRadius: 25,
           offset: const Offset(0, 10),
         ),
         BoxShadow(
-          color: neutral900.withOpacity(0.08),
+          color: neutral900.withAlpha((255 * 0.8).round()),
           blurRadius: 10,
           offset: const Offset(0, 4),
         ),

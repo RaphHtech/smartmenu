@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:smartmenu_app/screens/admin/admin_dashboard_overview_screen.dart';
 
 import '../../core/constants/colors.dart';
 import 'admin_signup_screen.dart';
 import 'create_restaurant_screen.dart';
-import 'admin_dashboard_screen.dart';
 import '../../widgets/ui/admin_themed.dart';
 
 class AdminLoginScreen extends StatefulWidget {
@@ -45,6 +45,9 @@ class _AdminLoginScreenState extends State<AdminLoginScreen> {
 
       final user = cred.user;
       if (user != null && mounted) {
+        // Stocker le context avant les opérations async
+        final navigator = Navigator.of(context);
+
         // Trouver le restaurant où l'uid est membre
         // Lecture directe du mapping user (O(1), pas d'index)
         final userDoc = await FirebaseFirestore.instance
@@ -52,21 +55,25 @@ class _AdminLoginScreenState extends State<AdminLoginScreen> {
             .doc(user.uid)
             .get();
 
+        // Vérifier mounted avant d'utiliser Navigator
+        if (!mounted) return;
+
         if (userDoc.exists &&
             userDoc.data()?['primary_restaurant_id'] != null) {
           final restaurantId =
               userDoc.data()!['primary_restaurant_id'] as String;
 
-          Navigator.of(context).pushReplacement(
+          Navigator.of(context).pushAndRemoveUntil(
             MaterialPageRoute(
               builder: (_) => AdminThemed(
-                child: AdminDashboardScreen(restaurantId: restaurantId),
+                child: AdminDashboardOverviewScreen(restaurantId: restaurantId),
               ),
             ),
+            (route) => false, // on vide toute la pile (adieu login)
           );
         } else {
           // Aucun resto : on crée le premier
-          Navigator.of(context).pushReplacement(
+          navigator.pushReplacement(
             MaterialPageRoute(builder: (_) => const CreateRestaurantScreen()),
           );
         }

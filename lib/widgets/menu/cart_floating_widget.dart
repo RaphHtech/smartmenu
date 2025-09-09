@@ -7,11 +7,11 @@ class CartFloatingWidget extends StatelessWidget {
   final VoidCallback onViewOrder;
 
   const CartFloatingWidget({
-    Key? key,
+    super.key,
     required this.cartItemCount,
     required this.cartTotal,
     required this.onViewOrder,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

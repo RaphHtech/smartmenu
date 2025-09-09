@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/foundation.dart';
 
 class FirebaseMenuService {
   static final FirebaseFirestore _firestore = FirebaseFirestore.instance;
@@ -28,7 +29,7 @@ class FirebaseMenuService {
 
       return items;
     } catch (e) {
-      print('Erreur lors de la récupération du menu: $e');
+      debugPrint('Erreur lors de la récupération du menu: $e');
       return [];
     }
   }
@@ -45,7 +46,7 @@ class FirebaseMenuService {
       }
       return null;
     } catch (e) {
-      print('Erreur lors de la récupération du restaurant: $e');
+      debugPrint('Erreur lors de la récupération du restaurant: $e');
       return null;
     }
   }

@@ -12,7 +12,7 @@ class OrderReviewModal extends StatelessWidget {
   final VoidCallback onConfirmOrder;
 
   const OrderReviewModal({
-    Key? key,
+    super.key,
     required this.itemQuantities,
     required this.menuData,
     required this.cartTotal,
@@ -21,13 +21,13 @@ class OrderReviewModal extends StatelessWidget {
     required this.onDecreaseQuantity,
     required this.onRemoveItem,
     required this.onConfirmOrder,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
     return Positioned.fill(
       child: Container(
-        color: Colors.black.withOpacity(0.8),
+        color: Colors.black.withAlpha((255 * 0.8).round()),
         child: Center(
           child: Container(
             margin: const EdgeInsets.all(20),

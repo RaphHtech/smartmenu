@@ -11,12 +11,12 @@ Une application de menu numérique moderne pour restaurants, développée avec *
 ### Architecture
 
 - **Client PWA** (`/r/{restaurantId}`) : Menu accessible via QR code, panier, commande
-- **Admin Dashboard** (`/admin`) : Interface restaurateur pour gérer menu, plats, images
+- **Admin Dashboard** (`/admin`) : Interface restaurateur SaaS premium pour gérer menu, plats, images
 - **Multi-tenant** : Chaque restaurant a ses données isolées avec sécurité Firestore
 
 ---
 
-## 🚀 État Actuel (Septembre 2025)
+## 🚀 État Actuel (Septembre 2025) - Version 2.1.0
 
 ### ✅ Fonctionnalités Terminées
 
@@ -33,15 +33,20 @@ Une application de menu numérique moderne pour restaurants, développée avec *
 - Devise dynamique (₪, €, $) selon restaurant
 - Tagline et bandeau promo personnalisables
 
-**Admin Dashboard :**
+**Admin Dashboard - Interface SaaS Premium :**
 
+- **AdminShell** : Sidebar/Topbar professionnelle (inspiration Stripe/Notion/Linear)
+- **Navigation complète** : Dashboard, Menu, Médias, Infos resto, Paramètres
+- **Responsive design** : Sidebar fixe desktop, drawer mobile
+- **Breadcrumbs** : Navigation contextuelle avec retour intelligent
+- **Design System Premium** : Palette neutre + accent indigo, typographie hiérarchisée
 - Auth Firebase (email/password) avec mapping users/{uid}
 - Signup → Create Restaurant → Dashboard complet
 - CRUD plats : création, modification, suppression
 - Upload images Firebase Storage (avec gestion suppression)
 - Options : plat signature, visible/masqué, catégories
 - Preview live (ouvre `/r/{rid}` nouvel onglet)
-- **NOUVEAU : Interface Premium avec Design System**
+- **Modification nom restaurant** : Interface dédiée dans Paramètres
 - Gestion devises multiples (ILS par défaut)
 - Placeholders avec icônes de catégorie (🍕, 🥗, etc.)
 - Screen "Infos du restaurant" pour modifier tagline/promo
@@ -54,50 +59,64 @@ Une application de menu numérique moderne pour restaurants, développée avec *
 - Service Worker différencié (cache client vs network admin)
 - Upload web-safe avec putData(Uint8List)
 
-### 🎯 Fonctionnalités Validées
+### 🎯 Nouvelles Fonctionnalités v2.1.0
 
-- Upload d'images fonctionne (Storage + Firestore)
-- Suppression d'images avec bouton "Retirer"
-- Placeholders avec emojis de catégorie côté admin
-- Affichage correct des devises selon restaurant
-- Preview menu depuis dashboard admin
-- **Design System Admin Premium appliqué avec succès**
+- **AdminShell Layout** : Interface SaaS avec sidebar/topbar premium
+- **Navigation intelligente** : Retour contextuel (sous-pages → Dashboard)
+- **Responsive optimisé** : Recherche adaptive, débordement corrigé
+- **Modification nom restaurant** : Interface intuitive avec validation
+- **Écrans placeholder** : Médias et Paramètres avec design cohérent
 
 ---
 
-## 🎨 NOUVEAU : Design System Admin Premium
+## 🎨 AdminShell - Interface SaaS Premium
 
-### Architecture Design
+### Architecture AdminShell
 
 ```
-lib/core/design/
-├── admin_tokens.dart      # Couleurs, espacements, radius, ombres
-├── admin_typography.dart  # Hiérarchie typographique premium
-├── admin_theme.dart       # ThemeData complet Material 3
-└── admin_themed.dart      # Wrapper pour appliquer le thème admin
-
 lib/widgets/ui/
-└── admin_themed.dart      # Extension navigation + wrapper
+├── admin_shell.dart          # Layout principal sidebar + topbar
+├── admin_themed.dart         # Wrapper thème admin
+└── admin_*.dart             # Composants spécialisés
+
+lib/screens/admin/
+├── admin_dashboard_screen.dart    # Gestion menu (wrappé AdminShell)
+├── admin_media_screen.dart        # Placeholder médias
+├── admin_settings_screen.dart     # Paramètres + nom restaurant
+├── admin_restaurant_info_screen.dart # Infos détaillées
+└── ...                           # Autres écrans admin
 ```
 
-### Styles Appliqués
+### Navigation AdminShell
 
-- **Palette Premium** : Gris neutres + accent indigo (inspiration Notion/Linear)
-- **Typography** : Hiérarchie Display/Headline/Body/Label
-- **AppBar** : Blanc avec bordure fine vs rouge avant
-- **Cards** : Bordures fines, coins arrondis, élévation subtile
-- **Inputs** : Focus states modernes, padding harmonieux
-- **Buttons** : Style indigo premium avec hover effects
-- **Background** : Gris très clair (neutral50) vs rose avant
+**Sidebar (Desktop 1024px+) :**
 
-### Navigation Admin Wrappée
+- Dashboard : Liste des plats + stats
+- Menu : Alias vers Dashboard (compatibilité)
+- Médias : Gestion fichiers (placeholder)
+- Infos resto : Tagline, promo, devise
+- Paramètres : Nom restaurant, équipe (futur)
 
-Tous les écrans admin utilisent désormais `AdminThemed` wrapper :
+**Topbar responsive :**
 
-- Via routes directes (`/admin`, `/admin/signup`)
-- Via navigation interne (`context.pushAdminScreen()`)
-- Isolation parfaite : le client PWA garde sa palette originale
-- Hot restart requis après migration pour voir le thème sur la 1re route admin
+- Burger menu (mobile) / Bouton retour contextuel
+- Titre de page dynamique
+- Actions personnalisées par écran
+- Recherche globale (>1000px) / Icône recherche (<1000px)
+
+**Navigation intelligente :**
+
+- Sidebar → Pages racines (Dashboard, Paramètres, etc.) sans retour
+- Sous-pages → Flèche retour vers page parente
+- Breadcrumbs contextuels
+
+### Design System Appliqué
+
+- **Palette Premium** : Gris neutres (#F9FAFB → #111827) + accent indigo (#6366F1)
+- **Typography** : Hiérarchie Display/Headline/Body/Label cohérente
+- **Composants** : Cards fines, inputs modernes, buttons premium
+- **States** : Loading, hover, focus, error harmonisés
+- **Responsive** : Breakpoints logiques, débordement maîtrisé
 
 ---
 
@@ -126,8 +145,8 @@ users/{uid}/ (primary_restaurant_id, role, created_at)
 ```
 / → HomeScreen (demo)
 /r/{restaurantId} → MenuScreen (PWA client)
-/admin → AdminLoginScreen (avec AdminThemed)
-/admin/signup → AdminSignupScreen (avec AdminThemed)
+/admin → AdminLoginScreen (avec AdminShell)
+/admin/signup → AdminSignupScreen (avec AdminShell)
 ```
 
 ---
@@ -139,9 +158,9 @@ lib/
 ├── core/
 │   ├── constants/colors.dart        # Palette client (PWA)
 │   └── design/                      # 🆕 Design System Admin
-│       ├── admin_tokens.dart
-│       ├── admin_typography.dart
-│       └── admin_theme.dart
+│       ├── admin_tokens.dart        # Variables design (couleurs, spacing, etc.)
+│       ├── admin_typography.dart    # Hiérarchie typographique
+│       └── admin_theme.dart         # ThemeData Material 3
 ├── services/
 │   ├── cart_service.dart           # Gestion panier
 │   └── firebase_menu_service.dart  # Intégration Firestore (client)
@@ -150,15 +169,18 @@ lib/
 │   ├── qr_scanner_screen.dart      # Scanner QR multi-restaurants
 │   ├── menu/
 │   │   └── menu_screen.dart        # Menu client
-│   └── admin/                      # 🆕 Tous wrappés avec AdminThemed
+│   └── admin/                      # 🆕 Interface AdminShell
 │       ├── admin_login_screen.dart      # Login restaurateur
 │       ├── admin_signup_screen.dart     # Signup + onboarding
 │       ├── create_restaurant_screen.dart # Création resto + owner
 │       ├── admin_dashboard_screen.dart   # Dashboard liste plats
+│       ├── admin_media_screen.dart       # Gestion médias (placeholder)
+│       ├── admin_settings_screen.dart    # Paramètres + nom restaurant
 │       ├── admin_restaurant_info_screen.dart # Gestion tagline/promo
 │       └── menu_item_form_screen.dart    # CRUD plats + upload images
 ├── widgets/
-│   ├── ui/                         # 🆕 Composants UI
+│   ├── ui/                         # 🆕 Composants AdminShell
+│   │   ├── admin_shell.dart        # Layout principal sidebar/topbar
 │   │   └── admin_themed.dart       # Wrapper + navigation admin
 │   ├── modals/order_review_modal.dart
 │   ├── notifications/custom_notification.dart
@@ -168,7 +190,7 @@ lib/
 │   ├── category_pill_widget.dart
 │   ├── gradient_text_widget.dart
 │   └── menu_item_widget.dart
-└── main.dart                       # Init Firebase + routing (AdminThemed)
+└── main.dart                       # Init Firebase + routing
 
 web/
 ├── index.html                      # Entrypoint Web (Flutter loader)
@@ -241,6 +263,7 @@ flutter build web      # Build production
   2. `/admin` → login puis redirection Dashboard
   3. CRUD plats → upload image Storage
   4. Preview → `/r/{rid}`
+  5. **Nouveau** : Paramètres → modifier nom restaurant
 
 ---
 
@@ -312,23 +335,25 @@ service firebase.storage {
 - Upload d'images avec suppression
 - Placeholders avec icônes de catégorie
 
-### ✅ Phase 1.5 - Design System Admin (Terminé - Septembre 2025)
+### ✅ Phase 2 - AdminShell & Interface Premium (Terminé - v2.1.0)
 
-- **Design Tokens Premium** : Couleurs neutres, espacements, typographie
-- **Thème Material 3** : AppBar, Cards, Buttons, Inputs, etc.
-- **Wrapper AdminThemed** : Application isolée du thème admin
-- **Navigation Wrappée** : Toutes les routes admin utilisent le design premium
-- **Interface transformation** : Passage de basique à niveau Stripe/Notion
-
-### 🚧 Phase 2 - AdminShell & Navigation (En cours)
-
+- **Design System Premium** : Couleurs neutres, espacements, typographie
 - **AdminShell Layout** : Sidebar + Topbar professionnelle
 - **Navigation Premium** : Dashboard, Menu, Médias, Infos, Paramètres
 - **Responsive Design** : Sidebar fixe desktop, drawer mobile
 - **Breadcrumbs** : Navigation contextuelle
-- **Recherche Globale** : Dans topbar avec filtres
+- **Modification nom restaurant** : Interface dédiée avec validation
+- **Interface transformation** : Passage de basique à niveau Stripe/Notion
 
-### 🔮 Phase 3 - Composants Premium
+### 🔮 Phase 3 - Fonctionnalités Utilisateur
+
+- **Recherche globale** : Fonctionnalité complète dans topbar
+- **Navigation retour** : Amélioration UX entre écrans
+- **Tri par catégorie** : Filtres et organisation
+- **Gestion équipe** : Invitations, rôles (manager, staff)
+- **Analytics de base** : Vues menu, plats populaires
+
+### 🔮 Phase 4 - Composants Premium
 
 - **Liste Plats Améliorée** : Thumbnails carrées, hover effects, skeleton loading
 - **États Vides Élégants** : Illustrations, CTAs clairs
@@ -336,16 +361,16 @@ service firebase.storage {
 - **Notifications Premium** : Toast messages avec icônes
 - **Formulaires Sectionnés** : Groupes logiques, validation temps réel
 
-### 🔮 Phase 4 - Features Avancées
+### 🔮 Phase 5 - Features Avancées
 
-- **Analytics Dashboard** : Métriques vues menu, plats populaires
+- **Gestion Médias** : Upload, organisation, optimisation images
+- **Analytics Dashboard** : Métriques avancées, rapports
 - **Preview Live Intégrée** : iframe dans admin au lieu nouvel onglet
 - **Export PDF Menu** : Génération automatique format print
 - **Notifications Temps Réel** : WebSocket pour commandes
 - **Multi-langues** : Hebrew/English/French selon marché
-- **Thèmes Client Multiples** : Pizza, Café, Fine Dining, etc.
 
-### 🚀 Phase 5 - Production & Scale
+### 🚀 Phase 6 - Production & Scale
 
 - **Déploiement Firebase Hosting** : `smartmenu-mvp.web.app`
 - **Core Web Vitals** : Optimisations performance
@@ -357,7 +382,8 @@ service firebase.storage {
 
 ## 📊 État Technique
 
-**Statut :** Design System Admin implémenté avec succès, prêt pour AdminShell  
+**Statut :** AdminShell implémenté avec succès - Interface SaaS premium opérationnelle  
+**Version :** 2.1.0 (AdminShell + Modification nom restaurant)  
 **Environnement :** Développement local + Firebase project configuré  
 **Déploiement cible :** `https://smartmenu-mvp.web.app`  
 **Dernière mise à jour :** Septembre 2025
@@ -369,33 +395,32 @@ service firebase.storage {
 - **PWA** : Cache différencié client/admin pour UX optimale
 - **Upload Web** : `putData(Uint8List)` obligatoire pour compatibilité web
 - **Design Isolation** : Admin premium isolé du client PWA
-- **Theme Override** : AdminThemed wrapper priorité sur styles explicites
+- **Navigation** : `pushAndRemoveUntil` pour pages racines, retour contextuel
 
 ### Leçons Apprises
 
-- **Wrapper Pattern** : Essentiel pour isoler thèmes dans routing Flutter Web
-- **Migration Progressive** : Appliquer design system par étapes évite breaking changes
-- **Style Precedence** : Properties explicites écrasent ThemeData, nécessite nettoyage
-- **Navigation Extensions** : `context.pushAdminScreen()` simplifie application wrapper
+- **AdminShell Pattern** : Layout centralisé évite duplication code et assure cohérence
+- **Navigation intelligente** : Différencier pages racines vs sous-pages critique pour UX
+- **Responsive Design** : Champ recherche adaptatif évite débordements
+- **Design System** : Tokens centralisés facilitent maintenance et évolutions
+- **Validation formulaires** : Feedback temps réel améliore satisfaction utilisateur
 
 ---
 
 ## 🎯 Prochaines Étapes Immédiates
 
-### AdminShell Priority (Semaine courante)
+### Phase 3 Priority (Prochaine semaine)
 
-1. **Créer AdminShell widget** : Layout sidebar + topbar + content area
-2. **Navigation Structure** : Dashboard, Menu, Médias, Infos, Paramètres, Logout
-3. **Responsive Breakpoints** : Desktop fixe, mobile drawer
-4. **Breadcrumbs Component** : Navigation contextuelle
-5. **Intégrer Écrans Existants** : Wrapper dans AdminShell
+1. **Recherche globale fonctionnelle** : Implémentation recherche plats
+2. **Navigation retour optimisée** : Résolution bug bouton retour Dashboard
+3. **Tri par catégorie** : Filtres dans liste plats
+4. **Gestion équipe basique** : Invitations collaborateurs
 
-### Composants Next
+### Corrections Techniques
 
-1. **ProCard Component** : Remplacer Card basique par version premium
-2. **ListRow Component** : Items plats avec thumbnail + actions
-3. **EmptyState Component** : États vides avec illustrations
-4. **Skeleton Component** : Loading states élégants
+1. **Debug navigation** : Bouton retour persistant sur Dashboard
+2. **CORS avancé** : Headers upload résumable pour gros fichiers
+3. **RBAC sécurité** : Restriction owner/manager pour actions sensibles
 
 ---
 
@@ -405,7 +430,7 @@ service firebase.storage {
 
 - **Neutrals** : 50 (background) → 900 (text max contrast)
 - **Primary** : Indigo moderne (#6366F1) pour actions
-- **States** : Success (vert), Warning (orange), Error (rouge)
+- **States** : Success (#10B981), Warning (#F59E0B), Error (#EF4444)
 
 ### Typography Hierarchy
 
@@ -426,11 +451,11 @@ service firebase.storage {
 
 Projet développé par **Raphaël Benitah** avec accompagnement technique collaboratif (Claude + ChatGPT).
 
-**Design System Admin** inspiré de Notion, Linear, Stripe Dashboard pour une expérience restaurateur premium.
+**AdminShell & Design System** inspirés de Stripe Dashboard, Notion, Linear pour une expérience restaurateur premium.
 
 ---
 
-**Version :** 2.0.0 (Design System Admin)  
+**Version :** 2.1.0 (AdminShell + Modification nom restaurant)  
 **License :** Propriétaire  
 **Contact :** rafaelbenitah@gmail.com
 

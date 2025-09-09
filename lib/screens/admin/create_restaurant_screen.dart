@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:smartmenu_app/screens/admin/admin_dashboard_overview_screen.dart';
 import '../../core/constants/colors.dart';
-import 'admin_dashboard_screen.dart';
 
 class CreateRestaurantScreen extends StatefulWidget {
   const CreateRestaurantScreen({super.key});
@@ -104,10 +104,11 @@ class _CreateRestaurantScreenState extends State<CreateRestaurantScreen> {
       });
 
       if (!mounted) return;
-      Navigator.pushReplacement(
+      Navigator.pushAndRemoveUntil(
         context,
         MaterialPageRoute(
-            builder: (_) => AdminDashboardScreen(restaurantId: rid)),
+            builder: (_) => AdminDashboardOverviewScreen(restaurantId: rid)),
+        (route) => false,
       );
     } catch (e) {
       setState(
@@ -151,10 +152,12 @@ class _CreateRestaurantScreenState extends State<CreateRestaurantScreen> {
                       prefixIcon: Icon(Icons.restaurant),
                     ),
                     validator: (v) {
-                      if (v == null || v.trim().isEmpty)
+                      if (v == null || v.trim().isEmpty) {
                         return 'Le nom du restaurant est obligatoire';
-                      if (v.trim().length < 2)
+                      }
+                      if (v.trim().length < 2) {
                         return 'Le nom doit contenir au moins 2 caractères';
+                      }
                       return null;
                     },
                   ),

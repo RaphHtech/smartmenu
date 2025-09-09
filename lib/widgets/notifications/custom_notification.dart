@@ -36,7 +36,7 @@ class CustomNotificationService {
               ),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.3),
+                  color: Colors.black.withAlpha((255 * 0.3).round()),
                   blurRadius: 10,
                   offset: const Offset(0, 5),
                 ),

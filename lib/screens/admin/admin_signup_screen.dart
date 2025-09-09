@@ -108,10 +108,12 @@ class _AdminSignupScreenState extends State<AdminSignupScreen> {
                         labelText: 'Mot de passe',
                         prefixIcon: Icon(Icons.lock)),
                     validator: (v) {
-                      if (v == null || v.isEmpty)
+                      if (v == null || v.isEmpty) {
                         return 'Veuillez saisir un mot de passe';
-                      if (v.length < 6)
+                      }
+                      if (v.length < 6) {
                         return 'Le mot de passe doit contenir au moins 6 caractères';
+                      }
                       return null;
                     },
                   ),
@@ -123,10 +125,12 @@ class _AdminSignupScreenState extends State<AdminSignupScreen> {
                         labelText: 'Confirmer le mot de passe',
                         prefixIcon: Icon(Icons.lock_outline)),
                     validator: (v) {
-                      if (v == null || v.isEmpty)
+                      if (v == null || v.isEmpty) {
                         return 'Veuillez confirmer votre mot de passe';
-                      if (v != _passwordController.text)
+                      }
+                      if (v != _passwordController.text) {
                         return 'Les mots de passe ne correspondent pas';
+                      }
                       return null;
                     },
                   ),

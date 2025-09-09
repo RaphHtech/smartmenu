@@ -4,7 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:image_picker/image_picker.dart';
 import '../../core/constants/colors.dart';
-import 'dart:typed_data';
+// import 'dart:typed_data';
 
 class MenuItemFormScreen extends StatefulWidget {
   final String restaurantId;
@@ -66,13 +66,13 @@ class _MenuItemFormScreenState extends State<MenuItemFormScreen> {
 
       if (doc.exists && mounted) {
         final currency = (doc.data()?['currency'] as String?) ?? 'ILS';
-        print('DEVISE CHARGÉE: $currency'); // DEBUG
+        debugPrint('DEVISE CHARGÉE: $currency'); // DEBUG
         setState(() {
           _restaurantCurrency = currency;
         });
       }
     } catch (e) {
-      print('Erreur chargement devise: $e');
+      debugPrint('Erreur chargement devise: $e');
     }
   }
 
@@ -131,11 +131,6 @@ class _MenuItemFormScreenState extends State<MenuItemFormScreen> {
       // (debug utile)
       debugPrint('UPLOAD → bucket=${ref.bucket} path=${ref.fullPath}');
 
-      final snap = await ref.putData(
-        _pickedBytes!,
-        SettableMetadata(contentType: 'image/jpeg'),
-      );
-
       final url = await ref.getDownloadURL();
       debugPrint('UPLOAD OK → $url');
       return url;
@@ -177,12 +172,12 @@ class _MenuItemFormScreenState extends State<MenuItemFormScreen> {
           final newUrl = await _uploadImage();
           if (newUrl != null && newUrl.isNotEmpty) {
             finalImageUrl = newUrl;
-            print('DEBUG: Nouvelle URL uploadée = $newUrl');
+            debugPrint('DEBUG: Nouvelle URL uploadée = $newUrl');
           } else {
-            print('DEBUG: Échec upload, on garde l\'ancienne URL');
+            debugPrint('DEBUG: Échec upload, on garde l\'ancienne URL');
           }
         } catch (e) {
-          print('DEBUG: Erreur upload = $e');
+          debugPrint('DEBUG: Erreur upload = $e');
           // On continue avec l'ancienne URL en cas d'erreur
         }
       }
@@ -202,14 +197,14 @@ class _MenuItemFormScreenState extends State<MenuItemFormScreen> {
       if (finalImageUrl != null && finalImageUrl.isNotEmpty) {
         itemData['imageUrl'] = finalImageUrl;
         itemData['image'] = finalImageUrl; // Pour compatibilité
-        print('DEBUG: Image sauvegardée avec URL = $finalImageUrl');
+        debugPrint('DEBUG: Image sauvegardée avec URL = $finalImageUrl');
       }
 
       // Cas suppression image en mode édition (aucune nouvelle image choisie)
       if (widget.itemId != null && _removeImage && _pickedBytes == null) {
         itemData['imageUrl'] = FieldValue.delete();
         itemData['image'] = FieldValue.delete();
-        print('DEBUG: Suppression image demandée');
+        debugPrint('DEBUG: Suppression image demandée');
       }
 
       final menuCollection = FirebaseFirestore.instance
@@ -220,12 +215,12 @@ class _MenuItemFormScreenState extends State<MenuItemFormScreen> {
       if (widget.itemId != null) {
         // Modification
         await menuCollection.doc(widget.itemId).update(itemData);
-        print('DEBUG: Plat modifié avec succès');
+        debugPrint('DEBUG: Plat modifié avec succès');
       } else {
         // Création
         itemData['created_at'] = FieldValue.serverTimestamp();
         await menuCollection.add(itemData);
-        print('DEBUG: Plat créé avec succès');
+        debugPrint('DEBUG: Plat créé avec succès');
       }
 
       if (mounted) {
@@ -244,7 +239,7 @@ class _MenuItemFormScreenState extends State<MenuItemFormScreen> {
         );
       }
     } catch (e) {
-      print('DEBUG: Erreur sauvegarde = $e');
+      debugPrint('DEBUG: Erreur sauvegarde = $e');
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
