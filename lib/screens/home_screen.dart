@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'qr_scanner_screen.dart';
 
 class HomeScreen extends StatelessWidget {
+  const HomeScreen({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -14,7 +16,7 @@ class HomeScreen extends StatelessWidget {
             const SizedBox(height: 40),
             ElevatedButton.icon(
               onPressed: () => Navigator.push(context,
-                  MaterialPageRoute(builder: (_) => QRScannerScreen())),
+                  MaterialPageRoute(builder: (_) => const QRScannerScreen())),
               icon: const Icon(Icons.qr_code_scanner),
               label: const Text('SCANNER QR RESTAURANT'),
             ),

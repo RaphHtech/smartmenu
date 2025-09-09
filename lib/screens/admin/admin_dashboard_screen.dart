@@ -1,13 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:smartmenu_app/screens/admin/admin_login_screen.dart';
 import 'admin_restaurant_info_screen.dart';
 import '../../core/constants/colors.dart';
 import 'menu_item_form_screen.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import '../../widgets/ui/admin_themed.dart';
+import '../../widgets/ui/admin_shell.dart';
 
 class AdminDashboardScreen extends StatefulWidget {
   final String restaurantId;
@@ -22,7 +21,6 @@ class AdminDashboardScreen extends StatefulWidget {
 }
 
 class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
-  String? _restaurantName;
   String _currency = 'ILS';
 
   String _emojiFor(String category) {
@@ -70,32 +68,10 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
     return p % 1 == 0 ? '${p.toInt()} $sym' : '${p.toStringAsFixed(2)} $sym';
   }
 
-  final User? _currentUser = FirebaseAuth.instance.currentUser;
-
   @override
   void initState() {
     super.initState();
-    _loadRestaurantName();
     _loadCurrency();
-  }
-
-  Future<void> _loadRestaurantName() async {
-    try {
-      final doc = await FirebaseFirestore.instance
-          .collection('restaurants')
-          .doc(widget.restaurantId)
-          .collection('info')
-          .doc('details')
-          .get();
-
-      if (doc.exists && mounted) {
-        setState(() {
-          _restaurantName = doc.data()?['name'] ?? 'Mon Restaurant';
-        });
-      }
-    } catch (e) {
-      print('Erreur chargement nom restaurant: $e');
-    }
   }
 
   Future<void> _loadCurrency() async {
@@ -113,15 +89,6 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
       }
     } catch (e) {
       debugPrint('Erreur chargement devise: $e');
-    }
-  }
-
-  Future<void> _logout() async {
-    await FirebaseAuth.instance.signOut();
-    if (mounted) {
-      Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (_) => const AdminLoginScreen()),
-      );
     }
   }
 
@@ -147,239 +114,170 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(_restaurantName ?? 'Dashboard'),
-        actions: [
-          // Ouvrir la page "Infos du restaurant"
-          IconButton(
-            icon: const Icon(Icons.info_outline),
-            tooltip: 'Infos du restaurant',
-            onPressed: () {
-              context.pushAdminScreen(
-                AdminRestaurantInfoScreen(restaurantId: widget.restaurantId),
-              );
-            },
-          ),
-
-          // Prévisualiser le menu
-          IconButton(
-            icon: const Icon(Icons.preview),
-            onPressed: _previewMenu,
-            tooltip: 'Prévisualiser le menu',
-          ),
-
-          // Compte / Déconnexion
-          PopupMenuButton<String>(
-            icon: const Icon(Icons.account_circle),
-            onSelected: (value) {
-              if (value == 'logout') _logout();
-            },
-            itemBuilder: (context) => [
-              PopupMenuItem(
-                value: 'profile',
-                child: Row(
-                  children: [
-                    const Icon(Icons.person, size: 18),
-                    const SizedBox(width: 8),
-                    Text(_currentUser?.email ?? 'Utilisateur'),
-                  ],
-                ),
+    return AdminShell(
+      title: 'Gestion du menu',
+      restaurantId: widget.restaurantId,
+      activeRoute: '/dashboard',
+      breadcrumbs: const ['Dashboard', 'Menu'],
+      actions: [
+        IconButton(
+          icon: const Icon(Icons.preview),
+          onPressed: _previewMenu,
+          tooltip: 'Prévisualiser le menu',
+        ),
+        const SizedBox(width: 8),
+        FilledButton.icon(
+          onPressed: _addMenuItem,
+          icon: const Icon(Icons.add),
+          label: const Text('Ajouter'),
+        ),
+      ],
+      child: StreamBuilder<QuerySnapshot>(
+        stream: FirebaseFirestore.instance
+            .collection('restaurants')
+            .doc(widget.restaurantId)
+            .collection('menus')
+            .snapshots(),
+        builder: (context, snapshot) {
+          if (snapshot.hasError) {
+            return Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Icon(Icons.error_outline, size: 64, color: Colors.red),
+                  const SizedBox(height: 16),
+                  Text('Erreur: ${snapshot.error}'),
+                ],
               ),
-              const PopupMenuDivider(),
-              const PopupMenuItem(
-                value: 'logout',
-                child: Row(
-                  children: [
-                    Icon(Icons.logout, size: 18, color: Colors.red),
-                    SizedBox(width: 8),
-                    Text('Déconnexion', style: TextStyle(color: Colors.red)),
-                  ],
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(width: 8),
-        ],
-      ),
-      body: Column(
-        children: [
-          // Pas de header ici - on le mettra dans le StreamBuilder
+            );
+          }
 
-          // Liste des plats
-          Expanded(
-            child: StreamBuilder<QuerySnapshot>(
-              stream: FirebaseFirestore.instance
-                  .collection('restaurants')
-                  .doc(widget.restaurantId)
-                  .collection('menus')
-                  .snapshots(),
-              builder: (context, snapshot) {
-                if (snapshot.hasError) {
-                  return Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const Icon(Icons.error_outline,
-                            size: 64, color: Colors.red),
-                        const SizedBox(height: 16),
-                        Text('Erreur: ${snapshot.error}'),
-                      ],
-                    ),
-                  );
-                }
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          }
 
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const Center(child: CircularProgressIndicator());
-                }
+          final docs = snapshot.data?.docs ?? [];
 
-                final docs = snapshot.data?.docs ?? [];
-                final itemCount = docs.length;
+          // Tri côté client
+          docs.sort((a, b) {
+            final dataA = a.data() as Map<String, dynamic>;
+            final dataB = b.data() as Map<String, dynamic>;
+            final categoryA = dataA['category'] ?? '';
+            final categoryB = dataB['category'] ?? '';
+            final nameA = dataA['name'] ?? '';
+            final nameB = dataB['name'] ?? '';
 
-                // Tri côté client
-                docs.sort((a, b) {
-                  final dataA = a.data() as Map<String, dynamic>;
-                  final dataB = b.data() as Map<String, dynamic>;
-                  final categoryA = dataA['category'] ?? '';
-                  final categoryB = dataB['category'] ?? '';
-                  final nameA = dataA['name'] ?? '';
-                  final nameB = dataB['name'] ?? '';
+            final categoryCompare = categoryA.compareTo(categoryB);
+            return categoryCompare != 0
+                ? categoryCompare
+                : nameA.compareTo(nameB);
+          });
 
-                  final categoryCompare = categoryA.compareTo(categoryB);
-                  return categoryCompare != 0
-                      ? categoryCompare
-                      : nameA.compareTo(nameB);
-                });
-
-                return Column(
-                  children: [
-                    // Header avec compteur
-                    Container(
-                      width: double.infinity,
-                      padding: const EdgeInsets.all(20),
-                      color: AppColors.primary.withOpacity(0.1),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Gestion du menu',
-                            style: Theme.of(context)
-                                .textTheme
-                                .headlineSmall
-                                ?.copyWith(
-                                  fontWeight: FontWeight.bold,
-                                ),
-                          ),
-                          const SizedBox(height: 8),
-                          Text(
-                            '$itemCount plat${itemCount > 1 ? 's' : ''} au menu',
-                            style: Theme.of(context)
-                                .textTheme
-                                .bodyMedium
-                                ?.copyWith(
-                                  color: Colors.grey[600],
-                                ),
-                          ),
-                        ],
-                      ),
-                    ),
-
-                    // LA TUILE "INFOS DU RESTAURANT"
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
-                      child: Card(
-                        elevation: 1,
-                        color: const Color(0xFFFFF5F5),
-                        child: ListTile(
-                          leading: const Icon(Icons.info_outline,
-                              color: Colors.redAccent),
-                          title: const Text('Infos du restaurant'),
-                          subtitle: const Text(
-                              'Modifier la description et le bandeau promo'),
-                          trailing: const Icon(Icons.chevron_right),
-                          onTap: () {
-                            context.pushAdminScreen(
-                              AdminRestaurantInfoScreen(
-                                  restaurantId: widget.restaurantId),
-                            );
-                          },
+          return Column(
+            children: [
+              // LA TUILE "INFOS DU RESTAURANT"
+              Padding(
+                padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
+                child: Card(
+                  elevation: 1,
+                  color: const Color(0xFFFFF5F5),
+                  child: ListTile(
+                    leading:
+                        const Icon(Icons.info_outline, color: Colors.redAccent),
+                    title: const Text('Infos du restaurant'),
+                    subtitle: const Text(
+                        'Modifier la description et le bandeau promo'),
+                    trailing: const Icon(Icons.chevron_right),
+                    onTap: () {
+                      context.pushAdminScreen(
+                        AdminRestaurantInfoScreen(
+                          restaurantId: widget.restaurantId,
+                          showBack: true,
                         ),
-                      ),
-                    ),
+                      );
+                    },
+                  ),
+                ),
+              ),
 
-                    // Contenu
-                    Expanded(
-                      child: docs.isEmpty
-                          ? Center(
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
+              // Contenu
+              Expanded(
+                child: docs.isEmpty
+                    ? Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(Icons.restaurant_menu,
+                                size: 64, color: Colors.grey[400]),
+                            const SizedBox(height: 16),
+                            Text(
+                              'Aucun plat au menu',
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .headlineSmall
+                                  ?.copyWith(
+                                    color: Colors.grey[600],
+                                  ),
+                            ),
+                            const SizedBox(height: 8),
+                            Text(
+                              'Ajoutez votre premier plat pour commencer',
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodyMedium
+                                  ?.copyWith(
+                                    color: Colors.grey[500],
+                                  ),
+                            ),
+                            const SizedBox(height: 24),
+                            ElevatedButton.icon(
+                              onPressed: _addMenuItem,
+                              icon: const Icon(Icons.add),
+                              label: const Text('Ajouter un plat'),
+                            ),
+                          ],
+                        ),
+                      )
+                    : ListView.builder(
+                        padding: const EdgeInsets.all(16),
+                        itemCount: docs.length,
+                        itemBuilder: (context, index) {
+                          final doc = docs[index];
+                          final data = doc.data() as Map<String, dynamic>;
+
+                          final itemId = doc.id;
+                          final name = (data['name'] ?? '').toString();
+                          final category = (data['category'] ?? '').toString();
+                          final desc = (data['description'] ?? '').toString();
+                          final isSignature = (data['signature'] == true) ||
+                              (data['hasSignature'] == true);
+
+                          final imgUrl = _pickImageUrl(data);
+                          final priceText = _formatPrice(data['price']);
+
+                          return Card(
+                            margin: const EdgeInsets.only(bottom: 12),
+                            child: ListTile(
+                              contentPadding: const EdgeInsets.all(12),
+                              leading:
+                                  _squareThumbAny(imgUrl, category: category),
+                              title: Row(
                                 children: [
-                                  Icon(Icons.restaurant_menu,
-                                      size: 64, color: Colors.grey[400]),
-                                  const SizedBox(height: 16),
-                                  Text(
-                                    'Aucun plat au menu',
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .headlineSmall
-                                        ?.copyWith(
-                                          color: Colors.grey[600],
-                                        ),
+                                  Expanded(
+                                    child: Text(
+                                      name,
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: const TextStyle(
+                                          fontWeight: FontWeight.w600),
+                                    ),
                                   ),
-                                  const SizedBox(height: 8),
-                                  Text(
-                                    'Ajoutez votre premier plat pour commencer',
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .bodyMedium
-                                        ?.copyWith(
-                                          color: Colors.grey[500],
-                                        ),
-                                  ),
-                                  const SizedBox(height: 24),
-                                  ElevatedButton.icon(
-                                    onPressed: _addMenuItem,
-                                    icon: const Icon(Icons.add),
-                                    label: const Text('Ajouter un plat'),
-                                  ),
-                                ],
-                              ),
-                            )
-                          : ListView.builder(
-                              padding: const EdgeInsets.all(16),
-                              itemCount: docs.length,
-                              itemBuilder: (context, index) {
-                                final doc = docs[index];
-                                final data = doc.data() as Map<String, dynamic>;
-
-                                final itemId = doc.id;
-                                final name = (data['name'] ?? '').toString();
-                                final category =
-                                    (data['category'] ?? '').toString();
-                                final desc =
-                                    (data['description'] ?? '').toString();
-                                final isSignature =
-                                    (data['signature'] == true) ||
-                                        (data['hasSignature'] == true);
-
-                                final imgUrl = _pickImageUrl(data);
-                                final priceText = _formatPrice(data['price']);
-
-                                return Card(
-                                  margin: const EdgeInsets.only(bottom: 12),
-                                  child: ListTile(
-                                    contentPadding: const EdgeInsets.all(12),
-                                    leading: _squareThumbAny(imgUrl,
-                                        category: category),
-                                    title: Row(
+                                  const SizedBox(width: 8),
+                                  Flexible(
+                                    fit: FlexFit.loose,
+                                    child: Row(
+                                      mainAxisSize: MainAxisSize.min,
                                       children: [
-                                        Expanded(
-                                          child: Text(
-                                            name,
-                                            style: const TextStyle(
-                                                fontWeight: FontWeight.w600),
-                                          ),
-                                        ),
                                         if (isSignature)
                                           Container(
                                             margin:
@@ -400,6 +298,8 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                                           ),
                                         Text(
                                           priceText,
+                                          maxLines: 1,
+                                          overflow: TextOverflow.fade,
                                           style: const TextStyle(
                                             color: AppColors.primary,
                                             fontWeight: FontWeight.w700,
@@ -407,76 +307,70 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                                         ),
                                       ],
                                     ),
-                                    subtitle: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Text(category.isEmpty
-                                            ? 'Sans catégorie'
-                                            : category),
-                                        if (desc.isNotEmpty)
-                                          Text(
-                                            desc,
-                                            maxLines: 1,
-                                            overflow: TextOverflow.ellipsis,
-                                            style: const TextStyle(
-                                                color: Colors.black54),
-                                          ),
-                                      ],
+                                  ),
+                                ],
+                              ),
+                              subtitle: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(category.isEmpty
+                                      ? 'Sans catégorie'
+                                      : category),
+                                  if (desc.isNotEmpty)
+                                    Text(
+                                      desc,
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: const TextStyle(
+                                          color: Colors.black54),
                                     ),
-                                    trailing: PopupMenuButton<String>(
-                                      onSelected: (value) {
-                                        switch (value) {
-                                          case 'edit':
-                                            _editMenuItem(itemId, data);
-                                            break;
-                                          case 'delete':
-                                            _deleteMenuItem(itemId, name);
-                                            break;
-                                        }
-                                      },
-                                      itemBuilder: (context) => const [
-                                        PopupMenuItem(
-                                          value: 'edit',
-                                          child: Row(
-                                            children: [
-                                              Icon(Icons.edit, size: 18),
-                                              SizedBox(width: 8),
-                                              Text('Modifier'),
-                                            ],
-                                          ),
-                                        ),
-                                        PopupMenuItem(
-                                          value: 'delete',
-                                          child: Row(
-                                            children: [
-                                              Icon(Icons.delete,
-                                                  size: 18, color: Colors.red),
-                                              SizedBox(width: 8),
-                                              Text('Supprimer',
-                                                  style: TextStyle(
-                                                      color: Colors.red)),
-                                            ],
-                                          ),
-                                        ),
+                                ],
+                              ),
+                              trailing: PopupMenuButton<String>(
+                                onSelected: (value) {
+                                  switch (value) {
+                                    case 'edit':
+                                      _editMenuItem(itemId, data);
+                                      break;
+                                    case 'delete':
+                                      _deleteMenuItem(itemId, name);
+                                      break;
+                                  }
+                                },
+                                itemBuilder: (context) => const [
+                                  PopupMenuItem(
+                                    value: 'edit',
+                                    child: Row(
+                                      children: [
+                                        Icon(Icons.edit, size: 18),
+                                        SizedBox(width: 8),
+                                        Text('Modifier'),
                                       ],
                                     ),
                                   ),
-                                );
-                              },
+                                  PopupMenuItem(
+                                    value: 'delete',
+                                    child: Row(
+                                      children: [
+                                        Icon(Icons.delete,
+                                            size: 18, color: Colors.red),
+                                        SizedBox(width: 8),
+                                        Text('Supprimer',
+                                            style:
+                                                TextStyle(color: Colors.red)),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
                             ),
-                    ),
-                  ],
-                );
-              },
-            ),
-          ),
-        ],
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _addMenuItem,
-        // backgroundColor: AppColors.primary,
-        child: const Icon(Icons.add, color: Colors.white),
+                          );
+                        },
+                      ),
+              ),
+            ],
+          );
+        },
       ),
     );
   }

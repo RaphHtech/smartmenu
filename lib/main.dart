@@ -53,7 +53,7 @@ class SmartMenuApp extends StatelessWidget {
     }
 
     // Route par défaut
-    return HomeScreen();
+    return const HomeScreen();
   }
 
   ThemeData _buildTheme() {

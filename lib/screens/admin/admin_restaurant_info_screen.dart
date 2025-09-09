@@ -1,13 +1,15 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-// import '../../core/constants/colors.dart';
+import '../../widgets/ui/admin_shell.dart';
 
 class AdminRestaurantInfoScreen extends StatefulWidget {
   final String restaurantId; // rid
+  final bool showBack;
 
   const AdminRestaurantInfoScreen({
     super.key,
     required this.restaurantId,
+    this.showBack = true,
   });
 
   @override
@@ -98,11 +100,13 @@ class _AdminRestaurantInfoScreenState extends State<AdminRestaurantInfoScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Infos du restaurant'),
-      ),
-      body: _loading
+    return AdminShell(
+      title: 'Infos du restaurant',
+      restaurantId: widget.restaurantId,
+      activeRoute: '/info',
+      breadcrumbs: const ['Dashboard', 'Infos du restaurant'],
+      showBackButton: widget.showBack,
+      child: _loading
           ? const Center(child: CircularProgressIndicator())
           : SingleChildScrollView(
               padding: const EdgeInsets.all(24),

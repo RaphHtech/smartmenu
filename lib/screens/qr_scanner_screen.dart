@@ -3,8 +3,10 @@ import 'package:mobile_scanner/mobile_scanner.dart';
 import 'menu/menu_screen.dart';
 
 class QRScannerScreen extends StatefulWidget {
+  const QRScannerScreen({super.key});
+
   @override
-  _QRScannerScreenState createState() => _QRScannerScreenState();
+  State<QRScannerScreen> createState() => _QRScannerScreenState();
 }
 
 class _QRScannerScreenState extends State<QRScannerScreen> {

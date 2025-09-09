@@ -388,7 +388,7 @@ class SimpleMenuScreenState extends State<MenuScreen> {
                               Padding(
                                 padding: const EdgeInsets.only(right: 12),
                                 child: CategoryPill(
-                                  label: _emojiFor(cat) + ' ' + cat,
+                                  label: '${_emojiFor(cat)} $cat',
                                   isActive: _selectedCategory == cat,
                                   onTap: () => _selectCategory(cat),
                                 ),

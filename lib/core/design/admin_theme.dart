@@ -31,7 +31,7 @@ class AdminTheme {
         onErrorContainer: AdminTokens.error500,
         outline: AdminTokens.neutral200,
         outlineVariant: AdminTokens.neutral100,
-        shadow: AdminTokens.neutral900.withOpacity(0.1),
+        shadow: AdminTokens.neutral900.withValues(alpha: 0.1),
       ),
 
       // ===== TYPOGRAPHY =====
@@ -57,7 +57,7 @@ class AdminTheme {
         backgroundColor: Colors.white,
         foregroundColor: AdminTokens.neutral800,
         surfaceTintColor: Colors.transparent,
-        shadowColor: AdminTokens.neutral900.withOpacity(0.1),
+        shadowColor: AdminTokens.neutral900.withValues(alpha: 0.1),
         titleTextStyle: AdminTypography.headlineLarge,
         toolbarHeight: AdminTokens.topbarHeight,
         systemOverlayStyle: SystemUiOverlayStyle.dark,
@@ -74,7 +74,7 @@ class AdminTheme {
         elevation: 0,
         color: Colors.white,
         surfaceTintColor: Colors.transparent,
-        shadowColor: AdminTokens.neutral900.withOpacity(0.1),
+        shadowColor: AdminTokens.neutral900.withValues(alpha: 0.1),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(AdminTokens.radius12),
           side: const BorderSide(
@@ -108,10 +108,10 @@ class AdminTheme {
           // Hover effects
           overlayColor: WidgetStateProperty.resolveWith((states) {
             if (states.contains(WidgetState.hovered)) {
-              return Colors.white.withOpacity(0.1);
+              return Colors.white.withValues(alpha: 0.1);
             }
             if (states.contains(WidgetState.pressed)) {
-              return Colors.white.withOpacity(0.2);
+              return Colors.white.withValues(alpha: 0.2);
             }
             return null;
           }),
@@ -195,7 +195,7 @@ class AdminTheme {
               return AdminTokens.primary50;
             }
             if (states.contains(WidgetState.pressed)) {
-              return AdminTokens.primary50.withOpacity(0.8);
+              return AdminTokens.primary50.withValues(alpha: 0.8);
             }
             return null;
           }),
@@ -281,8 +281,9 @@ class AdminTheme {
           return AdminTokens.neutral300;
         }),
         trackColor: WidgetStateProperty.resolveWith((states) {
-          if (states.contains(WidgetState.selected))
+          if (states.contains(WidgetState.selected)) {
             return AdminTokens.primary500;
+          }
           return AdminTokens.neutral200;
         }),
         trackOutlineColor: WidgetStateProperty.all(Colors.transparent),
@@ -291,8 +292,9 @@ class AdminTheme {
       // ===== CHECKBOX =====
       checkboxTheme: CheckboxThemeData(
         fillColor: WidgetStateProperty.resolveWith((states) {
-          if (states.contains(WidgetState.selected))
+          if (states.contains(WidgetState.selected)) {
             return AdminTokens.primary500;
+          }
           return Colors.transparent;
         }),
         checkColor: WidgetStateProperty.all(Colors.white),
@@ -319,7 +321,7 @@ class AdminTheme {
         backgroundColor: Colors.white,
         surfaceTintColor: Colors.transparent,
         elevation: 8,
-        shadowColor: AdminTokens.neutral900.withOpacity(0.15),
+        shadowColor: AdminTokens.neutral900.withValues(alpha: 0.15),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(AdminTokens.radius16),
         ),
