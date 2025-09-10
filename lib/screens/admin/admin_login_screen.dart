@@ -120,7 +120,7 @@ class _AdminLoginScreenState extends State<AdminLoginScreen> {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   const Icon(Icons.restaurant_menu,
-                      size: 64, color: AppColors.accent),
+                      size: 64, color: AppColors.primary),
                   const SizedBox(height: 24),
                   const Text(
                     'SmartMenu Admin',
@@ -128,13 +128,13 @@ class _AdminLoginScreenState extends State<AdminLoginScreen> {
                     style: TextStyle(
                         fontSize: 32,
                         fontWeight: FontWeight.bold,
-                        color: AppColors.white),
+                        color: AppColors.primary),
                   ),
                   const SizedBox(height: 8),
                   const Text(
                     'Connectez-vous à votre espace restaurateur',
                     textAlign: TextAlign.center,
-                    style: TextStyle(fontSize: 16, color: AppColors.white),
+                    style: TextStyle(fontSize: 16, color: Colors.black54),
                   ),
                   const SizedBox(height: 32),
                   TextFormField(

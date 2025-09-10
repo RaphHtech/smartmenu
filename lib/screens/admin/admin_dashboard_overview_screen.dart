@@ -17,7 +17,6 @@ class AdminDashboardOverviewScreen extends StatelessWidget {
       title: 'Dashboard',
       restaurantId: restaurantId,
       activeRoute: '/dashboard',
-      showBackButton: null, // Force la logique automatique
       breadcrumbs: const ['Dashboard'],
       child: SingleChildScrollView(
         child: Column(

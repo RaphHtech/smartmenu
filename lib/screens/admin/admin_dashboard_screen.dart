@@ -1,3 +1,6 @@
+import 'dart:async';
+
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'admin_restaurant_info_screen.dart';
@@ -22,6 +25,18 @@ class AdminDashboardScreen extends StatefulWidget {
 
 class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
   String _currency = 'ILS';
+  String _sortBy = 'category';
+  String? _selectedCategory;
+
+// 🔎 source de vérité unique pour la recherche (affichée et filtrée)
+  String _searchText = '';
+  final TextEditingController _searchController = TextEditingController();
+  final FocusNode _searchFocus = FocusNode();
+
+// catégories dérivées du flux, stockées en état pour les chips
+  List<String> _categories = [];
+
+  Timer? _debounceTimer;
 
   String _emojiFor(String category) {
     switch (category) {
@@ -72,6 +87,16 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
   void initState() {
     super.initState();
     _loadCurrency();
+    _searchController.addListener(() {
+      if (!mounted) return;
+      // Met à jour _searchText et rafraîchit l’UI (sans toucher au focus)
+      final t = _searchController.text;
+      if (t != _searchText) {
+        setState(() {
+          _searchText = t;
+        });
+      }
+    });
   }
 
   Future<void> _loadCurrency() async {
@@ -90,6 +115,14 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
     } catch (e) {
       debugPrint('Erreur chargement devise: $e');
     }
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    _searchFocus.dispose();
+    _debounceTimer?.cancel();
+    super.dispose();
   }
 
   Future<void> _previewMenu() async {
@@ -117,7 +150,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
     return AdminShell(
       title: 'Gestion du menu',
       restaurantId: widget.restaurantId,
-      activeRoute: '/dashboard',
+      activeRoute: '/menu',
       breadcrumbs: const ['Dashboard', 'Menu'],
       actions: [
         IconButton(
@@ -132,245 +165,217 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
           label: const Text('Ajouter'),
         ),
       ],
-      child: StreamBuilder<QuerySnapshot>(
-        stream: FirebaseFirestore.instance
-            .collection('restaurants')
-            .doc(widget.restaurantId)
-            .collection('menus')
-            .snapshots(),
-        builder: (context, snapshot) {
-          if (snapshot.hasError) {
-            return Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Icon(Icons.error_outline, size: 64, color: Colors.red),
-                  const SizedBox(height: 16),
-                  Text('Erreur: ${snapshot.error}'),
-                ],
-              ),
-            );
-          }
+      child: Column(
+        children: [
+          // 1) Tuile infos + UI de recherche/tri/chips HORS StreamBuilder
+          _buildSearchInterface(),
 
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
-          }
+          // 2) Seule la LISTE dépend du flux
+          Expanded(
+            child: StreamBuilder<QuerySnapshot>(
+              stream: FirebaseFirestore.instance
+                  .collection('restaurants')
+                  .doc(widget.restaurantId)
+                  .collection('menus')
+                  .snapshots(),
+              builder: (context, snapshot) {
+                if (snapshot.hasError) {
+                  return const Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(Icons.error_outline, size: 64, color: Colors.red),
+                        SizedBox(height: 16),
+                        Text('Erreur lors du chargement du menu'),
+                      ],
+                    ),
+                  );
+                }
 
-          final docs = snapshot.data?.docs ?? [];
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Center(child: CircularProgressIndicator());
+                }
 
-          // Tri côté client
-          docs.sort((a, b) {
-            final dataA = a.data() as Map<String, dynamic>;
-            final dataB = b.data() as Map<String, dynamic>;
-            final categoryA = dataA['category'] ?? '';
-            final categoryB = dataB['category'] ?? '';
-            final nameA = dataA['name'] ?? '';
-            final nameB = dataB['name'] ?? '';
+                final docs = snapshot.data?.docs ?? [];
 
-            final categoryCompare = categoryA.compareTo(categoryB);
-            return categoryCompare != 0
-                ? categoryCompare
-                : nameA.compareTo(nameB);
-          });
+                // --- Met à jour les catégories en état local (hors builder UI) ---
+                final newCategories = _computeCategories(docs);
+                if (!listEquals(newCategories, _categories)) {
+                  // évite setState pendant le build
+                  WidgetsBinding.instance.addPostFrameCallback((_) {
+                    if (mounted) {
+                      setState(() => _categories = newCategories);
+                    }
+                  });
+                }
 
-          return Column(
-            children: [
-              // LA TUILE "INFOS DU RESTAURANT"
-              Padding(
-                padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
-                child: Card(
-                  elevation: 1,
-                  color: const Color(0xFFFFF5F5),
-                  child: ListTile(
-                    leading:
-                        const Icon(Icons.info_outline, color: Colors.redAccent),
-                    title: const Text('Infos du restaurant'),
-                    subtitle: const Text(
-                        'Modifier la description et le bandeau promo'),
-                    trailing: const Icon(Icons.chevron_right),
-                    onTap: () {
-                      context.pushAdminScreen(
-                        AdminRestaurantInfoScreen(
-                          restaurantId: widget.restaurantId,
-                          showBack: true,
+                // --- Filtrage + tri (sur l’état _searchText / _selectedCategory / _sortBy) ---
+                final visibleDocs = _filterDocs(docs);
+
+                // Log debug optionnel
+                // debugPrint('SEARCH q="${_searchText.trim()}" cat=${_selectedCategory ?? "Toutes"} sort=$_sortBy -> docs=${docs.length} filtered=${visibleDocs.length}');
+
+                // --- Rendu liste (identique à ton code, mais sur visibleDocs) ---
+                if (docs.isEmpty) {
+                  return Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(Icons.restaurant_menu,
+                            size: 64, color: Colors.grey[400]),
+                        const SizedBox(height: 16),
+                        Text(
+                          'Aucun plat au menu',
+                          style: Theme.of(context)
+                              .textTheme
+                              .headlineSmall
+                              ?.copyWith(
+                                color: Colors.grey[600],
+                              ),
                         ),
-                      );
-                    },
-                  ),
-                ),
-              ),
-
-              // Contenu
-              Expanded(
-                child: docs.isEmpty
-                    ? Center(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(Icons.restaurant_menu,
-                                size: 64, color: Colors.grey[400]),
-                            const SizedBox(height: 16),
-                            Text(
-                              'Aucun plat au menu',
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .headlineSmall
-                                  ?.copyWith(
-                                    color: Colors.grey[600],
-                                  ),
-                            ),
-                            const SizedBox(height: 8),
-                            Text(
-                              'Ajoutez votre premier plat pour commencer',
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .bodyMedium
-                                  ?.copyWith(
+                        const SizedBox(height: 8),
+                        Text(
+                          'Ajoutez votre premier plat pour commencer',
+                          style:
+                              Theme.of(context).textTheme.bodyMedium?.copyWith(
                                     color: Colors.grey[500],
                                   ),
+                        ),
+                        const SizedBox(height: 24),
+                        ElevatedButton.icon(
+                          onPressed: _addMenuItem,
+                          icon: const Icon(Icons.add),
+                          label: const Text('Ajouter un plat'),
+                        ),
+                      ],
+                    ),
+                  );
+                }
+
+                return ListView.builder(
+                  padding: const EdgeInsets.all(16),
+                  itemCount: visibleDocs.length,
+                  itemBuilder: (context, index) {
+                    final doc = visibleDocs[index];
+                    final data = doc.data() as Map<String, dynamic>;
+
+                    final itemId = doc.id;
+                    final name = (data['name'] ?? '').toString();
+                    final category = (data['category'] ?? '').toString();
+                    final desc = (data['description'] ?? '').toString();
+                    final isSignature = (data['signature'] == true) ||
+                        (data['hasSignature'] == true);
+
+                    final imgUrl = _pickImageUrl(data);
+                    final priceText = _formatPrice(data['price']);
+
+                    return Card(
+                      margin: const EdgeInsets.only(bottom: 12),
+                      child: ListTile(
+                        contentPadding: const EdgeInsets.all(12),
+                        leading: _squareThumbAny(imgUrl, category: category),
+                        title: Row(
+                          children: [
+                            Expanded(
+                              child: Text(
+                                name,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: const TextStyle(
+                                    fontWeight: FontWeight.w600),
+                              ),
                             ),
-                            const SizedBox(height: 24),
-                            ElevatedButton.icon(
-                              onPressed: _addMenuItem,
-                              icon: const Icon(Icons.add),
-                              label: const Text('Ajouter un plat'),
+                            const SizedBox(width: 8),
+                            Flexible(
+                              fit: FlexFit.loose,
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  if (isSignature)
+                                    Container(
+                                      margin: const EdgeInsets.only(right: 8),
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 8, vertical: 4),
+                                      decoration: BoxDecoration(
+                                        color: Colors.red.shade50,
+                                        borderRadius: BorderRadius.circular(12),
+                                      ),
+                                      child: const Text('Signature',
+                                          style: TextStyle(
+                                              color: Colors.red, fontSize: 12)),
+                                    ),
+                                  Text(
+                                    priceText,
+                                    maxLines: 1,
+                                    overflow: TextOverflow.fade,
+                                    style: const TextStyle(
+                                      color: AppColors.primary,
+                                      fontWeight: FontWeight.w700,
+                                    ),
+                                  ),
+                                ],
+                              ),
                             ),
                           ],
                         ),
-                      )
-                    : ListView.builder(
-                        padding: const EdgeInsets.all(16),
-                        itemCount: docs.length,
-                        itemBuilder: (context, index) {
-                          final doc = docs[index];
-                          final data = doc.data() as Map<String, dynamic>;
-
-                          final itemId = doc.id;
-                          final name = (data['name'] ?? '').toString();
-                          final category = (data['category'] ?? '').toString();
-                          final desc = (data['description'] ?? '').toString();
-                          final isSignature = (data['signature'] == true) ||
-                              (data['hasSignature'] == true);
-
-                          final imgUrl = _pickImageUrl(data);
-                          final priceText = _formatPrice(data['price']);
-
-                          return Card(
-                            margin: const EdgeInsets.only(bottom: 12),
-                            child: ListTile(
-                              contentPadding: const EdgeInsets.all(12),
-                              leading:
-                                  _squareThumbAny(imgUrl, category: category),
-                              title: Row(
-                                children: [
-                                  Expanded(
-                                    child: Text(
-                                      name,
-                                      maxLines: 1,
-                                      overflow: TextOverflow.ellipsis,
-                                      style: const TextStyle(
-                                          fontWeight: FontWeight.w600),
-                                    ),
-                                  ),
-                                  const SizedBox(width: 8),
-                                  Flexible(
-                                    fit: FlexFit.loose,
-                                    child: Row(
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: [
-                                        if (isSignature)
-                                          Container(
-                                            margin:
-                                                const EdgeInsets.only(right: 8),
-                                            padding: const EdgeInsets.symmetric(
-                                                horizontal: 8, vertical: 4),
-                                            decoration: BoxDecoration(
-                                              color: Colors.red.shade50,
-                                              borderRadius:
-                                                  BorderRadius.circular(12),
-                                            ),
-                                            child: const Text(
-                                              'Signature',
-                                              style: TextStyle(
-                                                  color: Colors.red,
-                                                  fontSize: 12),
-                                            ),
-                                          ),
-                                        Text(
-                                          priceText,
-                                          maxLines: 1,
-                                          overflow: TextOverflow.fade,
-                                          style: const TextStyle(
-                                            color: AppColors.primary,
-                                            fontWeight: FontWeight.w700,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ],
+                        subtitle: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                                category.isEmpty ? 'Sans catégorie' : category),
+                            if (desc.isNotEmpty)
+                              Text(
+                                desc,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: const TextStyle(color: Colors.black54),
                               ),
-                              subtitle: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
+                          ],
+                        ),
+                        trailing: PopupMenuButton<String>(
+                          onSelected: (value) {
+                            switch (value) {
+                              case 'edit':
+                                _editMenuItem(itemId, data);
+                                break;
+                              case 'delete':
+                                _deleteMenuItem(itemId, name);
+                                break;
+                            }
+                          },
+                          itemBuilder: (context) => const [
+                            PopupMenuItem(
+                              value: 'edit',
+                              child: Row(
                                 children: [
-                                  Text(category.isEmpty
-                                      ? 'Sans catégorie'
-                                      : category),
-                                  if (desc.isNotEmpty)
-                                    Text(
-                                      desc,
-                                      maxLines: 1,
-                                      overflow: TextOverflow.ellipsis,
-                                      style: const TextStyle(
-                                          color: Colors.black54),
-                                    ),
-                                ],
-                              ),
-                              trailing: PopupMenuButton<String>(
-                                onSelected: (value) {
-                                  switch (value) {
-                                    case 'edit':
-                                      _editMenuItem(itemId, data);
-                                      break;
-                                    case 'delete':
-                                      _deleteMenuItem(itemId, name);
-                                      break;
-                                  }
-                                },
-                                itemBuilder: (context) => const [
-                                  PopupMenuItem(
-                                    value: 'edit',
-                                    child: Row(
-                                      children: [
-                                        Icon(Icons.edit, size: 18),
-                                        SizedBox(width: 8),
-                                        Text('Modifier'),
-                                      ],
-                                    ),
-                                  ),
-                                  PopupMenuItem(
-                                    value: 'delete',
-                                    child: Row(
-                                      children: [
-                                        Icon(Icons.delete,
-                                            size: 18, color: Colors.red),
-                                        SizedBox(width: 8),
-                                        Text('Supprimer',
-                                            style:
-                                                TextStyle(color: Colors.red)),
-                                      ],
-                                    ),
-                                  ),
+                                  Icon(Icons.edit, size: 18),
+                                  SizedBox(width: 8),
+                                  Text('Modifier'),
                                 ],
                               ),
                             ),
-                          );
-                        },
+                            PopupMenuItem(
+                              value: 'delete',
+                              child: Row(
+                                children: [
+                                  Icon(Icons.delete,
+                                      size: 18, color: Colors.red),
+                                  SizedBox(width: 8),
+                                  Text('Supprimer',
+                                      style: TextStyle(color: Colors.red)),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
-              ),
-            ],
-          );
-        },
+                    );
+                  },
+                );
+              },
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -528,5 +533,242 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
         }
       }
     }
+  }
+
+  String _normalize(String s) {
+    final lower = s.toLowerCase();
+    const from = 'àâäáãåçéèêëíìîïñóòôöõúùûüýÿ';
+    const to =
+        'aaaaaaceeeeiiiinooooouuuuyy'; // 27 caractères, correspondance 1:1
+    final out = StringBuffer();
+    for (final ch in lower.runes) {
+      final charStr = String.fromCharCode(ch);
+      final idx = from.indexOf(charStr);
+      out.write(idx >= 0 ? to[idx] : charStr);
+    }
+    return out.toString();
+  }
+
+// 1) UI hors StreamBuilder : tuile Infos + barre recherche + tri + chips
+  Widget _buildSearchInterface() {
+    return Column(
+      children: [
+        // Tuile "Infos du restaurant" (inchangée)
+        Padding(
+          padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
+          child: Card(
+            elevation: 1,
+            color: const Color(0xFFFFF5F5),
+            child: ListTile(
+              leading: const Icon(Icons.info_outline, color: Colors.redAccent),
+              title: const Text('Infos du restaurant'),
+              subtitle:
+                  const Text('Modifier la description et le bandeau promo'),
+              trailing: const Icon(Icons.chevron_right),
+              onTap: () {
+                context.pushAdminScreen(
+                  AdminRestaurantInfoScreen(
+                    restaurantId: widget.restaurantId,
+                    showBack: true,
+                  ),
+                );
+              },
+            ),
+          ),
+        ),
+
+        // Recherche + tri + chips
+        Padding(
+          padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+          child: Column(
+            children: [
+              Row(
+                children: [
+                  // Champ recherche
+                  Expanded(
+                    flex: 3,
+                    child: TextField(
+                      key: const ValueKey('menu_search_field'),
+                      controller: _searchController,
+                      focusNode: _searchFocus,
+                      decoration: InputDecoration(
+                        hintText: 'Rechercher...',
+                        prefixIcon: const Icon(Icons.search),
+                        suffixIcon: _searchText.isNotEmpty
+                            ? IconButton(
+                                icon: const Icon(Icons.clear),
+                                onPressed: () {
+                                  _searchController
+                                      .clear(); // listener mettra _searchText à ''
+                                  _searchFocus.requestFocus();
+                                },
+                              )
+                            : null,
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 8, vertical: 8),
+                      ),
+                      onChanged: (_) {
+                        // Rien d’autre : le listener du controller fait le setState
+                      },
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+
+                  // Tri compact
+                  SizedBox(
+                    width: 130,
+                    child: DropdownButtonFormField<String>(
+                      value: _sortBy,
+                      decoration: InputDecoration(
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 6, vertical: 8),
+                      ),
+                      items: const [
+                        DropdownMenuItem(
+                            value: 'category', child: Text('Catégorie')),
+                        DropdownMenuItem(value: 'name', child: Text('Nom')),
+                        DropdownMenuItem(value: 'price', child: Text('Prix')),
+                      ],
+                      onChanged: (value) {
+                        if (value != null) {
+                          setState(() => _sortBy = value);
+                        }
+                      },
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 12),
+
+              // Chips catégories (depuis _categories)
+              SizedBox(
+                height: 40,
+                child: ListView(
+                  scrollDirection: Axis.horizontal,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.only(right: 8),
+                      child: FilterChip(
+                        label: const Text('Toutes'),
+                        selected: _selectedCategory == null,
+                        onSelected: (_) =>
+                            setState(() => _selectedCategory = null),
+                        backgroundColor: Colors.grey[200],
+                        selectedColor: AppColors.primary.withAlpha(51),
+                        checkmarkColor: AppColors.primary,
+                      ),
+                    ),
+                    ..._categories.map((category) {
+                      final isSelected = _selectedCategory == category;
+                      return Padding(
+                        padding: const EdgeInsets.only(right: 8),
+                        child: FilterChip(
+                          label: Text(category),
+                          selected: isSelected,
+                          onSelected: (selected) {
+                            setState(() =>
+                                _selectedCategory = selected ? category : null);
+                          },
+                          backgroundColor: Colors.grey[200],
+                          selectedColor: AppColors.primary.withAlpha(51),
+                          checkmarkColor: AppColors.primary,
+                        ),
+                      );
+                    }),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+// 2) Utilitaires pour catégories et filtrage
+  List<String> _computeCategories(List<QueryDocumentSnapshot> docs) {
+    final set = <String>{};
+    for (final d in docs) {
+      final data = d.data() as Map<String, dynamic>;
+      final c = (data['category'] ?? '').toString().trim();
+      if (c.isNotEmpty) set.add(c);
+    }
+    final list = set.toList()..sort();
+    return list;
+  }
+
+  List<QueryDocumentSnapshot> _filterDocs(List<QueryDocumentSnapshot> docs) {
+    final visible = List<QueryDocumentSnapshot>.of(docs);
+
+    // Catégorie
+    if (_selectedCategory != null) {
+      visible.retainWhere((doc) {
+        final data = doc.data() as Map<String, dynamic>;
+        return (data['category'] ?? '').toString().trim() == _selectedCategory;
+      });
+    }
+
+    // Recherche (accent-insensible)
+    final q = _normalize(_searchText.trim());
+    if (q.isNotEmpty) {
+      visible.retainWhere((doc) {
+        final d = doc.data() as Map<String, dynamic>;
+        final name = _normalize((d['name'] ?? '').toString());
+        final desc = _normalize((d['description'] ?? '').toString());
+        final cat = _normalize((d['category'] ?? '').toString());
+        return name.contains(q) || desc.contains(q) || cat.contains(q);
+      });
+    }
+
+    // Tri
+    int cmpName(a, b) {
+      final da = a.data() as Map<String, dynamic>;
+      final db = b.data() as Map<String, dynamic>;
+      return (da['name'] ?? '')
+          .toString()
+          .compareTo((db['name'] ?? '').toString());
+    }
+
+    double p(dynamic x) => _parsePrice(x);
+    int cmpPrice(a, b) {
+      final da = a.data() as Map<String, dynamic>;
+      final pa = p(da['price']);
+      final db = b.data() as Map<String, dynamic>;
+      final pb = p(db['price']);
+      return pa.compareTo(pb);
+    }
+
+    int cmpCategoryThenName(a, b) {
+      final da = a.data() as Map<String, dynamic>;
+      final db = b.data() as Map<String, dynamic>;
+      final ca = (da['category'] ?? '').toString();
+      final cb = (db['category'] ?? '').toString();
+      final c = ca.compareTo(cb);
+      return c != 0
+          ? c
+          : (da['name'] ?? '')
+              .toString()
+              .compareTo((db['name'] ?? '').toString());
+    }
+
+    switch (_sortBy) {
+      case 'name':
+        visible.sort(cmpName);
+        break;
+      case 'price':
+        visible.sort(cmpPrice);
+        break;
+      case 'category':
+      default:
+        visible.sort(cmpCategoryThenName);
+    }
+
+    return visible;
   }
 }
