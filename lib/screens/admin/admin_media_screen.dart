@@ -1,10 +1,12 @@
-// lib/screens/admin/admin_media_screen.dart
+import 'dart:html' as html;
+import 'dart:typed_data';
 import 'package:flutter/material.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import '../../widgets/ui/admin_shell.dart';
 import '../../core/design/admin_tokens.dart';
 import '../../core/design/admin_typography.dart';
 
-class AdminMediaScreen extends StatelessWidget {
+class AdminMediaScreen extends StatefulWidget {
   final String restaurantId;
 
   const AdminMediaScreen({
@@ -13,71 +15,448 @@ class AdminMediaScreen extends StatelessWidget {
   });
 
   @override
+  State<AdminMediaScreen> createState() => _AdminMediaScreenState();
+}
+
+class _AdminMediaScreenState extends State<AdminMediaScreen> {
+  List<MediaItem> _mediaItems = [];
+  bool _isLoading = true;
+  String? _uploadError;
+  double? _uploadProgress;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadMediaItems();
+  }
+
+  Future<void> _loadMediaItems() async {
+    try {
+      final storageRef = FirebaseStorage.instance
+          .ref()
+          .child('restaurants/${widget.restaurantId}/menu');
+
+      final result = await storageRef.listAll();
+      final items = <MediaItem>[];
+
+      for (final item in result.items) {
+        try {
+          final url = await item.getDownloadURL();
+          final metadata = await item.getMetadata();
+          items.add(MediaItem(
+            name: item.name,
+            url: url,
+            size: metadata.size ?? 0,
+            uploadDate: metadata.timeCreated ?? DateTime.now(),
+          ));
+        } catch (e) {
+          debugPrint('Erreur chargement item ${item.name}: $e');
+        }
+      }
+
+      setState(() {
+        _mediaItems = items
+          ..sort((a, b) => b.uploadDate.compareTo(a.uploadDate));
+        _isLoading = false;
+      });
+    } catch (e) {
+      setState(() {
+        _isLoading = false;
+        _uploadError = 'Erreur chargement médias: $e';
+      });
+    }
+  }
+
+  Future<void> _handleFileDrop(html.File file) async {
+    if (!_isValidImageFile(file)) {
+      setState(() =>
+          _uploadError = 'Format non supporté. Utilisez PNG, JPG ou WebP.');
+      return;
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+      setState(() => _uploadError = 'Fichier trop volumineux (max 5MB).');
+      return;
+    }
+
+    setState(() {
+      _uploadError = null;
+      _uploadProgress = 0;
+    });
+
+    try {
+      final reader = html.FileReader();
+      reader.readAsArrayBuffer(file);
+
+      await reader.onLoad.first;
+      final data = reader.result as List<int>;
+      final uint8List = Uint8List.fromList(data);
+
+      final fileName = '${DateTime.now().millisecondsSinceEpoch}_${file.name}';
+      final ref = FirebaseStorage.instance
+          .ref()
+          .child('restaurants/${widget.restaurantId}/menu/$fileName');
+
+      final uploadTask = ref.putData(
+          uint8List,
+          SettableMetadata(
+            contentType: file.type,
+            customMetadata: {'originalName': file.name},
+          ));
+
+      uploadTask.snapshotEvents.listen((snapshot) {
+        setState(() {
+          _uploadProgress = snapshot.bytesTransferred / snapshot.totalBytes;
+        });
+      });
+
+      await uploadTask;
+
+      await _loadMediaItems(); // Reload list first
+      setState(() => _uploadProgress = null); // Then hide progress
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Image uploadée avec succès!')),
+      );
+    } catch (e) {
+      setState(() {
+        _uploadProgress = null;
+        _uploadError = 'Erreur upload: $e';
+      });
+    }
+  }
+
+  bool _isValidImageFile(html.File file) {
+    final validTypes = ['image/jpeg', 'image/png', 'image/webp'];
+    return validTypes.contains(file.type.toLowerCase());
+  }
+
+  Future<void> _deleteMedia(MediaItem item) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Supprimer le média'),
+        content: Text('Voulez-vous vraiment supprimer "${item.name}" ?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Annuler'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(context, true),
+            style: TextButton.styleFrom(foregroundColor: Colors.red),
+            child: const Text('Supprimer'),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed == true) {
+      try {
+        await FirebaseStorage.instance
+            .ref()
+            .child('restaurants/${widget.restaurantId}/menu/${item.name}')
+            .delete();
+
+        _loadMediaItems();
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Média supprimé avec succès')),
+        );
+      } catch (e) {
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Erreur suppression: $e')),
+        );
+      }
+    }
+  }
+
+  void _pickFiles() {
+    final input = html.FileUploadInputElement()
+      ..accept = 'image/*'
+      ..multiple = true;
+
+    input.click();
+
+    input.onChange.listen((e) {
+      final files = input.files;
+      if (files != null) {
+        for (final file in files) {
+          _handleFileDrop(file);
+        }
+      }
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     return AdminShell(
       title: 'Médias',
-      restaurantId: restaurantId,
+      restaurantId: widget.restaurantId,
       activeRoute: '/media',
       breadcrumbs: const ['Dashboard', 'Médias'],
-      child: SingleChildScrollView(
-        child: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Container(
-                width: 120,
-                height: 120,
-                decoration: BoxDecoration(
-                  color: AdminTokens.neutral100,
-                  borderRadius: BorderRadius.circular(AdminTokens.radius16),
-                ),
-                child: const Icon(
-                  Icons.photo_library_outlined,
+      actions: [
+        ElevatedButton.icon(
+          onPressed: _pickFiles,
+          icon: const Icon(Icons.add_photo_alternate),
+          label: const Text('Ajouter'),
+        ),
+      ],
+      child: Column(
+        children: [
+          // Zone drag-drop
+          _buildDropZone(),
+
+          if (_uploadError != null) _buildErrorAlert(),
+          if (_uploadProgress != null) _buildProgressBar(),
+
+          const SizedBox(height: AdminTokens.space24),
+
+          // Liste des médias
+          Expanded(
+            child: _isLoading
+                ? const Center(child: CircularProgressIndicator())
+                : _mediaItems.isEmpty
+                    ? _buildEmptyState()
+                    : _buildMediaGrid(),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildDropZone() {
+    return Container(
+      margin: const EdgeInsets.all(AdminTokens.space16),
+      child: Container(
+        height: 180,
+        decoration: BoxDecoration(
+          border: Border.all(
+            color: AdminTokens.neutral300,
+            width: 2,
+            style: BorderStyle.solid,
+          ),
+          borderRadius: BorderRadius.circular(AdminTokens.radius12),
+          color: AdminTokens.neutral50,
+        ),
+        child: InkWell(
+          onTap: _pickFiles,
+          borderRadius: BorderRadius.circular(AdminTokens.radius12),
+          child: Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Icon(
+                  Icons.cloud_upload_outlined,
                   size: 48,
                   color: AdminTokens.neutral400,
                 ),
-              ),
-              const SizedBox(height: AdminTokens.space24),
-              const Text(
-                'Gestion des médias',
-                style: AdminTypography.displaySmall,
-              ),
-              const SizedBox(height: AdminTokens.space8),
-              Text(
-                'Gérez vos images, logos et fichiers média',
-                style: AdminTypography.bodyMedium.copyWith(
-                  color: AdminTokens.neutral500,
+                const SizedBox(height: AdminTokens.space12),
+                Text(
+                  'cliquez pour sélectionner',
+                  style: AdminTypography.bodyLarge.copyWith(
+                    color: AdminTokens.neutral600,
+                  ),
                 ),
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: AdminTokens.space32),
-              Container(
-                padding: const EdgeInsets.all(AdminTokens.space20),
-                decoration: BoxDecoration(
-                  color: AdminTokens.primary50,
-                  borderRadius: BorderRadius.circular(AdminTokens.radius12),
+                const SizedBox(height: AdminTokens.space8),
+                Text(
+                  'PNG, JPG, WebP - Max 5MB',
+                  style: AdminTypography.bodySmall.copyWith(
+                    color: AdminTokens.neutral500,
+                  ),
                 ),
-                child: Column(
-                  children: [
-                    const Icon(
-                      Icons.construction_outlined,
-                      color: AdminTokens.primary600,
-                      size: 32,
-                    ),
-                    const SizedBox(height: AdminTokens.space12),
-                    Text(
-                      'Fonctionnalité en développement',
-                      style: AdminTypography.headlineSmall.copyWith(
-                        color: AdminTokens.primary600,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
     );
   }
+
+  Widget _buildErrorAlert() {
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: AdminTokens.space16),
+      padding: const EdgeInsets.all(AdminTokens.space12),
+      decoration: BoxDecoration(
+        color: AdminTokens.error50,
+        borderRadius: BorderRadius.circular(AdminTokens.radius8),
+        border: Border.all(color: Colors.red.shade200),
+      ),
+      child: Row(
+        children: [
+          const Icon(Icons.error_outline, color: AdminTokens.error500),
+          const SizedBox(width: AdminTokens.space8),
+          Expanded(
+            child: Text(
+              _uploadError!,
+              style: AdminTypography.bodyMedium
+                  .copyWith(color: Colors.red.shade800),
+            ),
+          ),
+          IconButton(
+            onPressed: () => setState(() => _uploadError = null),
+            icon: const Icon(Icons.close, color: AdminTokens.error500),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildProgressBar() {
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: AdminTokens.space16),
+      child: Column(
+        children: [
+          Row(
+            children: [
+              const Icon(Icons.upload, color: AdminTokens.primary600),
+              const SizedBox(width: AdminTokens.space8),
+              const Text('Upload en cours...'),
+              const Spacer(),
+              Text('${(_uploadProgress! * 100).toInt()}%'),
+            ],
+          ),
+          const SizedBox(height: AdminTokens.space8),
+          LinearProgressIndicator(
+            value: _uploadProgress,
+            backgroundColor: AdminTokens.neutral200,
+            valueColor: const AlwaysStoppedAnimation(AdminTokens.primary500),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildEmptyState() {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(
+            Icons.photo_library_outlined,
+            size: 64,
+            color: Colors.grey[400],
+          ),
+          const SizedBox(height: AdminTokens.space16),
+          const Text(
+            'Aucun média',
+            style: AdminTypography.headlineMedium,
+          ),
+          const SizedBox(height: AdminTokens.space8),
+          Text(
+            'Ajoutez vos premières images pour commencer',
+            style: AdminTypography.bodyMedium.copyWith(
+              color: AdminTokens.neutral500,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildMediaGrid() {
+    return GridView.builder(
+      padding: const EdgeInsets.all(AdminTokens.space16),
+      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: MediaQuery.of(context).size.width > 600 ? 4 : 2,
+        crossAxisSpacing: 12,
+        mainAxisSpacing: 20,
+        childAspectRatio: 0.75,
+      ),
+      itemCount: _mediaItems.length,
+      itemBuilder: (context, index) {
+        final item = _mediaItems[index];
+        return _buildMediaCard(item);
+      },
+    );
+  }
+
+  Widget _buildMediaCard(MediaItem item) {
+    return Card(
+      clipBehavior: Clip.antiAlias,
+      child: Column(
+        children: [
+          // Image 80% de la hauteur
+          Expanded(
+            flex: 4,
+            child: Container(
+              width: double.infinity,
+              child: Image.network(
+                item.url,
+                fit: BoxFit.cover,
+                errorBuilder: (context, error, stackTrace) {
+                  return Container(
+                    color: AdminTokens.neutral100,
+                    child: const Icon(Icons.broken_image,
+                        color: AdminTokens.neutral400),
+                  );
+                },
+              ),
+            ),
+          ),
+
+          // Zone info compacte 20%
+          Expanded(
+            flex: 1,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Expanded(
+                    child: Text(
+                      _formatFileSize(item.size),
+                      style: const TextStyle(
+                        fontSize: 12,
+                        color: AdminTokens.neutral600,
+                        fontWeight: FontWeight.w500,
+                      ),
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                  Tooltip(
+                    message: 'Supprimer',
+                    child: InkWell(
+                      onTap: () => _deleteMedia(item),
+                      borderRadius: BorderRadius.circular(4),
+                      child: Container(
+                        padding:
+                            const EdgeInsets.all(8), // Hit-area 44px minimum
+                        child: const Icon(
+                          Icons.delete_outline,
+                          size: 16,
+                          color: Colors.red,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  String _formatFileSize(int bytes) {
+    if (bytes < 1024) return '$bytes B';
+    if (bytes < 1024 * 1024) return '${(bytes / 1024).toStringAsFixed(1)} KB';
+    return '${(bytes / (1024 * 1024)).toStringAsFixed(1)} MB';
+  }
+}
+
+class MediaItem {
+  final String name;
+  final String url;
+  final int size;
+  final DateTime uploadDate;
+
+  MediaItem({
+    required this.name,
+    required this.url,
+    required this.size,
+    required this.uploadDate,
+  });
 }

@@ -105,7 +105,6 @@ class _AdminRestaurantInfoScreenState extends State<AdminRestaurantInfoScreen> {
       restaurantId: widget.restaurantId,
       activeRoute: '/info',
       breadcrumbs: const ['Dashboard', 'Infos du restaurant'],
-      showBackButton: widget.showBack,
       child: _loading
           ? const Center(child: CircularProgressIndicator())
           : SingleChildScrollView(

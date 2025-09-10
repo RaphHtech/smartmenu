@@ -1,6 +1,7 @@
 // lib/widgets/ui/admin_shell.dart
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:smartmenu_app/screens/admin/admin_dashboard_overview_screen.dart';
 // import 'package:smartmenu_app/screens/admin/admin_dashboard_overview_screen.dart';
 import '../../core/design/admin_tokens.dart';
 import '../../core/design/admin_typography.dart';
@@ -16,21 +17,19 @@ import '../../widgets/ui/admin_themed.dart';
 class AdminShell extends StatefulWidget {
   final Widget child;
   final String title;
-  final String restaurantId; // Nouveau
-  final String activeRoute; // Nouveau
-  final bool? showBackButton; // null => on déduit via Navigator.canPop()
   final List<String> breadcrumbs;
   final List<Widget>? actions;
+  final String? restaurantId;
+  final String? activeRoute; // ✅ AJOUTER cette ligne
 
   const AdminShell({
     super.key,
     required this.child,
     required this.title,
-    required this.restaurantId, // Nouveau
-    this.activeRoute = '/dashboard', // Nouveau
     this.breadcrumbs = const [],
     this.actions,
-    this.showBackButton,
+    this.restaurantId,
+    this.activeRoute, // ✅ AJOUTER cette ligne
   });
 
   @override
@@ -40,11 +39,23 @@ class AdminShell extends StatefulWidget {
 class _AdminShellState extends State<AdminShell> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   String _selectedRoute = '/dashboard';
+  String get _currentRoute => widget.activeRoute ?? _selectedRoute;
 
   @override
   void initState() {
     super.initState();
-    _selectedRoute = widget.activeRoute;
+    if (widget.activeRoute != null) {
+      _selectedRoute = widget.activeRoute!;
+    }
+  }
+
+  @override
+  void didUpdateWidget(covariant AdminShell oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.activeRoute != null &&
+        widget.activeRoute != oldWidget.activeRoute) {
+      setState(() => _selectedRoute = widget.activeRoute!);
+    }
   }
 
   final User? _currentUser = FirebaseAuth.instance.currentUser;
@@ -185,9 +196,13 @@ class _AdminShellState extends State<AdminShell> {
             ),
           ),
           const SizedBox(width: AdminTokens.space12),
-          const Text(
+          //
+          Text(
             'SmartMenu',
-            style: AdminTypography.headlineLarge,
+            style: AdminTypography.headlineLarge.copyWith(
+              color: AdminTokens.neutral900,
+              fontWeight: FontWeight.w700,
+            ),
           ),
         ],
       ),
@@ -198,7 +213,7 @@ class _AdminShellState extends State<AdminShell> {
     return ListView(
       padding: const EdgeInsets.symmetric(vertical: AdminTokens.space16),
       children: _navItems.map((item) {
-        final isActive = _selectedRoute == item.route;
+        final isActive = _currentRoute == item.route;
         return Padding(
           padding: const EdgeInsets.symmetric(
             horizontal: AdminTokens.space12,
@@ -340,10 +355,12 @@ class _AdminShellState extends State<AdminShell> {
             Builder(
               builder: (context) {
                 final w = MediaQuery.of(context).size.width;
-                final inferred = Navigator.of(context).canPop();
-                final showBack = (_selectedRoute == '/dashboard')
-                    ? false
-                    : (widget.showBackButton ?? inferred);
+                final canPop = Navigator.of(context).canPop();
+
+                // ✅ Utiliser activeRoute en priorité pour déterminer showBack
+                final currentRoute = _currentRoute;
+                final showBack =
+                    (currentRoute == '/dashboard') ? false : canPop;
                 if (w < 1024) {
                   return IconButton(
                     icon:
@@ -480,37 +497,51 @@ class _AdminShellState extends State<AdminShell> {
     );
   }
 
-  String _getRestaurantId() => widget.restaurantId;
+  String _getRestaurantId() => widget.restaurantId ?? 'newtest';
 
   void _onNavItemTap(String route) {
-    setState(() {
-      _selectedRoute = route;
-    });
+    setState(() => _selectedRoute = route);
 
+    // Fermer le drawer sur mobile
     if (MediaQuery.of(context).size.width < 1024) {
       Navigator.of(context).pop();
     }
 
+    final rid = widget.restaurantId ?? _getRestaurantId();
+
+    // ✅ DASHBOARD = Reset pile (racine propre)
+    if (route == '/dashboard') {
+      Navigator.of(context).pushAndRemoveUntil(
+        MaterialPageRoute(
+          builder: (_) => AdminThemed(
+            child: AdminDashboardOverviewScreen(restaurantId: rid),
+          ),
+        ),
+        (r) => false,
+      );
+      return;
+    }
+
+    // ✅ AUTRES PAGES = Push simple (retour visible)
     Widget screen;
     switch (route) {
-      case '/dashboard':
       case '/menu':
-        screen = AdminDashboardScreen(restaurantId: _getRestaurantId());
+        screen = AdminDashboardScreen(restaurantId: rid);
         break;
       case '/media':
-        screen = AdminMediaScreen(restaurantId: _getRestaurantId());
+        screen = AdminMediaScreen(restaurantId: rid);
         break;
       case '/info':
-        screen = AdminRestaurantInfoScreen(restaurantId: _getRestaurantId());
+        screen = AdminRestaurantInfoScreen(restaurantId: rid);
         break;
       case '/settings':
-        screen = AdminSettingsScreen(restaurantId: _getRestaurantId());
+        screen = AdminSettingsScreen(restaurantId: rid);
         break;
       default:
         return;
     }
 
-    Navigator.of(context).pushReplacement(
+    Navigator.of(context).push(
       MaterialPageRoute(builder: (_) => AdminThemed(child: screen)),
     );
   }

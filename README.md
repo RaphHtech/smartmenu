@@ -16,7 +16,7 @@ Une application de menu numérique moderne pour restaurants, développée avec *
 
 ---
 
-## 🚀 État Actuel (Septembre 2025) - Version 2.1.0
+## 🚀 État Actuel (Septembre 2025) - Version 2.2.0
 
 ### ✅ Fonctionnalités Terminées
 
@@ -66,6 +66,65 @@ Une application de menu numérique moderne pour restaurants, développée avec *
 - **Responsive optimisé** : Recherche adaptive, débordement corrigé
 - **Modification nom restaurant** : Interface intuitive avec validation
 - **Écrans placeholder** : Médias et Paramètres avec design cohérent
+
+### 🎯 Nouvelles Fonctionnalités v2.2.0 - Phase 3 Étape 1
+
+- **Filtres et recherche avancés** : Interface complète dans AdminDashboardScreen
+- **Recherche en temps réel** : Filtrage instantané par nom/description/catégorie avec support accents
+- **Tri dynamique** : Par catégorie/nom/prix avec persistence de l'état
+- **Chips de filtrage** : Filtrage par catégorie avec toggle et état "Toutes"
+- **Architecture optimisée** : Interface de recherche séparée du StreamBuilder pour performance
+- **Responsive design** : Champs de recherche et tri adaptés mobile/desktop
+
+**Interface de filtrage :**
+
+- Champ de recherche avec debouncing (300ms)
+- Menu déroulant tri compact et responsive
+- Chips catégories scrollables horizontalement
+- Bouton clear avec conservation du focus
+- Normalisation des accents pour recherche tolérante
+
+### 🎯 Nouvelles Fonctionnalités v2.3.0 - Phase 3 Étape 2
+
+- **AdminMediaScreen complète** : Interface de gestion des médias opérationnelle
+- **Upload d'images** : Sélection de fichiers avec validation format/taille (PNG, JPG, WebP - max 5MB)
+- **Galerie des médias** : Grille responsive des images uploadées avec métadonnées
+- **Gestion avancée** : Suppression avec confirmation, affichage taille fichier et date
+- **Feedback utilisateur** : Progress bar d'upload, alertes d'erreur avec dismiss
+- **Storage Rules optimisées** : Permissions multi-tenant pour upload/suppression sécurisés
+
+**Interface MediaScreen :**
+
+- Zone d'upload cliquable avec instructions claires
+- Bouton "Ajouter" dans topbar pour accès rapide
+- Grille 4 colonnes adaptative desktop/mobile
+- Cartes médias avec aperçu, nom, taille et actions
+- Gestion d'erreurs contextuelle (format, taille, permissions)
+- Loading states et empty states élégants
+
+---
+
+## 📊 État Technique mis à jour
+
+**Statut :** Phase 3 Étape 1 terminée - Filtres et recherche opérationnels  
+**Version :** 2.3.0 (Filtres + Recherche + MediaScreen + Navigation stable)
+**Environnement :** Développement local + Firebase project configuré  
+**Dernière mise à jour :** Septembre 2025
+
+### Nouvelles Notes Techniques
+
+- **Architecture de recherche** : Interface séparée du StreamBuilder pour éviter la perte de focus
+- **Performance** : Debouncing de 300ms + filtrage en mémoire sur snapshot existant
+- **Normalisation accents** : Fonction `_normalize()` pour recherche tolérante (français/hébreu)
+- **État local** : Gestion cohérente des filtres avec TextEditingController listener
+- **Responsive** : Menu déroulant largeur fixe (130px) pour éviter overflow mobile
+
+### Leçons Apprises Phase 3
+
+- **Focus management** : TextField dans StreamBuilder cause perte de focus systématique
+- **Architecture reactive** : Séparer UI stable (filtres) de UI dynamique (liste) crucial pour UX
+- **Performance filtering** : Filtrage en mémoire plus rapide que requêtes Firestore multiples
+- **State management** : TextEditingController.listener plus stable que onChanged pour recherche temps réel
 
 ---
 
@@ -382,8 +441,8 @@ service firebase.storage {
 
 ## 📊 État Technique
 
-**Statut :** AdminShell implémenté avec succès - Interface SaaS premium opérationnelle  
-**Version :** 2.1.0 (AdminShell + Modification nom restaurant)  
+**Statut :** Phase 3 Étape 1 terminée - Filtres et recherche opérationnels  
+**Version :** 2.2.0 (Filtres + Recherche + Navigation stable)  
 **Environnement :** Développement local + Firebase project configuré  
 **Déploiement cible :** `https://smartmenu-mvp.web.app`  
 **Dernière mise à jour :** Septembre 2025
@@ -396,6 +455,15 @@ service firebase.storage {
 - **Upload Web** : `putData(Uint8List)` obligatoire pour compatibilité web
 - **Design Isolation** : Admin premium isolé du client PWA
 - **Navigation** : `pushAndRemoveUntil` pour pages racines, retour contextuel
+- **Architecture de recherche** : Interface séparée du StreamBuilder pour éviter la perte de focus
+- **Performance** : Debouncing de 300ms + filtrage en mémoire sur snapshot existant
+- **Normalisation accents** : Fonction `_normalize()` pour recherche tolérante (français/hébreu)
+- **État local** : Gestion cohérente des filtres avec TextEditingController listener
+- **Responsive** : Menu déroulant largeur fixe (130px) pour éviter overflow mobile
+- **MediaScreen opérationnelle** : Upload/suppression Firebase Storage avec validation complète
+- **Storage Rules multi-tenant** : Permissions basées sur membership restaurant pour sécurité
+- **Upload validation** : Contrôle format (PNG/JPG/WebP) et taille (max 5MB) côté client
+- **UI responsive** : Grille adaptive 4 colonnes desktop, gestion mobile optimisée
 
 ### Leçons Apprises
 
@@ -404,6 +472,13 @@ service firebase.storage {
 - **Responsive Design** : Champ recherche adaptatif évite débordements
 - **Design System** : Tokens centralisés facilitent maintenance et évolutions
 - **Validation formulaires** : Feedback temps réel améliore satisfaction utilisateur
+- **Focus management** : TextField dans StreamBuilder cause perte de focus systématique
+- **Architecture reactive** : Séparer UI stable (filtres) de UI dynamique (liste) crucial pour UX
+- **Performance filtering** : Filtrage en mémoire plus rapide que requêtes Firestore multiples
+- **State management** : TextEditingController.listener plus stable que onChanged pour recherche temps réel
+- **Firebase Storage Rules** : Délai de propagation (1-2 min) critique pour tests fonctionnels
+- **File upload UX** : Progress bar et gestion d'erreurs essentiels pour feedback utilisateur
+- **Storage permissions** : Vérification membership restaurant plus sécurisée que auth simple
 
 ---
 
