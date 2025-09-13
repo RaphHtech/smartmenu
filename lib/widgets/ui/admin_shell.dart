@@ -1,8 +1,6 @@
-// lib/widgets/ui/admin_shell.dart
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:smartmenu_app/screens/admin/admin_dashboard_overview_screen.dart';
-// import 'package:smartmenu_app/screens/admin/admin_dashboard_overview_screen.dart';
+import '../../screens/admin/admin_dashboard_overview_screen.dart';
 import '../../core/design/admin_tokens.dart';
 import '../../core/design/admin_typography.dart';
 import '../../screens/admin/admin_login_screen.dart';
@@ -229,9 +227,16 @@ class _AdminShellState extends State<AdminShell> {
                   horizontal: AdminTokens.space12,
                   vertical: AdminTokens.space12,
                 ),
+                // État actif plus visible avec barre latérale
                 decoration: BoxDecoration(
                   color: isActive ? AdminTokens.primary50 : Colors.transparent,
                   borderRadius: BorderRadius.circular(AdminTokens.radius8),
+                  border: isActive
+                      ? const Border(
+                          left: BorderSide(
+                              color: AdminTokens.primary600, width: 2),
+                        )
+                      : null,
                 ),
                 child: Row(
                   children: [
@@ -400,63 +405,6 @@ class _AdminShellState extends State<AdminShell> {
                 tooltip: 'Menu',
                 onPressed: () => _scaffoldKey.currentState?.openDrawer(),
               ),
-
-            // Recherche globale
-            if (MediaQuery.of(context).size.width >= 1000) ...[
-              Container(
-                width: 280,
-                height: 36,
-                margin: const EdgeInsets.only(left: AdminTokens.space16),
-                child: TextField(
-                  decoration: InputDecoration(
-                    hintText: 'Rechercher...',
-                    hintStyle: AdminTypography.bodySmall.copyWith(
-                      color: AdminTokens.neutral400,
-                    ),
-                    prefixIcon: const Icon(
-                      Icons.search,
-                      size: AdminTokens.iconSm,
-                      color: AdminTokens.neutral400,
-                    ),
-                    filled: true,
-                    fillColor: AdminTokens.neutral50,
-                    contentPadding: const EdgeInsets.symmetric(
-                      horizontal: AdminTokens.space12,
-                      vertical: AdminTokens.space8,
-                    ),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(AdminTokens.radius8),
-                      borderSide: const BorderSide(
-                        color: AdminTokens.neutral300,
-                        width: 1,
-                      ),
-                    ),
-                    enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(AdminTokens.radius8),
-                      borderSide: const BorderSide(
-                        color: AdminTokens.neutral300,
-                        width: 1,
-                      ),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(AdminTokens.radius8),
-                      borderSide: const BorderSide(
-                        color: AdminTokens.primary500,
-                        width: 2,
-                      ),
-                    ),
-                  ),
-                  style: AdminTypography.bodySmall,
-                ),
-              ),
-            ] else ...[
-              IconButton(
-                icon: const Icon(Icons.search),
-                onPressed: () {
-                  // TODO: Ouvrir modal de recherche
-                },
-              ),
-            ],
           ],
         ),
       ),

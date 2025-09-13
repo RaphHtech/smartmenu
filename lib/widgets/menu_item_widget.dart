@@ -44,8 +44,14 @@ class MenuItem extends StatelessWidget {
     final String priceText = unitPrice % 1 == 0
         ? '$currencySymbol${unitPrice.toInt()}'
         : '$currencySymbol${unitPrice.toStringAsFixed(2)}';
-    final String img =
-        (pizza['imageUrl'] ?? pizza['image'] ?? '').toString().trim();
+    final String img = () {
+      final candidates = [pizza['imageUrl'], pizza['image'], pizza['photoUrl']];
+      for (final candidate in candidates) {
+        final s = (candidate?.toString() ?? '').trim();
+        if (s.isNotEmpty && s.toLowerCase() != 'null') return s;
+      }
+      return '';
+    }();
 
     return Container(
       decoration: BoxDecoration(
@@ -58,65 +64,86 @@ class MenuItem extends StatelessWidget {
       ),
       child: Column(
         children: [
-          // IMAGE SECTION
-          ClipRRect(
-            borderRadius: const BorderRadius.only(
-              topLeft: Radius.circular(16),
-              topRight: Radius.circular(16),
-            ),
-            child: SizedBox(
-              height: 200,
-              child: Stack(
-                fit: StackFit.expand,
-                children: [
-                  if (img.isNotEmpty)
-                    Image.network(
-                      img,
-                      fit: BoxFit.cover,
-                      errorBuilder: (_, __, ___) => const SizedBox.shrink(),
-                    )
-                  else
-                    const ColoredBox(
-                      color: Color(0x10FFFFFF),
-                      child: Center(
-                          child: Text('🍕', style: TextStyle(fontSize: 64))),
-                    ),
-
-                  // léger voile pour garder le texte lisible
-                  const DecoratedBox(
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        begin: Alignment.topCenter,
-                        end: Alignment.bottomCenter,
-                        colors: [Color(0x00000000), Color(0x29000000)],
-                      ),
-                    ),
-                  ),
-
-                  if (hasSignature)
-                    Positioned(
-                      top: 15,
-                      right: 15,
-                      child: DecoratedBox(
-                        decoration: BoxDecoration(
-                          color: AppColors.accent,
-                          borderRadius: BorderRadius.circular(20),
+          // IMAGE SECTION - Version premium + garde-fous
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(16),
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxHeight: 240),
+                child: AspectRatio(
+                  aspectRatio: 4 / 3,
+                  child: Stack(
+                    fit: StackFit.expand,
+                    children: [
+                      if (img.isNotEmpty)
+                        Image.network(
+                          img,
+                          fit: BoxFit.cover,
+                          gaplessPlayback: true,
+                          filterQuality: FilterQuality.medium,
+                          loadingBuilder: (ctx, child, loading) {
+                            if (loading == null) return child;
+                            return Container(
+                              color: const Color(0xFFF3F4F6),
+                              alignment: Alignment.center,
+                              child: const SizedBox(
+                                width: 24,
+                                height: 24,
+                                child:
+                                    CircularProgressIndicator(strokeWidth: 2),
+                              ),
+                            );
+                          },
+                          errorBuilder: (_, __, ___) => Container(
+                            color: const Color(0xFFF3F4F6),
+                            alignment: Alignment.center,
+                            child: const Text('🍕',
+                                style: TextStyle(fontSize: 64)),
+                          ),
+                        )
+                      else
+                        Container(
+                          color: const Color(0xFFF3F4F6),
+                          child: const Center(
+                            child: Text('🍕', style: TextStyle(fontSize: 64)),
+                          ),
                         ),
-                        child: const Padding(
-                          padding:
-                              EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                          child: Text(
-                            'SIGNATURE',
-                            style: TextStyle(
-                              color: AppColors.primary,
-                              fontWeight: FontWeight.w700,
-                              fontSize: 12.8,
-                            ),
+                      const DecoratedBox(
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            begin: Alignment.topCenter,
+                            end: Alignment.bottomCenter,
+                            colors: [Color(0x00000000), Color(0x29000000)],
                           ),
                         ),
                       ),
-                    ),
-                ],
+                      if (hasSignature)
+                        Positioned(
+                          top: 15,
+                          right: 15,
+                          child: DecoratedBox(
+                            decoration: BoxDecoration(
+                              color: AppColors.accent,
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                            child: const Padding(
+                              padding: EdgeInsets.symmetric(
+                                  horizontal: 12, vertical: 6),
+                              child: Text(
+                                'SIGNATURE',
+                                style: TextStyle(
+                                  color: AppColors.primary,
+                                  fontWeight: FontWeight.w700,
+                                  fontSize: 12.8,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                    ],
+                  ),
+                ),
               ),
             ),
           ),

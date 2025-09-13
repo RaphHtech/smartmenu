@@ -1,6 +1,7 @@
 // lib/screens/admin/admin_settings_screen.dart
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:smartmenu_app/widgets/admin/categories_settings_widget.dart';
 import '../../widgets/ui/admin_shell.dart';
 import '../../core/design/admin_tokens.dart';
 import '../../core/design/admin_typography.dart';
@@ -295,38 +296,15 @@ class _AdminSettingsScreenState extends State<AdminSettingsScreen> {
 
             const SizedBox(height: AdminTokens.space32),
 
-            // Fonctionnalités futures
-            Container(
-              padding: const EdgeInsets.all(AdminTokens.space20),
-              decoration: BoxDecoration(
-                color: AdminTokens.primary50,
-                borderRadius: BorderRadius.circular(AdminTokens.radius12),
-              ),
-              child: Column(
-                children: [
-                  const Icon(
-                    Icons.construction_outlined,
-                    color: AdminTokens.primary600,
-                    size: 32,
-                  ),
-                  const SizedBox(height: AdminTokens.space12),
-                  Text(
-                    'Fonctionnalités à venir',
-                    style: AdminTypography.headlineSmall.copyWith(
-                      color: AdminTokens.primary600,
-                    ),
-                  ),
-                  const SizedBox(height: AdminTokens.space8),
-                  Text(
-                    'Gestion des catégories, multi-langues, thèmes, équipe...',
-                    style: AdminTypography.bodyMedium.copyWith(
-                      color: AdminTokens.primary600,
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
-                ],
+            // Section Gestion des catégories
+            Card(
+              child: Padding(
+                padding: const EdgeInsets.all(AdminTokens.space20),
+                child: CategoriesSettings(restaurantId: widget.restaurantId),
               ),
             ),
+
+            const SizedBox(height: AdminTokens.space32),
           ],
         ),
       ),

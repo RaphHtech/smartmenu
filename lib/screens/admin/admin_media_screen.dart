@@ -1,5 +1,7 @@
+// ignore_for_file: avoid_web_libraries_in_flutter
 import 'dart:html' as html;
 import 'dart:typed_data';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import '../../widgets/ui/admin_shell.dart';
@@ -46,6 +48,7 @@ class _AdminMediaScreenState extends State<AdminMediaScreen> {
           items.add(MediaItem(
             name: item.name,
             url: url,
+            path: 'restaurants/${widget.restaurantId}/menu/${item.name}',
             size: metadata.size ?? 0,
             uploadDate: metadata.timeCreated ?? DateTime.now(),
           ));
@@ -187,6 +190,130 @@ class _AdminMediaScreenState extends State<AdminMediaScreen> {
         }
       }
     });
+  }
+
+  Future<void> _assignToItem(MediaItem item) async {
+    // Récupérer la liste des plats
+    final snapshot = await FirebaseFirestore.instance
+        .collection('restaurants')
+        .doc(widget.restaurantId)
+        .collection('menus')
+        .get();
+
+    if (!mounted) return;
+
+    final items = snapshot.docs
+        .map((doc) => {
+              'id': doc.id,
+              'name': doc.data()['name'] ?? '',
+              'category': doc.data()['category'] ?? '',
+            })
+        .toList();
+
+    if (items.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Aucun plat disponible')),
+      );
+      return;
+    }
+
+    // Afficher modal de sélection
+    final selectedItem = await showDialog<Map<String, dynamic>>(
+      context: context,
+      builder: (context) => _buildItemSelectionDialog(items),
+    );
+
+    if (selectedItem != null) {
+      await _updateItemImage(selectedItem['id'],
+          'restaurants/${widget.restaurantId}/menu/${item.name}', item.url);
+    }
+  }
+
+  Widget _buildItemSelectionDialog(List<Map<String, dynamic>> items) {
+    final controller = TextEditingController();
+    List<Map<String, dynamic>> filtered = List.of(items);
+
+    void applyFilter(String query) {
+      final q = query.trim().toLowerCase();
+      filtered = items.where((item) {
+        final name = (item['name'] as String).toLowerCase();
+        final category = (item['category'] as String).toLowerCase();
+        return name.contains(q) || category.contains(q);
+      }).toList();
+    }
+
+    applyFilter('');
+
+    return StatefulBuilder(
+      builder: (context, setState) => AlertDialog(
+        title: const Text('Assigner à un plat'),
+        content: SizedBox(
+          width: 360,
+          height: 460,
+          child: Column(
+            children: [
+              TextField(
+                controller: controller,
+                decoration: const InputDecoration(
+                  hintText: 'Rechercher un plat…',
+                  prefixIcon: Icon(Icons.search),
+                ),
+                onChanged: (value) => setState(() => applyFilter(value)),
+              ),
+              const SizedBox(height: 12),
+              Expanded(
+                child: ListView.separated(
+                  itemCount: filtered.length,
+                  separatorBuilder: (_, __) => const Divider(height: 1),
+                  itemBuilder: (context, index) {
+                    final item = filtered[index];
+                    return ListTile(
+                      title: Text(item['name']),
+                      subtitle: Text(item['category']),
+                      onTap: () => Navigator.pop(context, item),
+                    );
+                  },
+                ),
+              ),
+            ],
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Annuler'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _updateItemImage(
+      String itemId, String storagePath, String url) async {
+    try {
+      await FirebaseFirestore.instance
+          .collection('restaurants')
+          .doc(widget.restaurantId)
+          .collection('menus')
+          .doc(itemId)
+          .update({
+        'image': storagePath, // ✅ Path Storage (source de vérité)
+        'imageUrl': url, // ✅ URL pour affichage rapide
+        'updated_at': FieldValue.serverTimestamp(),
+      });
+
+      if (!mounted) return;
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Image assignée avec succès')),
+      );
+    } catch (e) {
+      if (!mounted) return;
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Erreur: $e')),
+      );
+    }
   }
 
   @override
@@ -362,7 +489,7 @@ class _AdminMediaScreenState extends State<AdminMediaScreen> {
         crossAxisCount: MediaQuery.of(context).size.width > 600 ? 4 : 2,
         crossAxisSpacing: 12,
         mainAxisSpacing: 20,
-        childAspectRatio: 0.75,
+        childAspectRatio: 0.80,
       ),
       itemCount: _mediaItems.length,
       itemBuilder: (context, index) {
@@ -379,9 +506,10 @@ class _AdminMediaScreenState extends State<AdminMediaScreen> {
         children: [
           // Image 80% de la hauteur
           Expanded(
-            flex: 4,
-            child: Container(
+            flex: 3,
+            child: SizedBox(
               width: double.infinity,
+              height: 28,
               child: Image.network(
                 item.url,
                 fit: BoxFit.cover,
@@ -396,45 +524,63 @@ class _AdminMediaScreenState extends State<AdminMediaScreen> {
             ),
           ),
 
-          // Zone info compacte 20%
+          // Zone info compacte 25%
+          // Zone info compacte 25%
           Expanded(
             flex: 1,
             child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              padding: const EdgeInsets.all(6),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
                 children: [
-                  Expanded(
-                    child: Text(
-                      _formatFileSize(item.size),
-                      style: const TextStyle(
-                        fontSize: 12,
-                        color: AdminTokens.neutral600,
-                        fontWeight: FontWeight.w500,
+                  // Ligne taille + supprimer
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Expanded(
+                        child: Text(
+                          _formatFileSize(item.size),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: const TextStyle(
+                            fontSize: 10,
+                            fontWeight: FontWeight.w500,
+                            color: AdminTokens.neutral600,
+                          ),
+                        ),
                       ),
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ),
-                  Tooltip(
-                    message: 'Supprimer',
-                    child: InkWell(
-                      onTap: () => _deleteMedia(item),
-                      borderRadius: BorderRadius.circular(4),
-                      child: Container(
-                        padding:
-                            const EdgeInsets.all(8), // Hit-area 44px minimum
+                      InkWell(
+                        onTap: () => _deleteMedia(item),
                         child: const Icon(
                           Icons.delete_outline,
-                          size: 16,
+                          size: 14,
                           color: Colors.red,
                         ),
                       ),
+                    ],
+                  ),
+                  const SizedBox(height: 4),
+                  // Bouton utiliser
+                  SizedBox(
+                    width: double.infinity,
+                    child: TextButton(
+                      onPressed: () => _assignToItem(item),
+                      style: TextButton.styleFrom(
+                        padding: EdgeInsets.zero,
+                        minimumSize: const Size(0, 24),
+                        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                        visualDensity:
+                            const VisualDensity(horizontal: -4, vertical: -4),
+                        foregroundColor: Colors.blue,
+                      ),
+                      child: const Text('Utiliser',
+                          style: TextStyle(fontSize: 10)),
                     ),
                   ),
                 ],
               ),
             ),
-          ),
+          ), // Zone info compacte 25%
         ],
       ),
     );
@@ -450,12 +596,14 @@ class _AdminMediaScreenState extends State<AdminMediaScreen> {
 class MediaItem {
   final String name;
   final String url;
+  final String path;
   final int size;
   final DateTime uploadDate;
 
   MediaItem({
     required this.name,
     required this.url,
+    required this.path,
     required this.size,
     required this.uploadDate,
   });

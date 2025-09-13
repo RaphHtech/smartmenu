@@ -11,6 +11,21 @@ import 'package:firebase_storage/firebase_storage.dart';
 import '../../widgets/ui/admin_themed.dart';
 import '../../widgets/ui/admin_shell.dart';
 
+List<String> applyOrderAndHide(
+  Set<String> allCats,
+  List<String> order,
+  Set<String> hidden,
+) {
+  final visible = allCats.where((c) => !hidden.contains(c)).toSet();
+  final rest = visible.where((c) => !order.contains(c)).toList()..sort();
+  return [...order.where(visible.contains), ...rest];
+}
+
+int weightFor(String cat, List<String> order) {
+  final i = order.indexOf(cat);
+  return i >= 0 ? i : 1000;
+}
+
 class AdminDashboardScreen extends StatefulWidget {
   final String restaurantId;
 
@@ -27,6 +42,9 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
   String _currency = 'ILS';
   String _sortBy = 'category';
   String? _selectedCategory;
+  List<String> _categoriesOrder = [];
+  Set<String> _categoriesHidden = {};
+  StreamSubscription? _infoSub;
 
 // 🔎 source de vérité unique pour la recherche (affichée et filtrée)
   String _searchText = '';
@@ -86,7 +104,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
   @override
   void initState() {
     super.initState();
-    _loadCurrency();
+    _listenRestaurantInfo();
     _searchController.addListener(() {
       if (!mounted) return;
       // Met à jour _searchText et rafraîchit l’UI (sans toucher au focus)
@@ -99,22 +117,25 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
     });
   }
 
-  Future<void> _loadCurrency() async {
-    try {
-      final doc = await FirebaseFirestore.instance
-          .collection('restaurants')
-          .doc(widget.restaurantId)
-          .collection('info')
-          .doc('details')
-          .get();
+  void _listenRestaurantInfo() {
+    _infoSub = FirebaseFirestore.instance
+        .collection('restaurants')
+        .doc(widget.restaurantId)
+        .collection('info')
+        .doc('details')
+        .snapshots()
+        .listen((snap) {
+      final data = snap.data() ?? {};
+      if (!mounted) return;
+      setState(() {
+        _currency = (data['currency'] as String?) ?? 'ILS';
+        _categoriesOrder = List<String>.from(data['categoriesOrder'] ?? []);
+        _categoriesHidden = Set<String>.from(data['categoriesHidden'] ?? []);
+      });
 
-      if (doc.exists && mounted) {
-        setState(
-            () => _currency = (doc.data()?['currency'] as String?) ?? 'ILS');
-      }
-    } catch (e) {
-      debugPrint('Erreur chargement devise: $e');
-    }
+      print('DEBUG - categoriesOrder: $_categoriesOrder');
+      print('DEBUG - categoriesHidden: $_categoriesHidden');
+    }, onError: (e) => debugPrint('Erreur info/details: $e'));
   }
 
   @override
@@ -122,24 +143,30 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
     _searchController.dispose();
     _searchFocus.dispose();
     _debounceTimer?.cancel();
+    _infoSub?.cancel();
     super.dispose();
   }
 
   Future<void> _previewMenu() async {
-    final uri = Uri.base;
-    final previewUrl =
-        '${uri.scheme}://${uri.host}:${uri.port}/r/${widget.restaurantId}';
+    final origin = Uri.base;
+    final previewUri = Uri(
+      scheme: origin.scheme,
+      host: origin.host,
+      port: origin.hasPort ? origin.port : null,
+      path: '/r/${widget.restaurantId}',
+      queryParameters: {
+        'preview': '1',
+        'return': '/admin',
+      },
+    );
 
     try {
-      await launchUrl(
-        Uri.parse(previewUrl),
-        webOnlyWindowName: '_blank',
-      );
+      await launchUrl(previewUri, webOnlyWindowName: '_blank');
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-              content: Text('Impossible d\'ouvrir la prévisualisation: $e')),
+              content: Text("Impossible d'ouvrir la prévisualisation: $e")),
         );
       }
     }
@@ -148,7 +175,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
   @override
   Widget build(BuildContext context) {
     return AdminShell(
-      title: 'Gestion du menu',
+      title: 'Menu',
       restaurantId: widget.restaurantId,
       activeRoute: '/menu',
       breadcrumbs: const ['Dashboard', 'Menu'],
@@ -699,8 +726,19 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
       final c = (data['category'] ?? '').toString().trim();
       if (c.isNotEmpty) set.add(c);
     }
-    final list = set.toList()..sort();
-    return list;
+    // Inclure aussi les catégories déclarées par le restaurateur
+    set.addAll(_categoriesOrder);
+
+    final categories =
+        applyOrderAndHide(set, _categoriesOrder, _categoriesHidden);
+
+    if (_selectedCategory != null && !categories.contains(_selectedCategory)) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) setState(() => _selectedCategory = null);
+      });
+    }
+
+    return categories;
   }
 
   List<QueryDocumentSnapshot> _filterDocs(List<QueryDocumentSnapshot> docs) {
@@ -749,12 +787,19 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
       final db = b.data() as Map<String, dynamic>;
       final ca = (da['category'] ?? '').toString();
       final cb = (db['category'] ?? '').toString();
+
+      final wa = weightFor(ca, _categoriesOrder);
+      final wb = weightFor(cb, _categoriesOrder);
+      if (wa != wb) return wa.compareTo(wb);
+
+      // Fallback alpha si poids identique
       final c = ca.compareTo(cb);
-      return c != 0
-          ? c
-          : (da['name'] ?? '')
-              .toString()
-              .compareTo((db['name'] ?? '').toString());
+      if (c != 0) return c;
+
+      // Et enfin par nom pour stabilité
+      return (da['name'] ?? '')
+          .toString()
+          .compareTo((db['name'] ?? '').toString());
     }
 
     switch (_sortBy) {

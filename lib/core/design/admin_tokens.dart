@@ -49,8 +49,8 @@ class AdminTokens {
   // ===== RADIUS =====
 
   static const double radius4 = 4.0;
-  static const double radius8 = 8.0;
-  static const double radius12 = 12.0;
+  static const double radius8 = 12.0;
+  static const double radius12 = 16.0;
   static const double radius16 = 16.0;
   static const double radius24 = 24.0;
 
@@ -123,4 +123,10 @@ class AdminTokens {
   static const Duration animationSlow = Duration(milliseconds: 400);
 
   static const Curve animationCurve = Curves.easeInOutCubic;
+
+  static const BoxShadow cardShadow = BoxShadow(
+    color: Color.fromRGBO(0, 0, 0, 0.08),
+    blurRadius: 24,
+    offset: Offset(0, 8),
+  );
 }
