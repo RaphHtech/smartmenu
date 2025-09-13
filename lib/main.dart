@@ -31,6 +31,16 @@ class SmartMenuApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       home: _getInitialScreen(),
       theme: _buildTheme(),
+      onGenerateRoute: (settings) {
+        // Route /r/{restaurantId}
+        if (settings.name?.startsWith('/r/') == true) {
+          final restaurantId = settings.name!.substring(3);
+          return MaterialPageRoute(
+            builder: (context) => MenuScreen(restaurantId: restaurantId),
+          );
+        }
+        return null;
+      },
     );
   }
 

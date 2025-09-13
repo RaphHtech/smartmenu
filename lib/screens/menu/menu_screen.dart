@@ -1,7 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import '../../core/constants/colors.dart';
-import '../../widgets/gradient_text_widget.dart';
 import '../../widgets/category_pill_widget.dart';
 import '../../widgets/menu_item_widget.dart';
 import '../../widgets/modals/order_review_modal.dart';
@@ -9,6 +8,23 @@ import '../../widgets/notifications/custom_notification.dart';
 import '../../widgets/menu/cart_floating_widget.dart';
 import '../../widgets/menu/app_header_widget.dart';
 import '../../services/cart_service.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
+import 'dart:html' as html;
+
+List<String> applyOrderAndHide(
+  Set<String> allCats,
+  List<String> order,
+  Set<String> hidden,
+) {
+  final visible = allCats.where((c) => !hidden.contains(c)).toSet();
+  final rest = visible.where((c) => !order.contains(c)).toList()..sort();
+  return [...order.where(visible.contains), ...rest];
+}
+
+int weightFor(String cat, List<String> order) {
+  final i = order.indexOf(cat);
+  return i >= 0 ? i : 1000;
+}
 
 class MenuScreen extends StatefulWidget {
   final String restaurantId;
@@ -23,15 +39,20 @@ class SimpleMenuScreenState extends State<MenuScreen> {
   bool _isLoading = true; // État initial : en chargement
   int _cartItemCount = 0;
   double _cartTotal = 0.0;
-  String _selectedCategory = 'Pizzas';
+  bool _isAdminPreview = false;
+  String _selectedCategory = '';
+  final ScrollController _categoryScrollController = ScrollController();
   Map<String, int> itemQuantities = {};
   bool _showOrderModal = false;
   bool _promoEnabled = true;
   String _restaurantName = '';
+  String _logoUrl = '';
   String _restaurantCurrency = 'ILS'; // <-- règle l'erreur "undefined name"
   String _tagline = ''; // sous-titre (catch phrase)
   String _promoText = ''; // bandeau promo
   Map<String, List<Map<String, dynamic>>> _menuData = {};
+  List<String> _categoriesOrder = [];
+  Set<String> _categoriesHidden = {};
   String _emojiFor(String cat) {
     switch (cat) {
       case 'Pizzas':
@@ -99,6 +120,8 @@ class SimpleMenuScreenState extends State<MenuScreen> {
   @override
   void initState() {
     super.initState();
+    final qp = Uri.base.queryParameters;
+    _isAdminPreview = qp.containsKey('preview') || qp.containsKey('admin');
     _loadMenuFromFirebase();
     _loadRestaurantDetails();
   }
@@ -119,6 +142,20 @@ class SimpleMenuScreenState extends State<MenuScreen> {
       _tagline = (data['tagline'] ?? '').toString().trim();
       _promoText = (data['promo_text'] ?? '').toString().trim();
       _promoEnabled = (data['promo_enabled'] as bool?) ?? true;
+      _logoUrl = (data['logoUrl'] ?? '').toString();
+      _categoriesOrder = List<String>.from(data['categoriesOrder'] ?? []);
+      _categoriesHidden = Set<String>.from(data['categoriesHidden'] ?? []);
+
+      if (_menuData.isNotEmpty &&
+          (_selectedCategory.isEmpty || _selectedCategory == 'Boissons')) {
+        final allCats = _menuData.keys.toSet();
+        allCats.addAll(_categoriesOrder);
+        final orderedCats =
+            applyOrderAndHide(allCats, _categoriesOrder, _categoriesHidden);
+        if (orderedCats.isNotEmpty) {
+          _selectedCategory = orderedCats.first;
+        }
+      }
     });
   }
 
@@ -127,23 +164,16 @@ class SimpleMenuScreenState extends State<MenuScreen> {
 
     // résout l'id effectif
     final String rid = () {
-      // si on est sur le web et qu’un rid est fourni en query string
       final q = Uri.base.queryParameters['rid'];
       if (q != null && q.isNotEmpty) return q;
-      return widget.restaurantId; // sinon, on garde la prop
+      return widget.restaurantId;
     }();
 
-    // Charger le menu (remplace l'appel au service)
     final items = await _fetchMenuItems(rid);
     final organized = _groupByCategory(items);
 
     setState(() {
       _menuData = organized;
-      // si la catégorie sélectionnée n’existe pas, prends la 1ère dispo
-      final keys = organized.keys.toList()..sort();
-      if (keys.isNotEmpty && !organized.containsKey(_selectedCategory)) {
-        _selectedCategory = keys.first;
-      }
       _isLoading = false;
     });
   }
@@ -205,6 +235,24 @@ class SimpleMenuScreenState extends State<MenuScreen> {
     setState(() {
       _selectedCategory = category;
     });
+
+    // Calculer la position pour centrer la catégorie sélectionnée
+    if (_categoryScrollController.hasClients) {
+      final categories = _menuData.keys.toList()..sort();
+      final selectedIndex = categories.indexOf(category);
+
+      if (selectedIndex >= 0) {
+        // Largeur estimée d'une pill (padding + texte + espacement)
+        const pillWidth = 120.0;
+        final scrollPosition = selectedIndex * pillWidth;
+
+        _categoryScrollController.animateTo(
+          scrollPosition > 0 ? scrollPosition - 60 : 0, // Offset pour centrer
+          duration: const Duration(milliseconds: 300),
+          curve: Curves.easeOut,
+        );
+      }
+    }
   }
 
   void _showOrderReview() {
@@ -231,6 +279,21 @@ class SimpleMenuScreenState extends State<MenuScreen> {
 
   double _getItemPrice(String itemName) {
     return CartService.getItemPrice(itemName, _menuData);
+  }
+
+  void _handleAdminReturn(BuildContext context) {
+    if (Navigator.canPop(context)) {
+      Navigator.pop(context);
+      return;
+    }
+    if (kIsWeb) {
+      try {
+        html.window.close();
+      } catch (_) {
+        final returnUrl = Uri.base.queryParameters['return'] ?? '/admin';
+        html.window.location.assign(returnUrl);
+      }
+    }
   }
 
   @override
@@ -264,10 +327,16 @@ class SimpleMenuScreenState extends State<MenuScreen> {
                 AppHeaderWidget(
                   onServerCall: () {
                     _showCustomNotification(
-                      '📞 Appel du serveur...\nUn membre de notre équipe arrive à votre table !',
+                      'Appel du serveur...\nUn membre de notre équipe arrive à votre table !',
                     );
                   },
-                  restaurantName: _restaurantName.toUpperCase(),
+                  restaurantName:
+                      _restaurantName, // Pas de .toUpperCase() (fait dans le widget)
+                  showAdminReturn: _isAdminPreview,
+                  onAdminReturn: _isAdminPreview
+                      ? () => _handleAdminReturn(context)
+                      : null,
+                  logoUrl: _logoUrl,
                 ),
 
                 // ===== SECTION HÉRO (2e “rectangle”) =====
@@ -277,63 +346,25 @@ class SimpleMenuScreenState extends State<MenuScreen> {
                       Container(
                         width: double.infinity,
                         padding: const EdgeInsets.symmetric(
-                            vertical: 40, horizontal: 20),
+                            vertical: 30, horizontal: 20),
                         decoration:
                             const BoxDecoration(color: AppColors.heroOverlay),
-                        child:
-                            // Ligne du logo + grand titre (sur 1 ligne)
-                            Column(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            // Ligne du logo + grand titre (sur 1 ligne)
-                            FittedBox(
-                              // ← évite tout dépassement horizontal
-                              fit: BoxFit.scaleDown,
-                              child: Row(
-                                mainAxisSize: MainAxisSize.min,
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: [
-                                  // Logo "triangle" doré
-                                  // Pas d'icône pour le moment
-
-                                  // Titre HÉRO en dégradé — 1 LIGNE
-                                  GradientText(
-                                    _restaurantName.toUpperCase(),
-                                    gradient: AppColors.titleGradient,
-                                    style: const TextStyle(
-                                      fontSize: 56, // ≈ 3.5rem
-                                      fontWeight: FontWeight.w900,
-                                      height: 1.0,
-                                      shadows: [
-                                        Shadow(
-                                          // léger relief comme sur la maquette
-                                          color: Color.fromRGBO(0, 0, 0, 0.25),
-                                          blurRadius: 12,
-                                          offset: Offset(0, 6),
-                                        ),
-                                      ],
-                                    ),
-                                    textAlign: TextAlign.center,
-                                    maxLines: 1,
+                        child: Center(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              if (_tagline.isNotEmpty)
+                                Text(
+                                  _tagline,
+                                  textAlign: TextAlign.center,
+                                  style: const TextStyle(
+                                    fontSize: 22,
+                                    fontWeight: FontWeight.w600,
+                                    color: Color.fromRGBO(255, 255, 255, 0.9),
                                   ),
-                                ],
-                              ),
-                            ),
-
-                            const SizedBox(height: 12),
-
-                            // 📝 DESCRIPTION
-                            if (_tagline.isNotEmpty)
-                              Text(
-                                _tagline,
-                                textAlign: TextAlign.center,
-                                style: const TextStyle(
-                                  fontSize: 22, // ≈ 1.3rem
-                                  fontWeight: FontWeight.w600,
-                                  color: Color.fromRGBO(255, 255, 255, 0.9),
                                 ),
-                              ),
-                          ],
+                            ],
+                          ),
                         ),
                       ),
                     ],
@@ -348,24 +379,32 @@ class SimpleMenuScreenState extends State<MenuScreen> {
                   return SliverToBoxAdapter(
                     child: (_promoEnabled && _promoText.isNotEmpty)
                         ? Container(
-                            margin: const EdgeInsets.all(20),
-                            padding: const EdgeInsets.all(20),
+                            margin: const EdgeInsets.symmetric(
+                                horizontal: 20, vertical: 8),
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 16, vertical: 12),
                             decoration: BoxDecoration(
-                              color: const Color.fromRGBO(255, 255, 255, 0.15),
-                              borderRadius: BorderRadius.circular(16),
-                              border: Border.all(
-                                color: const Color.fromRGBO(255, 255, 255, 0.2),
-                                width: 1,
-                              ),
+                              color: const Color(0x26F59E0B),
+                              borderRadius: BorderRadius.circular(12),
+                              border:
+                                  Border.all(color: const Color(0x33F59E0B)),
                             ),
-                            child: Text(
-                              _promoText,
-                              style: const TextStyle(
-                                fontSize: 19,
-                                fontWeight: FontWeight.w700,
-                                color: AppColors.accent,
-                              ),
-                              textAlign: TextAlign.center,
+                            child: Row(
+                              children: [
+                                const Icon(Icons.local_offer,
+                                    size: 18, color: Color(0xFFF59E0B)),
+                                const SizedBox(width: 8),
+                                Expanded(
+                                  child: Text(
+                                    _promoText,
+                                    textAlign: TextAlign.center,
+                                    style: const TextStyle(
+                                      fontWeight: FontWeight.w600,
+                                      color: Color(0xFF92400E),
+                                    ),
+                                  ),
+                                ),
+                              ],
                             ),
                           )
                         : const SizedBox.shrink(),
@@ -377,6 +416,7 @@ class SimpleMenuScreenState extends State<MenuScreen> {
                   child: Container(
                     padding: const EdgeInsets.only(top: 20, bottom: 20),
                     child: SingleChildScrollView(
+                      controller: _categoryScrollController,
                       scrollDirection: Axis.horizontal,
                       physics: const AlwaysScrollableScrollPhysics(),
                       child: Padding(
@@ -384,7 +424,12 @@ class SimpleMenuScreenState extends State<MenuScreen> {
                             left: 20), // Padding seulement sur le contenu
                         child: Row(
                           children: [
-                            for (final cat in (_menuData.keys.toList()..sort()))
+                            for (final cat in () {
+                              final allCats = _menuData.keys.toSet();
+                              allCats.addAll(_categoriesOrder);
+                              return applyOrderAndHide(
+                                  allCats, _categoriesOrder, _categoriesHidden);
+                            }())
                               Padding(
                                 padding: const EdgeInsets.only(right: 12),
                                 child: CategoryPill(
@@ -402,27 +447,7 @@ class SimpleMenuScreenState extends State<MenuScreen> {
                 ),
 
                 // ===== TITRE DE SECTION =====
-                const SliverToBoxAdapter(
-                  child: Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 20, vertical: 20),
-                    child: Text(
-                      '🍕 SPECIALITÉS',
-                      style: TextStyle(
-                        fontSize: 32, // ← 2rem du HTML
-                        fontWeight: FontWeight.w800,
-                        color: AppColors.accent,
-                        shadows: [
-                          Shadow(
-                            color: Color.fromRGBO(0, 0, 0, 0.3),
-                            blurRadius: 8,
-                            offset: Offset(0, 2),
-                          ),
-                        ],
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-                  ),
-                ),
+                const SliverToBoxAdapter(child: SizedBox(height: 10)),
 
                 // ===== ITEMS DU MENU =====
                 (() {
@@ -441,7 +466,8 @@ class SimpleMenuScreenState extends State<MenuScreen> {
                     final currentItems = _menuData[_selectedCategory] ??
                         const <Map<String, dynamic>>[];
                     return SliverPadding(
-                      padding: const EdgeInsets.symmetric(horizontal: 20),
+                      padding: const EdgeInsets.symmetric(horizontal: 20)
+                          .copyWith(bottom: 96),
                       sliver: SliverList(
                         delegate: SliverChildBuilderDelegate(
                           (context, index) {
@@ -477,7 +503,7 @@ class SimpleMenuScreenState extends State<MenuScreen> {
                 })(),
 
                 const SliverToBoxAdapter(
-                  child: SizedBox(height: 120),
+                  child: SizedBox(height: 96), // Espace pour le FAB
                 ),
               ],
             ),

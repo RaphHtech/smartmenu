@@ -554,30 +554,48 @@ class _MenuItemFormScreenState extends State<MenuItemFormScreen> {
   }
 
   Widget _buildImagePlaceholder() {
-    return Container(
-      width: double.infinity,
-      height: double.infinity,
-      decoration: BoxDecoration(
-        color: Colors.grey[100],
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(
-            Icons.add_a_photo,
-            size: 48,
-            color: Colors.grey[400],
-          ),
-          const SizedBox(height: 8),
-          Text(
-            'Ajouter une photo',
-            style: TextStyle(
-              color: Colors.grey[500],
-              fontSize: 16,
+    return GestureDetector(
+      onTap: () async {
+        await _pickImage();
+        setState(() {
+          _removeImage = false;
+        });
+      },
+      child: Container(
+        width: double.infinity,
+        height: double.infinity,
+        decoration: BoxDecoration(
+          color: Colors.grey[100],
+          borderRadius: BorderRadius.circular(12),
+          border:
+              Border.all(color: Colors.grey[300]!, style: BorderStyle.solid),
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              Icons.add_a_photo,
+              size: 48,
+              color: Colors.grey[400],
             ),
-          ),
-        ],
+            const SizedBox(height: 8),
+            Text(
+              'Ajouter une photo',
+              style: TextStyle(
+                color: Colors.grey[500],
+                fontSize: 16,
+              ),
+            ),
+            const SizedBox(height: 4),
+            Text(
+              'Cliquez pour sélectionner',
+              style: TextStyle(
+                color: Colors.grey[400],
+                fontSize: 12,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
