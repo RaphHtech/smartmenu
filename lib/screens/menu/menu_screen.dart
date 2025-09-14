@@ -53,6 +53,8 @@ class SimpleMenuScreenState extends State<MenuScreen> {
   Map<String, List<Map<String, dynamic>>> _menuData = {};
   List<String> _categoriesOrder = [];
   Set<String> _categoriesHidden = {};
+  final ScrollController _mainScrollController = ScrollController();
+  bool _isHeaderCollapsed = false;
   String _emojiFor(String cat) {
     switch (cat) {
       case 'Pizzas':
@@ -124,6 +126,15 @@ class SimpleMenuScreenState extends State<MenuScreen> {
     _isAdminPreview = qp.containsKey('preview') || qp.containsKey('admin');
     _loadMenuFromFirebase();
     _loadRestaurantDetails();
+    _mainScrollController.addListener(_handleScroll);
+  }
+
+  @override
+  void dispose() {
+    _mainScrollController.removeListener(_handleScroll);
+    _mainScrollController.dispose();
+    _categoryScrollController.dispose();
+    super.dispose();
   }
 
   Future<void> _loadRestaurantDetails() async {
@@ -191,6 +202,28 @@ class SimpleMenuScreenState extends State<MenuScreen> {
 
     // Animation visuelle (optionnel)
     _showCustomNotification('✅ $itemName ajouté au panier !');
+  }
+
+  void setItemQuantity(String itemName, double price, int newQuantity) {
+    setState(() {
+      final currentQuantity = itemQuantities[itemName] ?? 0;
+      final quantityDiff = newQuantity - currentQuantity;
+
+      if (newQuantity == 0) {
+        itemQuantities.remove(itemName);
+      } else {
+        itemQuantities[itemName] = newQuantity;
+      }
+
+      _cartItemCount += quantityDiff;
+      _cartTotal += (price * quantityDiff);
+    });
+
+    final currentQuantity =
+        itemQuantities[itemName] ?? 0; // Redéfini ici pour la comparaison
+    if (newQuantity > currentQuantity) {
+      _showCustomNotification('✅ $itemName ajouté au panier !');
+    }
   }
 
   void increaseQuantity(String itemName, double price) {
@@ -296,6 +329,17 @@ class SimpleMenuScreenState extends State<MenuScreen> {
     }
   }
 
+  void _handleScroll() {
+    final offset = _mainScrollController.offset;
+    final shouldCollapse = _isHeaderCollapsed ? offset > 32 : offset > 72;
+
+    if (shouldCollapse != _isHeaderCollapsed) {
+      setState(() {
+        _isHeaderCollapsed = shouldCollapse;
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Stack(
@@ -321,6 +365,7 @@ class SimpleMenuScreenState extends State<MenuScreen> {
           body: SafeArea(
             bottom: false,
             child: CustomScrollView(
+              controller: _mainScrollController,
               physics: const BouncingScrollPhysics(),
               slivers: [
                 // ===== HEADER (en dur) =====
@@ -341,114 +386,142 @@ class SimpleMenuScreenState extends State<MenuScreen> {
 
                 // ===== SECTION HÉRO (2e “rectangle”) =====
                 SliverToBoxAdapter(
-                  child: Column(
-                    children: [
-                      Container(
-                        width: double.infinity,
-                        padding: const EdgeInsets.symmetric(
-                            vertical: 30, horizontal: 20),
-                        decoration:
-                            const BoxDecoration(color: AppColors.heroOverlay),
-                        child: Center(
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              if (_tagline.isNotEmpty)
-                                Text(
-                                  _tagline,
-                                  textAlign: TextAlign.center,
-                                  style: const TextStyle(
-                                    fontSize: 22,
-                                    fontWeight: FontWeight.w600,
-                                    color: Color.fromRGBO(255, 255, 255, 0.9),
-                                  ),
-                                ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-
-                // ===== SECTION PROMO (glassmorphism) =====
-                (() {
-                  if (!_promoEnabled || _promoText.isEmpty) {
-                    return const SliverToBoxAdapter(child: SizedBox.shrink());
-                  }
-                  return SliverToBoxAdapter(
-                    child: (_promoEnabled && _promoText.isNotEmpty)
-                        ? Container(
-                            margin: const EdgeInsets.symmetric(
-                                horizontal: 20, vertical: 8),
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 16, vertical: 12),
-                            decoration: BoxDecoration(
-                              color: const Color(0x26F59E0B),
-                              borderRadius: BorderRadius.circular(12),
-                              border:
-                                  Border.all(color: const Color(0x33F59E0B)),
-                            ),
-                            child: Row(
-                              children: [
-                                const Icon(Icons.local_offer,
-                                    size: 18, color: Color(0xFFF59E0B)),
-                                const SizedBox(width: 8),
-                                Expanded(
-                                  child: Text(
-                                    _promoText,
-                                    textAlign: TextAlign.center,
-                                    style: const TextStyle(
-                                      fontWeight: FontWeight.w600,
-                                      color: Color(0xFF92400E),
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          )
-                        : const SizedBox.shrink(),
-                  );
-                })(),
-
-                // ===== NAVIGATION CATÉGORIES =====
-                SliverToBoxAdapter(
-                  child: Container(
-                    padding: const EdgeInsets.only(top: 20, bottom: 20),
-                    child: SingleChildScrollView(
-                      controller: _categoryScrollController,
-                      scrollDirection: Axis.horizontal,
-                      physics: const AlwaysScrollableScrollPhysics(),
-                      child: Padding(
-                        padding: const EdgeInsets.only(
-                            left: 20), // Padding seulement sur le contenu
-                        child: Row(
-                          children: [
-                            for (final cat in () {
-                              final allCats = _menuData.keys.toSet();
-                              allCats.addAll(_categoriesOrder);
-                              return applyOrderAndHide(
-                                  allCats, _categoriesOrder, _categoriesHidden);
-                            }())
-                              Padding(
-                                padding: const EdgeInsets.only(right: 12),
-                                child: CategoryPill(
-                                  label: '${_emojiFor(cat)} $cat',
-                                  isActive: _selectedCategory == cat,
-                                  onTap: () => _selectCategory(cat),
-                                ),
+                  child: AnimatedContainer(
+                    duration: const Duration(milliseconds: 200),
+                    curve: Curves.easeOut,
+                    padding: EdgeInsets.symmetric(
+                      vertical: _isHeaderCollapsed ? 8 : 30,
+                      horizontal: 20,
+                    ),
+                    decoration:
+                        const BoxDecoration(color: AppColors.heroOverlay),
+                    child: AnimatedOpacity(
+                      duration: const Duration(milliseconds: 180),
+                      opacity: _isHeaderCollapsed ? 0 : 1,
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          if (_tagline.isNotEmpty)
+                            Text(
+                              _tagline,
+                              textAlign: TextAlign.center,
+                              style: const TextStyle(
+                                fontSize: 22,
+                                fontWeight: FontWeight.w600,
+                                color: Color.fromRGBO(255, 255, 255, 0.9),
                               ),
-                            const SizedBox(width: 20),
-                          ],
-                        ),
+                            ),
+                        ],
                       ),
                     ),
                   ),
                 ),
 
-                // ===== TITRE DE SECTION =====
-                const SliverToBoxAdapter(child: SizedBox(height: 10)),
+                // ===== SECTION PROMO (glassmorphism) =====
+                SliverToBoxAdapter(
+                  child: AnimatedContainer(
+                    duration: const Duration(milliseconds: 200),
+                    height: (_promoEnabled &&
+                            _promoText.isNotEmpty &&
+                            !_isHeaderCollapsed)
+                        ? null
+                        : 0,
+                    child: AnimatedOpacity(
+                      duration: const Duration(milliseconds: 180),
+                      opacity: _isHeaderCollapsed ? 0 : 1,
+                      child: (_promoEnabled && _promoText.isNotEmpty)
+                          ? Container(
+                              margin: const EdgeInsets.symmetric(
+                                  horizontal: 20, vertical: 8),
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 16, vertical: 12),
+                              decoration: BoxDecoration(
+                                color: const Color(0x26F59E0B),
+                                borderRadius: BorderRadius.circular(12),
+                                border:
+                                    Border.all(color: const Color(0x33F59E0B)),
+                              ),
+                              child: Row(
+                                children: [
+                                  const Icon(Icons.local_offer,
+                                      size: 18, color: Color(0xFFF59E0B)),
+                                  const SizedBox(width: 8),
+                                  Expanded(
+                                    child: Text(
+                                      _promoText,
+                                      textAlign: TextAlign.center,
+                                      style: const TextStyle(
+                                        fontWeight: FontWeight.w600,
+                                        color: Color(0xFF92400E),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            )
+                          : const SizedBox.shrink(),
+                    ),
+                  ),
+                ),
 
+                // ===== NAVIGATION CATÉGORIES =====
+                SliverAppBar(
+                  pinned: true,
+                  toolbarHeight: 0,
+                  backgroundColor: Colors.transparent,
+                  elevation: 0,
+                  shadowColor: Colors.transparent,
+                  surfaceTintColor: Colors.transparent,
+                  flexibleSpace: Container(
+                    decoration: BoxDecoration(
+                      boxShadow: _isHeaderCollapsed
+                          ? [
+                              BoxShadow(
+                                color: Colors.black.withOpacity(0.1),
+                                blurRadius: 4,
+                                offset: const Offset(0, 2),
+                              ),
+                            ]
+                          : [],
+                    ),
+                  ),
+                  bottom: PreferredSize(
+                    preferredSize: const Size.fromHeight(88),
+                    child: Container(
+                      height: 88,
+                      padding: const EdgeInsets.symmetric(vertical: 20),
+                      child: SingleChildScrollView(
+                        controller: _categoryScrollController,
+                        scrollDirection: Axis.horizontal,
+                        physics: const AlwaysScrollableScrollPhysics(),
+                        child: Padding(
+                          padding: const EdgeInsets.only(left: 20),
+                          child: Row(
+                            children: [
+                              for (final cat in () {
+                                final allCats = _menuData.keys.toSet();
+                                allCats.addAll(_categoriesOrder);
+                                return applyOrderAndHide(allCats,
+                                    _categoriesOrder, _categoriesHidden);
+                              }())
+                                Padding(
+                                  padding: const EdgeInsets.only(right: 12),
+                                  child: CategoryPill(
+                                    label: '${_emojiFor(cat)} $cat',
+                                    isActive: _selectedCategory == cat,
+                                    onTap: () => _selectCategory(cat),
+                                  ),
+                                ),
+                              const SizedBox(width: 20),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+                // ===== TITRE DE SECTION =====
+                const SliverToBoxAdapter(child: SizedBox(height: 18)),
                 // ===== ITEMS DU MENU =====
                 (() {
                   if (_isLoading) {
@@ -484,11 +557,12 @@ class SimpleMenuScreenState extends State<MenuScreen> {
                             final nameKey = (item['name'] ?? '') as String;
 
                             return Padding(
-                              padding: const EdgeInsets.only(bottom: 20),
+                              padding: const EdgeInsets.only(bottom: 28),
                               child: MenuItem(
                                 pizza: adapted,
                                 quantity: itemQuantities[nameKey] ?? 0,
                                 onAddToCart: addToCart,
+                                onSetQuantity: setItemQuantity, // ← NOUVEAU
                                 onIncreaseQuantity: increaseQuantity,
                                 onDecreaseQuantity: decreaseQuantity,
                                 currencySymbol: _symbolFor(_restaurantCurrency),

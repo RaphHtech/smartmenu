@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:smartmenu_app/screens/admin/admin_branding_screen.dart';
 import '../../screens/admin/admin_dashboard_overview_screen.dart';
 import '../../core/design/admin_tokens.dart';
 import '../../core/design/admin_typography.dart';
@@ -77,6 +78,12 @@ class _AdminShellState extends State<AdminShell> {
       icon: Icons.photo_library_outlined,
       activeIcon: Icons.photo_library,
       label: 'Médias',
+    ),
+    const AdminNavItem(
+      route: '/branding',
+      icon: Icons.palette_outlined,
+      activeIcon: Icons.palette,
+      label: 'Branding',
     ),
     const AdminNavItem(
       route: '/info',
@@ -445,7 +452,12 @@ class _AdminShellState extends State<AdminShell> {
     );
   }
 
-  String _getRestaurantId() => widget.restaurantId ?? 'newtest';
+  String _getRestaurantId() {
+    if (widget.restaurantId == null) {
+      throw Exception('Restaurant ID manquant dans AdminShell');
+    }
+    return widget.restaurantId!;
+  }
 
   void _onNavItemTap(String route) {
     setState(() => _selectedRoute = route);
@@ -455,7 +467,7 @@ class _AdminShellState extends State<AdminShell> {
       Navigator.of(context).pop();
     }
 
-    final rid = widget.restaurantId ?? _getRestaurantId();
+    final rid = _getRestaurantId(); // ← Ligne corrigée
 
     // ✅ DASHBOARD = Reset pile (racine propre)
     if (route == '/dashboard') {
@@ -478,6 +490,9 @@ class _AdminShellState extends State<AdminShell> {
         break;
       case '/media':
         screen = AdminMediaScreen(restaurantId: rid);
+        break;
+      case '/branding':
+        screen = AdminBrandingScreen(restaurantId: rid);
         break;
       case '/info':
         screen = AdminRestaurantInfoScreen(restaurantId: rid);
