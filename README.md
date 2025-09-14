@@ -160,16 +160,52 @@ Une application de menu numérique moderne pour restaurants, développée avec *
 - **Sélection intelligente** : Reset automatique si catégorie sélectionnée devient masquée
 - **Interface réactive** : Optimistic UI pour fluidité, \_load() pour synchronisation
 
-**Schéma Firestore étendu :**
+**Workflow fonctionnel :**
 
-```javascript
-restaurants/{rid}/info/details: {
-  categoriesOrder: ['Pizzas', 'Entrées', 'Pâtes', 'Boissons'], // ordre personnalisé
-  categoriesHidden: [], // catégories masquées
-  // ... autres champs existants
-}
+1. Paramètres → Réorganiser catégories par drag & drop
+2. Masquer catégories temporaires (ex: menu hivernal)
+3. Ajouter nouvelles catégories → Apparition immédiate côté admin/client
+4. Admin Menu & Client → Ordre et visibilité synchronisés
 
- **Workflow fonctionnel :**
+---
+
+### 🎯 Nouvelles Fonctionnalités v2.6.0 - Branding & Identité Visuelle ✅ TERMINÉE
+
+**Page Branding dédiée :**
+
+- **Upload logo restaurant** : Gestion Firebase Storage avec validation PNG/JPG, max 2MB
+- **Aperçus temps réel** : Prévisualisation Hero (36px) et Sticky (28px) identiques au client
+- **Fallback intelligent** : Monogramme auto-généré avec couleur dérivée stable du nom
+- **Cache-busting** : Versioning automatique pour mise à jour immédiate côté client
+- **Suppression sécurisée** : Nettoyage Storage + Firestore avec gestion d'erreurs
+
+**Interface Header client professionnalisée :**
+
+- **Logo + nom lockup** : Brand lockup professionnel remplaçant le dégradé "cheap"
+- **Typographie premium** : Texte blanc net sans effets, ombre subtile pour lisibilité
+- **Responsive adaptatif** : Tailles logo/texte différenciées Hero (36px) vs Sticky (28px)
+- **Standards UX** : Alignement avec patterns UberEats/DoorDash pour crédibilité marque
+
+**Architecture technique :**
+
+- **HTML5 Upload natif** : API web native évitant dépendances file_picker
+- **Storage organisé** : `restaurants/{rid}/branding/logo_*.png` avec versioning
+- **Validation robuste** : Format, taille, dimensions avec feedback utilisateur clair
+- **RBAC préparé** : Restriction Owner/Admin extensible selon roadmap permissions
+
+**Workflow fonctionnel :**
+
+1. Admin → Branding → Upload logo avec prévisualisation live Hero + Sticky
+2. Client header → Affichage automatique logo + nom en brand lockup professionnel
+3. Fallback → Monogramme coloré dérivé du nom si pas de logo
+4. Versioning → Cache-busting automatique garantit mise à jour immédiate
+
+**Impact UX majeur :** Transformation de l'aspect "amateur" en identité de marque professionnelle alignée standards SaaS modernes (Stripe, Notion, Linear).
+
+---
+
+**Workflow fonctionnel :**
+
 1. Paramètres → Réorganiser catégories par drag & drop
 2. Masquer catégories temporaires (ex: menu hivernal)
 3. Ajouter nouvelles catégories → Apparition immédiate côté admin/client
@@ -296,6 +332,7 @@ lib/
 │ ├── admin_media_screen.dart # Gestion médias complète
 │ ├── admin_settings_screen.dart # Paramètres + nom restaurant
 │ ├── admin_restaurant_info_screen.dart # Gestion tagline/promo
+│ ├── admin_branding_screen.dart # 🆕 Gestion identité visuelle complète
 │ └── menu_item_form_screen.dart # CRUD plats + upload images
 ├── widgets/
 │ ├── ui/ # 🆕 Composants AdminShell
@@ -319,7 +356,7 @@ web/
 ├── Icon-192.png
 └── Icon-512.png
 
-````
+```
 
 ---
 
@@ -338,7 +375,7 @@ web/
 git clone https://github.com/RaphHtech/smartmenu.git
 cd smartmenu_app
 flutter pub get
-````
+```
 
 ### Configuration Firebase
 
@@ -512,8 +549,8 @@ service firebase.storage {
 
 ## 📊 État Technique
 
-**Statut :** Phase 3 terminée - MVP complet fonctionnel  
-**Version :** 2.4.0 (Dashboard Overview + Landing Page + Navigation optimisée)  
+**Statut :** Phase 4 en cours - Fonctionnalités avancées  
+**Version :** 2.6.0 (Branding & Identité visuelle)
 **Environnement :** Développement local + Firebase project configuré  
 **Déploiement cible :** `https://smartmenu-mvp.web.app`  
 **Dernière mise à jour :** Septembre 2025

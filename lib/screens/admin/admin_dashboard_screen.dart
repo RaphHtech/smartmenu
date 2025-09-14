@@ -56,25 +56,6 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
 
   Timer? _debounceTimer;
 
-  String _emojiFor(String category) {
-    switch (category) {
-      case 'Pizzas':
-        return '🍕';
-      case 'Entrées':
-        return '🥗';
-      case 'Pâtes':
-        return '🍝';
-      case 'Desserts':
-        return '🍰';
-      case 'Boissons':
-        return '🹹';
-      case 'Spécialités':
-        return '⭐';
-      default:
-        return '🍽️'; // icône par défaut
-    }
-  }
-
   String _symbol(String c) {
     switch (c) {
       case 'ILS':
@@ -132,9 +113,6 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
         _categoriesOrder = List<String>.from(data['categoriesOrder'] ?? []);
         _categoriesHidden = Set<String>.from(data['categoriesHidden'] ?? []);
       });
-
-      print('DEBUG - categoriesOrder: $_categoriesOrder');
-      print('DEBUG - categoriesHidden: $_categoriesHidden');
     }, onError: (e) => debugPrint('Erreur info/details: $e'));
   }
 
@@ -456,10 +434,19 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
       child: Container(
         width: 56,
         height: 56,
-        color: const Color(0xFFF5F5F5),
-        child: Text(
-          _emojiFor(category),
-          style: const TextStyle(fontSize: 24),
+        decoration: BoxDecoration(
+          gradient: const LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [Color(0xFFF0F0F0), Color(0xFFE8E8E8)],
+          ),
+          border: Border.all(color: const Color(0xFFD0D0D0), width: 1),
+        ),
+        alignment: Alignment.center,
+        child: const Icon(
+          Icons.image_outlined,
+          size: 22,
+          color: Color(0xFF757575),
         ),
       ),
     );

@@ -19,6 +19,23 @@ class AppHeaderWidget extends StatelessWidget {
     this.logoUrl,
   });
 
+  Color _generateStableColor(String name) {
+    final colors = [
+      const Color(0xFF6366F1),
+      const Color(0xFF8B5CF6),
+      const Color(0xFF10B981),
+      const Color(0xFFEF4444),
+      const Color(0xFF3B82F6),
+      const Color(0xFFF59E0B),
+    ];
+
+    int sum = 0;
+    for (int i = 0; i < name.length; i++) {
+      sum += name.codeUnitAt(i);
+    }
+    return colors[sum % colors.length];
+  }
+
   @override
   Widget build(BuildContext context) {
     return SliverAppBar(
@@ -101,20 +118,22 @@ class AppHeaderWidget extends StatelessWidget {
                             children: [
                               _brandAvatar(restaurantName, logoUrl),
                               const SizedBox(width: 8),
-                              GradientText(
+                              Text(
                                 restaurantName.isEmpty
                                     ? 'RESTAURANT'
                                     : restaurantName,
                                 style: const TextStyle(
-                                  fontSize: 28,
-                                  fontWeight: FontWeight.w900,
-                                  letterSpacing: 1,
-                                  height: 1.05,
-                                ),
-                                gradient: const LinearGradient(
-                                  colors: [
-                                    Color(0xFFFFD179),
-                                    Color(0xFFFFA45B)
+                                  fontSize: 26,
+                                  fontWeight: FontWeight.w700,
+                                  color: Colors.white,
+                                  letterSpacing: 0.3, // ← Réduit
+                                  shadows: [
+                                    Shadow(
+                                      offset: Offset(0, 1),
+                                      blurRadius: 2,
+                                      color: Color.fromRGBO(
+                                          0, 0, 0, 0.15), // ← Plus subtil
+                                    ),
                                   ],
                                 ),
                               ),
@@ -154,11 +173,15 @@ class AppHeaderWidget extends StatelessWidget {
 
   Widget _brandAvatar(String name, String? url) {
     Widget fallback(String initials) => Container(
-          width: 28,
-          height: 28,
+          width: 36,
+          height: 36,
           decoration: BoxDecoration(
-            color: const Color(0xFF6366F1),
-            borderRadius: BorderRadius.circular(6),
+            color: _generateStableColor(name),
+            shape: BoxShape.circle,
+            border: Border.all(
+              color: Colors.white.withOpacity(0.2),
+              width: 1,
+            ),
           ),
           alignment: Alignment.center,
           child: Text(
@@ -166,7 +189,7 @@ class AppHeaderWidget extends StatelessWidget {
             style: const TextStyle(
               color: Colors.white,
               fontWeight: FontWeight.w700,
-              fontSize: 12,
+              fontSize: 14,
             ),
           ),
         );
@@ -182,14 +205,24 @@ class AppHeaderWidget extends StatelessWidget {
             .toUpperCase();
 
     if (url != null && url.trim().isNotEmpty && url.toLowerCase() != 'null') {
-      return ClipRRect(
-        borderRadius: BorderRadius.circular(6),
-        child: Image.network(
-          url,
-          width: 28,
-          height: 28,
-          fit: BoxFit.cover,
-          errorBuilder: (_, __, ___) => fallback(initials),
+      return Container(
+        width: 36,
+        height: 36,
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          border: Border.all(
+            color: Colors.white.withOpacity(0.2),
+            width: 1,
+          ),
+        ),
+        child: ClipOval(
+          child: Image.network(
+            url,
+            width: 36,
+            height: 36,
+            fit: BoxFit.cover,
+            errorBuilder: (_, __, ___) => fallback(initials),
+          ),
         ),
       );
     }
