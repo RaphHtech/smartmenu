@@ -163,12 +163,6 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
           tooltip: 'Prévisualiser le menu',
         ),
         const SizedBox(width: 8),
-        IconButton(
-          icon: const Icon(Icons.reorder),
-          onPressed: _showReorderDialog,
-          tooltip: 'Réorganiser les plats',
-        ),
-        const SizedBox(width: 8),
         FilledButton.icon(
           onPressed: _addMenuItem,
           icon: const Icon(Icons.add),
@@ -393,9 +387,9 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
 // 1) Pick l'url d'image en tolérant plusieurs noms de clés
   String _pickImageUrl(Map<String, dynamic> data) {
     const candidates = [
-      'imageUrl',
-      'imageURL',
+      'imageUrl', // Première priorité
       'image',
+      'imageURL',
       'image_url',
       'photoUrl',
       'photo_url',
@@ -480,15 +474,14 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
   Widget _squareThumb(String url, {String category = ''}) {
     final u = url.trim();
     return ClipRRect(
-      borderRadius: BorderRadius.circular(12),
-      child: Image.network(
-        u,
-        width: 56,
-        height: 56,
-        fit: BoxFit.cover,
-        errorBuilder: (_, __, ___) => _thumbPlaceholder(category: category),
-      ),
-    );
+        borderRadius: BorderRadius.circular(12),
+        child: Image.network(
+          u,
+          width: 56,
+          height: 56,
+          fit: BoxFit.cover,
+          errorBuilder: (_, __, ___) => _thumbPlaceholder(category: category),
+        ));
   }
 
   void _addMenuItem() {
@@ -731,99 +724,131 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
         return name.contains(q) || desc.contains(q) || cat.contains(q);
       });
     }
-
+// Tri
+    switch (_sortBy) {
+      case 'name':
+        visible.sort((a, b) {
+          final dataA = a.data() as Map<String, dynamic>?;
+          final dataB = b.data() as Map<String, dynamic>?;
+          return (dataA?['name'] ?? '')
+              .toString()
+              .compareTo((dataB?['name'] ?? '').toString());
+        });
+        break;
+      case 'price':
+        visible.sort((a, b) {
+          final dataA = a.data() as Map<String, dynamic>?;
+          final dataB = b.data() as Map<String, dynamic>?;
+          return _parsePrice(dataA?['price'])
+              .compareTo(_parsePrice(dataB?['price']));
+        });
+        break;
+      case 'category':
+      default:
+        visible.sort((a, b) {
+          final dataA = a.data() as Map<String, dynamic>?;
+          final dataB = b.data() as Map<String, dynamic>?;
+          final ca = (dataA?['category'] ?? '').toString();
+          final cb = (dataB?['category'] ?? '').toString();
+          final c = ca.compareTo(cb);
+          if (c != 0) return c;
+          return (dataA?['name'] ?? '')
+              .toString()
+              .compareTo((dataB?['name'] ?? '').toString());
+        });
+    }
     return visible;
   }
 
-  Future<void> _showReorderDialog() async {
-    final docs = await FirebaseFirestore.instance
-        .collection('restaurants')
-        .doc(widget.restaurantId)
-        .collection('menus')
-        .get(); // Sans orderBy pour l'instant
+  // Future<void> _showReorderDialog() async {
+  //   final docs = await FirebaseFirestore.instance
+  //       .collection('restaurants')
+  //       .doc(widget.restaurantId)
+  //       .collection('menus')
+  //       .get(); // Sans orderBy pour l'instant
 
-    final items = docs.docs.map((doc) {
-      final data = doc.data();
-      return {
-        'id': doc.id,
-        'name': data['name'] ?? '',
-        'category': data['category'] ?? '',
-        'order': data['order'] ?? 0,
-      };
-    }).toList();
+  //   final items = docs.docs.map((doc) {
+  //     final data = doc.data();
+  //     return {
+  //       'id': doc.id,
+  //       'name': data['name'] ?? '',
+  //       'category': data['category'] ?? '',
+  //       'order': data['order'] ?? 0,
+  //     };
+  //   }).toList();
 
-    items.sort((a, b) => (a['order'] as int).compareTo(b['order'] as int));
+  //   items.sort((a, b) => (a['order'] as int).compareTo(b['order'] as int));
 
-    final reorderedItems = await showDialog<List<Map<String, dynamic>>>(
-      context: context,
-      builder: (context) => _buildReorderDialog(items),
-    );
+  //   final reorderedItems = await showDialog<List<Map<String, dynamic>>>(
+  //     context: context,
+  //     builder: (context) => _buildReorderDialog(items),
+  //   );
 
-    if (reorderedItems != null) {
-      await _updateItemsOrder(reorderedItems);
-    }
-  }
+  //   if (reorderedItems != null) {
+  //     await _updateItemsOrder(reorderedItems);
+  //   }
+  // }
 
-  Widget _buildReorderDialog(List<Map<String, dynamic>> items) {
-    return StatefulBuilder(
-      builder: (context, setState) => AlertDialog(
-        title: const Text('Réorganiser les plats'),
-        content: SizedBox(
-          width: 400,
-          height: 500,
-          child: ReorderableListView.builder(
-            itemCount: items.length,
-            onReorder: (oldIndex, newIndex) {
-              setState(() {
-                if (newIndex > oldIndex) newIndex--;
-                final item = items.removeAt(oldIndex);
-                items.insert(newIndex, item);
-              });
-            },
-            itemBuilder: (context, index) {
-              final item = items[index];
-              return ListTile(
-                key: ValueKey(item['id']),
-                leading: const Icon(Icons.drag_handle),
-                title: Text(item['name']),
-                subtitle: Text(item['category']),
-              );
-            },
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Annuler'),
-          ),
-          TextButton(
-            onPressed: () => Navigator.pop(context, items),
-            child: const Text('Sauvegarder'),
-          ),
-        ],
-      ),
-    );
-  }
+  // Widget _buildReorderDialog(List<Map<String, dynamic>> items) {
+  //   return StatefulBuilder(
+  //     builder: (context, setState) => AlertDialog(
+  //       title: const Text('Réorganiser les plats'),
+  //       content: SizedBox(
+  //         width: 400,
+  //         height: 500,
+  //         child: ReorderableListView.builder(
+  //           itemCount: items.length,
+  //           onReorder: (oldIndex, newIndex) {
+  //             setState(() {
+  //               if (newIndex > oldIndex) newIndex--;
+  //               final item = items.removeAt(oldIndex);
+  //               items.insert(newIndex, item);
+  //             });
+  //           },
+  //           itemBuilder: (context, index) {
+  //             final item = items[index];
+  //             return ListTile(
+  //               key: ValueKey(item['id']),
+  //               leading: const Icon(Icons.drag_handle),
+  //               title: Text(item['name']),
+  //               subtitle: Text(item['category']),
+  //             );
+  //           },
+  //         ),
+  //       ),
+  //       actions: [
+  //         TextButton(
+  //           onPressed: () => Navigator.pop(context),
+  //           child: const Text('Annuler'),
+  //         ),
+  //         TextButton(
+  //           onPressed: () => Navigator.pop(context, items),
+  //           child: const Text('Sauvegarder'),
+  //         ),
+  //       ],
+  //     ),
+  //   );
+  // }
 
-  Future<void> _updateItemsOrder(List<Map<String, dynamic>> items) async {
-    final batch = FirebaseFirestore.instance.batch();
+  // Future<void> _updateItemsOrder(List<Map<String, dynamic>> items) async {
+  //   final batch = FirebaseFirestore.instance.batch();
 
-    for (int i = 0; i < items.length; i++) {
-      final ref = FirebaseFirestore.instance
-          .collection('restaurants')
-          .doc(widget.restaurantId)
-          .collection('menus')
-          .doc(items[i]['id']);
+  //   for (int i = 0; i < items.length; i++) {
+  //     final ref = FirebaseFirestore.instance
+  //         .collection('restaurants')
+  //         .doc(widget.restaurantId)
+  //         .collection('menus')
+  //         .doc(items[i]['id']);
 
-      batch.update(ref, {'order': (i + 1) * 100});
-    }
+  //     batch.update(ref, {'order': (i + 1) * 100});
+  //   }
 
-    await batch.commit();
+  //   await batch.commit();
 
-    if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Ordre des plats mis à jour')),
-      );
-    }
-  }
+  //   if (mounted) {
+  //     ScaffoldMessenger.of(context).showSnackBar(
+  //       const SnackBar(content: Text('Ordre des plats mis à jour')),
+  //     );
+  //   }
+  // }
 }

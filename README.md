@@ -17,13 +17,14 @@ Une application de menu numérique moderne pour restaurants, développée avec *
 
 ---
 
-## 🚀 État Actuel (Septembre 2025) - Version 2.6.0 ✅
+## 🚀 État Actuel (Septembre 2025) — Version 2.6.1 ✅
 
 ### 📌 Évolution
 
 - v2.4.0 — Dashboard Overview + Landing Page
 - v2.5.0 — Gestion avancée catégories
 - v2.6.0 — Branding professionnel (logo + fallback intelligent)
+- v2.6.1 — Rollback stabilisation + optimisations performance
 
 ---
 
@@ -51,6 +52,10 @@ Une application de menu numérique moderne pour restaurants, développée avec *
 - **Scanner QR Beta** : Affiché conditionnellement sur HTTPS/localhost
 - **Validation robuste** : Normalisation, messages d'erreur clairs
 - **UX clavier** : textInputAction.go, focus management
+  **URLs de test**
+- Client : `/r/{restaurantId}?t=12` (aujourd'hui `{restaurantId}` = ID Firestore)
+- Admin : `/admin`
+  > Le support `slug` reviendra plus tard. En attendant, utiliser l'ID exact du doc restaurant.
 
 ### Admin Dashboard - Interface SaaS Premium
 
@@ -74,6 +79,10 @@ Une application de menu numérique moderne pour restaurants, développée avec *
 - **MediaScreen complète** : Upload, gestion et assignation d'images aux plats
 - **Gestion catégories** : Réorganisation drag & drop, masquage/affichage, création
 - **Branding** : Upload logo restaurant avec fallback monogramme intelligent
+- **Stabilisation post-rollback** : Retour aux fonctionnalités core stables
+- **Optimisations requêtes** : Suppression des index complexes problématiques
+- **Architecture simplifiée** : Menu client et admin avec base de données unifiée
+- **Gestion d'erreurs robuste** : Fallback de catégories, règles Firestore optimisées
 
 ### Infrastructure
 
@@ -82,6 +91,7 @@ Une application de menu numérique moderne pour restaurants, développée avec *
 - CORS restreint (dev/staging/prod)
 - Service Worker différencié (cache client vs network admin)
 - Upload web-safe avec putData(Uint8List)
+- Analytics Firebase: `menu_open` (avec `tableId`) et `add_to_cart` (item + `tableId`)
 
 **Compatibilité assurée :** Si `categoriesOrder`/`categoriesHidden` absents, comportement alphabétique par défaut.
 
@@ -100,11 +110,9 @@ Une application de menu numérique moderne pour restaurants, développée avec *
 
 ```
 restaurants/{rid}/
-├── info/details (name, currency, tagline, promo_text, promo_enabled, owner_uid)
+├── info/details (name, currency, tagline, promo_text, categoriesOrder, categoriesHidden)
 ├── members/{uid} (role, invited_at)
-└── menus/{itemId} (name, price, category, image, imageUrl, signature, visible)
-
-users/{uid}/ (primary_restaurant_id, role, created_at)
+└── menus/{itemId} (name, price, category, imageUrl, signature, visible)
 ```
 
 ### Routing Web
@@ -234,8 +242,13 @@ gcloud config set project smartmenu-mvp
 # Vérifiez le bucket par défaut :
 firebase storage:bucket
 # Puis appliquez le CORS sur le bucket retourné, ex. :
-gsutil cors set cors.json gs://smartmenu-mvp.appspot.com
+gsutil cors set cors.json gs://smartmenu-mvp.firebasestorage.app
 ```
+
+**Notes importantes :**
+
+- Vérifier le bucket exact avec la commande puis appliquer CORS sur celui-ci (dans notre cas `gs://smartmenu-mvp.firebasestorage.app`)
+- Après modification CORS: DevTools → Application → Unregister Service Worker → Empty cache and hard reload.
 
 ### Développement
 
@@ -264,8 +277,8 @@ service cloud.firestore {
 
       // Menus
       match /menus/{itemId} {
-        allow read: if true;
-        allow write: if isMember(rid);
+        allow list, get: if resource.data.visible == true;
+        allow create, update, delete: if isMember(rid);
       }
 
       // Membres
@@ -318,6 +331,23 @@ service firebase.storage {
 ---
 
 ## Changelog
+
+### v2.6.1 — Rollback & Stabilisation
+
+**Corrections architecturales majeures :**
+
+- **Retour menu fonctionnel** : Suppression système de réorganisation complexe
+- **Requêtes simplifiées** : Firestore sans index problématiques
+- **CORS Firebase Storage** : Configuration correcte pour images
+- **Règles Firestore** : Lecture publique menus pour clients anonymes
+- **Code nettoyé** : Suppression variables inutilisées et logs debug
+
+**Notes d'exploitation**
+
+- Client: requêtes `.where('visible', true)` (alignées sur les Rules)
+- CORS: configuré sur le bucket `…appspot.com` + hard-reload SW après changement
+- Images: conserver l'URL brute `getDownloadURL()`; cache-bust côté UI en `?v=`/`&v=`
+- URLs: `/r/{restaurantId}?t=12` (ID Firestore; slug repoussé)
 
 ### v2.6.0 — Branding professionnel
 
@@ -416,11 +446,11 @@ service firebase.storage {
 
 ## 📊 État Technique
 
-**Statut :** Phase 4 terminée - Branding complet  
-**Version :** 2.6.0 (Branding & Identité visuelle)  
+**Statut :** Post-rollback - Base stable reconstituée
+**Version :** 2.6.1 (Rollback + stabilisation)  
 **Environnement :** Développement local + Firebase project configuré  
 **Déploiement cible :** `https://smartmenu-mvp.web.app`  
-**Dernière mise à jour :** Septembre 2025
+**Dernière mise à jour :** Septembre 2025 - Rollback réussi
 
 ### Notes Techniques Importantes
 
@@ -440,6 +470,9 @@ service firebase.storage {
 - **Erreur CORS** : vérifier le domaine autorisé dans gsutil cors
 - **Cache PWA** : vider le cache navigateur pour voir les derniers logos
 - **Logo non affiché** : vérifier `logoVersion` et cache-busting `?v=`
+- **Images cassées** : conserver l'URL `getDownloadURL()` telle quelle en base avec `?alt=media&token=...`
+- **Cache-bust images** : ajouter `&v=123` si URL contient déjà `?`, sinon `?v=123`
+- **Fallback UI** : utiliser `errorBuilder` sur `Image.network` pour éviter les cartes cassées
 
 ---
 
@@ -451,7 +484,7 @@ Projet développé par **Raphaël Benitah** avec accompagnement technique collab
 
 ---
 
-**Version :** 2.6.0 (Branding terminé, MVP étendu)  
+**Version :** 2.6.1 (Rollback + stabilisation)
 **License :** Propriétaire  
 **Contact :** rafaelbenitah@gmail.com  
 **Repository :** `https://github.com/RaphHtech/smartmenu`

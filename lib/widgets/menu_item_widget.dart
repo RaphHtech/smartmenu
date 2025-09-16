@@ -285,7 +285,7 @@ class MenuItem extends StatelessWidget {
                     : const Color(0xFF6C5CE7);
 
     return Container(
-      color: bg.withOpacity(0.9),
+      color: bg.withValues(alpha: 0.9),
       alignment: Alignment.center,
       child: const Icon(Icons.restaurant_menu_rounded,
           size: 18, color: Colors.white),
@@ -312,7 +312,7 @@ class MenuItem extends StatelessWidget {
               width: 40,
               height: 4,
               decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.3),
+                color: Colors.white.withValues(alpha: 0.3),
                 borderRadius: BorderRadius.circular(2),
               ),
             ),
