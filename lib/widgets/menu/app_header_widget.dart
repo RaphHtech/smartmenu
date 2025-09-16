@@ -1,7 +1,6 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import '../../core/constants/colors.dart';
-import '../../widgets/gradient_text_widget.dart';
 
 class AppHeaderWidget extends StatelessWidget {
   final VoidCallback onServerCall;
@@ -58,7 +57,8 @@ class AppHeaderWidget extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 // Gauche : logo OU bouton retour admin
-                Expanded(
+                SizedBox(
+                  width: 80,
                   child: Align(
                     alignment: Alignment.centerLeft,
                     child: showAdminReturn
@@ -146,7 +146,8 @@ class AppHeaderWidget extends StatelessWidget {
                 ),
 
                 // Droite : bouton Serveur
-                Expanded(
+                SizedBox(
+                  width: 100,
                   child: Align(
                     alignment: Alignment.centerRight,
                     child: ElevatedButton.icon(
