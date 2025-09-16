@@ -17,11 +17,19 @@ Une application de menu numérique moderne pour restaurants, développée avec *
 
 ---
 
-## 🚀 État Actuel (Septembre 2025) - Version 2.5.0 ✅ TERMINÉE
+## 🚀 État Actuel (Septembre 2025) - Version 2.6.0 ✅
 
-### ✅ Fonctionnalités Terminées
+### 📌 Évolution
 
-**Client PWA :**
+- v2.4.0 — Dashboard Overview + Landing Page
+- v2.5.0 — Gestion avancée catégories
+- v2.6.0 — Branding professionnel (logo + fallback intelligent)
+
+---
+
+## ✅ Fonctionnalités Terminées
+
+### Client PWA
 
 - Navigation par catégories dynamiques (Pizzas, Entrées, Pâtes, Desserts, Boissons)
 - Ajout au panier avec contrôles +/-
@@ -35,7 +43,16 @@ Une application de menu numérique moderne pour restaurants, développée avec *
 - Devise dynamique (₪, €, $) selon restaurant
 - Tagline et bandeau promo personnalisables
 
-**Admin Dashboard - Interface SaaS Premium :**
+**Landing (client) :**
+
+- **Interface moderne** : Design premium avec logo gradient
+- **Saisie code restaurant** : Input avec validation format (a-z, 0-9, tirets)
+- **Navigation optimisée** : pushReplacement vers menu (pas de retour accidentel)
+- **Scanner QR Beta** : Affiché conditionnellement sur HTTPS/localhost
+- **Validation robuste** : Normalisation, messages d'erreur clairs
+- **UX clavier** : textInputAction.go, focus management
+
+### Admin Dashboard - Interface SaaS Premium
 
 - **AdminShell** : Sidebar/Topbar professionnelle (inspiration Stripe/Notion/Linear)
 - **Navigation complète** : Dashboard, Menu, Médias, Infos resto, Paramètres
@@ -53,219 +70,20 @@ Une application de menu numérique moderne pour restaurants, développée avec *
 - Gestion devises multiples (ILS par défaut)
 - Placeholders avec icônes de catégorie (🍕, 🥗, etc.)
 - Screen "Infos du restaurant" pour modifier tagline/promo
+- **Filtres et recherche avancés** : Interface complète avec tri dynamique
+- **MediaScreen complète** : Upload, gestion et assignation d'images aux plats
+- **Gestion catégories** : Réorganisation drag & drop, masquage/affichage, création
+- **Branding** : Upload logo restaurant avec fallback monogramme intelligent
 
-**Landing Page Client :**
-
-- **Interface moderne** : Design premium avec logo gradient
-- **Saisie code restaurant** : Input avec validation format (a-z, 0-9, tirets)
-- **Navigation optimisée** : pushReplacement vers menu (pas de retour accidentel)
-- **Scanner QR Beta** : Affiché conditionnellement sur HTTPS/localhost
-- **Validation robuste** : Normalisation, messages d'erreur clairs
-- **UX clavier** : textInputAction.go, focus management
-
-**Infrastructure :**
+### Infrastructure
 
 - Firestore Rules multi-tenant sécurisées
 - Storage Rules avec lecture publique images
-- CORS configuré (localhost + production)
+- CORS restreint (dev/staging/prod)
 - Service Worker différencié (cache client vs network admin)
 - Upload web-safe avec putData(Uint8List)
 
-### 🎯 Nouvelles Fonctionnalités v2.1.0 - AdminShell Premium
-
-- **AdminShell Layout** : Interface SaaS avec sidebar/topbar premium
-- **Navigation intelligente** : Retour contextuel (sous-pages → Dashboard)
-- **Responsive optimisé** : Recherche adaptive, débordement corrigé
-- **Modification nom restaurant** : Interface intuitive avec validation
-- **Écrans placeholder** : Médias et Paramètres avec design cohérent
-
-### 🎯 Nouvelles Fonctionnalités v2.2.0 - Filtres & Recherche
-
-- **Filtres et recherche avancés** : Interface complète dans AdminDashboardScreen
-- **Recherche en temps réel** : Filtrage instantané par nom/description/catégorie avec support accents
-- **Tri dynamique** : Par catégorie/nom/prix avec persistence de l'état
-- **Chips de filtrage** : Filtrage par catégorie avec toggle et état "Toutes"
-- **Architecture optimisée** : Interface de recherche séparée du StreamBuilder pour performance
-- **Responsive design** : Champs de recherche et tri adaptés mobile/desktop
-
-**Interface de filtrage :**
-
-- Champ de recherche avec normalisation des accents
-- Menu déroulant tri compact et responsive
-- Chips catégories scrollables horizontalement
-- Bouton clear avec conservation du focus
-- Normalisation des accents pour recherche tolérante
-
-### 🎯 Nouvelles Fonctionnalités v2.3.0 - MediaScreen & Assignation Images
-
-- **AdminMediaScreen complète** : Interface de gestion des médias opérationnelle
-- **Upload d'images** : Sélection de fichiers avec validation format/taille (PNG, JPG, WebP - max 5MB)
-- **Galerie des médias** : Grille responsive des images uploadées avec métadonnées
-- **Gestion avancée** : Suppression avec confirmation, affichage taille fichier et date
-- **Feedback utilisateur** : Progress bar d'upload, alertes d'erreur avec dismiss
-- **Storage Rules optimisées** : Permissions multi-tenant pour upload/suppression sécurisés
-- **🆕 Assignation d'images aux plats** : Depuis MediaScreen vers plats existants
-
-**Interface MediaScreen :**
-
-- Zone d'upload cliquable avec instructions claires
-- Bouton "Ajouter" dans topbar pour accès rapide
-- Grille 4 colonnes adaptative desktop/mobile
-- Cartes médias avec aperçu, nom, taille et actions
-- **Bouton "Utiliser"** : Modal de sélection des plats avec recherche
-- **Assignation Firestore** : Update automatique image + imageUrl des plats
-- Gestion d'erreurs contextuelle (format, taille, permissions)
-- Loading states et empty states élégants
-
-### 🎯 Nouvelles Fonctionnalités v2.4.0 - Dashboard Overview & Landing Page
-
-**Dashboard Overview :**
-
-- **Métriques temps réel** : Total plats, catégories, images, signatures
-- **Actions rapides** : Ajouter plat, gérer médias, modifier infos, prévisualiser
-- **Calculs côté client** : Zero surcoût Firestore, 100% synchro
-- **Responsive** : Grille adaptive 4/2 colonnes selon écran
-- **États visuels** : Carte warning pour plats sans image
-
-**Landing Page Client :**
-
-- **Design moderne** : Logo gradient, typographie premium
-- **Validation robuste** : Regex format, normalisation lowercase
-- **Feature flag scanner** : Détection HTTPS/localhost automatique
-- **Navigation optimisée** : pushReplacement, pas de retour accidentel
-- **UX premium** : États loading, erreurs inline, focus management
-
----
-
-### 🎯 Nouvelles Fonctionnalités v2.5.0 - Gestion avancée des catégories ✅
-
-**Contrôle restaurateur (Paramètres) :**
-
-- **Réorganisation par drag & drop** : ReorderableListView pour l'ordre personnalisé
-- **Masquage/Affichage dynamique** : Switch par catégorie avec persistance
-- **Création de nouvelles catégories** : Input avec validation case-insensitive et TitleCase
-- **Suppression sécurisée** : Vérification des plats existants, proposition de masquage
-- **Gestion d'erreurs robuste** : Optimistic UI + rollback en cas d'échec
-
-**Application côté Client & Admin :**
-
-- **Ordre personnalisé appliqué** : Barre de catégories et tri des plats respectent les paramètres
-- **Masquage effectif** : Catégories masquées n'apparaissent plus dans l'interface
-- **Synchronisation temps réel** : Listener Firestore pour mise à jour immédiate
-- **Catégories vides visibles** : Nouvelles catégories apparaissent même sans plats
-
-**Améliorations techniques :**
-
-- **Normalisation tolérante** : Comparaison "pizza" vs "Pizzas" fonctionnelle
-- **Sélection intelligente** : Reset automatique si catégorie sélectionnée devient masquée
-- **Interface réactive** : Optimistic UI pour fluidité, \_load() pour synchronisation
-
-**Workflow fonctionnel :**
-
-1. Paramètres → Réorganiser catégories par drag & drop
-2. Masquer catégories temporaires (ex: menu hivernal)
-3. Ajouter nouvelles catégories → Apparition immédiate côté admin/client
-4. Admin Menu & Client → Ordre et visibilité synchronisés
-
----
-
-### 🎯 Nouvelles Fonctionnalités v2.6.0 - Branding & Identité Visuelle ✅ TERMINÉE
-
-**Page Branding dédiée :**
-
-- **Upload logo restaurant** : Gestion Firebase Storage avec validation PNG/JPG, max 2MB
-- **Aperçus temps réel** : Prévisualisation Hero (36px) et Sticky (28px) identiques au client
-- **Fallback intelligent** : Monogramme auto-généré avec couleur dérivée stable du nom
-- **Cache-busting** : Versioning automatique pour mise à jour immédiate côté client
-- **Suppression sécurisée** : Nettoyage Storage + Firestore avec gestion d'erreurs
-
-**Interface Header client professionnalisée :**
-
-- **Logo + nom lockup** : Brand lockup professionnel remplaçant le dégradé "cheap"
-- **Typographie premium** : Texte blanc net sans effets, ombre subtile pour lisibilité
-- **Responsive adaptatif** : Tailles logo/texte différenciées Hero (36px) vs Sticky (28px)
-- **Standards UX** : Alignement avec patterns UberEats/DoorDash pour crédibilité marque
-
-**Architecture technique :**
-
-- **HTML5 Upload natif** : API web native évitant dépendances file_picker
-- **Storage organisé** : `restaurants/{rid}/branding/logo_*.png` avec versioning
-- **Validation robuste** : Format, taille, dimensions avec feedback utilisateur clair
-- **RBAC préparé** : Restriction Owner/Admin extensible selon roadmap permissions
-
-**Workflow fonctionnel :**
-
-1. Admin → Branding → Upload logo avec prévisualisation live Hero + Sticky
-2. Client header → Affichage automatique logo + nom en brand lockup professionnel
-3. Fallback → Monogramme coloré dérivé du nom si pas de logo
-4. Versioning → Cache-busting automatique garantit mise à jour immédiate
-
-**Impact UX majeur :** Transformation de l'aspect "amateur" en identité de marque professionnelle alignée standards SaaS modernes (Stripe, Notion, Linear).
-
----
-
-**Workflow fonctionnel :**
-
-1. Paramètres → Réorganiser catégories par drag & drop
-2. Masquer catégories temporaires (ex: menu hivernal)
-3. Ajouter nouvelles catégories → Apparition immédiate côté admin/client
-4. Admin Menu & Client → Ordre et visibilité synchronisés
-
 **Compatibilité assurée :** Si `categoriesOrder`/`categoriesHidden` absents, comportement alphabétique par défaut.
-
-## 🎨 AdminShell - Interface SaaS Premium
-
-### Architecture AdminShell
-
-```
-
-lib/widgets/ui/
-├── admin*shell.dart # Layout principal sidebar + topbar
-├── admin_themed.dart # Wrapper thème admin
-├── categories_settings_widget.dart # 🆕 gestion des catégories (drag, hide, add)
-└── admin*\*.dart # Composants spécialisés
-
-lib/screens/admin/
-├── admin_dashboard_overview_screen.dart # Vue d'ensemble + métriques
-├── admin_dashboard_screen.dart # Gestion menu (CRUD plats)
-├── admin_media_screen.dart # Gestion médias complète
-├── admin_settings_screen.dart # Paramètres + nom restaurant
-├── admin_restaurant_info_screen.dart # Infos détaillées
-└── ... # Autres écrans admin
-
-```
-
-### Navigation AdminShell
-
-**Sidebar (Desktop 1024px+) :**
-
-- **Dashboard** : Vue d'ensemble (métriques + actions rapides)
-- **Menu** : Gestion des plats (CRUD, filtres, tri)
-- **Médias** : Gestion fichiers complète + assignation
-- **Infos resto** : Tagline, promo, devise
-- **Paramètres** : Nom restaurant, équipe (futur)
-
-**Topbar responsive :**
-
-- Burger menu (mobile) / Bouton retour contextuel
-- Titre de page dynamique
-- Actions personnalisées par écran
-- Interface épurée (recherche globale supprimée)
-- **Recherche par écran** : Recherche au niveau écran (ex. Menu) sans recherche globale AdminShell
-
-**Navigation intelligente :**
-
-- **Dashboard = racine** (pushAndRemoveUntil, pas de retour)
-- **Autres pages** → push simple avec retour visible vers Dashboard
-- Breadcrumbs contextuels
-
-### Design System Appliqué
-
-- **Palette Premium** : Gris neutres (#F9FAFB → #111827) + accent indigo (#6366F1)
-- **Typography** : Hiérarchie Display/Headline/Body/Label cohérente
-- **Composants** : Cards fines, inputs modernes, buttons premium
-- **States** : Loading, hover, focus, error harmonisés
-- **Responsive** : Breakpoints logiques, débordement maîtrisé
 
 ---
 
@@ -281,71 +99,78 @@ lib/screens/admin/
 ### Structure Firestore
 
 ```
-
 restaurants/{rid}/
 ├── info/details (name, currency, tagline, promo_text, promo_enabled, owner_uid)
 ├── members/{uid} (role, invited_at)
 └── menus/{itemId} (name, price, category, image, imageUrl, signature, visible)
 
 users/{uid}/ (primary_restaurant_id, role, created_at)
-
 ```
 
 ### Routing Web
 
 ```
-
 / → HomeScreen (landing page + saisie code)
 /r/{restaurantId} → MenuScreen (PWA client)
 /admin → AdminLoginScreen (avec AdminShell)
 /admin/signup → AdminSignupScreen (avec AdminShell)
-
 ```
+
+### 🔐 Rôles et permissions (RBAC)
+
+| Ressource              | Owner | Manager | Staff |
+| ---------------------- | ----- | ------- | ----- |
+| info (name, branding…) | CRUD  | R       | R     |
+| menus                  | CRUD  | CRUD    | R     |
+| media (photos)         | CRUD  | CRUD    | R     |
+| members                | CRUD  | R       | —     |
+
+⚠️ Les menus et images sont publics en lecture uniquement (aucune donnée sensible).
 
 ---
 
 ## 📂 Structure Projet
 
 ```
-
 lib/
 ├── core/
-│ ├── constants/colors.dart # Palette client (PWA)
-│ └── design/ # 🆕 Design System Admin
-│ ├── admin_tokens.dart # Variables design (couleurs, spacing, etc.)
-│ ├── admin_typography.dart # Hiérarchie typographique
-│ └── admin_theme.dart # ThemeData Material 3
+│   ├── constants/colors.dart # Palette client (PWA)
+│   └── design/ # 🆕 Design System Admin
+│       ├── admin_tokens.dart # Variables design (couleurs, spacing, etc.)
+│       ├── admin_typography.dart # Hiérarchie typographique
+│       └── admin_theme.dart # ThemeData Material 3
 ├── services/
-│ ├── cart_service.dart # Gestion panier
-│ └── firebase_menu_service.dart # Intégration Firestore (client)
+│   ├── cart_service.dart # Gestion panier
+│   └── firebase_menu_service.dart # Intégration Firestore (client)
 ├── screens/
-│ ├── home_screen.dart # Landing page avec saisie code
-│ ├── qr_scanner_screen.dart # Scanner QR multi-restaurants (futur)
-│ ├── menu/
-│ │ └── menu_screen.dart # Menu client
-│ └── admin/ # 🆕 Interface AdminShell
-│ ├── admin_login_screen.dart # Login restaurateur
-│ ├── admin_signup_screen.dart # Signup + onboarding
-│ ├── create_restaurant_screen.dart # Création resto + owner
-│ ├── admin_dashboard_overview_screen.dart # Dashboard métriques
-│ ├── admin_dashboard_screen.dart # Gestion menu (CRUD)
-│ ├── admin_media_screen.dart # Gestion médias complète
-│ ├── admin_settings_screen.dart # Paramètres + nom restaurant
-│ ├── admin_restaurant_info_screen.dart # Gestion tagline/promo
-│ ├── admin_branding_screen.dart # 🆕 Gestion identité visuelle complète
-│ └── menu_item_form_screen.dart # CRUD plats + upload images
+│   ├── home_screen.dart # Landing page avec saisie code
+│   ├── qr_scanner_screen.dart # Scanner QR multi-restaurants (futur)
+│   ├── menu/
+│   │   └── menu_screen.dart # Menu client
+│   └── admin/ # 🆕 Interface AdminShell
+│       ├── admin_login_screen.dart # Login restaurateur
+│       ├── admin_signup_screen.dart # Signup + onboarding
+│       ├── create_restaurant_screen.dart # Création resto + owner
+│       ├── admin_dashboard_overview_screen.dart # Dashboard métriques
+│       ├── admin_dashboard_screen.dart # Gestion menu (CRUD)
+│       ├── admin_media_screen.dart # Gestion médias complète
+│       ├── admin_settings_screen.dart # Paramètres + nom restaurant
+│       ├── admin_restaurant_info_screen.dart # Gestion tagline/promo
+│       ├── admin_branding_screen.dart # Gestion identité visuelle complète
+│       └── menu_item_form_screen.dart # CRUD plats + upload images
 ├── widgets/
-│ ├── ui/ # 🆕 Composants AdminShell
-│ │ ├── admin_shell.dart # Layout principal sidebar/topbar
-│ │ └── admin_themed.dart # Wrapper + navigation admin
-│ ├── modals/order_review_modal.dart
-│ ├── notifications/custom_notification.dart
-│ ├── menu/
-│ │ ├── cart_floating_widget.dart
-│ │ └── app_header_widget.dart
-│ ├── category_pill_widget.dart
-│ ├── gradient_text_widget.dart
-│ └── menu_item_widget.dart
+│   ├── ui/ # 🆕 Composants AdminShell
+│   │   ├── admin_shell.dart # Layout principal sidebar/topbar
+│   │   ├── admin_themed.dart # Wrapper + navigation admin
+│   │   └── categories_settings_widget.dart # Gestion des catégories
+│   ├── modals/order_review_modal.dart
+│   ├── notifications/custom_notification.dart
+│   ├── menu/
+│   │   ├── cart_floating_widget.dart
+│   │   └── app_header_widget.dart
+│   ├── category_pill_widget.dart
+│   ├── gradient_text_widget.dart
+│   └── menu_item_widget.dart
 └── main.dart # Init Firebase + routing
 
 web/
@@ -353,9 +178,8 @@ web/
 ├── manifest.json # PWA manifest
 ├── sw.js # Service Worker (cache client/admin)
 └── icons/
-├── Icon-192.png
-└── Icon-512.png
-
+    ├── Icon-192.png
+    └── Icon-512.png
 ```
 
 ---
@@ -392,7 +216,12 @@ flutter pub get
 # Créer cors.json dans le dossier racine :
 echo '[
   {
-    "origin": ["*"],
+    "origin": [
+      "http://localhost:5000",
+      "http://127.0.0.1:5000",
+      "https://smartmenu-stg.web.app",
+      "https://smartmenu.web.app"
+    ],
     "method": ["GET", "POST", "PUT", "DELETE", "HEAD", "OPTIONS"],
     "maxAgeSeconds": 3600,
     "responseHeader": ["Content-Type", "Authorization", "Content-Length", "User-Agent", "x-goog-resumable"]
@@ -415,21 +244,6 @@ flutter run -d chrome  # Mode dev
 flutter build web      # Build production
 ```
 
-### Tests manuels
-
-- **Landing** : `/` → saisir code restaurant (ex: `newtest`) → navigation vers menu
-- **Client** : `/r/{restaurantId}` → navigation menu avec preview admin
-- **Admin** :
-  1. `/admin/signup` → créer compte + restaurant
-  2. `/admin` → login puis redirection Dashboard Overview
-  3. Dashboard → métriques + actions rapides fonctionnelles
-  4. Menu → CRUD plats avec recherche/filtres
-  5. Médias → upload images + assignation aux plats
-  6. Preview → `/r/{rid}` avec retour admin
-  7. Paramètres → modifier nom restaurant
-  8. **Preview admin** : `/r/{rid}?admin=true` → bouton retour admin visible et fonctionnel
-  9. **Navigation landing** : Depuis `/` vers menu → bouton back ne retourne PAS à l'accueil
-
 ---
 
 ## 🔒 Sécurité & Rules Firebase
@@ -445,7 +259,7 @@ service cloud.firestore {
       match /info/{docId} {
         allow read: if true;
         allow create: if request.auth != null && request.resource.data.owner_uid == request.auth.uid;
-        allow update, delete: if isMember(rid);
+        allow update, delete: if isOwner(rid);
       }
 
       // Menus
@@ -457,14 +271,21 @@ service cloud.firestore {
       // Membres
       match /members/{uid} {
         allow read: if request.auth != null && request.auth.uid == uid;
-        allow create: if request.auth != null && request.auth.uid == uid && request.resource.data.role == "owner";
         allow update, delete: if isMember(rid) && request.auth.uid == uid;
+        allow create: if isOwner(rid); // owner peut ajouter des membres
       }
     }
 
+    // Helpers functions
     function isMember(rid) {
       return request.auth != null &&
              exists(/databases/$(database)/documents/restaurants/$(rid)/members/$(request.auth.uid));
+    }
+
+    function isOwner(rid) {
+      return request.auth != null &&
+             exists(/databases/$(database)/documents/restaurants/$(rid)/members/$(request.auth.uid)) &&
+             get(/databases/$(database)/documents/restaurants/$(rid)/members/$(request.auth.uid)).data.role == "owner";
     }
   }
 }
@@ -476,10 +297,19 @@ service cloud.firestore {
 rules_version = '2';
 service firebase.storage {
   match /b/{bucket}/o {
-    match /restaurants/{rid}/menu/{file} {
+    match /restaurants/{rid}/menu/{file=**} {
       allow read: if true;
-      allow write: if request.auth != null &&
-        exists(/databases/(default)/documents/restaurants/$(rid)/members/$(request.auth.uid));
+      allow write: if isMember(rid);
+    }
+
+    match /restaurants/{rid}/branding/{file=**} {
+      allow read: if true;
+      allow write: if isOwner(rid);
+    }
+
+    match /restaurants/{rid}/media/{file=**} {
+      allow read: if true;
+      allow write: if isMember(rid);
     }
   }
 }
@@ -487,38 +317,83 @@ service firebase.storage {
 
 ---
 
+## Changelog
+
+### v2.6.0 — Branding professionnel
+
+**Page Branding dédiée :**
+
+- **Upload logo restaurant** : Gestion Firebase Storage avec validation PNG/JPG, max 2MB
+- **Aperçus temps réel** : Prévisualisation Hero (36px) et Sticky (28px)
+- **Fallback intelligent** : Monogramme auto-généré avec couleur dérivée stable du nom
+- **Cache-busting** : Versioning automatique pour mise à jour immédiate côté client
+- **Suppression sécurisée** : Nettoyage Storage + Firestore avec gestion d'erreurs
+
+**Interface Header client professionnalisée :**
+
+- **Logo + nom lockup** : Brand lockup professionnel
+- **Typographie premium** : Texte blanc net sans effets, ombre subtile pour lisibilité
+- **Responsive adaptatif** : Tailles logo/texte différenciées Hero (36px) vs Sticky (28px)
+
+**Architecture technique :**
+
+- **HTML5 Upload natif** : API web native évitant dépendances file_picker
+- **Storage organisé** : `restaurants/{rid}/branding/logo_*.png` avec versioning
+- **Validation robuste** : Format, taille, dimensions avec feedback utilisateur clair
+
+### v2.5.0 — Gestion avancée des catégories
+
+**Contrôle restaurateur (Paramètres) :**
+
+- **Réorganisation par drag & drop** : ReorderableListView pour l'ordre personnalisé
+- **Masquage/Affichage dynamique** : Switch par catégorie avec persistance
+- **Création de nouvelles catégories** : Input avec validation case-insensitive et TitleCase
+- **Suppression sécurisée** : Vérification des plats existants, proposition de masquage
+- **Gestion d'erreurs robuste** : Optimistic UI + rollback en cas d'échec
+
+**Application côté Client & Admin :**
+
+- **Ordre personnalisé appliqué** : Barre de catégories et tri des plats respectent les paramètres
+- **Masquage effectif** : Catégories masquées n'apparaissent plus dans l'interface
+- **Synchronisation temps réel** : Listener Firestore pour mise à jour immédiate
+- **Catégories vides visibles** : Nouvelles catégories apparaissent même sans plats
+
+### v2.4.0 — Dashboard Overview & Landing Page
+
+**Dashboard Overview :**
+
+- **Métriques temps réel** : Total plats, catégories, images, signatures
+- **Actions rapides** : Ajouter plat, gérer médias, modifier infos, prévisualiser
+- **Responsive** : Grille adaptive 4/2 colonnes selon écran
+- **États visuels** : Carte warning pour plats sans image
+
+### v2.3.0 — MediaScreen & assignation d'images
+
+- **AdminMediaScreen complète** : Interface de gestion des médias opérationnelle
+- **Upload d'images** : Sélection de fichiers avec validation format/taille (PNG, JPG, WebP - max 5MB)
+- **Galerie des médias** : Grille responsive des images uploadées avec métadonnées
+- **Gestion avancée** : Suppression avec confirmation, affichage taille fichier et date
+- **Assignation d'images aux plats** : Depuis MediaScreen vers plats existants
+
+### v2.2.0 — Filtres & Recherche
+
+- **Filtres et recherche avancés** : Interface complète dans AdminDashboardScreen
+- **Recherche en temps réel** : Filtrage instantané par nom/description/catégorie avec support accents
+- **Tri dynamique** : Par catégorie/nom/prix avec persistence de l'état
+- **Chips de filtrage** : Filtrage par catégorie avec toggle et état "Toutes"
+- **Architecture optimisée** : Interface de recherche séparée du StreamBuilder pour performance
+
+### v2.1.0 — AdminShell Premium
+
+- **AdminShell Layout** : Interface SaaS avec sidebar/topbar premium
+- **Navigation intelligente** : Retour contextuel (sous-pages → Dashboard)
+- **Responsive optimisé** : Recherche adaptive, débordement corrigé
+- **Modification nom restaurant** : Interface intuitive avec validation
+- **Écrans placeholder** : Médias et Paramètres avec design cohérent
+
+---
+
 ## 📋 Roadmap
-
-### ✅ Phase 1 - MVP Fonctionnel (Terminé)
-
-- Client PWA Flutter Web terminé
-- Authentification restaurateurs (login/signup)
-- Onboarding propriétaire (CreateRestaurantScreen)
-- Rules Firestore multi-tenant + Rules Storage
-- Dashboard restaurateur : liste temps réel des plats
-- CRUD plats + upload images (web + mobile)
-- Upload d'images avec suppression
-- Placeholders avec icônes de catégorie
-
-### ✅ Phase 2 - AdminShell & Interface Premium (Terminé - v2.1.0)
-
-- **Design System Premium** : Couleurs neutres, espacements, typographie
-- **AdminShell Layout** : Sidebar + Topbar professionnelle
-- **Navigation Premium** : Dashboard, Menu, Médias, Infos, Paramètres
-- **Responsive Design** : Sidebar fixe desktop, drawer mobile
-- **Breadcrumbs** : Navigation contextuelle
-- **Modification nom restaurant** : Interface dédiée avec validation
-- **Interface transformation** : Passage de basique à niveau Stripe/Notion
-
-### ✅ Phase 3 - Consolidation Features (Terminé - v2.4.0)
-
-- **Recherche et filtres** : Interface complète avec tri par catégorie/nom/prix
-- **MediaScreen opérationnelle** : Upload, gestion et assignation d'images
-- **Assignation Media → Plats** : Modal de sélection avec recherche
-- **Dashboard Overview** : Métriques temps réel + actions rapides
-- **Landing Page Client** : Saisie code + feature flag scanner
-- **Preview admin** : Navigation aller-retour seamless client ↔ admin
-- **Interface épurée** : Suppression recherche globale inutile
 
 ### 🔮 Phase 4 - Features Avancées
 
@@ -529,15 +404,7 @@ service firebase.storage {
 - **Notifications Temps Réel** : WebSocket pour commandes
 - **Multi-langues** : Hebrew/English/French selon marché
 
-### 🔮 Phase 5 - Composants Premium
-
-- **Liste Plats Améliorée** : Thumbnails carrées, hover effects, skeleton loading
-- **États Vides Élégants** : Illustrations, CTAs clairs
-- **Modales Cohérentes** : Design system unifié
-- **Notifications Premium** : Toast messages avec icônes
-- **Formulaires Sectionnés** : Groupes logiques, validation temps réel
-
-### 🚀 Phase 6 - Production & Scale
+### 🚀 Phase 5 - Production & Scale
 
 - **Déploiement Firebase Hosting** : `smartmenu-mvp.web.app`
 - **Core Web Vitals** : Optimisations performance
@@ -549,8 +416,8 @@ service firebase.storage {
 
 ## 📊 État Technique
 
-**Statut :** Phase 4 en cours - Fonctionnalités avancées  
-**Version :** 2.6.0 (Branding & Identité visuelle)
+**Statut :** Phase 4 terminée - Branding complet  
+**Version :** 2.6.0 (Branding & Identité visuelle)  
 **Environnement :** Développement local + Firebase project configuré  
 **Déploiement cible :** `https://smartmenu-mvp.web.app`  
 **Dernière mise à jour :** Septembre 2025
@@ -563,78 +430,16 @@ service firebase.storage {
 - **Upload Web** : `putData(Uint8List)` obligatoire pour compatibilité web
 - **Design Isolation** : Admin premium isolé du client PWA
 - **Navigation** : `pushAndRemoveUntil` pour pages racines, retour contextuel
-- **Architecture de recherche** : Interface séparée du StreamBuilder pour éviter la perte de focus
-- **Performance** : Filtrage en mémoire sur snapshot existant pour réactivité
-- **Normalisation accents** : Fonction `_normalize()` pour recherche tolérante (français/hébreu)
-- **MediaScreen opérationnelle** : Upload/suppression Firebase Storage avec validation complète
-- **Storage Rules multi-tenant** : Permissions basées sur membership restaurant pour sécurité
-- **Assignation images** : Modal de sélection plats avec recherche locale et update Firestore dual (image + imageUrl)
-- **Dashboard métriques** : Calculs côté client temps réel, zero surcoût Firestore
-- **Landing page robuste** : Validation regex, feature flag scanner, navigation optimisée
-- **Routing dynamique** : onGenerateRoute pour `/r/{code}` avec navigation interne
-
-### Leçons Apprises
-
-- **AdminShell Pattern** : Layout centralisé évite duplication code et assure cohérence
-- **Navigation intelligente** : Différencier pages racines vs sous-pages critique pour UX
-- **Responsive Design** : Champ recherche adaptatif évite débordements
-- **Design System** : Tokens centralisés facilitent maintenance et évolutions
-- **Validation formulaires** : Feedback temps réel améliore satisfaction utilisateur
-- **Focus management** : TextField dans StreamBuilder cause perte de focus systématique
-- **Architecture reactive** : Séparer UI stable (filtres) de UI dynamique (liste) crucial pour UX
-- **Performance filtering** : Filtrage en mémoire plus rapide que requêtes Firestore multiples
-- **Firebase Storage Rules** : Délai de propagation (1-2 min) critique pour tests fonctionnels
-- **File upload UX** : Progress bar et gestion d'erreurs essentiels pour feedback utilisateur
-- **Storage permissions** : Vérification membership restaurant plus sécurisée que auth simple
-- **Media workflow** : Assignation image → plat depuis galerie améliore significativement UX gestion contenu
-- **Dashboard insights** : Métriques temps réel côté client plus réactives que compteurs backend
-- **Landing page MVP** : Feature flag + validation robuste meilleur que sur-engineering
-- **Navigation routing** : onGenerateRoute nécessaire pour navigation interne dynamique
 
 ---
 
-## 🎯 Prochaines Étapes Recommandées
+## 🛠 Troubleshooting
 
-### Phase 4 Priority (Optionnel)
-
-1. **Scanner QR fonctionnel** : Implémentation mobile_scanner pour compléter landing page
-2. **Analytics Dashboard** : Métriques avancées avec tendances temporelles
-3. **Gestion équipe basique** : Invitations collaborateurs avec rôles
-
-### Production Ready
-
-1. **Déploiement Firebase Hosting** : Configuration environnement production
-2. **Performance audit** : Core Web Vitals et optimisations
-3. **Tests E2E** : Couverture complète user journeys
-
-### Déploiement production
-
-- `flutter build web` puis `firebase deploy --only hosting`
-- Vérifier **Authorized domains** (inclure le domaine prod)
-- Repasser CORS si le bucket change d'environnement
-
----
-
-## 🎨 Style Guidelines Admin
-
-### Palette Couleurs
-
-- **Neutrals** : 50 (background) → 900 (text max contrast)
-- **Primary** : Indigo moderne (#6366F1) pour actions
-- **States** : Success (#10B981), Warning (#F59E0B), Error (#EF4444)
-
-### Typography Hierarchy
-
-- **Display** : Titres de page (32px, 24px, 20px)
-- **Headline** : Titres composants (18px, 16px, 14px)
-- **Body** : Contenu (16px, 14px, 12px)
-- **Label** : UI elements (14px, 12px, 11px)
-
-### Spacing System
-
-- **Base 4px** : 4, 8, 12, 16, 20, 24, 32, 40, 48, 64
-- **Radius** : 4, 8, 12, 16, 24 selon contexte
-- **Elevation** : Ombres subtiles, max 8px blur
+- **Propagation des Rules** : attendre 1—2 min après publication
+- **403 Storage** : vérifier auth + rules + membership restaurant
+- **Erreur CORS** : vérifier le domaine autorisé dans gsutil cors
+- **Cache PWA** : vider le cache navigateur pour voir les derniers logos
+- **Logo non affiché** : vérifier `logoVersion` et cache-busting `?v=`
 
 ---
 
@@ -646,8 +451,7 @@ Projet développé par **Raphaël Benitah** avec accompagnement technique collab
 
 ---
 
-**Version :** 2.4.0 (MVP complet - Dashboard Overview + Landing Page)  
+**Version :** 2.6.0 (Branding terminé, MVP étendu)  
 **License :** Propriétaire  
-**Contact :** rafaelbenitah@gmail.com
-
+**Contact :** rafaelbenitah@gmail.com  
 **Repository :** `https://github.com/RaphHtech/smartmenu`

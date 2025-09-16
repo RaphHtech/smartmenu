@@ -133,7 +133,8 @@ class _AdminBrandingScreenState extends State<AdminBrandingScreen> {
       });
 
       setState(() {
-        _logoUrl = '$downloadUrl?v=$version';
+        final separator = downloadUrl.contains('?') ? '&' : '?';
+        _logoUrl = '$downloadUrl${separator}v=$version';
       });
 
       if (mounted) {
@@ -183,9 +184,12 @@ class _AdminBrandingScreenState extends State<AdminBrandingScreen> {
         setState(() {
           final baseUrl = data['logoUrl'] as String?;
           final version = data['logoVersion'] as int?;
-          _logoUrl = baseUrl != null && version != null
-              ? '$baseUrl?v=$version'
-              : baseUrl;
+          if (baseUrl != null && version != null) {
+            final separator = baseUrl.contains('?') ? '&' : '?';
+            _logoUrl = '$baseUrl${separator}v=$version';
+          } else {
+            _logoUrl = baseUrl;
+          }
           _restaurantName =
               data['name'] as String? ?? 'Restaurant'; // ← AJOUTER
           _brandColorController.text = data['brandColor'] as String? ?? '';

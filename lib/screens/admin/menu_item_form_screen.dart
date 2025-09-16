@@ -4,7 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:image_picker/image_picker.dart';
 import '../../core/constants/colors.dart';
-// import 'dart:typed_data';
+import 'dart:typed_data';
 
 class MenuItemFormScreen extends StatefulWidget {
   final String restaurantId;
@@ -38,6 +38,7 @@ class _MenuItemFormScreenState extends State<MenuItemFormScreen> {
   // Image (portable Web + Mobile)
   Uint8List? _pickedBytes; // web/mobile-safe
   String? _imageUrl; // current or newly uploaded
+  String? _initialCategory;
 
   final List<String> _categories = [
     'Pizzas',
@@ -79,6 +80,7 @@ class _MenuItemFormScreenState extends State<MenuItemFormScreen> {
   void _loadInitialData() {
     if (widget.initialData != null) {
       final data = widget.initialData!;
+      _initialCategory = data['category'] ?? _categories.first; // ← Déplacé ici
       _nameController.text = data['name'] ?? '';
       _descriptionController.text = data['description'] ?? '';
       _priceController.text = (data['price'] ?? 0).toString();
@@ -88,6 +90,9 @@ class _MenuItemFormScreenState extends State<MenuItemFormScreen> {
 
       // Très important pour préserver l'image existante
       _imageUrl = data['imageUrl'] ?? data['image'] ?? '';
+    } else {
+      // Nouveau plat - pas de catégorie initiale
+      _initialCategory = null;
     }
   }
 
@@ -121,8 +126,8 @@ class _MenuItemFormScreenState extends State<MenuItemFormScreen> {
 
     try {
       final fileName = '${DateTime.now().millisecondsSinceEpoch}.jpg';
-      final path = 'restaurants/${widget.restaurantId}/menu/$fileName';
-      // ⚠️ forcer le bon bucket (firebasestorage.app)
+      final path =
+          'restaurants/${widget.restaurantId}/media/$fileName'; // ⚠️ forcer le bon bucket (firebasestorage.app)
       final storage = FirebaseStorage.instanceFor(
         bucket: 'smartmenu-mvp.firebasestorage.app',
       );
@@ -131,7 +136,12 @@ class _MenuItemFormScreenState extends State<MenuItemFormScreen> {
       // (debug utile)
       debugPrint('UPLOAD → bucket=${ref.bucket} path=${ref.fullPath}');
 
-      final url = await ref.getDownloadURL();
+// Upload d'abord
+      final uploadTask = ref.putData(_pickedBytes!);
+      final snapshot = await uploadTask;
+
+// Puis récupère l'URL
+      final url = await snapshot.ref.getDownloadURL();
       debugPrint('UPLOAD OK → $url');
       return url;
     } on FirebaseException catch (e) {
@@ -205,6 +215,25 @@ class _MenuItemFormScreenState extends State<MenuItemFormScreen> {
         itemData['imageUrl'] = FieldValue.delete();
         itemData['image'] = FieldValue.delete();
         debugPrint('DEBUG: Suppression image demandée');
+      }
+
+      final String newCat = _selectedCategory;
+      final String? prevCat = _initialCategory;
+
+      if (widget.itemId == null || (prevCat != null && prevCat != newCat)) {
+        final q = await FirebaseFirestore.instance
+            .collection('restaurants')
+            .doc(widget.restaurantId)
+            .collection('menus')
+            .where('category', isEqualTo: newCat)
+            .orderBy('order', descending: true)
+            .limit(1)
+            .get();
+
+        final lastOrder =
+            q.docs.isNotEmpty ? (q.docs.first.data()['order'] as int? ?? 0) : 0;
+
+        itemData['order'] = lastOrder + 100;
       }
 
       final menuCollection = FirebaseFirestore.instance

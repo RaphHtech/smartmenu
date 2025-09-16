@@ -185,10 +185,10 @@ class MenuItem extends StatelessWidget {
               child: SizedBox(
                 width: 44,
                 height: 44,
-                child: (imageUrl == null || imageUrl!.isEmpty)
+                child: (imageUrl == null || imageUrl.isEmpty)
                     ? _categoryPlaceholder(category)
                     : Image.network(
-                        imageUrl!,
+                        imageUrl,
                         fit: BoxFit.cover,
                         errorBuilder: (_, __, ___) =>
                             _categoryPlaceholder(category),

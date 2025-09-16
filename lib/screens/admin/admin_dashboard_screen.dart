@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'admin_restaurant_info_screen.dart';
 import '../../core/constants/colors.dart';
 import 'menu_item_form_screen.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -164,6 +163,12 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
           tooltip: 'Prévisualiser le menu',
         ),
         const SizedBox(width: 8),
+        IconButton(
+          icon: const Icon(Icons.reorder),
+          onPressed: _showReorderDialog,
+          tooltip: 'Réorganiser les plats',
+        ),
+        const SizedBox(width: 8),
         FilledButton.icon(
           onPressed: _addMenuItem,
           icon: const Icon(Icons.add),
@@ -221,7 +226,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                 // debugPrint('SEARCH q="${_searchText.trim()}" cat=${_selectedCategory ?? "Toutes"} sort=$_sortBy -> docs=${docs.length} filtered=${visibleDocs.length}');
 
                 // --- Rendu liste (identique à ton code, mais sur visibleDocs) ---
-                if (docs.isEmpty) {
+                if (visibleDocs.isEmpty) {
                   return Center(
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -567,33 +572,9 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
   Widget _buildSearchInterface() {
     return Column(
       children: [
-        // Tuile "Infos du restaurant" (inchangée)
-        Padding(
-          padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
-          child: Card(
-            elevation: 1,
-            color: const Color(0xFFFFF5F5),
-            child: ListTile(
-              leading: const Icon(Icons.info_outline, color: Colors.redAccent),
-              title: const Text('Infos du restaurant'),
-              subtitle:
-                  const Text('Modifier la description et le bandeau promo'),
-              trailing: const Icon(Icons.chevron_right),
-              onTap: () {
-                context.pushAdminScreen(
-                  AdminRestaurantInfoScreen(
-                    restaurantId: widget.restaurantId,
-                    showBack: true,
-                  ),
-                );
-              },
-            ),
-          ),
-        ),
-
         // Recherche + tri + chips
         Padding(
-          padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+          padding: const EdgeInsets.fromLTRB(16, 16, 16, 16),
           child: Column(
             children: [
               Row(
@@ -751,56 +732,98 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
       });
     }
 
-    // Tri
-    int cmpName(a, b) {
-      final da = a.data() as Map<String, dynamic>;
-      final db = b.data() as Map<String, dynamic>;
-      return (da['name'] ?? '')
-          .toString()
-          .compareTo((db['name'] ?? '').toString());
-    }
-
-    double p(dynamic x) => _parsePrice(x);
-    int cmpPrice(a, b) {
-      final da = a.data() as Map<String, dynamic>;
-      final pa = p(da['price']);
-      final db = b.data() as Map<String, dynamic>;
-      final pb = p(db['price']);
-      return pa.compareTo(pb);
-    }
-
-    int cmpCategoryThenName(a, b) {
-      final da = a.data() as Map<String, dynamic>;
-      final db = b.data() as Map<String, dynamic>;
-      final ca = (da['category'] ?? '').toString();
-      final cb = (db['category'] ?? '').toString();
-
-      final wa = weightFor(ca, _categoriesOrder);
-      final wb = weightFor(cb, _categoriesOrder);
-      if (wa != wb) return wa.compareTo(wb);
-
-      // Fallback alpha si poids identique
-      final c = ca.compareTo(cb);
-      if (c != 0) return c;
-
-      // Et enfin par nom pour stabilité
-      return (da['name'] ?? '')
-          .toString()
-          .compareTo((db['name'] ?? '').toString());
-    }
-
-    switch (_sortBy) {
-      case 'name':
-        visible.sort(cmpName);
-        break;
-      case 'price':
-        visible.sort(cmpPrice);
-        break;
-      case 'category':
-      default:
-        visible.sort(cmpCategoryThenName);
-    }
-
     return visible;
+  }
+
+  Future<void> _showReorderDialog() async {
+    final docs = await FirebaseFirestore.instance
+        .collection('restaurants')
+        .doc(widget.restaurantId)
+        .collection('menus')
+        .get(); // Sans orderBy pour l'instant
+
+    final items = docs.docs.map((doc) {
+      final data = doc.data();
+      return {
+        'id': doc.id,
+        'name': data['name'] ?? '',
+        'category': data['category'] ?? '',
+        'order': data['order'] ?? 0,
+      };
+    }).toList();
+
+    items.sort((a, b) => (a['order'] as int).compareTo(b['order'] as int));
+
+    final reorderedItems = await showDialog<List<Map<String, dynamic>>>(
+      context: context,
+      builder: (context) => _buildReorderDialog(items),
+    );
+
+    if (reorderedItems != null) {
+      await _updateItemsOrder(reorderedItems);
+    }
+  }
+
+  Widget _buildReorderDialog(List<Map<String, dynamic>> items) {
+    return StatefulBuilder(
+      builder: (context, setState) => AlertDialog(
+        title: const Text('Réorganiser les plats'),
+        content: SizedBox(
+          width: 400,
+          height: 500,
+          child: ReorderableListView.builder(
+            itemCount: items.length,
+            onReorder: (oldIndex, newIndex) {
+              setState(() {
+                if (newIndex > oldIndex) newIndex--;
+                final item = items.removeAt(oldIndex);
+                items.insert(newIndex, item);
+              });
+            },
+            itemBuilder: (context, index) {
+              final item = items[index];
+              return ListTile(
+                key: ValueKey(item['id']),
+                leading: const Icon(Icons.drag_handle),
+                title: Text(item['name']),
+                subtitle: Text(item['category']),
+              );
+            },
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Annuler'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(context, items),
+            child: const Text('Sauvegarder'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _updateItemsOrder(List<Map<String, dynamic>> items) async {
+    final batch = FirebaseFirestore.instance.batch();
+
+    for (int i = 0; i < items.length; i++) {
+      final ref = FirebaseFirestore.instance
+          .collection('restaurants')
+          .doc(widget.restaurantId)
+          .collection('menus')
+          .doc(items[i]['id']);
+
+      batch.update(ref, {'order': (i + 1) * 100});
+    }
+
+    await batch.commit();
+
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Ordre des plats mis à jour')),
+      );
+    }
   }
 }

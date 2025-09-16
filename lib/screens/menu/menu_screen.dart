@@ -1,15 +1,17 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:smartmenu_app/services/analytics_service.dart';
+import 'package:smartmenu_app/services/table_service.dart';
 import '../../core/constants/colors.dart';
 import '../../widgets/category_pill_widget.dart';
 import '../../widgets/menu_item_widget.dart';
 import '../../widgets/modals/order_review_modal.dart';
 import '../../widgets/notifications/custom_notification.dart';
 import '../../widgets/menu/cart_floating_widget.dart';
-import '../../widgets/menu/app_header_widget.dart';
 import '../../services/cart_service.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'dart:html' as html;
+import '../../widgets/premium_app_header_widget.dart';
 
 List<String> applyOrderAndHide(
   Set<String> allCats,
@@ -91,11 +93,10 @@ class SimpleMenuScreenState extends State<MenuScreen> {
         .collection('restaurants')
         .doc(rid)
         .collection('menus')
-        // pour afficher uniquement les plats visibles, laisser la ligne;
-        // sinon, la commenter.
         .where('visible', isEqualTo: true)
+        .orderBy('order')
+        .orderBy('name')
         .get();
-
     return snap.docs.map((d) {
       final data = d.data();
       data['id'] = d.id;
@@ -111,11 +112,7 @@ class SimpleMenuScreenState extends State<MenuScreen> {
       final cat = (it['category'] ?? 'Autres').toString();
       (out[cat] ??= []).add(it);
     }
-    // tri par nom dans chaque catégorie
-    for (final v in out.values) {
-      v.sort((a, b) =>
-          (a['name'] ?? '').toString().compareTo((b['name'] ?? '').toString()));
-    }
+
     return out;
   }
 
@@ -124,8 +121,18 @@ class SimpleMenuScreenState extends State<MenuScreen> {
     super.initState();
     final qp = Uri.base.queryParameters;
     _isAdminPreview = qp.containsKey('preview') || qp.containsKey('admin');
+    String? tableId = qp['t'] ?? qp['table'];
+    if (tableId != null) {
+      // Nettoyer le format (accepter "table12" → "12")
+      tableId = tableId.replaceFirst(RegExp(r'^table'), '');
+      TableService.setTableId(tableId);
+    }
+
     _loadMenuFromFirebase();
     _loadRestaurantDetails();
+    // Log menu open
+    AnalyticsService.logMenuOpen(widget.restaurantId,
+        tableId: TableService.getTableId());
     _mainScrollController.addListener(_handleScroll);
   }
 
@@ -200,6 +207,10 @@ class SimpleMenuScreenState extends State<MenuScreen> {
       _cartTotal += price;
     });
 
+    // Log add to cart (UNE SEULE LIGNE)
+    AnalyticsService.logAddToCart(widget.restaurantId, itemName,
+        tableId: TableService.getTableId());
+
     // Animation visuelle (optionnel)
     _showCustomNotification('✅ $itemName ajouté au panier !');
   }
@@ -269,23 +280,28 @@ class SimpleMenuScreenState extends State<MenuScreen> {
       _selectedCategory = category;
     });
 
-    // Calculer la position pour centrer la catégorie sélectionnée
-    if (_categoryScrollController.hasClients) {
-      final categories = _menuData.keys.toList()..sort();
-      final selectedIndex = categories.indexOf(category);
+    // Post-frame pour éviter double animateTo
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (_categoryScrollController.hasClients && mounted) {
+        final allCats = _menuData.keys.toSet();
+        allCats.addAll(_categoriesOrder);
+        final orderedCategories =
+            applyOrderAndHide(allCats, _categoriesOrder, _categoriesHidden);
+        final selectedIndex = orderedCategories.indexOf(category);
 
-      if (selectedIndex >= 0) {
-        // Largeur estimée d'une pill (padding + texte + espacement)
-        const pillWidth = 120.0;
-        final scrollPosition = selectedIndex * pillWidth;
+        if (selectedIndex >= 0) {
+          const pillWidth = 120.0;
+          final targetPosition = selectedIndex * pillWidth;
+          final maxScroll = _categoryScrollController.position.maxScrollExtent;
 
-        _categoryScrollController.animateTo(
-          scrollPosition > 0 ? scrollPosition - 60 : 0, // Offset pour centrer
-          duration: const Duration(milliseconds: 300),
-          curve: Curves.easeOut,
-        );
+          _categoryScrollController.animateTo(
+            (targetPosition - 60).clamp(0.0, maxScroll),
+            duration: const Duration(milliseconds: 180),
+            curve: Curves.easeOut,
+          );
+        }
       }
-    }
+    });
   }
 
   void _showOrderReview() {
@@ -369,7 +385,8 @@ class SimpleMenuScreenState extends State<MenuScreen> {
               physics: const BouncingScrollPhysics(),
               slivers: [
                 // ===== HEADER (en dur) =====
-                AppHeaderWidget(
+                PremiumAppHeaderWidget(
+                  tagline: _tagline,
                   onServerCall: () {
                     _showCustomNotification(
                       'Appel du serveur...\nUn membre de notre équipe arrive à votre table !',
@@ -382,39 +399,6 @@ class SimpleMenuScreenState extends State<MenuScreen> {
                       ? () => _handleAdminReturn(context)
                       : null,
                   logoUrl: _logoUrl,
-                ),
-
-                // ===== SECTION HÉRO (2e “rectangle”) =====
-                SliverToBoxAdapter(
-                  child: AnimatedContainer(
-                    duration: const Duration(milliseconds: 200),
-                    curve: Curves.easeOut,
-                    padding: EdgeInsets.symmetric(
-                      vertical: _isHeaderCollapsed ? 8 : 30,
-                      horizontal: 20,
-                    ),
-                    decoration:
-                        const BoxDecoration(color: AppColors.heroOverlay),
-                    child: AnimatedOpacity(
-                      duration: const Duration(milliseconds: 180),
-                      opacity: _isHeaderCollapsed ? 0 : 1,
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          if (_tagline.isNotEmpty)
-                            Text(
-                              _tagline,
-                              textAlign: TextAlign.center,
-                              style: const TextStyle(
-                                fontSize: 22,
-                                fontWeight: FontWeight.w600,
-                                color: Color.fromRGBO(255, 255, 255, 0.9),
-                              ),
-                            ),
-                        ],
-                      ),
-                    ),
-                  ),
                 ),
 
                 // ===== SECTION PROMO (glassmorphism) =====
@@ -450,6 +434,8 @@ class SimpleMenuScreenState extends State<MenuScreen> {
                                     child: Text(
                                       _promoText,
                                       textAlign: TextAlign.center,
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
                                       style: const TextStyle(
                                         fontWeight: FontWeight.w600,
                                         color: Color(0xFF92400E),
@@ -463,6 +449,8 @@ class SimpleMenuScreenState extends State<MenuScreen> {
                     ),
                   ),
                 ),
+
+                const SliverToBoxAdapter(child: SizedBox(height: 12)),
 
                 // ===== NAVIGATION CATÉGORIES =====
                 SliverAppBar(
@@ -520,8 +508,12 @@ class SimpleMenuScreenState extends State<MenuScreen> {
                     ),
                   ),
                 ),
+
+                const SliverToBoxAdapter(child: SizedBox(height: 12)),
+
                 // ===== TITRE DE SECTION =====
-                const SliverToBoxAdapter(child: SizedBox(height: 18)),
+                const SliverToBoxAdapter(child: SizedBox(height: 12)),
+
                 // ===== ITEMS DU MENU =====
                 (() {
                   if (_isLoading) {
@@ -557,7 +549,7 @@ class SimpleMenuScreenState extends State<MenuScreen> {
                             final nameKey = (item['name'] ?? '') as String;
 
                             return Padding(
-                              padding: const EdgeInsets.only(bottom: 28),
+                              padding: const EdgeInsets.only(bottom: 16),
                               child: MenuItem(
                                 pizza: adapted,
                                 quantity: itemQuantities[nameKey] ?? 0,
@@ -575,6 +567,23 @@ class SimpleMenuScreenState extends State<MenuScreen> {
                     );
                   }
                 })(),
+
+                if (!_isAdminPreview)
+                  SliverToBoxAdapter(
+                    child: Container(
+                      padding: const EdgeInsets.all(16),
+                      child: Center(
+                        child: Text(
+                          'Powered by SmartMenu',
+                          style: TextStyle(
+                            fontSize: 10,
+                            color: Colors.white..withValues(alpha: 0.65),
+                            fontWeight: FontWeight.w400,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
 
                 const SliverToBoxAdapter(
                   child: SizedBox(height: 96), // Espace pour le FAB

@@ -36,8 +36,7 @@ class _AdminMediaScreenState extends State<AdminMediaScreen> {
     try {
       final storageRef = FirebaseStorage.instance
           .ref()
-          .child('restaurants/${widget.restaurantId}/menu');
-
+          .child('restaurants/${widget.restaurantId}/media');
       final result = await storageRef.listAll();
       final items = <MediaItem>[];
 
@@ -98,8 +97,7 @@ class _AdminMediaScreenState extends State<AdminMediaScreen> {
       final fileName = '${DateTime.now().millisecondsSinceEpoch}_${file.name}';
       final ref = FirebaseStorage.instance
           .ref()
-          .child('restaurants/${widget.restaurantId}/menu/$fileName');
-
+          .child('restaurants/${widget.restaurantId}/media/$fileName');
       final uploadTask = ref.putData(
           uint8List,
           SettableMetadata(
@@ -158,7 +156,7 @@ class _AdminMediaScreenState extends State<AdminMediaScreen> {
       try {
         await FirebaseStorage.instance
             .ref()
-            .child('restaurants/${widget.restaurantId}/menu/${item.name}')
+            .child('restaurants/${widget.restaurantId}/media/${item.name}')
             .delete();
 
         _loadMediaItems();
@@ -225,7 +223,7 @@ class _AdminMediaScreenState extends State<AdminMediaScreen> {
 
     if (selectedItem != null) {
       await _updateItemImage(selectedItem['id'],
-          'restaurants/${widget.restaurantId}/menu/${item.name}', item.url);
+          'restaurants/${widget.restaurantId}/media/${item.name}', item.url);
     }
   }
 
