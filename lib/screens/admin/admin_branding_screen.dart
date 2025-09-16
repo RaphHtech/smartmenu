@@ -98,8 +98,8 @@ class _AdminBrandingScreenState extends State<AdminBrandingScreen> {
         }
       }
 
-      print('DEBUG - Restaurant ID: ${widget.restaurantId}');
-      print('DEBUG - User UID: ${FirebaseAuth.instance.currentUser?.uid}');
+      debugPrint('DEBUG - Restaurant ID: ${widget.restaurantId}');
+      debugPrint('DEBUG - User UID: ${FirebaseAuth.instance.currentUser?.uid}');
 
       final version = DateTime.now().millisecondsSinceEpoch;
       final ref = FirebaseStorage.instance
@@ -155,10 +155,10 @@ class _AdminBrandingScreenState extends State<AdminBrandingScreen> {
   @override
   void initState() {
     super.initState();
-    print('=== BRANDING DEBUG ===');
-    print('Restaurant ID: ${widget.restaurantId}');
-    print('User UID: ${FirebaseAuth.instance.currentUser?.uid}');
-    print('===================');
+    debugPrint('=== BRANDING DEBUG ===');
+    debugPrint('Restaurant ID: ${widget.restaurantId}');
+    debugPrint('User UID: ${FirebaseAuth.instance.currentUser?.uid}');
+    debugPrint('===================');
     _loadBrandingData();
   }
 
@@ -543,7 +543,7 @@ class _AdminBrandingScreenState extends State<AdminBrandingScreen> {
         decoration: BoxDecoration(
           shape: BoxShape.circle,
           border: Border.all(
-            color: Colors.white.withOpacity(0.2),
+            color: Colors.white.withValues(alpha: 0.2),
             width: 1,
           ),
         ),
@@ -580,7 +580,7 @@ class _AdminBrandingScreenState extends State<AdminBrandingScreen> {
         color: _generateStableColor(_restaurantName), // ← Couleur stable
         shape: BoxShape.circle,
         border: Border.all(
-          color: Colors.white.withOpacity(0.2),
+          color: Colors.white.withValues(alpha: 0.2),
           width: 1,
         ),
       ),

@@ -38,7 +38,7 @@ class _MenuItemFormScreenState extends State<MenuItemFormScreen> {
   // Image (portable Web + Mobile)
   Uint8List? _pickedBytes; // web/mobile-safe
   String? _imageUrl; // current or newly uploaded
-  String? _initialCategory;
+  // String? _initialCategory;
 
   final List<String> _categories = [
     'Pizzas',
@@ -80,7 +80,6 @@ class _MenuItemFormScreenState extends State<MenuItemFormScreen> {
   void _loadInitialData() {
     if (widget.initialData != null) {
       final data = widget.initialData!;
-      _initialCategory = data['category'] ?? _categories.first; // ← Déplacé ici
       _nameController.text = data['name'] ?? '';
       _descriptionController.text = data['description'] ?? '';
       _priceController.text = (data['price'] ?? 0).toString();
@@ -92,7 +91,6 @@ class _MenuItemFormScreenState extends State<MenuItemFormScreen> {
       _imageUrl = data['imageUrl'] ?? data['image'] ?? '';
     } else {
       // Nouveau plat - pas de catégorie initiale
-      _initialCategory = null;
     }
   }
 
@@ -215,25 +213,6 @@ class _MenuItemFormScreenState extends State<MenuItemFormScreen> {
         itemData['imageUrl'] = FieldValue.delete();
         itemData['image'] = FieldValue.delete();
         debugPrint('DEBUG: Suppression image demandée');
-      }
-
-      final String newCat = _selectedCategory;
-      final String? prevCat = _initialCategory;
-
-      if (widget.itemId == null || (prevCat != null && prevCat != newCat)) {
-        final q = await FirebaseFirestore.instance
-            .collection('restaurants')
-            .doc(widget.restaurantId)
-            .collection('menus')
-            .where('category', isEqualTo: newCat)
-            .orderBy('order', descending: true)
-            .limit(1)
-            .get();
-
-        final lastOrder =
-            q.docs.isNotEmpty ? (q.docs.first.data()['order'] as int? ?? 0) : 0;
-
-        itemData['order'] = lastOrder + 100;
       }
 
       final menuCollection = FirebaseFirestore.instance

@@ -1,11 +1,14 @@
-[{
-  "origin": [
-    "http://localhost:5000",
-    "http://127.0.0.1:5000", 
-    "http://192.168.1.55:5000",
-    "https://smartmenu-mvp.web.app"
-  ],
-  "method": ["GET", "HEAD", "OPTIONS"],
-  "maxAgeSeconds": 3600,
-  "responseHeader": ["Content-Type", "Access-Control-Allow-Origin"]
-}]
+[
+  {
+    "origin": [
+      "http://localhost:5001",
+      "http://127.0.0.1:5001", 
+      "http://192.168.1.55:5001",
+      "https://smartmenu-mvp.web.app",
+      "https://smartmenu-mvp.firebaseapp.com"
+    ],
+    "method": ["GET", "HEAD", "OPTIONS", "POST", "PUT"],
+    "responseHeader": ["Content-Type", "Authorization", "x-goog-resumable", "Content-Length"],
+    "maxAgeSeconds": 3600
+  }
+]

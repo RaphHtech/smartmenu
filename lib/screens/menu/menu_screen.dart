@@ -87,16 +87,14 @@ class SimpleMenuScreenState extends State<MenuScreen> {
     }
   }
 
-// --- Fetch direct depuis Firestore ---
   Future<List<Map<String, dynamic>>> _fetchMenuItems(String rid) async {
     final snap = await FirebaseFirestore.instance
         .collection('restaurants')
         .doc(rid)
         .collection('menus')
         .where('visible', isEqualTo: true)
-        .orderBy('order')
-        .orderBy('name')
         .get();
+
     return snap.docs.map((d) {
       final data = d.data();
       data['id'] = d.id;
@@ -112,7 +110,10 @@ class SimpleMenuScreenState extends State<MenuScreen> {
       final cat = (it['category'] ?? 'Autres').toString();
       (out[cat] ??= []).add(it);
     }
-
+    for (final v in out.values) {
+      v.sort((a, b) =>
+          (a['name'] ?? '').toString().compareTo((b['name'] ?? '').toString()));
+    }
     return out;
   }
 
@@ -180,18 +181,27 @@ class SimpleMenuScreenState extends State<MenuScreen> {
   void _loadMenuFromFirebase() async {
     setState(() => _isLoading = true);
 
-    // résout l'id effectif
-    final String rid = () {
+    // Résout l'id effectif
+    final String resolvedRid = () {
       final q = Uri.base.queryParameters['rid'];
       if (q != null && q.isNotEmpty) return q;
       return widget.restaurantId;
     }();
 
-    final items = await _fetchMenuItems(rid);
+    final items = await _fetchMenuItems(resolvedRid);
     final organized = _groupByCategory(items);
+
+    final categories = organized.keys.toList();
+    final fallbackCategory = categories.isNotEmpty ? categories.first : null;
+
+    final nextSelected =
+        _selectedCategory.isNotEmpty && categories.contains(_selectedCategory)
+            ? _selectedCategory
+            : fallbackCategory;
 
     setState(() {
       _menuData = organized;
+      _selectedCategory = nextSelected ?? '';
       _isLoading = false;
     });
   }
@@ -465,7 +475,7 @@ class SimpleMenuScreenState extends State<MenuScreen> {
                       boxShadow: _isHeaderCollapsed
                           ? [
                               BoxShadow(
-                                color: Colors.black.withOpacity(0.1),
+                                color: Colors.black.withValues(alpha: 0.1),
                                 blurRadius: 4,
                                 offset: const Offset(0, 2),
                               ),
@@ -528,8 +538,10 @@ class SimpleMenuScreenState extends State<MenuScreen> {
                       ),
                     );
                   } else {
-                    final currentItems = _menuData[_selectedCategory] ??
-                        const <Map<String, dynamic>>[];
+                    final currentItems = _selectedCategory.isEmpty
+                        ? _menuData.values.expand((v) => v).toList()
+                        : (_menuData[_selectedCategory] ??
+                            const <Map<String, dynamic>>[]);
                     return SliverPadding(
                       padding: const EdgeInsets.symmetric(horizontal: 20)
                           .copyWith(bottom: 96),
@@ -541,9 +553,12 @@ class SimpleMenuScreenState extends State<MenuScreen> {
                             // make sure MenuItem gets both 'image' and 'imageUrl'
                             final adapted = {
                               ...item,
-                              'image': item['image'] ?? item['imageUrl'] ?? '',
-                              'imageUrl':
-                                  item['imageUrl'] ?? item['image'] ?? '',
+                              'image': (item['imageUrl'] ?? item['image'])
+                                      as String? ??
+                                  '',
+                              'imageUrl': (item['imageUrl'] ?? item['image'])
+                                      as String? ??
+                                  '',
                             };
 
                             final nameKey = (item['name'] ?? '') as String;
