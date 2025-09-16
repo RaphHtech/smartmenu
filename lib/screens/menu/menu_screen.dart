@@ -54,6 +54,7 @@ class SimpleMenuScreenState extends State<MenuScreen> {
   String _promoText = ''; // bandeau promo
   Map<String, List<Map<String, dynamic>>> _menuData = {};
   List<String> _categoriesOrder = [];
+  List<String> _orderedCategories = [];
   Set<String> _categoriesHidden = {};
   final ScrollController _mainScrollController = ScrollController();
   bool _isHeaderCollapsed = false;
@@ -117,6 +118,59 @@ class SimpleMenuScreenState extends State<MenuScreen> {
     return out;
   }
 
+  Future<void> _hydrate() async {
+    setState(() => _isLoading = true);
+
+    // Résolution RID unique
+    final String resolvedRid = () {
+      final q = Uri.base.queryParameters['rid'];
+      if (q != null && q.isNotEmpty) return q;
+      return widget.restaurantId;
+    }();
+
+    // Fetch parallèle
+    final futures = await Future.wait([
+      _fetchMenuItems(resolvedRid),
+      _loadRestaurantDetailsData(resolvedRid),
+    ]);
+
+    final items = futures[0] as List<Map<String, dynamic>>;
+    final restaurantData = futures[1] as Map<String, dynamic>;
+
+    // Construction de l'ordre
+    final organized = _groupByCategory(items);
+    final categoriesOrder =
+        List<String>.from(restaurantData['categoriesOrder'] ?? []);
+    final categoriesHidden =
+        Set<String>.from(restaurantData['categoriesHidden'] ?? []);
+
+    final allCats =
+        organized.keys.where((c) => !categoriesHidden.contains(c)).toSet();
+    final orderedCategories = [
+      ...categoriesOrder.where(allCats.contains),
+      ...allCats.difference(categoriesOrder.toSet()).toList()..sort(),
+    ];
+
+    // Single setState
+    if (mounted) {
+      setState(() {
+        _menuData = organized;
+        _orderedCategories = orderedCategories;
+        _selectedCategory =
+            orderedCategories.isNotEmpty ? orderedCategories.first : '';
+        _restaurantName = (restaurantData['name'] ?? '').toString();
+        _restaurantCurrency = (restaurantData['currency'] ?? 'ILS').toString();
+        _tagline = (restaurantData['tagline'] ?? '').toString().trim();
+        _promoText = (restaurantData['promo_text'] ?? '').toString().trim();
+        _promoEnabled = (restaurantData['promo_enabled'] as bool?) ?? true;
+        _logoUrl = (restaurantData['logoUrl'] ?? '').toString();
+        _categoriesOrder = categoriesOrder;
+        _categoriesHidden = categoriesHidden;
+        _isLoading = false;
+      });
+    }
+  }
+
   @override
   void initState() {
     super.initState();
@@ -129,8 +183,7 @@ class SimpleMenuScreenState extends State<MenuScreen> {
       TableService.setTableId(tableId);
     }
 
-    _loadMenuFromFirebase();
-    _loadRestaurantDetails();
+    _hydrate();
     // Log menu open
     AnalyticsService.logMenuOpen(widget.restaurantId,
         tableId: TableService.getTableId());
@@ -145,65 +198,15 @@ class SimpleMenuScreenState extends State<MenuScreen> {
     super.dispose();
   }
 
-  Future<void> _loadRestaurantDetails() async {
+  Future<Map<String, dynamic>> _loadRestaurantDetailsData(String rid) async {
     final snap = await FirebaseFirestore.instance
         .collection('restaurants')
-        .doc(widget.restaurantId)
+        .doc(rid)
         .collection('info')
         .doc('details')
         .get();
 
-    final data = snap.data() ?? {};
-    if (!mounted) return;
-    setState(() {
-      _restaurantName = (data['name'] ?? '').toString();
-      _restaurantCurrency = (data['currency'] ?? 'ILS').toString();
-      _tagline = (data['tagline'] ?? '').toString().trim();
-      _promoText = (data['promo_text'] ?? '').toString().trim();
-      _promoEnabled = (data['promo_enabled'] as bool?) ?? true;
-      _logoUrl = (data['logoUrl'] ?? '').toString();
-      _categoriesOrder = List<String>.from(data['categoriesOrder'] ?? []);
-      _categoriesHidden = Set<String>.from(data['categoriesHidden'] ?? []);
-
-      if (_menuData.isNotEmpty &&
-          (_selectedCategory.isEmpty || _selectedCategory == 'Boissons')) {
-        final allCats = _menuData.keys.toSet();
-        allCats.addAll(_categoriesOrder);
-        final orderedCats =
-            applyOrderAndHide(allCats, _categoriesOrder, _categoriesHidden);
-        if (orderedCats.isNotEmpty) {
-          _selectedCategory = orderedCats.first;
-        }
-      }
-    });
-  }
-
-  void _loadMenuFromFirebase() async {
-    setState(() => _isLoading = true);
-
-    // Résout l'id effectif
-    final String resolvedRid = () {
-      final q = Uri.base.queryParameters['rid'];
-      if (q != null && q.isNotEmpty) return q;
-      return widget.restaurantId;
-    }();
-
-    final items = await _fetchMenuItems(resolvedRid);
-    final organized = _groupByCategory(items);
-
-    final categories = organized.keys.toList();
-    final fallbackCategory = categories.isNotEmpty ? categories.first : null;
-
-    final nextSelected =
-        _selectedCategory.isNotEmpty && categories.contains(_selectedCategory)
-            ? _selectedCategory
-            : fallbackCategory;
-
-    setState(() {
-      _menuData = organized;
-      _selectedCategory = nextSelected ?? '';
-      _isLoading = false;
-    });
+    return snap.data() ?? {};
   }
 
   void addToCart(String itemName, double price) {
@@ -293,12 +296,7 @@ class SimpleMenuScreenState extends State<MenuScreen> {
     // Post-frame pour éviter double animateTo
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (_categoryScrollController.hasClients && mounted) {
-        final allCats = _menuData.keys.toSet();
-        allCats.addAll(_categoriesOrder);
-        final orderedCategories =
-            applyOrderAndHide(allCats, _categoriesOrder, _categoriesHidden);
-        final selectedIndex = orderedCategories.indexOf(category);
-
+        final selectedIndex = _orderedCategories.indexOf(category);
         if (selectedIndex >= 0) {
           const pillWidth = 120.0;
           final targetPosition = selectedIndex * pillWidth;
@@ -496,12 +494,7 @@ class SimpleMenuScreenState extends State<MenuScreen> {
                           padding: const EdgeInsets.only(left: 20),
                           child: Row(
                             children: [
-                              for (final cat in () {
-                                final allCats = _menuData.keys.toSet();
-                                allCats.addAll(_categoriesOrder);
-                                return applyOrderAndHide(allCats,
-                                    _categoriesOrder, _categoriesHidden);
-                              }())
+                              for (final cat in _orderedCategories)
                                 Padding(
                                   padding: const EdgeInsets.only(right: 12),
                                   child: CategoryPill(
