@@ -112,13 +112,15 @@ class AdminDashboardOverviewScreen extends StatelessWidget {
                   builder: (context, c) {
                     final isWide = c.maxWidth >= 900;
                     final cross = isWide ? 4 : 2;
-                    return GridView.count(
-                      crossAxisCount: cross,
-                      crossAxisSpacing: AdminTokens.space16,
-                      mainAxisSpacing: AdminTokens.space16,
+                    return GridView(
+                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: isWide ? 4 : 2,
+                        crossAxisSpacing: AdminTokens.space16,
+                        mainAxisSpacing: AdminTokens.space16,
+                        mainAxisExtent: isWide ? 64.0 : 84.0,
+                      ),
                       shrinkWrap: true,
                       physics: const NeverScrollableScrollPhysics(),
-                      childAspectRatio: 3.2,
                       children: [
                         _QuickAction(
                           icon: Icons.add,
@@ -230,17 +232,23 @@ class _QuickAction extends StatelessWidget {
         borderRadius: BorderRadius.circular(AdminTokens.radius12),
         onTap: onTap,
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16),
-          child: Row(
+          padding: const EdgeInsets.all(12),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(icon, color: AdminTokens.primary600),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Text(label,
-                    style: AdminTypography.bodyLarge
-                        .copyWith(fontWeight: FontWeight.w600)),
+              Icon(icon, color: AdminTokens.primary600, size: 24),
+              const SizedBox(height: 8),
+              Text(
+                label,
+                textAlign: TextAlign.center,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                style: AdminTypography.bodyMedium.copyWith(
+                  fontWeight: FontWeight.w600,
+                  fontSize: 12,
+                  height: 1.2,
+                ),
               ),
-              const Icon(Icons.chevron_right),
             ],
           ),
         ),

@@ -393,10 +393,14 @@ class _AdminShellState extends State<AdminShell> {
               },
             ),
 
-            // Titre de la page
-            Text(
-              widget.title,
-              style: AdminTypography.headlineLarge,
+            // Titre de la page avec protection overflow
+            Flexible(
+              child: Text(
+                widget.title,
+                style: AdminTypography.headlineLarge,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
             ),
 
             const Spacer(),

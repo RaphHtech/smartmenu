@@ -151,21 +151,23 @@ class _AdminSettingsScreenState extends State<AdminSettingsScreen> {
                           color: AdminTokens.primary600,
                         ),
                         const SizedBox(width: AdminTokens.space12),
-                        const Text(
-                          'Nom du restaurant',
-                          style: AdminTypography.headlineMedium,
+                        const Expanded(
+                          child: Text(
+                            'Nom du restaurant',
+                            style: AdminTypography.headlineMedium,
+                            overflow: TextOverflow.ellipsis,
+                          ),
                         ),
-                        const Spacer(),
                         if (!_isEditing)
-                          TextButton.icon(
+                          IconButton(
                             onPressed: () {
                               setState(() {
                                 _isEditing = true;
                                 _error = null;
                               });
                             },
-                            icon: const Icon(Icons.edit, size: 16),
-                            label: const Text('Modifier'),
+                            icon: const Icon(Icons.edit, size: 18),
+                            tooltip: 'Modifier',
                           ),
                       ],
                     ),

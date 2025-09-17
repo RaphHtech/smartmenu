@@ -156,6 +156,7 @@ class _CategoriesSettingsState extends State<CategoriesSettings> {
         ReorderableListView(
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
+          buildDefaultDragHandles: false,
           onReorder: (oldIndex, newIndex) async {
             if (newIndex > oldIndex) newIndex--;
             setState(() {
@@ -165,31 +166,240 @@ class _CategoriesSettingsState extends State<CategoriesSettings> {
             await _save();
           },
           children: [
-            for (final cat in _order)
-              ListTile(
-                key: ValueKey(cat),
-                title: Text(cat),
-                trailing: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(_hidden.contains(cat) ? 'Masquée' : 'Visible'),
-                    const SizedBox(width: 8),
-                    Switch(
-                      value: !_hidden.contains(cat),
-                      onChanged: (value) async {
-                        setState(() {
-                          value ? _hidden.remove(cat) : _hidden.add(cat);
-                        });
-                        await _save();
-                      },
+            for (int i = 0; i < _order.length; i++)
+              Container(
+                key: ValueKey(_order[i]),
+                margin: const EdgeInsets.symmetric(vertical: 6),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(color: Colors.grey.shade200),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.04),
+                      blurRadius: 8,
+                      offset: const Offset(0, 2),
                     ),
-                    const SizedBox(width: 8),
-                    IconButton(
-                      icon: const Icon(Icons.delete, color: Colors.red),
-                      onPressed: () => _onDeleteCategory(cat),
-                    ),
-                    const Icon(Icons.drag_handle),
                   ],
+                ),
+                child: LayoutBuilder(
+                  builder: (context, c) {
+                    final isTiny =
+                        c.maxWidth < 380; // iPhone SE ≈ 320, petits écrans
+
+                    final cat = _order[i];
+                    final hidden = _hidden.contains(cat);
+                    final statusColor =
+                        hidden ? Colors.orange.shade700 : Colors.green.shade700;
+                    final statusBg =
+                        hidden ? Colors.orange.shade50 : Colors.green.shade50;
+
+                    // ---------- MODE 2 LIGNES (petits écrans) ----------
+                    if (isTiny) {
+                      return Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          // Ligne "nom"
+                          Row(
+                            children: [
+                              // handle drag
+                              SizedBox(
+                                width: 44,
+                                height: 44,
+                                child: ReorderableDragStartListener(
+                                  index: i,
+                                  child: Icon(Icons.drag_indicator,
+                                      size: 18, color: Colors.grey.shade500),
+                                ),
+                              ),
+                              // icône
+                              Container(
+                                width: 28,
+                                height: 28,
+                                alignment: Alignment.center,
+                                decoration: BoxDecoration(
+                                    color: Colors.indigo.shade50,
+                                    borderRadius: BorderRadius.circular(6)),
+                                child: Icon(Icons.category,
+                                    size: 14, color: Colors.indigo.shade600),
+                              ),
+                              const SizedBox(width: 12),
+                              // nom
+                              Expanded(
+                                child: Text(
+                                  cat,
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: const TextStyle(
+                                      fontSize: 15,
+                                      fontWeight: FontWeight.w700,
+                                      height: 1.15),
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 8),
+                          // Ligne "actions"
+                          Row(
+                            children: [
+                              // badge Visible/Masquée
+                              Container(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 10, vertical: 6),
+                                decoration: BoxDecoration(
+                                    color: statusBg,
+                                    borderRadius: BorderRadius.circular(999)),
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Icon(
+                                        hidden
+                                            ? Icons.visibility_off
+                                            : Icons.visibility,
+                                        size: 14,
+                                        color: statusColor),
+                                    const SizedBox(width: 6),
+                                    Text(hidden ? 'Masquée' : 'Visible',
+                                        style: TextStyle(
+                                            fontSize: 12,
+                                            fontWeight: FontWeight.w600,
+                                            color: statusColor)),
+                                  ],
+                                ),
+                              ),
+                              const Spacer(),
+                              Transform.scale(
+                                scale: 0.82,
+                                child: Switch.adaptive(
+                                  value: !hidden,
+                                  onChanged: (v) async {
+                                    setState(() => v
+                                        ? _hidden.remove(cat)
+                                        : _hidden.add(cat));
+                                    await _save();
+                                  },
+                                ),
+                              ),
+                              const SizedBox(width: 4),
+                              SizedBox(
+                                width: 40,
+                                height: 40,
+                                child: Material(
+                                  color: Colors.red.shade50,
+                                  borderRadius: BorderRadius.circular(8),
+                                  child: IconButton(
+                                    tooltip: 'Supprimer',
+                                    icon: Icon(Icons.delete_outline,
+                                        size: 16, color: Colors.red.shade600),
+                                    onPressed: () => _onDeleteCategory(cat),
+                                    padding: EdgeInsets.zero,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      );
+                    }
+
+                    // ---------- MODE 1 LIGNE (tablette/desktop) ----------
+                    return Row(
+                      children: [
+                        // handle drag
+                        SizedBox(
+                          width: 44,
+                          height: 44,
+                          child: ReorderableDragStartListener(
+                            index: i,
+                            child: Icon(Icons.drag_indicator,
+                                size: 18, color: Colors.grey.shade500),
+                          ),
+                        ),
+                        // icône
+                        Container(
+                          width: 28,
+                          height: 28,
+                          alignment: Alignment.center,
+                          decoration: BoxDecoration(
+                              color: Colors.indigo.shade50,
+                              borderRadius: BorderRadius.circular(6)),
+                          child: Icon(Icons.category,
+                              size: 14, color: Colors.indigo.shade600),
+                        ),
+                        const SizedBox(width: 12),
+
+                        // nom (priorité de largeur)
+                        Expanded(
+                          child: Text(
+                            cat,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: const TextStyle(
+                                fontSize: 15,
+                                fontWeight: FontWeight.w700,
+                                height: 1.15),
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+
+                        // actions à droite — compactes
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 8, vertical: 4),
+                          decoration: BoxDecoration(
+                              color: statusBg,
+                              borderRadius: BorderRadius.circular(999)),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(
+                                  hidden
+                                      ? Icons.visibility_off
+                                      : Icons.visibility,
+                                  size: 12,
+                                  color: statusColor),
+                              const SizedBox(width: 4),
+                              Text(hidden ? 'Masquée' : 'Visible',
+                                  style: TextStyle(
+                                      fontSize: 11,
+                                      fontWeight: FontWeight.w600,
+                                      color: statusColor)),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        Transform.scale(
+                          scale: 0.88,
+                          child: Switch.adaptive(
+                            value: !hidden,
+                            onChanged: (v) async {
+                              setState(() =>
+                                  v ? _hidden.remove(cat) : _hidden.add(cat));
+                              await _save();
+                            },
+                          ),
+                        ),
+                        const SizedBox(width: 4),
+                        SizedBox(
+                          width: 40,
+                          height: 40,
+                          child: Material(
+                            color: Colors.red.shade50,
+                            borderRadius: BorderRadius.circular(8),
+                            child: IconButton(
+                              tooltip: 'Supprimer',
+                              icon: Icon(Icons.delete_outline,
+                                  size: 16, color: Colors.red.shade600),
+                              onPressed: () => _onDeleteCategory(cat),
+                              padding: EdgeInsets.zero,
+                            ),
+                          ),
+                        ),
+                      ],
+                    );
+                  },
                 ),
               ),
           ],
