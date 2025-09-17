@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:smartmenu_app/screens/admin/admin_dashboard_screen.dart';
 import '../../widgets/ui/admin_shell.dart';
 import '../../widgets/ui/admin_themed.dart';
 import '../../core/design/admin_tokens.dart';
@@ -380,7 +381,12 @@ class AdminDashboardOverviewScreen extends StatelessWidget {
                 '$noImageCount éléments sans image - ajoutez des visuels.'),
           ),
           ElevatedButton(
-            onPressed: () {},
+            onPressed: () {
+              // Navigation vers l'écran menu via AdminShell
+              context.pushAdminScreen(
+                AdminDashboardScreen(restaurantId: restaurantId),
+              );
+            },
             style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.orange.shade600),
             child:
