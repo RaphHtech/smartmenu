@@ -154,7 +154,7 @@ class AdminDashboardOverviewScreen extends StatelessWidget {
                   crossAxisCount: isWide ? 4 : 2,
                   crossAxisSpacing: AdminTokens.space16,
                   mainAxisSpacing: AdminTokens.space16,
-                  mainAxisExtent: isWide ? 64.0 : 84.0,
+                  mainAxisExtent: isWide ? 72.0 : 92.0, // ← Hauteur augmentée
                 ),
                 shrinkWrap: true,
                 physics: const NeverScrollableScrollPhysics(),
@@ -490,6 +490,13 @@ class _MetricCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(AdminTokens.radius12),
         border: Border.all(
             color: isWarn ? Colors.orange.shade200 : AdminTokens.neutral200),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.04),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
       ),
       child: Row(
         children: [
