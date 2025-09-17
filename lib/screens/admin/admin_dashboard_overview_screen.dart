@@ -110,15 +110,21 @@ class AdminDashboardOverviewScreen extends StatelessWidget {
                 const SizedBox(height: AdminTokens.space12),
                 LayoutBuilder(
                   builder: (context, c) {
-                    final isWide = c.maxWidth >= 900;
-                    final cross = isWide ? 4 : 2;
-                    return GridView.count(
-                      crossAxisCount: cross,
-                      crossAxisSpacing: AdminTokens.space16,
-                      mainAxisSpacing: AdminTokens.space16,
+                    final isWide = c.maxWidth >= 900; // desktop
+                    final crossAxisCount = isWide ? 4 : 2;
+                    final tileHeight =
+                        isWide ? 64.0 : 72.0; // assez haut pour 2 lignes
+
+                    return GridView(
+                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: crossAxisCount,
+                        crossAxisSpacing: AdminTokens.space16,
+                        mainAxisSpacing: AdminTokens.space16,
+                        mainAxisExtent:
+                            tileHeight, // ✅ hauteur fixe, fini les textes coupés
+                      ),
                       shrinkWrap: true,
                       physics: const NeverScrollableScrollPhysics(),
-                      childAspectRatio: 3.2,
                       children: [
                         _QuickAction(
                           icon: Icons.add,
@@ -215,8 +221,12 @@ class _QuickAction extends StatelessWidget {
   final IconData icon;
   final String label;
   final VoidCallback onTap;
-  const _QuickAction(
-      {required this.icon, required this.label, required this.onTap});
+
+  const _QuickAction({
+    required this.icon,
+    required this.label,
+    required this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -229,19 +239,32 @@ class _QuickAction extends StatelessWidget {
       child: InkWell(
         borderRadius: BorderRadius.circular(AdminTokens.radius12),
         onTap: onTap,
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16),
-          child: Row(
-            children: [
-              Icon(icon, color: AdminTokens.primary600),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Text(label,
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(
+            minHeight: 56, // garantit une ligne
+            maxHeight: 88, // laisse respirer si 2 lignes
+          ),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Icon(icon, color: AdminTokens.primary600, size: 20),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: Text(
+                    label,
+                    maxLines: 2, // 2 lignes possibles
+                    softWrap: true,
+                    overflow: TextOverflow.ellipsis,
                     style: AdminTypography.bodyLarge
-                        .copyWith(fontWeight: FontWeight.w600)),
-              ),
-              const Icon(Icons.chevron_right),
-            ],
+                        .copyWith(fontWeight: FontWeight.w600),
+                  ),
+                ),
+                const SizedBox(width: 6),
+                const Icon(Icons.chevron_right, size: 18),
+              ],
+            ),
           ),
         ),
       ),

@@ -1,5 +1,4 @@
-// ignore_for_file: avoid_web_libraries_in_flutter
-import 'dart:html' as html;
+import 'package:image_picker/image_picker.dart';
 import 'dart:typed_data';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
@@ -69,69 +68,6 @@ class _AdminMediaScreenState extends State<AdminMediaScreen> {
     }
   }
 
-  Future<void> _handleFileDrop(html.File file) async {
-    if (!_isValidImageFile(file)) {
-      setState(() =>
-          _uploadError = 'Format non supporté. Utilisez PNG, JPG ou WebP.');
-      return;
-    }
-
-    if (file.size > 5 * 1024 * 1024) {
-      setState(() => _uploadError = 'Fichier trop volumineux (max 5MB).');
-      return;
-    }
-
-    setState(() {
-      _uploadError = null;
-      _uploadProgress = 0;
-    });
-
-    try {
-      final reader = html.FileReader();
-      reader.readAsArrayBuffer(file);
-
-      await reader.onLoad.first;
-      final data = reader.result as List<int>;
-      final uint8List = Uint8List.fromList(data);
-
-      final fileName = '${DateTime.now().millisecondsSinceEpoch}_${file.name}';
-      final ref = FirebaseStorage.instance
-          .ref()
-          .child('restaurants/${widget.restaurantId}/media/$fileName');
-      final uploadTask = ref.putData(
-          uint8List,
-          SettableMetadata(
-            contentType: file.type,
-            customMetadata: {'originalName': file.name},
-          ));
-
-      uploadTask.snapshotEvents.listen((snapshot) {
-        setState(() {
-          _uploadProgress = snapshot.bytesTransferred / snapshot.totalBytes;
-        });
-      });
-
-      await uploadTask;
-
-      await _loadMediaItems(); // Reload list first
-      setState(() => _uploadProgress = null); // Then hide progress
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Image uploadée avec succès!')),
-      );
-    } catch (e) {
-      setState(() {
-        _uploadProgress = null;
-        _uploadError = 'Erreur upload: $e';
-      });
-    }
-  }
-
-  bool _isValidImageFile(html.File file) {
-    final validTypes = ['image/jpeg', 'image/png', 'image/webp'];
-    return validTypes.contains(file.type.toLowerCase());
-  }
-
   Future<void> _deleteMedia(MediaItem item) async {
     final confirmed = await showDialog<bool>(
       context: context,
@@ -173,21 +109,62 @@ class _AdminMediaScreenState extends State<AdminMediaScreen> {
     }
   }
 
-  void _pickFiles() {
-    final input = html.FileUploadInputElement()
-      ..accept = 'image/*'
-      ..multiple = true;
+  void _pickFiles() async {
+    try {
+      final picker = ImagePicker();
+      final XFile? x = await picker.pickImage(
+        source: ImageSource.gallery,
+        maxWidth: 2048,
+        imageQuality: 85,
+      );
+      if (x == null) return;
 
-    input.click();
+      final Uint8List bytes = await x.readAsBytes();
+      final String name = x.name;
+      final String ext = name.split('.').last.toLowerCase();
+      final String contentType = ext == 'png'
+          ? 'image/png'
+          : ext == 'webp'
+              ? 'image/webp'
+              : 'image/jpeg';
 
-    input.onChange.listen((e) {
-      final files = input.files;
-      if (files != null) {
-        for (final file in files) {
-          _handleFileDrop(file);
-        }
-      }
-    });
+      setState(() {
+        _uploadError = null;
+        _uploadProgress = 0;
+      });
+
+      final fileName = '${DateTime.now().millisecondsSinceEpoch}_$name';
+      final ref = FirebaseStorage.instance
+          .ref()
+          .child('restaurants/${widget.restaurantId}/media/$fileName');
+
+      final uploadTask = ref.putData(
+        bytes,
+        SettableMetadata(
+          contentType: contentType,
+          customMetadata: {'originalName': name},
+        ),
+      );
+
+      uploadTask.snapshotEvents.listen((s) {
+        if (!mounted) return;
+        setState(() {
+          _uploadProgress =
+              s.totalBytes == 0 ? 0 : s.bytesTransferred / s.totalBytes;
+        });
+      });
+
+      await uploadTask;
+      await _loadMediaItems();
+
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Import réussi')),
+      );
+    } catch (e) {
+      if (!mounted) return;
+      setState(() => _uploadError = 'Erreur upload: $e');
+    }
   }
 
   Future<void> _assignToItem(MediaItem item) async {

@@ -10,7 +10,6 @@ import '../../widgets/notifications/custom_notification.dart';
 import '../../widgets/menu/cart_floating_widget.dart';
 import '../../services/cart_service.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
-import 'dart:html' as html;
 import '../../widgets/premium_app_header_widget.dart';
 
 List<String> applyOrderAndHide(
@@ -344,12 +343,10 @@ class SimpleMenuScreenState extends State<MenuScreen> {
       return;
     }
     if (kIsWeb) {
-      try {
-        html.window.close();
-      } catch (_) {
-        final returnUrl = Uri.base.queryParameters['return'] ?? '/admin';
-        html.window.location.assign(returnUrl);
-      }
+      // Utilisation d'une approche plus sûre pour fermer la fenêtre
+      final returnUrl = Uri.base.queryParameters['return'] ?? '/admin';
+      // Redirection vers l'admin au lieu de fermer
+      Navigator.pushReplacementNamed(context, returnUrl);
     }
   }
 

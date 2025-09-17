@@ -7,7 +7,7 @@ import '../../core/design/admin_tokens.dart';
 import '../../core/design/admin_typography.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'dart:typed_data';
-import 'dart:html' as html;
+import 'package:image_picker/image_picker.dart';
 
 class AdminBrandingScreen extends StatefulWidget {
   final String restaurantId;
@@ -47,46 +47,36 @@ class _AdminBrandingScreenState extends State<AdminBrandingScreen> {
 
   Future<void> _uploadLogo() async {
     try {
-      final input = html.FileUploadInputElement()
-        ..accept = 'image/*'
-        ..click();
-
-      input.onChange.listen((e) async {
-        final file = input.files?.first;
-        if (file != null) {
-          // Validation taille
-          if (file.size > 2 * 1024 * 1024) {
-            setState(() => _error = 'Le fichier doit faire moins de 2MB');
-            return;
-          }
-
-          // Validation format
-          if (!file.type.startsWith('image/')) {
-            setState(
-                () => _error = 'Veuillez sélectionner une image (PNG/JPG)');
-            return;
-          }
-
-          final reader = html.FileReader();
-          reader.readAsArrayBuffer(file);
-          reader.onLoadEnd.listen((e) async {
-            final bytes = reader.result as Uint8List;
-            await _uploadToFirebase(bytes, file.name);
-          });
-        }
+      setState(() {
+        _isLoading = true;
+        _error = null;
       });
-    } catch (e) {
-      setState(() => _error = 'Erreur lors de la sélection: $e');
-    }
-  }
 
-  Future<void> _uploadToFirebase(Uint8List bytes, String fileName) async {
-    setState(() {
-      _isLoading = true;
-      _error = null;
-    });
+      final picker = ImagePicker();
+      final XFile? x = await picker.pickImage(
+        source: ImageSource.gallery,
+        maxWidth: 1024,
+        imageQuality: 85,
+      );
+      if (x == null) {
+        setState(() => _isLoading = false);
+        return;
+      }
 
-    try {
+      final Uint8List bytes = await x.readAsBytes();
+
+      // Validation taille
+      if (bytes.length > 2 * 1024 * 1024) {
+        setState(() {
+          _isLoading = false;
+          _error = 'Le fichier doit faire moins de 2MB';
+        });
+        return;
+      }
+
+      final ext = x.name.split('.').last.toLowerCase();
+      final contentType = ext == 'png' ? 'image/png' : 'image/jpeg';
+
       // Supprimer l'ancien logo s'il existe
       if (_logoUrl != null) {
         try {
@@ -98,21 +88,18 @@ class _AdminBrandingScreenState extends State<AdminBrandingScreen> {
         }
       }
 
-      debugPrint('DEBUG - Restaurant ID: ${widget.restaurantId}');
-      debugPrint('DEBUG - User UID: ${FirebaseAuth.instance.currentUser?.uid}');
-
       final version = DateTime.now().millisecondsSinceEpoch;
       final ref = FirebaseStorage.instance
           .ref()
           .child('restaurants')
           .child(widget.restaurantId)
           .child('branding')
-          .child('logo_$version.png');
+          .child('logo_$version.$ext');
 
       final uploadTask = ref.putData(
         bytes,
         SettableMetadata(
-          contentType: 'image/png',
+          contentType: contentType,
           cacheControl: 'public, max-age=31536000, immutable',
         ),
       );
