@@ -839,29 +839,31 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
               const SizedBox(height: 12),
 
               // Chips catégories (depuis _categories)
+              // Chips catégories (depuis _categories)
               SizedBox(
-                height: 36, // Hauteur fixe 36px
+                height: 40,
                 child: ListView(
                   scrollDirection: Axis.horizontal,
                   children: [
-                    // Style amélioré pour les chips
-                    FilterChip(
-                      label: const Text('Toutes'),
-                      selected: _selectedCategory == null,
-                      onSelected: (_) =>
-                          setState(() => _selectedCategory = null),
-                      backgroundColor: const Color(0xFFF5F5F5), // neutral-100
-                      selectedColor: Colors.indigo.shade50, // primary-50
-                      labelStyle: TextStyle(
-                        color: _selectedCategory == null
-                            ? Colors.indigo.shade700 // primary-700 si actif
-                            : const Color(0xFF404040), // neutral-700 si inactif
+                    // Chip "Toutes"
+                    Padding(
+                      padding: const EdgeInsets.only(right: 8),
+                      child: FilterChip(
+                        label: const Text('Toutes'),
+                        selected: _selectedCategory == null,
+                        onSelected: (_) =>
+                            setState(() => _selectedCategory = null),
+                        backgroundColor: Colors.grey[200],
+                        selectedColor: AppColors.primary.withAlpha(51),
+                        checkmarkColor: AppColors.primary,
                       ),
                     ),
+                    // Autres catégories avec même espacement
                     ..._categories.map((category) {
                       final isSelected = _selectedCategory == category;
                       return Padding(
-                        padding: const EdgeInsets.only(right: 8),
+                        padding: const EdgeInsets.only(
+                            right: 8), // ← Même espacement
                         child: FilterChip(
                           label: Text(category),
                           selected: isSelected,

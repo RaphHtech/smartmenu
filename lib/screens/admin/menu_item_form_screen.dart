@@ -40,20 +40,15 @@ class _MenuItemFormScreenState extends State<MenuItemFormScreen> {
   String? _imageUrl; // current or newly uploaded
   // String? _initialCategory;
 
-  final List<String> _categories = [
-    'Pizzas',
-    'Entrées',
-    'Pâtes',
-    'Desserts',
-    'Boissons',
-    'Spécialités',
-  ];
+  List<String> _categories = [];
+  bool _categoriesLoaded = false;
 
   @override
   void initState() {
     super.initState();
     _loadInitialData();
     _loadRestaurantCurrency();
+    _loadCategories();
   }
 
   Future<void> _loadRestaurantCurrency() async {
@@ -91,6 +86,80 @@ class _MenuItemFormScreenState extends State<MenuItemFormScreen> {
       _imageUrl = data['imageUrl'] ?? data['image'] ?? '';
     } else {
       // Nouveau plat - pas de catégorie initiale
+    }
+  }
+
+  Future<void> _loadCategories() async {
+    try {
+      // 1. Récupère les catégories configurées du restaurant
+      final detailsDoc = await FirebaseFirestore.instance
+          .collection('restaurants')
+          .doc(widget.restaurantId)
+          .collection('info')
+          .doc('details')
+          .get();
+
+      final detailsData = detailsDoc.data() ?? {};
+      final configuredCategories =
+          List<String>.from(detailsData['categoriesOrder'] ?? []);
+
+      // 2. Récupère les catégories existantes des plats
+      final menuSnapshot = await FirebaseFirestore.instance
+          .collection('restaurants')
+          .doc(widget.restaurantId)
+          .collection('menus')
+          .get();
+
+      final Set<String> existingCategories = {};
+      for (final doc in menuSnapshot.docs) {
+        final category = (doc.data()['category'] ?? '').toString().trim();
+        if (category.isNotEmpty) {
+          existingCategories.add(category);
+        }
+      }
+
+      // 3. Combine et ordonne les catégories
+      final allCategories = <String>{};
+      allCategories.addAll(configuredCategories);
+      allCategories.addAll(existingCategories);
+
+      // 4. Applique l'ordre configuré
+      final orderedCategories = <String>[];
+      for (final cat in configuredCategories) {
+        if (allCategories.contains(cat)) {
+          orderedCategories.add(cat);
+        }
+      }
+
+      // Ajoute les autres catégories par ordre alphabétique
+      final remainingCategories = allCategories
+          .where((cat) => !configuredCategories.contains(cat))
+          .toList()
+        ..sort();
+      orderedCategories.addAll(remainingCategories);
+
+      if (mounted) {
+        setState(() {
+          _categories = orderedCategories;
+          _categoriesLoaded = true;
+
+          // Si pas de catégorie sélectionnée, prend la première disponible
+          if (_selectedCategory.isEmpty && _categories.isNotEmpty) {
+            _selectedCategory = _categories.first;
+          }
+        });
+      }
+    } catch (e) {
+      debugPrint('Erreur chargement catégories: $e');
+      if (mounted) {
+        setState(() {
+          _categories = ['Pizzas', 'Entrées', 'Plats', 'Desserts', 'Boissons'];
+          _categoriesLoaded = true;
+          if (_selectedCategory.isEmpty) {
+            _selectedCategory = _categories.first;
+          }
+        });
+      }
     }
   }
 
@@ -485,27 +554,31 @@ class _MenuItemFormScreenState extends State<MenuItemFormScreen> {
                 const SizedBox(width: 16),
                 Expanded(
                   flex: 3,
-                  child: DropdownButtonFormField<String>(
-                    value: _selectedCategory,
-                    decoration: const InputDecoration(
-                      labelText: 'Catégorie',
-                      prefixIcon: Icon(Icons.category),
-                      border: OutlineInputBorder(),
-                    ),
-                    items: _categories.map((category) {
-                      return DropdownMenuItem(
-                        value: category,
-                        child: Text(category),
-                      );
-                    }).toList(),
-                    onChanged: (value) {
-                      if (value != null) {
-                        setState(() {
-                          _selectedCategory = value;
-                        });
-                      }
-                    },
-                  ),
+                  child: _categoriesLoaded
+                      ? DropdownButtonFormField<String>(
+                          value: _categories.contains(_selectedCategory)
+                              ? _selectedCategory
+                              : null,
+                          decoration: const InputDecoration(
+                            labelText: 'Catégorie',
+                            prefixIcon: Icon(Icons.category),
+                            border: OutlineInputBorder(),
+                          ),
+                          items: _categories.map((category) {
+                            return DropdownMenuItem(
+                              value: category,
+                              child: Text(category),
+                            );
+                          }).toList(),
+                          onChanged: (value) {
+                            if (value != null) {
+                              setState(() {
+                                _selectedCategory = value;
+                              });
+                            }
+                          },
+                        )
+                      : const CircularProgressIndicator(), // Loading pendant le chargement
                 ),
               ],
             ),
