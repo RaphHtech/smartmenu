@@ -275,98 +275,140 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
 
                     return Card(
                       margin: const EdgeInsets.only(bottom: 12),
-                      child: ListTile(
-                        contentPadding: const EdgeInsets.all(12),
-                        leading: _squareThumbAny(imgUrl, category: category),
-                        title: Row(
-                          children: [
-                            Expanded(
-                              child: Text(
-                                name,
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                                style: const TextStyle(
-                                    fontWeight: FontWeight.w600),
-                              ),
-                            ),
-                            const SizedBox(width: 8),
-                            Flexible(
-                              fit: FlexFit.loose,
-                              child: Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  if (isSignature)
-                                    Container(
-                                      margin: const EdgeInsets.only(right: 8),
-                                      padding: const EdgeInsets.symmetric(
-                                          horizontal: 8, vertical: 4),
-                                      decoration: BoxDecoration(
-                                        color: Colors.red.shade50,
-                                        borderRadius: BorderRadius.circular(12),
-                                      ),
-                                      child: const Text('Signature',
-                                          style: TextStyle(
-                                              color: Colors.red, fontSize: 12)),
-                                    ),
-                                  Text(
-                                    priceText,
-                                    maxLines: 1,
-                                    overflow: TextOverflow.fade,
-                                    style: const TextStyle(
-                                      color: AppColors.primary,
-                                      fontWeight: FontWeight.w700,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-                        subtitle: Column(
+                      child: Padding(
+                        padding: const EdgeInsets.all(12),
+                        child: Row(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(
-                                category.isEmpty ? 'Sans catégorie' : category),
-                            if (desc.isNotEmpty)
-                              Text(
-                                desc,
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                                style: const TextStyle(color: Colors.black54),
-                              ),
-                          ],
-                        ),
-                        trailing: PopupMenuButton<String>(
-                          onSelected: (value) {
-                            switch (value) {
-                              case 'edit':
-                                _editMenuItem(itemId, data);
-                                break;
-                              case 'delete':
-                                _deleteMenuItem(itemId, name);
-                                break;
-                            }
-                          },
-                          itemBuilder: (context) => const [
-                            PopupMenuItem(
-                              value: 'edit',
-                              child: Row(
-                                children: [
-                                  Icon(Icons.edit, size: 18),
-                                  SizedBox(width: 8),
-                                  Text('Modifier'),
-                                ],
+                            // Thumbnail
+                            _squareThumbAny(imgUrl, category: category),
+                            const SizedBox(width: 12),
+
+                            // Content avec padding droite pour réserver l'espace kebab
+                            Expanded(
+                              child: Container(
+                                padding: const EdgeInsets.only(right: 12),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    // Ligne 1: Titre + Badge Signature
+                                    Row(
+                                      children: [
+                                        Expanded(
+                                          child: Text(
+                                            name,
+                                            maxLines: 1,
+                                            overflow: TextOverflow.ellipsis,
+                                            style: const TextStyle(
+                                                fontWeight: FontWeight.w600),
+                                          ),
+                                        ),
+                                        if (isSignature) ...[
+                                          const SizedBox(width: 8),
+                                          Container(
+                                            padding: const EdgeInsets.symmetric(
+                                                horizontal: 6, vertical: 2),
+                                            decoration: BoxDecoration(
+                                              color: Colors.red.shade50,
+                                              borderRadius:
+                                                  BorderRadius.circular(8),
+                                            ),
+                                            child: const Text('Signature',
+                                                style: TextStyle(
+                                                    color: Colors.red,
+                                                    fontSize: 10)),
+                                          ),
+                                        ],
+                                      ],
+                                    ),
+
+                                    const SizedBox(height: 6),
+
+                                    // Ligne 2: Catégorie + Prix
+                                    Row(
+                                      children: [
+                                        Expanded(
+                                          child: Text(
+                                            category.isEmpty
+                                                ? 'Sans catégorie'
+                                                : category,
+                                            maxLines: 1,
+                                            overflow: TextOverflow.ellipsis,
+                                            style: const TextStyle(
+                                              fontSize: 13,
+                                              color: Color(0xFF757575),
+                                            ),
+                                          ),
+                                        ),
+                                        Text(
+                                          priceText,
+                                          style: const TextStyle(
+                                            color: AppColors.primary,
+                                            fontWeight: FontWeight.w700,
+                                            fontSize: 16,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+
+                                    // Ligne 3: Description (si présente)
+                                    if (desc.isNotEmpty) ...[
+                                      const SizedBox(height: 4),
+                                      Text(
+                                        desc,
+                                        maxLines: 2,
+                                        overflow: TextOverflow.ellipsis,
+                                        style: const TextStyle(
+                                            color: Colors.black54,
+                                            fontSize: 12),
+                                      ),
+                                    ],
+                                  ],
+                                ),
                               ),
                             ),
-                            PopupMenuItem(
-                              value: 'delete',
-                              child: Row(
-                                children: [
-                                  Icon(Icons.delete,
-                                      size: 18, color: Colors.red),
-                                  SizedBox(width: 8),
-                                  Text('Supprimer',
-                                      style: TextStyle(color: Colors.red)),
+
+                            const SizedBox(width: 8),
+
+                            // Kebab menu
+                            SizedBox(
+                              width: 40,
+                              height: 40,
+                              child: PopupMenuButton<String>(
+                                onSelected: (value) {
+                                  switch (value) {
+                                    case 'edit':
+                                      _editMenuItem(itemId, data);
+                                      break;
+                                    case 'delete':
+                                      _deleteMenuItem(itemId, name);
+                                      break;
+                                  }
+                                },
+                                itemBuilder: (context) => const [
+                                  PopupMenuItem(
+                                    value: 'edit',
+                                    child: Row(
+                                      children: [
+                                        Icon(Icons.edit, size: 18),
+                                        SizedBox(width: 8),
+                                        Text('Modifier'),
+                                      ],
+                                    ),
+                                  ),
+                                  PopupMenuItem(
+                                    value: 'delete',
+                                    child: Row(
+                                      children: [
+                                        Icon(Icons.delete,
+                                            size: 18, color: Colors.red),
+                                        SizedBox(width: 8),
+                                        Text('Supprimer',
+                                            style:
+                                                TextStyle(color: Colors.red)),
+                                      ],
+                                    ),
+                                  ),
                                 ],
                               ),
                             ),
@@ -759,96 +801,4 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
     }
     return visible;
   }
-
-  // Future<void> _showReorderDialog() async {
-  //   final docs = await FirebaseFirestore.instance
-  //       .collection('restaurants')
-  //       .doc(widget.restaurantId)
-  //       .collection('menus')
-  //       .get(); // Sans orderBy pour l'instant
-
-  //   final items = docs.docs.map((doc) {
-  //     final data = doc.data();
-  //     return {
-  //       'id': doc.id,
-  //       'name': data['name'] ?? '',
-  //       'category': data['category'] ?? '',
-  //       'order': data['order'] ?? 0,
-  //     };
-  //   }).toList();
-
-  //   items.sort((a, b) => (a['order'] as int).compareTo(b['order'] as int));
-
-  //   final reorderedItems = await showDialog<List<Map<String, dynamic>>>(
-  //     context: context,
-  //     builder: (context) => _buildReorderDialog(items),
-  //   );
-
-  //   if (reorderedItems != null) {
-  //     await _updateItemsOrder(reorderedItems);
-  //   }
-  // }
-
-  // Widget _buildReorderDialog(List<Map<String, dynamic>> items) {
-  //   return StatefulBuilder(
-  //     builder: (context, setState) => AlertDialog(
-  //       title: const Text('Réorganiser les plats'),
-  //       content: SizedBox(
-  //         width: 400,
-  //         height: 500,
-  //         child: ReorderableListView.builder(
-  //           itemCount: items.length,
-  //           onReorder: (oldIndex, newIndex) {
-  //             setState(() {
-  //               if (newIndex > oldIndex) newIndex--;
-  //               final item = items.removeAt(oldIndex);
-  //               items.insert(newIndex, item);
-  //             });
-  //           },
-  //           itemBuilder: (context, index) {
-  //             final item = items[index];
-  //             return ListTile(
-  //               key: ValueKey(item['id']),
-  //               leading: const Icon(Icons.drag_handle),
-  //               title: Text(item['name']),
-  //               subtitle: Text(item['category']),
-  //             );
-  //           },
-  //         ),
-  //       ),
-  //       actions: [
-  //         TextButton(
-  //           onPressed: () => Navigator.pop(context),
-  //           child: const Text('Annuler'),
-  //         ),
-  //         TextButton(
-  //           onPressed: () => Navigator.pop(context, items),
-  //           child: const Text('Sauvegarder'),
-  //         ),
-  //       ],
-  //     ),
-  //   );
-  // }
-
-  // Future<void> _updateItemsOrder(List<Map<String, dynamic>> items) async {
-  //   final batch = FirebaseFirestore.instance.batch();
-
-  //   for (int i = 0; i < items.length; i++) {
-  //     final ref = FirebaseFirestore.instance
-  //         .collection('restaurants')
-  //         .doc(widget.restaurantId)
-  //         .collection('menus')
-  //         .doc(items[i]['id']);
-
-  //     batch.update(ref, {'order': (i + 1) * 100});
-  //   }
-
-  //   await batch.commit();
-
-  //   if (mounted) {
-  //     ScaffoldMessenger.of(context).showSnackBar(
-  //       const SnackBar(content: Text('Ordre des plats mis à jour')),
-  //     );
-  //   }
-  // }
 }
