@@ -157,16 +157,44 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
       activeRoute: '/menu',
       breadcrumbs: const ['Dashboard', 'Menu'],
       actions: [
-        IconButton(
-          icon: const Icon(Icons.preview),
-          onPressed: _previewMenu,
-          tooltip: 'Prévisualiser le menu',
-        ),
-        const SizedBox(width: 8),
-        FilledButton.icon(
-          onPressed: _addMenuItem,
-          icon: const Icon(Icons.add),
-          label: const Text('Ajouter'),
+        LayoutBuilder(
+          builder: (context, constraints) {
+            final isMobile = MediaQuery.of(context).size.width < 480;
+
+            return Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // Prévisualiser - toujours en IconButton
+                IconButton(
+                  icon: const Icon(Icons.preview),
+                  onPressed: _previewMenu,
+                  tooltip: 'Prévisualiser le menu',
+                ),
+                const SizedBox(width: 8),
+
+                // Ajouter - responsif
+                if (isMobile) ...[
+                  // Mobile : IconButton seul
+                  IconButton(
+                    icon: const Icon(Icons.add),
+                    onPressed: _addMenuItem,
+                    tooltip: 'Ajouter un plat',
+                    style: IconButton.styleFrom(
+                      backgroundColor: Theme.of(context).primaryColor,
+                      foregroundColor: Colors.white,
+                    ),
+                  ),
+                ] else ...[
+                  // Desktop : FilledButton avec texte
+                  FilledButton.icon(
+                    onPressed: _addMenuItem,
+                    icon: const Icon(Icons.add),
+                    label: const Text('Ajouter'),
+                  ),
+                ],
+              ],
+            );
+          },
         ),
       ],
       child: Column(
@@ -257,7 +285,9 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                 }
 
                 return ListView.builder(
-                  padding: const EdgeInsets.all(16),
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 12), // Garde 16px comme ChatGPT recommande
                   itemCount: visibleDocs.length,
                   itemBuilder: (context, index) {
                     final doc = visibleDocs[index];
@@ -274,7 +304,13 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                     final priceText = _formatPrice(data['price']);
 
                     return Card(
-                      margin: const EdgeInsets.only(bottom: 12),
+                      margin: EdgeInsets.only(
+                        bottom: 8,
+                        left: MediaQuery.of(context).size.width < 600
+                            ? 0
+                            : 4, // Pas de margin latéral sur mobile
+                        right: MediaQuery.of(context).size.width < 600 ? 0 : 4,
+                      ),
                       elevation: 0,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(14),
@@ -283,7 +319,8 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                       child: LayoutBuilder(
                         builder: (context, constraints) {
                           final isXs = constraints.maxWidth < 360;
-                          final thumbnailSize = isXs ? 64.0 : 72.0;
+                          final thumbnailSize =
+                              isXs ? 64.0 : 72.0; // ← AJOUTER cette ligne
                           final cardPadding =
                               constraints.maxWidth >= 768 ? 20.0 : 16.0;
 
@@ -328,10 +365,12 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                                                 name,
                                                 maxLines: 1,
                                                 overflow: TextOverflow.ellipsis,
-                                                style: TextStyle(
-                                                  fontSize: isXs ? 15 : 16,
-                                                  fontWeight: FontWeight.w600,
-                                                  color: Colors.grey.shade900,
+                                                style: const TextStyle(
+                                                  fontSize: 16,
+                                                  fontWeight: FontWeight
+                                                      .w600, // semi-bold
+                                                  color: Color(
+                                                      0xFF171717), // neutral-900
                                                   height: 1.3,
                                                 ),
                                               ),
@@ -392,12 +431,12 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                                                     maxLines: 1,
                                                     overflow:
                                                         TextOverflow.ellipsis,
-                                                    style: TextStyle(
+                                                    style: const TextStyle(
                                                       fontSize: 13,
-                                                      fontWeight:
-                                                          FontWeight.w500,
-                                                      color:
-                                                          Colors.grey.shade600,
+                                                      fontWeight: FontWeight
+                                                          .w500, // medium
+                                                      color: Color(
+                                                          0xFF525252), // neutral-600
                                                     ),
                                                   ),
                                                   if (desc.isNotEmpty) ...[
@@ -407,10 +446,10 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                                                       maxLines: 2,
                                                       overflow:
                                                           TextOverflow.ellipsis,
-                                                      style: TextStyle(
+                                                      style: const TextStyle(
                                                         fontSize: 13,
-                                                        color: Colors
-                                                            .grey.shade700,
+                                                        color: Color(
+                                                            0xFF404040), // neutral-700
                                                         height: 1.4,
                                                       ),
                                                     ),
@@ -454,11 +493,11 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                                                   Text(
                                                     '${_formatPriceNumber(data['price'])}\u00A0₪',
                                                     style: TextStyle(
-                                                      fontSize: 18,
+                                                      fontSize: 19,
                                                       fontWeight:
                                                           FontWeight.w700,
-                                                      color: Colors
-                                                          .indigo.shade600,
+                                                      color: Colors.indigo
+                                                          .shade600, // primary-600
                                                     ),
                                                   ),
                                                 ],
@@ -801,20 +840,22 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
 
               // Chips catégories (depuis _categories)
               SizedBox(
-                height: 40,
+                height: 36, // Hauteur fixe 36px
                 child: ListView(
                   scrollDirection: Axis.horizontal,
                   children: [
-                    Padding(
-                      padding: const EdgeInsets.only(right: 8),
-                      child: FilterChip(
-                        label: const Text('Toutes'),
-                        selected: _selectedCategory == null,
-                        onSelected: (_) =>
-                            setState(() => _selectedCategory = null),
-                        backgroundColor: Colors.grey[200],
-                        selectedColor: AppColors.primary.withAlpha(51),
-                        checkmarkColor: AppColors.primary,
+                    // Style amélioré pour les chips
+                    FilterChip(
+                      label: const Text('Toutes'),
+                      selected: _selectedCategory == null,
+                      onSelected: (_) =>
+                          setState(() => _selectedCategory = null),
+                      backgroundColor: const Color(0xFFF5F5F5), // neutral-100
+                      selectedColor: Colors.indigo.shade50, // primary-50
+                      labelStyle: TextStyle(
+                        color: _selectedCategory == null
+                            ? Colors.indigo.shade700 // primary-700 si actif
+                            : const Color(0xFF404040), // neutral-700 si inactif
                       ),
                     ),
                     ..._categories.map((category) {

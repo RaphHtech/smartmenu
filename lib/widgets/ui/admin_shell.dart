@@ -393,13 +393,16 @@ class _AdminShellState extends State<AdminShell> {
               },
             ),
 
-            // Titre de la page - plus compact sur mobile
+            // Titre adaptatif selon largeur
             Flexible(
               child: Text(
                 widget.title,
-                style: MediaQuery.of(context).size.width < 600
-                    ? AdminTypography.headlineMedium // Plus petit sur mobile
-                    : AdminTypography.headlineLarge,
+                style: MediaQuery.of(context).size.width < 400
+                    ? AdminTypography
+                        .bodyLarge // Encore plus petit pour Galaxy S8+
+                    : MediaQuery.of(context).size.width < 600
+                        ? AdminTypography.headlineMedium
+                        : AdminTypography.headlineLarge,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
               ),
