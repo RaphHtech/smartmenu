@@ -275,145 +275,249 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
 
                     return Card(
                       margin: const EdgeInsets.only(bottom: 12),
-                      child: Padding(
-                        padding: const EdgeInsets.all(12),
-                        child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            // Thumbnail
-                            _squareThumbAny(imgUrl, category: category),
-                            const SizedBox(width: 12),
+                      elevation: 0,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(14),
+                        side: BorderSide(color: Colors.grey.shade100),
+                      ),
+                      child: LayoutBuilder(
+                        builder: (context, constraints) {
+                          final isXs = constraints.maxWidth < 360;
+                          final thumbnailSize = isXs ? 64.0 : 72.0;
+                          final cardPadding =
+                              constraints.maxWidth >= 768 ? 20.0 : 16.0;
 
-                            // Content avec padding droite pour réserver l'espace kebab
-                            Expanded(
-                              child: Container(
-                                padding: const EdgeInsets.only(right: 12),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    // Ligne 1: Titre + Badge Signature
-                                    Row(
+                          return Padding(
+                            padding: EdgeInsets.all(cardPadding),
+                            child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                // Thumbnail avec taille responsive
+                                SizedBox(
+                                  width: thumbnailSize,
+                                  height: thumbnailSize,
+                                  child: ClipRRect(
+                                    borderRadius: BorderRadius.circular(12),
+                                    child: imgUrl.isNotEmpty
+                                        ? Image.network(
+                                            imgUrl,
+                                            fit: BoxFit.cover,
+                                            errorBuilder: (_, __, ___) =>
+                                                _buildThumbnailPlaceholder(),
+                                          )
+                                        : _buildThumbnailPlaceholder(),
+                                  ),
+                                ),
+                                const SizedBox(width: 16),
+
+                                // Content avec réservation kebab
+                                Expanded(
+                                  child: Container(
+                                    padding: const EdgeInsets.only(right: 8),
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
                                       children: [
-                                        Expanded(
-                                          child: Text(
-                                            name,
-                                            maxLines: 1,
-                                            overflow: TextOverflow.ellipsis,
-                                            style: const TextStyle(
-                                                fontWeight: FontWeight.w600),
-                                          ),
-                                        ),
-                                        if (isSignature) ...[
-                                          const SizedBox(width: 8),
-                                          Container(
-                                            padding: const EdgeInsets.symmetric(
-                                                horizontal: 6, vertical: 2),
-                                            decoration: BoxDecoration(
-                                              color: Colors.red.shade50,
-                                              borderRadius:
-                                                  BorderRadius.circular(8),
-                                            ),
-                                            child: const Text('Signature',
+                                        // Ligne 1: Titre + Badge selon breakpoint
+                                        Row(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Expanded(
+                                              child: Text(
+                                                name,
+                                                maxLines: 1,
+                                                overflow: TextOverflow.ellipsis,
                                                 style: TextStyle(
-                                                    color: Colors.red,
-                                                    fontSize: 10)),
-                                          ),
-                                        ],
-                                      ],
-                                    ),
-
-                                    const SizedBox(height: 6),
-
-                                    // Ligne 2: Catégorie + Prix
-                                    Row(
-                                      children: [
-                                        Expanded(
-                                          child: Text(
-                                            category.isEmpty
-                                                ? 'Sans catégorie'
-                                                : category,
-                                            maxLines: 1,
-                                            overflow: TextOverflow.ellipsis,
-                                            style: const TextStyle(
-                                              fontSize: 13,
-                                              color: Color(0xFF757575),
+                                                  fontSize: isXs ? 15 : 16,
+                                                  fontWeight: FontWeight.w600,
+                                                  color: Colors.grey.shade900,
+                                                  height: 1.3,
+                                                ),
+                                              ),
                                             ),
-                                          ),
+                                            if (!isXs && isSignature) ...[
+                                              const SizedBox(width: 12),
+                                              Container(
+                                                padding:
+                                                    const EdgeInsets.symmetric(
+                                                        horizontal: 8,
+                                                        vertical: 2),
+                                                decoration: BoxDecoration(
+                                                  color: Colors.red.shade50,
+                                                  borderRadius:
+                                                      BorderRadius.circular(
+                                                          999),
+                                                ),
+                                                child: Text(
+                                                  'Signature',
+                                                  style: TextStyle(
+                                                    fontSize: 11,
+                                                    fontWeight: FontWeight.w600,
+                                                    color: Colors.red.shade600,
+                                                  ),
+                                                ),
+                                              ),
+                                            ],
+                                            if (!isXs) ...[
+                                              const SizedBox(width: 12),
+                                              Text(
+                                                '${_formatPriceNumber(data['price'])}\u00A0₪', // Espace insécable
+                                                style: TextStyle(
+                                                  fontSize: 18,
+                                                  fontWeight: FontWeight.w700,
+                                                  color: Colors.indigo.shade600,
+                                                ),
+                                              ),
+                                            ],
+                                          ],
                                         ),
-                                        Text(
-                                          priceText,
-                                          style: const TextStyle(
-                                            color: AppColors.primary,
-                                            fontWeight: FontWeight.w700,
-                                            fontSize: 16,
-                                          ),
+
+                                        const SizedBox(height: 8),
+
+                                        // Ligne 2: Métas + Badge/Prix mobile
+                                        Row(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Flexible(
+                                              child: Column(
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.start,
+                                                children: [
+                                                  Text(
+                                                    category.isEmpty
+                                                        ? 'Sans catégorie'
+                                                        : category,
+                                                    maxLines: 1,
+                                                    overflow:
+                                                        TextOverflow.ellipsis,
+                                                    style: TextStyle(
+                                                      fontSize: 13,
+                                                      fontWeight:
+                                                          FontWeight.w500,
+                                                      color:
+                                                          Colors.grey.shade600,
+                                                    ),
+                                                  ),
+                                                  if (desc.isNotEmpty) ...[
+                                                    const SizedBox(height: 4),
+                                                    Text(
+                                                      desc,
+                                                      maxLines: 2,
+                                                      overflow:
+                                                          TextOverflow.ellipsis,
+                                                      style: TextStyle(
+                                                        fontSize: 13,
+                                                        color: Colors
+                                                            .grey.shade700,
+                                                        height: 1.4,
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ],
+                                              ),
+                                            ),
+                                            if (isXs) ...[
+                                              const SizedBox(width: 12),
+                                              Column(
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.end,
+                                                children: [
+                                                  if (isSignature)
+                                                    Container(
+                                                      margin:
+                                                          const EdgeInsets.only(
+                                                              bottom: 4),
+                                                      padding: const EdgeInsets
+                                                          .symmetric(
+                                                          horizontal: 8,
+                                                          vertical: 2),
+                                                      decoration: BoxDecoration(
+                                                        color:
+                                                            Colors.red.shade50,
+                                                        borderRadius:
+                                                            BorderRadius
+                                                                .circular(999),
+                                                      ),
+                                                      child: Text(
+                                                        'Signature',
+                                                        style: TextStyle(
+                                                          fontSize: 11,
+                                                          fontWeight:
+                                                              FontWeight.w600,
+                                                          color: Colors
+                                                              .red.shade600,
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  Text(
+                                                    '${_formatPriceNumber(data['price'])}\u00A0₪',
+                                                    style: TextStyle(
+                                                      fontSize: 18,
+                                                      fontWeight:
+                                                          FontWeight.w700,
+                                                      color: Colors
+                                                          .indigo.shade600,
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            ],
+                                          ],
                                         ),
                                       ],
                                     ),
+                                  ),
+                                ),
 
-                                    // Ligne 3: Description (si présente)
-                                    if (desc.isNotEmpty) ...[
-                                      const SizedBox(height: 4),
-                                      Text(
-                                        desc,
-                                        maxLines: 2,
-                                        overflow: TextOverflow.ellipsis,
-                                        style: const TextStyle(
-                                            color: Colors.black54,
-                                            fontSize: 12),
+                                // Kebab menu avec touch target 44px
+                                SizedBox(
+                                  width: 44,
+                                  height: 44,
+                                  child: PopupMenuButton<String>(
+                                    padding: EdgeInsets.zero,
+                                    onSelected: (value) {
+                                      switch (value) {
+                                        case 'edit':
+                                          _editMenuItem(itemId, data);
+                                          break;
+                                        case 'delete':
+                                          _deleteMenuItem(itemId, name);
+                                          break;
+                                      }
+                                    },
+                                    itemBuilder: (context) => const [
+                                      PopupMenuItem(
+                                        value: 'edit',
+                                        child: Row(
+                                          children: [
+                                            Icon(Icons.edit, size: 18),
+                                            SizedBox(width: 8),
+                                            Text('Modifier'),
+                                          ],
+                                        ),
+                                      ),
+                                      PopupMenuItem(
+                                        value: 'delete',
+                                        child: Row(
+                                          children: [
+                                            Icon(Icons.delete,
+                                                size: 18, color: Colors.red),
+                                            SizedBox(width: 8),
+                                            Text('Supprimer',
+                                                style: TextStyle(
+                                                    color: Colors.red)),
+                                          ],
+                                        ),
                                       ),
                                     ],
-                                  ],
+                                  ),
                                 ),
-                              ),
+                              ],
                             ),
-
-                            const SizedBox(width: 8),
-
-                            // Kebab menu
-                            SizedBox(
-                              width: 40,
-                              height: 40,
-                              child: PopupMenuButton<String>(
-                                onSelected: (value) {
-                                  switch (value) {
-                                    case 'edit':
-                                      _editMenuItem(itemId, data);
-                                      break;
-                                    case 'delete':
-                                      _deleteMenuItem(itemId, name);
-                                      break;
-                                  }
-                                },
-                                itemBuilder: (context) => const [
-                                  PopupMenuItem(
-                                    value: 'edit',
-                                    child: Row(
-                                      children: [
-                                        Icon(Icons.edit, size: 18),
-                                        SizedBox(width: 8),
-                                        Text('Modifier'),
-                                      ],
-                                    ),
-                                  ),
-                                  PopupMenuItem(
-                                    value: 'delete',
-                                    child: Row(
-                                      children: [
-                                        Icon(Icons.delete,
-                                            size: 18, color: Colors.red),
-                                        SizedBox(width: 8),
-                                        Text('Supprimer',
-                                            style:
-                                                TextStyle(color: Colors.red)),
-                                      ],
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
+                          );
+                        },
                       ),
                     );
                   },
@@ -466,6 +570,25 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
     } catch (_) {
       return '';
     }
+  }
+
+  Widget _buildThumbnailPlaceholder() {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.grey.shade50,
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Icon(
+        Icons.image_outlined,
+        size: 20,
+        color: Colors.grey.shade400,
+      ),
+    );
+  }
+
+  String _formatPriceNumber(dynamic price) {
+    final p = _parsePrice(price);
+    return p % 1 == 0 ? '${p.toInt()}' : p.toStringAsFixed(2);
   }
 
 // Petit placeholder réutilisable
