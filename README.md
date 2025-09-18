@@ -83,6 +83,12 @@ Une application de menu numérique moderne pour restaurants, développée avec *
 - **Optimisations requêtes** : Suppression des index complexes problématiques
 - **Architecture simplifiée** : Menu client et admin avec base de données unifiée
 - **Gestion d'erreurs robuste** : Fallback de catégories, règles Firestore optimisées
+- **Réorganisation des plats** : Interface drag & drop premium niveau Shopify/Notion
+- **Gestion de l'ordre des plats** : Algorithme de positionnement fractionnel avec renormalisation
+- **Actions groupées** : Masquer/afficher, déplacer entre catégories, sélection multiple
+- **Sauvegarde optimisée** : Delta writes avec chunking 500 items, auto-save avec indicateur
+- **Layout responsive** : Desktop avec sidebar catégories, mobile avec chips
+- **Synchronisation client-admin** : L'ordre défini côté admin se reflète côté client
 
 ### Infrastructure
 
@@ -108,20 +114,21 @@ Une application de menu numérique moderne pour restaurants, développée avec *
 
 ### Structure Firestore
 
-```
+````
 restaurants/{rid}/
 ├── info/details (name, currency, tagline, promo_text, categoriesOrder, categoriesHidden)
 ├── members/{uid} (role, invited_at)
-└── menus/{itemId} (name, price, category, imageUrl, signature, visible)
-```
+└── menus/{itemId} (name, price, category, imageUrl, signature, visible, position)```
 
 ### Routing Web
 
-```
+````
+
 / → HomeScreen (landing page + saisie code)
 /r/{restaurantId} → MenuScreen (PWA client)
 /admin → AdminLoginScreen (avec AdminShell)
 /admin/signup → AdminSignupScreen (avec AdminShell)
+
 ```
 
 ### 🔐 Rôles et permissions (RBAC)
@@ -140,45 +147,47 @@ restaurants/{rid}/
 ## 📂 Structure Projet
 
 ```
+
 lib/
 ├── core/
-│   ├── constants/colors.dart # Palette client (PWA)
-│   └── design/ # 🆕 Design System Admin
-│       ├── admin_tokens.dart # Variables design (couleurs, spacing, etc.)
-│       ├── admin_typography.dart # Hiérarchie typographique
-│       └── admin_theme.dart # ThemeData Material 3
+│ ├── constants/colors.dart # Palette client (PWA)
+│ └── design/ # 🆕 Design System Admin
+│ ├── admin_tokens.dart # Variables design (couleurs, spacing, etc.)
+│ ├── admin_typography.dart # Hiérarchie typographique
+│ └── admin_theme.dart # ThemeData Material 3
 ├── services/
-│   ├── cart_service.dart # Gestion panier
-│   └── firebase_menu_service.dart # Intégration Firestore (client)
+│ ├── cart_service.dart # Gestion panier
+│ └── firebase_menu_service.dart # Intégration Firestore (client)
 ├── screens/
-│   ├── home_screen.dart # Landing page avec saisie code
-│   ├── qr_scanner_screen.dart # Scanner QR multi-restaurants (futur)
-│   ├── menu/
-│   │   └── menu_screen.dart # Menu client
-│   └── admin/ # 🆕 Interface AdminShell
-│       ├── admin_login_screen.dart # Login restaurateur
-│       ├── admin_signup_screen.dart # Signup + onboarding
-│       ├── create_restaurant_screen.dart # Création resto + owner
-│       ├── admin_dashboard_overview_screen.dart # Dashboard métriques
-│       ├── admin_dashboard_screen.dart # Gestion menu (CRUD)
-│       ├── admin_media_screen.dart # Gestion médias complète
-│       ├── admin_settings_screen.dart # Paramètres + nom restaurant
-│       ├── admin_restaurant_info_screen.dart # Gestion tagline/promo
-│       ├── admin_branding_screen.dart # Gestion identité visuelle complète
-│       └── menu_item_form_screen.dart # CRUD plats + upload images
+│ ├── home_screen.dart # Landing page avec saisie code
+│ ├── qr_scanner_screen.dart # Scanner QR multi-restaurants (futur)
+│ ├── menu/
+│ │ └── menu_screen.dart # Menu client
+│ └── admin/ # 🆕 Interface AdminShell
+│ ├── admin_login_screen.dart # Login restaurateur
+│ ├── admin_signup_screen.dart # Signup + onboarding
+│ ├── create_restaurant_screen.dart # Création resto + owner
+│ ├── admin_dashboard_overview_screen.dart # Dashboard métriques
+│ ├── admin_dashboard_screen.dart # Gestion menu (CRUD)
+│ ├── admin_media_screen.dart # Gestion médias complète
+│ ├── admin_menu_reorder_screen.dart # Interface réorganisation drag & drop premium
+│ ├── admin_settings_screen.dart # Paramètres + nom restaurant
+│ ├── admin_restaurant_info_screen.dart # Gestion tagline/promo
+│ ├── admin_branding_screen.dart # Gestion identité visuelle complète
+│ └── menu_item_form_screen.dart # CRUD plats + upload images
 ├── widgets/
-│   ├── ui/ # 🆕 Composants AdminShell
-│   │   ├── admin_shell.dart # Layout principal sidebar/topbar
-│   │   ├── admin_themed.dart # Wrapper + navigation admin
-│   │   └── categories_settings_widget.dart # Gestion des catégories
-│   ├── modals/order_review_modal.dart
-│   ├── notifications/custom_notification.dart
-│   ├── menu/
-│   │   ├── cart_floating_widget.dart
-│   │   └── app_header_widget.dart
-│   ├── category_pill_widget.dart
-│   ├── gradient_text_widget.dart
-│   └── menu_item_widget.dart
+│ ├── ui/ # 🆕 Composants AdminShell
+│ │ ├── admin_shell.dart # Layout principal sidebar/topbar
+│ │ ├── admin_themed.dart # Wrapper + navigation admin
+│ │ └── categories_settings_widget.dart # Gestion des catégories
+│ ├── modals/order_review_modal.dart
+│ ├── notifications/custom_notification.dart
+│ ├── menu/
+│ │ ├── cart_floating_widget.dart
+│ │ └── app_header_widget.dart
+│ ├── category_pill_widget.dart
+│ ├── gradient_text_widget.dart
+│ └── menu_item_widget.dart
 └── main.dart # Init Firebase + routing
 
 web/
@@ -186,9 +195,10 @@ web/
 ├── manifest.json # PWA manifest
 ├── sw.js # Service Worker (cache client/admin)
 └── icons/
-    ├── Icon-192.png
-    └── Icon-512.png
-```
+├── Icon-192.png
+└── Icon-512.png
+
+````
 
 ---
 
@@ -207,7 +217,7 @@ web/
 git clone https://github.com/RaphHtech/smartmenu.git
 cd smartmenu_app
 flutter pub get
-```
+````
 
 ### Configuration Firebase
 
@@ -331,6 +341,29 @@ service firebase.storage {
 ---
 
 ## Changelog
+
+### v2.7.0 — Interface de Réorganisation Premium (Septembre 2025)
+
+**Réorganisation des plats niveau enterprise :**
+
+- **Drag & drop fluide** : Interface de réorganisation des plats avec ReorderableListView
+- **Algorithme de positionnement** : Système fractionnel avec renormalisation automatique
+- **Optimisations Firestore** : Delta writes, chunking 500 items, coûts minimisés
+- **Actions bulk** : Sélection multiple, masquer/afficher, déplacement inter-catégories
+- **Auto-save intelligent** : Sauvegarde avec debounce 600ms et indicateur visuel d'état
+- **Layout responsive** : Sidebar desktop + chips mobile, touch targets 44px minimum
+
+**Synchronisation client-admin :**
+
+- **Champ position** : Ajout automatique aux plats existants lors du premier accès
+- **Tri respecté** : Menu client affiche l'ordre défini par le restaurateur
+- **Fallback intelligent** : Tri par nom si positions égales
+
+**Architecture technique :**
+
+- **Dirty tracking** : Suivi précis des modifications pour écritures minimales
+- **Chunking automatique** : Batches Firestore limitées à 500 operations
+- **Gestion d'erreurs** : États de sauvegarde avec rollback visuel en cas d'échec
 
 ### v2.6.2 - Corrections Interface Mobile (Septembre 2025)
 
@@ -464,10 +497,9 @@ service firebase.storage {
 ## 📊 État Technique
 
 **Statut :** Post-rollback - Base stable reconstituée
-**Version :** 2.6.1 (Rollback + stabilisation)  
-**Environnement :** Développement local + Firebase project configuré  
+**Version :** 2.7.0 (Interface de réorganisation premium)**Environnement :** Développement local + Firebase project configuré  
 **Déploiement cible :** `https://smartmenu-mvp.web.app`  
-**Dernière mise à jour :** Septembre 2025 - Rollback réussi
+**Dernière mise à jour :** Septembre 2025 - Réorganisation drag & drop niveau enterprise
 
 ### Notes Techniques Importantes
 
@@ -504,7 +536,7 @@ Projet développé par **Raphaël Benitah** avec accompagnement technique collab
 
 ---
 
-**Version :** 2.6.2 (Interface mobile responsive)
-**License :** Propriétaire  
+**Version :** 2.7.0 (Interface de réorganisation premium)
+**Dernière mise à jour :** Septembre 2025 - Réorganisation drag & drop niveau enterprise**License :** Propriétaire  
 **Contact :** rafaelbenitah@gmail.com  
 **Repository :** `https://github.com/RaphHtech/smartmenu`
