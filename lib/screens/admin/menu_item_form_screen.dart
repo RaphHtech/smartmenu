@@ -43,6 +43,48 @@ class _MenuItemFormScreenState extends State<MenuItemFormScreen> {
   List<String> _categories = [];
   bool _categoriesLoaded = false;
 
+  Future<void> ensureCategoryInOrder(
+      String restaurantId, String newCategoryLabel) async {
+    final category = newCategoryLabel.trim().replaceAll(RegExp(r'\s+'), ' ');
+    if (category.isEmpty) return;
+
+    final detailsRef = FirebaseFirestore.instance
+        .collection('restaurants')
+        .doc(restaurantId)
+        .collection('info')
+        .doc('details');
+
+    await FirebaseFirestore.instance.runTransaction((tx) async {
+      final snap = await tx.get(detailsRef);
+      final data = snap.data() ?? {};
+
+      final List<String> order =
+          List<String>.from(data['categoriesOrder'] ?? []);
+      final Set<String> hidden =
+          Set<String>.from(data['categoriesHidden'] ?? []);
+
+      // Cherche en insensible à la casse
+      final existsIndex = order.indexWhere(
+          (existing) => existing.toLowerCase() == category.toLowerCase());
+
+      if (existsIndex == -1) {
+        // Nouvelle catégorie : ajouter à la fin
+        order.add(category);
+      }
+
+      // Rendre visible par défaut (retirer du set caché)
+      hidden.removeWhere((h) => h.toLowerCase() == category.toLowerCase());
+
+      tx.set(
+          detailsRef,
+          {
+            'categoriesOrder': order,
+            'categoriesHidden': hidden.toList(),
+          },
+          SetOptions(merge: true));
+    });
+  }
+
   @override
   void initState() {
     super.initState();
@@ -306,21 +348,7 @@ class _MenuItemFormScreenState extends State<MenuItemFormScreen> {
             .collection('info')
             .doc('details');
 
-        await FirebaseFirestore.instance.runTransaction((tx) async {
-          final snap = await tx.get(detailsRef);
-          final data = snap.data() ?? {};
-          final List<dynamic> order = List.of(data['categoriesOrder'] ?? []);
-
-          if (!order.contains(_selectedCategory)) {
-            if (order.isEmpty) {
-              order.insert(0, _selectedCategory);
-            } else {
-              order.add(_selectedCategory);
-            }
-            tx.set(detailsRef, {'categoriesOrder': order},
-                SetOptions(merge: true));
-          }
-        });
+        await ensureCategoryInOrder(widget.restaurantId, _selectedCategory);
       }
 
       if (mounted) {

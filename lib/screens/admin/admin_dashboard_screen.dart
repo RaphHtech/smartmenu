@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:smartmenu_app/screens/admin/admin_menu_reorder_screen.dart';
 import '../../core/constants/colors.dart';
 import 'menu_item_form_screen.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -149,6 +150,12 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
     }
   }
 
+  void _openReorderScreen() {
+    context.pushAdminScreen(
+      AdminMenuReorderScreen(restaurantId: widget.restaurantId),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return AdminShell(
@@ -171,6 +178,21 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                   tooltip: 'Prévisualiser le menu',
                 ),
                 const SizedBox(width: 8),
+
+                // Réorganiser - responsif
+                if (isMobile) ...[
+                  IconButton(
+                    icon: const Icon(Icons.reorder),
+                    onPressed: _openReorderScreen,
+                    tooltip: 'Réorganiser les plats',
+                  ),
+                ] else ...[
+                  OutlinedButton.icon(
+                    onPressed: _openReorderScreen,
+                    icon: const Icon(Icons.reorder),
+                    label: const Text('Réorganiser'),
+                  ),
+                ],
 
                 // Ajouter - responsif
                 if (isMobile) ...[
@@ -958,8 +980,27 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
           final dataB = b.data() as Map<String, dynamic>?;
           final ca = (dataA?['category'] ?? '').toString();
           final cb = (dataB?['category'] ?? '').toString();
-          final c = ca.compareTo(cb);
-          if (c != 0) return c;
+
+          // Tri par catégorie d'abord
+          int catCompare = ca.compareTo(cb);
+          if (catCompare != 0) return catCompare;
+
+          // Puis par position dans la catégorie
+          final posA = (dataA?['position'] as num?)?.toDouble() ?? 999999.0;
+          final posB = (dataB?['position'] as num?)?.toDouble() ?? 999999.0;
+
+          if (posA == 0 && posB == 0) {
+            return (dataA?['name'] ?? '')
+                .toString()
+                .compareTo((dataB?['name'] ?? '').toString());
+          }
+          if (posA == 0) return 1;
+          if (posB == 0) return -1;
+
+          int posCompare = posA.compareTo(posB);
+          if (posCompare != 0) return posCompare;
+
+          // Enfin par nom si même position
           return (dataA?['name'] ?? '')
               .toString()
               .compareTo((dataB?['name'] ?? '').toString());
