@@ -332,6 +332,23 @@ service firebase.storage {
 
 ## Changelog
 
+### v2.6.2 - Corrections Interface Mobile (Septembre 2025)
+
+**Corrections UI responsive majeures :**
+
+- **Dashboard mobile** : Boutons "Actions rapides" redesignés avec layout Column/Row adaptatif
+- **Catégories admin** : Résolution problème affichage vertical ("P-i-z-z-a-s" → "Pizzas")
+- **Design moderne** : Badges de statut, avatars catégories, ombres subtiles
+- **Layout responsive** : Utilisation de `Wrap` et `LayoutBuilder` pour éviter les overflows iPhone SE
+- **CORS développement** : Configuration `origin: ["*"]` pour ports Flutter aléatoires
+
+**Architecture technique :**
+
+- **Widgets responsifs** : `ConstrainedBox` + `Wrap` pour actions adaptatives
+- **Gestion overflows** : `softWrap: false` + `maxLines: 1` + `TextOverflow.ellipsis`
+- **Touch targets** : Boutons 36-40px minimum pour accessibilité mobile
+- **Design cohérent** : Palette indigo/success/warning avec Material 3
+
 ### v2.6.1 — Rollback & Stabilisation
 
 **Corrections architecturales majeures :**
@@ -473,6 +490,9 @@ service firebase.storage {
 - **Images cassées** : conserver l'URL `getDownloadURL()` telle quelle en base avec `?alt=media&token=...`
 - **Cache-bust images** : ajouter `&v=123` si URL contient déjà `?`, sinon `?v=123`
 - **Fallback UI** : utiliser `errorBuilder` sur `Image.network` pour éviter les cartes cassées
+- **Interface mobile cassée** : Vérifier utilisation `Expanded` et `Wrap` au lieu de `Row` fixe
+- **Catégories verticales** : Forcer `softWrap: false` + `letterSpacing: 0`
+- **Overflows mobiles** : Remplacer `childAspectRatio` par `mainAxisExtent` dans GridView
 
 ---
 
@@ -484,7 +504,7 @@ Projet développé par **Raphaël Benitah** avec accompagnement technique collab
 
 ---
 
-**Version :** 2.6.1 (Rollback + stabilisation)
+**Version :** 2.6.2 (Interface mobile responsive)
 **License :** Propriétaire  
 **Contact :** rafaelbenitah@gmail.com  
 **Repository :** `https://github.com/RaphHtech/smartmenu`
