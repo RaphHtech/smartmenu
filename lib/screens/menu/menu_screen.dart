@@ -96,11 +96,40 @@ class SimpleMenuScreenState extends State<MenuScreen> {
         .where('visible', isEqualTo: true)
         .get();
 
-    return snap.docs.map((d) {
+    final items = snap.docs.map((d) {
       final data = d.data();
       data['id'] = d.id;
+      // Assurer position par défaut
+      data['position'] = (data['position'] as num?)?.toDouble() ?? 0.0;
       return data;
     }).toList();
+
+// Tri manuel par catégorie puis position puis nom
+    items.sort((a, b) {
+      final catA = (a['category'] ?? '').toString();
+      final catB = (b['category'] ?? '').toString();
+
+      // D'abord par catégorie
+      int catCompare = catA.compareTo(catB);
+      if (catCompare != 0) return catCompare;
+
+      // Puis par position (0 = fin de liste)
+      final posA = (a['position'] as num?)?.toDouble() ?? 999999.0;
+      final posB = (b['position'] as num?)?.toDouble() ?? 999999.0;
+
+      if (posA == 0 && posB == 0) {
+        // Si les deux n'ont pas de position, tri par nom
+        return (a['name'] ?? '')
+            .toString()
+            .compareTo((b['name'] ?? '').toString());
+      }
+      if (posA == 0) return 1; // A à la fin
+      if (posB == 0) return -1; // B à la fin
+
+      return posA.compareTo(posB);
+    });
+
+    return items;
   }
 
 // --- Groupage par catégorie + tri par nom ---
