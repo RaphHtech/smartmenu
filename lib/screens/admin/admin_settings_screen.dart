@@ -1,13 +1,12 @@
-// lib/screens/admin/admin_settings_screen.dart
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:smartmenu_app/widgets/admin/categories_settings_widget.dart';
 import '../../widgets/ui/admin_shell.dart';
 import '../../core/design/admin_tokens.dart';
 import '../../core/design/admin_typography.dart';
 import '../../widgets/ui/admin_themed.dart';
 import 'admin_restaurant_info_screen.dart';
-// import 'package:firebase_core/firebase_core.dart';
+import '../../screens/admin/category_manager_sheet.dart';
+import '../../services/category_repository.dart';
 
 class AdminSettingsScreen extends StatefulWidget {
   final String restaurantId;
@@ -302,7 +301,23 @@ class _AdminSettingsScreenState extends State<AdminSettingsScreen> {
             Card(
               child: Padding(
                 padding: const EdgeInsets.all(AdminTokens.space20),
-                child: CategoriesSettings(restaurantId: widget.restaurantId),
+                child: Card(
+                  child: ListTile(
+                    leading: const Icon(Icons.category),
+                    title: const Text('Gérer les catégories'),
+                    subtitle: const Text('Réorganiser, masquer et renommer'),
+                    trailing: const Icon(Icons.arrow_forward_ios),
+                    onTap: () async {
+                      final state = await CategoryManager.getLiveState(
+                              widget.restaurantId)
+                          .first;
+                      if (mounted) {
+                        CategoryManagerSheet.show(
+                            context, widget.restaurantId, state);
+                      }
+                    },
+                  ),
+                ),
               ),
             ),
 

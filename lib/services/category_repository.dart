@@ -3,7 +3,17 @@ import 'package:rxdart/rxdart.dart';
 import '../models/category.dart';
 
 class CategoryManager {
-  static final FirebaseFirestore _db = FirebaseFirestore.instance;
+  static FirebaseFirestore _db = FirebaseFirestore.instance;
+
+// Méthode pour injection en test
+  static void setFirestoreInstance(FirebaseFirestore instance) {
+    _db = instance;
+  }
+
+// Reset pour les tests
+  static void resetFirestoreInstance() {
+    _db = FirebaseFirestore.instance;
+  }
 
   // Stream unifié des infos restaurant
   static Stream<Map<String, dynamic>> getRestaurantInfoStream(

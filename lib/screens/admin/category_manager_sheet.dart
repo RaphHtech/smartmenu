@@ -69,8 +69,6 @@ class CategoryManagerSheet extends StatefulWidget {
 }
 
 class _CategoryManagerSheetState extends State<CategoryManagerSheet> {
-  static const double footerHeight = 56.0;
-
   late StreamSubscription _stateSubscription;
   late List<String> _categoriesOrder;
   late Set<String> _categoriesHidden;
@@ -363,11 +361,11 @@ class _CategoryManagerSheetState extends State<CategoryManagerSheet> {
                       ),
                     ),
                     const SizedBox(width: 16),
-                    Expanded(
+                    const Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Text(
+                          Text(
                             'Gérer les catégories',
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
@@ -377,7 +375,7 @@ class _CategoryManagerSheetState extends State<CategoryManagerSheet> {
                               color: Color(0xFF111827),
                             ),
                           ),
-                          const Text(
+                          Text(
                             'Réorganisez et configurez',
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
@@ -717,7 +715,7 @@ class _CategoryTileState extends State<CategoryTile>
             boxShadow: _scaleAnimation.value > 1.0
                 ? [
                     BoxShadow(
-                      color: const Color(0xFF4F46E5).withOpacity(0.1),
+                      color: const Color(0xFF4F46E5).withValues(alpha: 0.1),
                       blurRadius: 8,
                       offset: const Offset(0, 2),
                     ),
