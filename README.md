@@ -1,4 +1,8 @@
-# SmartMenu App 🍕
+# SmartMenu — QR Menu SaaS (Flutter + Firebase)
+
+[![Flutter](https://img.shields.io/badge/Flutter-3.16%2B-blue)]()
+[![Firebase](https://img.shields.io/badge/Firebase-Firestore%20%7C%20Auth%20%7C%20Storage-orange)]()
+[![PWA](https://img.shields.io/badge/PWA-Ready-success)]()
 
 Une application de menu numérique moderne pour restaurants, développée avec **Flutter** (mobile & web PWA) et **Firebase**.
 
@@ -17,14 +21,11 @@ Une application de menu numérique moderne pour restaurants, développée avec *
 
 ---
 
-## 🚀 État Actuel (Septembre 2025) — Version 2.6.1 ✅
+## 🚀 État actuel (sept. 2025) — Version 2.7.1 ✅
 
 ### 📌 Évolution
 
-- v2.4.0 — Dashboard Overview + Landing Page
-- v2.5.0 — Gestion avancée catégories
-- v2.6.0 — Branding professionnel (logo + fallback intelligent)
-- v2.6.1 — Rollback stabilisation + optimisations performance
+Voir le détail dans [CHANGELOG.md](./CHANGELOG.md).
 
 ---
 
@@ -77,7 +78,7 @@ Une application de menu numérique moderne pour restaurants, développée avec *
 - Screen "Infos du restaurant" pour modifier tagline/promo
 - **Filtres et recherche avancés** : Interface complète avec tri dynamique
 - **MediaScreen complète** : Upload, gestion et assignation d'images aux plats
-- **Gestion catégories** : Réorganisation drag & drop, masquage/affichage, création
+- **Gestion catégories avancée** : Modal premium responsive (desktop/mobile) avec drag & drop, masquage, renommage en temps réel
 - **Branding** : Upload logo restaurant avec fallback monogramme intelligent
 - **Stabilisation post-rollback** : Retour aux fonctionnalités core stables
 - **Optimisations requêtes** : Suppression des index complexes problématiques
@@ -97,6 +98,8 @@ Une application de menu numérique moderne pour restaurants, développée avec *
 - CORS restreint (dev/staging/prod)
 - Service Worker différencié (cache client vs network admin)
 - Upload web-safe avec putData(Uint8List)
+- Service de catégories unifié: `category_repository.dart` avec streams temps réel
+- Modal responsive: Dialog desktop + Bottom sheet mobile avec SafeArea
 - Analytics Firebase: `menu_open` (avec `tableId`) et `add_to_cart` (item + `tableId`)
 
 **Compatibilité assurée :** Si `categoriesOrder`/`categoriesHidden` absents, comportement alphabétique par défaut.
@@ -105,7 +108,7 @@ Une application de menu numérique moderne pour restaurants, développée avec *
 
 ## 🛠 Architecture Technique
 
-### Stack Principal
+### Stack Principale
 
 - **Frontend** : Flutter Web (PWA + Admin)
 - **Backend** : Firebase (Firestore + Auth + Storage + Hosting)
@@ -114,15 +117,16 @@ Une application de menu numérique moderne pour restaurants, développée avec *
 
 ### Structure Firestore
 
-````
+```
 restaurants/{rid}/
 ├── info/details (name, currency, tagline, promo_text, categoriesOrder, categoriesHidden)
 ├── members/{uid} (role, invited_at)
-└── menus/{itemId} (name, price, category, imageUrl, signature, visible, position)```
+└── menus/{itemId} (name, price, category, imageUrl, signature, visible, position)
+```
 
 ### Routing Web
 
-````
+```
 
 / → HomeScreen (landing page + saisie code)
 /r/{restaurantId} → MenuScreen (PWA client)
@@ -171,6 +175,7 @@ lib/
 │ ├── admin_dashboard_screen.dart # Gestion menu (CRUD)
 │ ├── admin_media_screen.dart # Gestion médias complète
 │ ├── admin_menu_reorder_screen.dart # Interface réorganisation drag & drop premium
+│ ├── category_manager_sheet.dart # Modal gestion catégories premium
 │ ├── admin_settings_screen.dart # Paramètres + nom restaurant
 │ ├── admin_restaurant_info_screen.dart # Gestion tagline/promo
 │ ├── admin_branding_screen.dart # Gestion identité visuelle complète
@@ -198,7 +203,7 @@ web/
 ├── Icon-192.png
 └── Icon-512.png
 
-````
+```
 
 ---
 
@@ -217,7 +222,7 @@ web/
 git clone https://github.com/RaphHtech/smartmenu.git
 cd smartmenu_app
 flutter pub get
-````
+```
 
 ### Configuration Firebase
 
@@ -536,7 +541,7 @@ Projet développé par **Raphaël Benitah** avec accompagnement technique collab
 
 ---
 
-**Version :** 2.7.0 (Interface de réorganisation premium)
-**Dernière mise à jour :** Septembre 2025 - Réorganisation drag & drop niveau enterprise**License :** Propriétaire  
+**Version :** 2.7.1 (Gestion catégories premium)
+**Dernière mise à jour :** Septembre 2025 - Modal responsive + drag & dropniveau enterprise**License :** Propriétaire  
 **Contact :** rafaelbenitah@gmail.com  
 **Repository :** `https://github.com/RaphHtech/smartmenu`
