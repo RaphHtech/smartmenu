@@ -53,9 +53,7 @@ class SimpleMenuScreenState extends State<MenuScreen> {
   String _tagline = ''; // sous-titre (catch phrase)
   String _promoText = ''; // bandeau promo
   Map<String, List<Map<String, dynamic>>> _menuData = {};
-  List<String> _categoriesOrder = [];
   List<String> _orderedCategories = [];
-  Set<String> _categoriesHidden = {};
   final ScrollController _mainScrollController = ScrollController();
   bool _isHeaderCollapsed = false;
   String _emojiFor(String cat) {
@@ -96,40 +94,11 @@ class SimpleMenuScreenState extends State<MenuScreen> {
         .where('visible', isEqualTo: true)
         .get();
 
-    final items = snap.docs.map((d) {
+    return snap.docs.map((d) {
       final data = d.data();
       data['id'] = d.id;
-      // Assurer position par défaut
-      data['position'] = (data['position'] as num?)?.toDouble() ?? 0.0;
       return data;
     }).toList();
-
-// Tri manuel par catégorie puis position puis nom
-    items.sort((a, b) {
-      final catA = (a['category'] ?? '').toString();
-      final catB = (b['category'] ?? '').toString();
-
-      // D'abord par catégorie
-      int catCompare = catA.compareTo(catB);
-      if (catCompare != 0) return catCompare;
-
-      // Puis par position (0 = fin de liste)
-      final posA = (a['position'] as num?)?.toDouble() ?? 999999.0;
-      final posB = (b['position'] as num?)?.toDouble() ?? 999999.0;
-
-      if (posA == 0 && posB == 0) {
-        // Si les deux n'ont pas de position, tri par nom
-        return (a['name'] ?? '')
-            .toString()
-            .compareTo((b['name'] ?? '').toString());
-      }
-      if (posA == 0) return 1; // A à la fin
-      if (posB == 0) return -1; // B à la fin
-
-      return posA.compareTo(posB);
-    });
-
-    return items;
   }
 
 // --- Groupage par catégorie + tri par nom ---
@@ -193,8 +162,6 @@ class SimpleMenuScreenState extends State<MenuScreen> {
         _promoText = (restaurantData['promo_text'] ?? '').toString().trim();
         _promoEnabled = (restaurantData['promo_enabled'] as bool?) ?? true;
         _logoUrl = (restaurantData['logoUrl'] ?? '').toString();
-        _categoriesOrder = categoriesOrder;
-        _categoriesHidden = categoriesHidden;
         _isLoading = false;
       });
     }
