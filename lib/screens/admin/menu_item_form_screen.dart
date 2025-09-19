@@ -4,7 +4,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:image_picker/image_picker.dart';
 import '../../core/constants/colors.dart';
-// import 'dart:typed_data';
 
 class MenuItemFormScreen extends StatefulWidget {
   final String restaurantId;
@@ -340,13 +339,6 @@ class _MenuItemFormScreenState extends State<MenuItemFormScreen> {
         itemData['created_at'] = FieldValue.serverTimestamp();
         await menuCollection.add(itemData);
         debugPrint('DEBUG: Plat créé avec succès');
-
-        // Mise à jour de categoriesOrder si nouvelle catégorie
-        final detailsRef = FirebaseFirestore.instance
-            .collection('restaurants')
-            .doc(widget.restaurantId)
-            .collection('info')
-            .doc('details');
 
         await ensureCategoryInOrder(widget.restaurantId, _selectedCategory);
       }

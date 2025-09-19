@@ -194,21 +194,24 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
     try {
       await CategoryManager.toggleCategoryVisibility(
           widget.restaurantId, category);
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Catégorie mise à jour.'),
-          backgroundColor: Colors.green,
-          behavior: SnackBarBehavior.floating,
-        ),
-      );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Catégorie mise à jour.'),
+            backgroundColor: Colors.green,
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
+      }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Erreur: $e'),
-          backgroundColor: Colors.red,
-        ),
-      );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Erreur: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
     }
   }
 
@@ -332,7 +335,8 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                       .collection('restaurants')
                       .doc(widget.restaurantId)
                       .collection('menus')
-                      .snapshots(),
+                      .snapshots()
+                      .distinct(), // Évite les rebuilds identiques
                   builder: (context, snapshot) {
                     if (snapshot.hasError) {
                       return const Center(

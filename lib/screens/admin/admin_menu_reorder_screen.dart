@@ -33,8 +33,7 @@ class _AdminMenuReorderScreenState extends State<AdminMenuReorderScreen> {
   // Sélection multiple
 // Dans _AdminMenuReorderScreenState
   final Set<String> _selectedItems = <String>{};
-  Set<String> _dirtyItemIds = <String>{};
-
+  final Set<String> _dirtyItemIds = {};
   void _recalculatePositions(
       String category, List<MenuItemData> items, int oldIndex, int newIndex) {
     final item = items[newIndex];
@@ -64,7 +63,7 @@ class _AdminMenuReorderScreenState extends State<AdminMenuReorderScreen> {
   @override
   void initState() {
     super.initState();
-    print('DEBUG: Restaurant ID = ${widget.restaurantId}');
+    debugPrint('DEBUG: Restaurant ID = ${widget.restaurantId}');
     _loadMenuItems();
     _listenRestaurantInfo();
   }
@@ -113,7 +112,7 @@ class _AdminMenuReorderScreenState extends State<AdminMenuReorderScreen> {
 
     if (updateCount > 0) {
       await batch.commit();
-      print('Migration: $updateCount items mis à jour');
+      debugPrint('Migration: $updateCount items mis à jour');
     }
   }
 
@@ -146,7 +145,7 @@ class _AdminMenuReorderScreenState extends State<AdminMenuReorderScreen> {
   }
 
   Future<void> _loadMenuItems() async {
-    print('DEBUG: Début _loadMenuItems');
+    debugPrint('DEBUG: Début _loadMenuItems');
     try {
       final snapshot = await FirebaseFirestore.instance
           .collection('restaurants')
@@ -154,7 +153,7 @@ class _AdminMenuReorderScreenState extends State<AdminMenuReorderScreen> {
           .collection('menus')
           .get();
 
-      print('DEBUG: Snapshot reçu avec ${snapshot.docs.length} docs');
+      debugPrint('DEBUG: Snapshot reçu avec ${snapshot.docs.length} docs');
 
       final items = <MenuItemData>[];
       final categories = <String>{};
@@ -168,13 +167,13 @@ class _AdminMenuReorderScreenState extends State<AdminMenuReorderScreen> {
         }
       }
 
-      print('DEBUG: Items parsés, début initialisation positions');
+      debugPrint('DEBUG: Items parsés, début initialisation positions');
 
       // Initialiser positions si manquantes
       await _initializePositionsIfNeeded(items);
       await _migrateOldItems();
 
-      print('DEBUG: Positions initialisées, début groupement');
+      debugPrint('DEBUG: Positions initialisées, début groupement');
 
       // Grouper par catégorie
       final itemsByCategory = <String, List<MenuItemData>>{};
@@ -190,7 +189,7 @@ class _AdminMenuReorderScreenState extends State<AdminMenuReorderScreen> {
         categoryItems.sort((a, b) => a.position.compareTo(b.position));
       }
 
-      print('DEBUG: Données prêtes, setState');
+      debugPrint('DEBUG: Données prêtes, setState');
 
       setState(() {
         _itemsByCategory = itemsByCategory;
@@ -203,9 +202,9 @@ class _AdminMenuReorderScreenState extends State<AdminMenuReorderScreen> {
         _isLoading = false; // ← AJOUTER
       });
 
-      print('DEBUG: _loadMenuItems terminé avec succès');
+      debugPrint('DEBUG: _loadMenuItems terminé avec succès');
     } catch (e) {
-      print('DEBUG: Erreur dans _loadMenuItems: $e');
+      debugPrint('DEBUG: Erreur dans _loadMenuItems: $e');
       _showErrorSnackBar('Erreur de chargement: $e');
     }
   }

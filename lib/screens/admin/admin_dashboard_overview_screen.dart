@@ -231,7 +231,7 @@ class AdminDashboardOverviewScreen extends StatelessWidget {
               Text(
                 restaurantName,
                 style: TextStyle(
-                  color: Colors.white.withOpacity(0.9),
+                  color: Colors.white.withValues(alpha: 0.9),
                   fontSize: 14,
                 ),
               ),
@@ -492,7 +492,7 @@ class _MetricCard extends StatelessWidget {
             color: isWarn ? Colors.orange.shade200 : AdminTokens.neutral200),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.04),
+            color: Colors.black.withValues(alpha: 0.04),
             blurRadius: 8,
             offset: const Offset(0, 2),
           ),
