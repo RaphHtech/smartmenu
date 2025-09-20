@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:smartmenu_app/services/analytics_service.dart';
 import 'package:smartmenu_app/services/table_service.dart';
+import 'package:smartmenu_app/widgets/badges_legend_widget.dart';
 import '../../core/constants/colors.dart';
 import '../../widgets/category_pill_widget.dart';
 import '../../widgets/menu_item_widget.dart';
@@ -109,10 +110,37 @@ class SimpleMenuScreenState extends State<MenuScreen> {
       final cat = (it['category'] ?? 'Autres').toString();
       (out[cat] ??= []).add(it);
     }
+
+    // Tri par : featured (true en premier), puis position, puis nom
     for (final v in out.values) {
-      v.sort((a, b) =>
-          (a['name'] ?? '').toString().compareTo((b['name'] ?? '').toString()));
+      v.sort((a, b) {
+        // DEBUG: Affiche les valeurs
+        final aFeatured = a['featured'] as bool? ?? false;
+        final bFeatured = b['featured'] as bool? ?? false;
+
+        debugPrint(
+            'Tri: ${a['name']} (featured=$aFeatured) vs ${b['name']} (featured=$bFeatured)');
+
+        // 1. Featured en premier
+        if (aFeatured != bFeatured) {
+          final result = aFeatured ? -1 : 1;
+          debugPrint('  → Featured différent, résultat: $result');
+          return result;
+        }
+
+        // 2. Puis par position
+        final aPosition = (a['position'] as num?)?.toDouble() ?? 999999.0;
+        final bPosition = (b['position'] as num?)?.toDouble() ?? 999999.0;
+        final positionCompare = aPosition.compareTo(bPosition);
+        if (positionCompare != 0) return positionCompare;
+
+        // 3. Enfin par nom
+        return (a['name'] ?? '')
+            .toString()
+            .compareTo((b['name'] ?? '').toString());
+      });
     }
+
     return out;
   }
 
@@ -510,9 +538,55 @@ class SimpleMenuScreenState extends State<MenuScreen> {
 
                 const SliverToBoxAdapter(child: SizedBox(height: 12)),
 
-                // ===== TITRE DE SECTION =====
-                const SliverToBoxAdapter(child: SizedBox(height: 12)),
-
+                // ===== TITRE DE SECTION AVEC INFO BADGES =====
+                SliverToBoxAdapter(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 20, vertical: 12),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          _selectedCategory.isEmpty
+                              ? 'Menu'
+                              : _selectedCategory,
+                          style: const TextStyle(
+                            fontSize: 24,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                            shadows: [
+                              Shadow(
+                                  offset: Offset(0, 1),
+                                  blurRadius: 2,
+                                  color: Colors.black26)
+                            ],
+                          ),
+                        ),
+                        GestureDetector(
+                          onTap: () {
+                            showModalBottomSheet(
+                              context: context,
+                              backgroundColor: Colors.transparent,
+                              builder: (_) => const BadgesLegendWidget(),
+                            );
+                          },
+                          child: Container(
+                            padding: const EdgeInsets.all(8),
+                            decoration: BoxDecoration(
+                              color: Colors.white.withOpacity(0.2),
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                            child: const Icon(
+                              Icons.info_outline,
+                              size: 20,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
                 // ===== ITEMS DU MENU =====
                 (() {
                   if (_isLoading) {

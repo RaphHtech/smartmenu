@@ -118,6 +118,9 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
         scrollDirection: Axis.horizontal,
         child: Row(
           children: [
+            // AJOUTER: Chip "Toutes" en premier
+            _buildAllCategoriesChip(state),
+
             // Catégories ordonnées
             ...categoriesOrder
                 .where((cat) => allCategories.contains(cat))
@@ -146,6 +149,22 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _buildAllCategoriesChip(CategoryLiveState state) {
+    final totalCount = state.counts.values.fold(0, (sum, count) => sum + count);
+    final isSelected = _selectedCategory == null;
+
+    return Padding(
+      padding: const EdgeInsets.only(right: 8),
+      child: FilterChip(
+        label: Text('Toutes ($totalCount)'),
+        selected: isSelected,
+        onSelected: (selected) => setState(() => _selectedCategory = null),
+        selectedColor: AppColors.primary.withAlpha(51),
+        backgroundColor: Colors.blue[50],
       ),
     );
   }

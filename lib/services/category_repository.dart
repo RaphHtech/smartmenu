@@ -51,11 +51,33 @@ class CategoryManager {
     return CombineLatestStream.combine2(
       getRestaurantInfoStream(restaurantId),
       getCategoryCountsStream(restaurantId),
-      (Map<String, dynamic> info, Map<String, int> counts) => CategoryLiveState(
-        order: List<String>.from(info['categoriesOrder'] ?? []),
-        hidden: Set<String>.from(info['categoriesHidden'] ?? []),
-        counts: counts,
-      ),
+      (Map<String, dynamic> info, Map<String, int> counts) {
+        final configuredOrder =
+            List<String>.from(info['categoriesOrder'] ?? []);
+        final detectedCategories = counts.keys.toSet();
+
+        // Union : ordre configuré + catégories détectées non configurées
+        final mergedOrder = <String>[];
+        mergedOrder.addAll(configuredOrder);
+
+        // Ajoute les catégories détectées qui ne sont pas dans l'ordre configuré
+        for (final detected in detectedCategories) {
+          if (!configuredOrder.contains(detected)) {
+            mergedOrder.add(detected);
+          }
+        }
+
+        // Réconciliation automatique si nouvelles catégories détectées
+        if (mergedOrder.length > configuredOrder.length) {
+          _reconcileCategories(restaurantId, mergedOrder);
+        }
+
+        return CategoryLiveState(
+          order: mergedOrder,
+          hidden: Set<String>.from(info['categoriesHidden'] ?? []),
+          counts: counts,
+        );
+      },
     );
   }
 
@@ -223,5 +245,16 @@ class CategoryManager {
         'updatedAt': FieldValue.serverTimestamp(),
       });
     });
+  }
+
+// Réconciliation automatique (fire-and-forget)
+  static void _reconcileCategories(String restaurantId, List<String> newOrder) {
+    _db
+        .collection('restaurants')
+        .doc(restaurantId)
+        .collection('info')
+        .doc('details')
+        .update({'categoriesOrder': newOrder}).catchError(
+            (e) => print('Erreur réconciliation: $e'));
   }
 }

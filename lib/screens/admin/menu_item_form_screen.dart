@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:image_picker/image_picker.dart';
 import '../../core/constants/colors.dart';
+import '../../models/menu_item.dart';
 
 class MenuItemFormScreen extends StatefulWidget {
   final String restaurantId;
@@ -29,7 +30,6 @@ class _MenuItemFormScreenState extends State<MenuItemFormScreen> {
 
   String _selectedCategory = 'Pizzas';
   String _restaurantCurrency = 'ILS';
-  bool _isSignature = false;
   bool _isVisible = true;
   bool _isLoading = false;
   bool _removeImage = false;
@@ -41,6 +41,8 @@ class _MenuItemFormScreenState extends State<MenuItemFormScreen> {
 
   List<String> _categories = [];
   bool _categoriesLoaded = false;
+  bool _featured = false;
+  List<String> _badges = [];
 
   Future<void> ensureCategoryInOrder(
       String restaurantId, String newCategoryLabel) async {
@@ -120,7 +122,8 @@ class _MenuItemFormScreenState extends State<MenuItemFormScreen> {
       _descriptionController.text = data['description'] ?? '';
       _priceController.text = (data['price'] ?? 0).toString();
       _selectedCategory = data['category'] ?? _categories.first;
-      _isSignature = data['signature'] ?? false;
+      _featured = data['featured'] ?? false;
+      _badges = List<String>.from(data['badges'] ?? []);
       _isVisible = data['visible'] ?? true;
 
       // Très important pour préserver l'image existante
@@ -301,15 +304,22 @@ class _MenuItemFormScreenState extends State<MenuItemFormScreen> {
       }
 
       // Données du plat
-      final itemData = {
-        'name': _nameController.text.trim(),
-        'description': _descriptionController.text.trim(),
-        'price': double.parse(_priceController.text),
-        'category': _selectedCategory,
-        'signature': _isSignature,
-        'visible': _isVisible,
-        'updated_at': FieldValue.serverTimestamp(),
-      };
+      final menuItem = MenuItem(
+        id: widget.itemId ?? '',
+        name: _nameController.text.trim(),
+        description: _descriptionController.text.trim(),
+        price: double.parse(_priceController.text),
+        category: _selectedCategory,
+        signature: false,
+        featured: _featured,
+        badges: _badges,
+        visible: _isVisible,
+        createdAt: DateTime.now(),
+        updatedAt: DateTime.now(),
+      );
+
+      final itemData = menuItem.toJson();
+      itemData['updated_at'] = FieldValue.serverTimestamp();
 
       // Gestion de l'image
       if (finalImageUrl != null && finalImageUrl.isNotEmpty) {
@@ -410,9 +420,6 @@ class _MenuItemFormScreenState extends State<MenuItemFormScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text(isEditing ? 'Modifier le plat' : 'Ajouter un plat'),
-        // backgroundColor: AppColors.primary,
-        // foregroundColor: Colors.white,
-        // elevation: 0,
       ),
       body: Form(
         key: _formKey,
@@ -619,16 +626,39 @@ class _MenuItemFormScreenState extends State<MenuItemFormScreen> {
                     ),
                     const SizedBox(height: 12),
                     SwitchListTile(
-                      title: const Text('Plat signature'),
-                      subtitle: const Text('Mettre en avant ce plat'),
-                      value: _isSignature,
-                      activeColor: AppColors.primary,
-                      onChanged: (value) {
-                        setState(() {
-                          _isSignature = value;
-                        });
-                      },
+                      title: const Text('Mettre en avant'),
+                      subtitle: const Text('Épingler en haut de la catégorie'),
+                      value: _featured,
+                      onChanged: (value) => setState(() => _featured = value),
                     ),
+                    const SizedBox(height: 16),
+                    Text('Badges',
+                        style: Theme.of(context).textTheme.titleMedium),
+                    const SizedBox(height: 8),
+                    Wrap(
+                      spacing: 8,
+                      children: [
+                        'populaire',
+                        'nouveau',
+                        'spécialité',
+                        'chef',
+                        'saisonnier'
+                      ]
+                          .map((badge) => FilterChip(
+                                label: Text(badge),
+                                selected: _badges.contains(badge),
+                                onSelected: (selected) {
+                                  setState(() {
+                                    if (selected)
+                                      _badges.add(badge);
+                                    else
+                                      _badges.remove(badge);
+                                  });
+                                },
+                              ))
+                          .toList(),
+                    ),
+                    const SizedBox(height: 16),
                     SwitchListTile(
                       title: const Text('Visible sur le menu'),
                       subtitle: const Text('Les clients peuvent voir ce plat'),

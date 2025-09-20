@@ -201,20 +201,27 @@ class MenuItem extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    name,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.w700,
-                        color: Colors.white,
-                        shadows: [
-                          Shadow(
-                              offset: Offset(0, 1),
-                              blurRadius: 2,
-                              color: Colors.black26)
-                        ]),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Text(
+                          name,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: const TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.w700,
+                              color: Colors.white,
+                              shadows: [
+                                Shadow(
+                                    offset: Offset(0, 1),
+                                    blurRadius: 2,
+                                    color: Colors.black26)
+                              ]),
+                        ),
+                      ),
+                      ..._buildBadges(),
+                    ],
                   ),
                   if (description.isNotEmpty) ...[
                     const SizedBox(height: 2),
@@ -382,6 +389,94 @@ class MenuItem extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  List<Widget> _buildBadges() {
+    final List<String> badges = List<String>.from(pizza['badges'] ?? []);
+    if (badges.isEmpty) return [];
+
+    // Priority order for mobile (1 badge max)
+    final priority = [
+      'populaire',
+      'nouveau',
+      'spécialité',
+      'chef',
+      'saisonnier'
+    ];
+    badges.sort((a, b) => priority.indexOf(a).compareTo(priority.indexOf(b)));
+
+    // Take only first badge for mobile compact view
+    final displayBadge = badges.first;
+
+    Color badgeColor;
+    IconData badgeIcon;
+
+    switch (displayBadge) {
+      case 'populaire':
+        badgeColor = const Color(0xFFFF8C00); // Orange
+        badgeIcon = Icons.star;
+        break;
+      case 'nouveau':
+        badgeColor = const Color(0xFF4F46E5); // Indigo
+        badgeIcon = Icons.fiber_new;
+        break;
+      case 'spécialité':
+        badgeColor = const Color(0xFF7C3AED); // Violet
+        badgeIcon = Icons.restaurant;
+        break;
+      case 'chef':
+        badgeColor = const Color(0xFF0891B2); // Teal
+        badgeIcon = Icons.person;
+        break;
+      case 'saisonnier':
+        badgeColor = const Color(0xFF059669); // Vert
+        badgeIcon = Icons.eco;
+        break;
+      default:
+        return [];
+    }
+    return [
+      const SizedBox(width: 4),
+      Container(
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+        decoration: BoxDecoration(
+          color: badgeColor,
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(badgeIcon, size: 10, color: Colors.white),
+            const SizedBox(width: 4),
+            Text(
+              _getBadgeText(displayBadge),
+              style: const TextStyle(
+                fontSize: 10,
+                fontWeight: FontWeight.w600,
+                color: Colors.white,
+              ),
+            ),
+          ],
+        ),
+      )
+    ];
+  }
+}
+
+String _getBadgeText(String badge) {
+  switch (badge) {
+    case 'populaire':
+      return 'Populaire';
+    case 'nouveau':
+      return 'Nouveau';
+    case 'spécialité':
+      return 'Spécialité';
+    case 'chef':
+      return 'Choix du chef';
+    case 'saisonnier':
+      return 'Saisonnier';
+    default:
+      return badge;
   }
 }
 
