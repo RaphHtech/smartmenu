@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <html>
 <head>
-<base href="/">  <meta charset="UTF-8">
+<base href="/" />
+<meta charset="UTF-8">
   <meta content="IE=Edge" http-equiv="X-UA-Compatible">
   <meta name="description" content="SmartMenu - Menu digital pour restaurants">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -9,6 +10,7 @@
   <meta name="apple-mobile-web-app-title" content="SmartMenu">
   <meta name="msapplication-TileColor" content="#000000">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="mobile-web-app-capable" content="yes" />
   
   <title>SmartMenu</title>
   <link rel="manifest" href="manifest.json">
@@ -43,20 +45,21 @@
   </div>
 
   <script>
-    window.addEventListener('load', function () {
-      const host = document.querySelector('#flutter_host');
-      _flutter.loader.loadEntrypoint({
-        // important: sans '/' initial pour respecter <base href="/">
-        entrypointUrl: "main.dart.js",
-        onEntrypointLoaded: function (engineInitializer) {
-          engineInitializer.initializeEngine({ hostElement: host }).then(function (appRunner) {
-            host.querySelector('.loading')?.remove();
-            appRunner.runApp();
-          });
-        }
-      });
+  window.addEventListener('load', function () {
+    const host = document.querySelector('#flutter_host');
+    const loading = host.querySelector('.loading');
+    
+    _flutter.loader.loadEntrypoint({
+      entrypointUrl: '/main.dart.js', // CHEMIN ABSOLU (ajout du /)
+      onEntrypointLoaded: function (engineInitializer) {
+        engineInitializer.initializeEngine({ hostElement: host }).then(function (appRunner) {
+          loading?.remove();
+          appRunner.runApp();
+        });
+      }
     });
-  </script>
+  });
+</script>
   <script src="flutter.js" defer></script>
 </body>
 </html>

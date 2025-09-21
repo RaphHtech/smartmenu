@@ -142,7 +142,7 @@ class _AdminLoginScreenState extends State<AdminLoginScreen> {
                             color: Colors.white,
                             borderRadius:
                                 BorderRadius.circular(AdminTokens.radius16),
-                            boxShadow: [AdminTokens.cardShadow],
+                            boxShadow: const [AdminTokens.cardShadow],
                           ),
                           child: Form(
                             key: _formKey,

@@ -83,12 +83,24 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
   }
 
   Future<void> _previewMenu() async {
+    // Récupérer le slug/code du restaurant
+    final detailsSnap = await FirebaseFirestore.instance
+        .collection('restaurants')
+        .doc(widget.restaurantId)
+        .collection('info')
+        .doc('details')
+        .get();
+
+    final data = detailsSnap.data() ?? {};
+    final code = (data['slug'] ?? data['code'] ?? '').toString().trim();
+    final publicId = code.isNotEmpty ? code : widget.restaurantId;
+
     final origin = Uri.base;
     final previewUri = Uri(
       scheme: origin.scheme,
       host: origin.host,
       port: origin.hasPort ? origin.port : null,
-      path: '/r/${widget.restaurantId}',
+      path: '/r/$publicId', // Utilise le slug au lieu de l'ID
       queryParameters: {
         'preview': '1',
         'return': '/admin',

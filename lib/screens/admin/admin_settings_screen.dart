@@ -7,6 +7,7 @@ import '../../widgets/ui/admin_themed.dart';
 import 'admin_restaurant_info_screen.dart';
 import '../../screens/admin/category_manager_sheet.dart';
 import '../../services/category_repository.dart';
+import 'package:flutter/services.dart';
 
 class AdminSettingsScreen extends StatefulWidget {
   final String restaurantId;
@@ -33,6 +34,7 @@ class _AdminSettingsScreenState extends State<AdminSettingsScreen> {
   void initState() {
     super.initState();
     _loadRestaurantName();
+    _addCodeToExistingRestaurant();
   }
 
   @override
@@ -322,9 +324,164 @@ class _AdminSettingsScreenState extends State<AdminSettingsScreen> {
             ),
 
             const SizedBox(height: AdminTokens.space32),
+
+            // Section Intégration
+            const Text(
+              'Intégration',
+              style: AdminTypography.headlineLarge,
+            ),
+            const SizedBox(height: AdminTokens.space16),
+
+            Card(
+              child: Padding(
+                padding: const EdgeInsets.all(AdminTokens.space20),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Row(
+                      children: [
+                        Icon(
+                          Icons.qr_code,
+                          color: AdminTokens.primary600,
+                        ),
+                        SizedBox(width: AdminTokens.space12),
+                        Text(
+                          'Code restaurant',
+                          style: AdminTypography.headlineMedium,
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: AdminTokens.space16),
+                    FutureBuilder<DocumentSnapshot>(
+                      future: FirebaseFirestore.instance
+                          .collection('restaurants')
+                          .doc(widget.restaurantId)
+                          .collection('info')
+                          .doc('details')
+                          .get(),
+                      builder: (context, snapshot) {
+                        if (!snapshot.hasData) {
+                          return const CircularProgressIndicator();
+                        }
+
+                        final data =
+                            snapshot.data!.data() as Map<String, dynamic>? ??
+                                {};
+                        final code =
+                            data['slug'] ?? data['code'] ?? widget.restaurantId;
+
+                        return Column(
+                          children: [
+                            _buildInfoRow('Code restaurant', code),
+                            const SizedBox(height: AdminTokens.space8),
+                            _buildInfoRow('URL publique',
+                                '${Uri.base.origin}/r/${data['slug'] ?? data['code'] ?? widget.restaurantId}'),
+                            const SizedBox(height: AdminTokens.space16),
+
+                            // Boutons d'action
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: OutlinedButton.icon(
+                                    icon: const Icon(Icons.qr_code, size: 18),
+                                    label: const Text('Générer QR'),
+                                    onPressed: () => _generateQRCode(code),
+                                  ),
+                                ),
+                                const SizedBox(width: AdminTokens.space12),
+                                Expanded(
+                                  child: ElevatedButton.icon(
+                                    icon: const Icon(Icons.share, size: 18),
+                                    label: const Text('Partager'),
+                                    onPressed: () => _shareRestaurant(code),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        );
+                      },
+                    ),
+                  ],
+                ),
+              ),
+            ),
           ],
         ),
       ),
+    );
+  }
+
+  void _generateQRCode(String code) {
+    // TODO: Implémenter génération QR
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Génération QR - À implémenter')),
+    );
+  }
+
+  void _shareRestaurant(String code) {
+    final url = '${Uri.base.origin}/r/$code';
+    Clipboard.setData(ClipboardData(text: url));
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('URL copiée : $url')),
+    );
+  }
+
+  Widget _buildInfoRow(String label, String value) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        SizedBox(
+          width: 120,
+          child: Text(
+            label,
+            style: AdminTypography.bodyMedium.copyWith(
+              fontWeight: FontWeight.w500,
+              color: AdminTokens.neutral600,
+            ),
+          ),
+        ),
+        Expanded(
+          child: Text(
+            value,
+            style: AdminTypography.bodyLarge,
+          ),
+        ),
+        IconButton(
+          icon: const Icon(Icons.copy, size: 20),
+          onPressed: () {
+            Clipboard.setData(ClipboardData(text: value));
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text('Copié : $value')),
+            );
+          },
+        ),
+      ],
+    );
+  }
+
+  Future<void> _addCodeToExistingRestaurant() async {
+    final doc = await FirebaseFirestore.instance
+        .collection('restaurants')
+        .doc(widget.restaurantId)
+        .collection('info')
+        .doc('details')
+        .get();
+
+    final data = doc.data() ?? {};
+    if (data['code'] != null) return; // Déjà un code
+
+    final name = data['name'] ?? 'restaurant';
+    final code = name
+        .toLowerCase()
+        .replaceAll(RegExp(r'[^a-z0-9]'), '-')
+        .replaceAll(RegExp(r'-+'), '-')
+        .replaceAll(RegExp(r'^-|-$'), '');
+
+    await doc.reference.update({'code': code});
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Code généré : $code')),
     );
   }
 }

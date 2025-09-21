@@ -14,6 +14,7 @@ import 'package:smartmenu_app/screens/admin/auth/admin_reset_screen.dart';
 import 'core/constants/colors.dart';
 import 'widgets/ui/admin_themed.dart';
 import 'core/auth/auth_guard.dart';
+import 'screens/menu/resolve_restaurant_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -34,11 +35,15 @@ class SmartMenuApp extends StatelessWidget {
       home: _getInitialScreen(),
       theme: _buildTheme(),
       onGenerateRoute: (settings) {
-        // Route /r/{restaurantId}
-        if (settings.name?.startsWith('/r/') == true) {
-          final restaurantId = settings.name!.substring(3);
+        final name = settings.name ?? '';
+        final uri = Uri.tryParse(name);
+        if (uri != null &&
+            uri.pathSegments.isNotEmpty &&
+            uri.pathSegments.first == 'r') {
+          final idOrSlug =
+              (uri.pathSegments.length > 1) ? uri.pathSegments[1] : '';
           return MaterialPageRoute(
-            builder: (context) => MenuScreen(restaurantId: restaurantId),
+            builder: (_) => ResolveRestaurantScreen(idOrSlug: idOrSlug),
           );
         }
         return null;
@@ -50,6 +55,13 @@ class SmartMenuApp extends StatelessWidget {
     if (kIsWeb) {
       final segments = Uri.base.pathSegments;
 
+      // 1) PRIORITÉ: Route /r/{restaurantId} → MenuScreen
+      if (segments.isNotEmpty && segments[0] == 'r') {
+        final idOrSlug = (segments.length > 1) ? segments[1] : '';
+        return ResolveRestaurantScreen(idOrSlug: idOrSlug);
+      }
+
+      // 2) Routes admin (après /r/)
       if (segments.isNotEmpty && segments[0] == 'admin') {
         final requestedPath = '/${segments.join('/')}';
         final redirectRoute = AuthGuard.getRedirectRoute(requestedPath);
@@ -68,7 +80,7 @@ class SmartMenuApp extends StatelessWidget {
           }
         }
 
-        // Routes directes
+        // Routes directes admin
         if (segments.length > 1) {
           switch (segments[1]) {
             case 'login':
@@ -85,7 +97,7 @@ class SmartMenuApp extends StatelessWidget {
       }
     }
 
-    // Route par défaut
+    // 3) Route par défaut
     return const HomeScreen();
   }
 

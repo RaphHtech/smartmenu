@@ -9,16 +9,57 @@ import 'menu_item_form_screen.dart';
 import 'admin_media_screen.dart';
 import 'admin_restaurant_info_screen.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class AdminDashboardOverviewScreen extends StatelessWidget {
   final String restaurantId;
   const AdminDashboardOverviewScreen({super.key, required this.restaurantId});
 
   Future<void> _previewMenu(BuildContext context) async {
-    final uri = Uri.base;
-    final url =
-        '${uri.scheme}://${uri.host}:${uri.port}/r/$restaurantId?admin=true';
-    await launchUrl(Uri.parse(url), webOnlyWindowName: '_blank');
+    // 1) Récupère le restaurant principal de l’utilisateur
+    final uid = FirebaseAuth.instance.currentUser?.uid;
+    if (uid == null) return;
+
+    final userDoc =
+        await FirebaseFirestore.instance.collection('users').doc(uid).get();
+
+    final rid = userDoc.data()?['primary_restaurant_id'] as String?;
+    if (rid == null || rid.isEmpty) return;
+
+    // 2) (Optionnel mais robuste) Essaie d’utiliser un “code public” s’il existe
+    //    dans restaurants/{rid}/info/details (p. ex. code, slug, shortCode).
+    final detailsDoc = await FirebaseFirestore.instance
+        .collection('restaurants')
+        .doc(rid)
+        .collection('info')
+        .doc('details')
+        .get();
+
+    final data = detailsDoc.data() ?? {};
+    final code = (data['slug'] ?? data['code'] ?? data['shortCode'] ?? '')
+        .toString()
+        .trim();
+
+    // 3) Construis l’URL /r/<identifiant> (par défaut on utilise le docId = rid)
+    final base = Uri.base;
+    final host = base.host;
+    final port = base.hasPort ? base.port : null;
+
+    // Utilise le "code" si présent, sinon l'id Firestore (rid)
+    final path = '/r/${code.isNotEmpty ? code : rid}';
+    final url = Uri(
+      scheme: base.scheme,
+      host: host,
+      port: port,
+      path: path,
+      queryParameters: const {
+        // facultatif: garde le flag si tu en as besoin côté MenuScreen
+        'admin': 'true',
+      },
+    );
+
+    // 4) Ouvre dans un nouvel onglet
+    await launchUrl(url, webOnlyWindowName: '_blank');
   }
 
   Map<String, int> _calculateMetrics(List<QueryDocumentSnapshot> docs) {
