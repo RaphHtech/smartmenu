@@ -8,10 +8,12 @@ import 'screens/home_screen.dart';
 import 'screens/menu/menu_screen.dart';
 import 'screens/admin/admin_login_screen.dart';
 import 'screens/admin/admin_signup_screen.dart';
+import 'package:smartmenu_app/screens/admin/auth/admin_reset_screen.dart';
 
 // Import core
 import 'core/constants/colors.dart';
 import 'widgets/ui/admin_themed.dart';
+import 'core/auth/auth_guard.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -48,22 +50,47 @@ class SmartMenuApp extends StatelessWidget {
     if (kIsWeb) {
       final segments = Uri.base.pathSegments;
 
-      // Route /admin
       if (segments.isNotEmpty && segments[0] == 'admin') {
-        if (segments.length > 1 && segments[1] == 'signup') {
-          return const AdminThemed(child: AdminSignupScreen());
-        }
-        return const AdminThemed(child: AdminLoginScreen());
-      }
+        final requestedPath = '/${segments.join('/')}';
+        final redirectRoute = AuthGuard.getRedirectRoute(requestedPath);
 
-      // Route /r/{restaurantId}
-      if (segments.length >= 2 && segments[0] == 'r') {
-        return MenuScreen(restaurantId: segments[1]);
+        if (redirectRoute != null) {
+          final uri = Uri.parse(redirectRoute);
+          final returnUrl = uri.queryParameters['returnUrl'];
+
+          switch (uri.path) {
+            case '/admin/login':
+              return AdminThemed(child: AdminLoginScreen(returnUrl: returnUrl));
+            case '/admin/dashboard':
+              return _getAdminDashboard();
+            default:
+              return const AdminThemed(child: AdminLoginScreen());
+          }
+        }
+
+        // Routes directes
+        if (segments.length > 1) {
+          switch (segments[1]) {
+            case 'login':
+              final returnUrl = Uri.base.queryParameters['returnUrl'];
+              return AdminThemed(child: AdminLoginScreen(returnUrl: returnUrl));
+            case 'signup':
+              return const AdminThemed(child: AdminSignupScreen());
+            case 'reset':
+              return const AdminThemed(child: AdminResetScreen());
+          }
+        }
+
+        return const AdminThemed(child: AdminLoginScreen());
       }
     }
 
     // Route par défaut
     return const HomeScreen();
+  }
+
+  Widget _getAdminDashboard() {
+    return const AdminThemed(child: AdminLoginScreen());
   }
 
   ThemeData _buildTheme() {

@@ -42,9 +42,10 @@ class AdminDashboardScreen extends StatefulWidget {
 class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
   String _sortBy = 'category';
   String? _selectedCategory;
-
-// 🔎 source de vérité unique pour la recherche (affichée et filtrée)
   String _searchText = '';
+  bool _filterFeatured = false;
+  bool _filterWithBadges = false;
+  bool _filterNoImage = false;
   final TextEditingController _searchController = TextEditingController();
   final FocusNode _searchFocus = FocusNode();
 
@@ -434,9 +435,6 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                         final name = (data['name'] ?? '').toString();
                         final category = (data['category'] ?? '').toString();
                         final desc = (data['description'] ?? '').toString();
-                        final isSignature = (data['signature'] == true) ||
-                            (data['hasSignature'] == true);
-
                         final imgUrl = _pickImageUrl(data);
                         return Card(
                           margin: EdgeInsets.only(
@@ -513,31 +511,6 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                                                     ),
                                                   ),
                                                 ),
-                                                if (!isXs && isSignature) ...[
-                                                  const SizedBox(width: 12),
-                                                  Container(
-                                                    padding: const EdgeInsets
-                                                        .symmetric(
-                                                        horizontal: 8,
-                                                        vertical: 2),
-                                                    decoration: BoxDecoration(
-                                                      color: Colors.red.shade50,
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                              999),
-                                                    ),
-                                                    child: Text(
-                                                      'Signature',
-                                                      style: TextStyle(
-                                                        fontSize: 11,
-                                                        fontWeight:
-                                                            FontWeight.w600,
-                                                        color:
-                                                            Colors.red.shade600,
-                                                      ),
-                                                    ),
-                                                  ),
-                                                ],
                                                 if (!isXs) ...[
                                                   const SizedBox(width: 12),
                                                   Text(
@@ -608,38 +581,6 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                                                     crossAxisAlignment:
                                                         CrossAxisAlignment.end,
                                                     children: [
-                                                      if (isSignature)
-                                                        Container(
-                                                          margin:
-                                                              const EdgeInsets
-                                                                  .only(
-                                                                  bottom: 4),
-                                                          padding:
-                                                              const EdgeInsets
-                                                                  .symmetric(
-                                                                  horizontal: 8,
-                                                                  vertical: 2),
-                                                          decoration:
-                                                              BoxDecoration(
-                                                            color: Colors
-                                                                .red.shade50,
-                                                            borderRadius:
-                                                                BorderRadius
-                                                                    .circular(
-                                                                        999),
-                                                          ),
-                                                          child: Text(
-                                                            'Signature',
-                                                            style: TextStyle(
-                                                              fontSize: 11,
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .w600,
-                                                              color: Colors
-                                                                  .red.shade600,
-                                                            ),
-                                                          ),
-                                                        ),
                                                       Text(
                                                         '${_formatPriceNumber(data['price'])}\u00A0₪',
                                                         style: TextStyle(
@@ -907,6 +848,33 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
             ],
           ),
         ),
+        // AJOUTER CES LIGNES :
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          child: Wrap(
+            spacing: 8,
+            children: [
+              FilterChip(
+                label: const Text('Mis en avant'),
+                selected: _filterFeatured,
+                onSelected: (selected) =>
+                    setState(() => _filterFeatured = selected),
+              ),
+              FilterChip(
+                label: const Text('Avec badges'),
+                selected: _filterWithBadges,
+                onSelected: (selected) =>
+                    setState(() => _filterWithBadges = selected),
+              ),
+              FilterChip(
+                label: const Text('Sans image'),
+                selected: _filterNoImage,
+                onSelected: (selected) =>
+                    setState(() => _filterNoImage = selected),
+              ),
+            ],
+          ),
+        ),
       ],
     );
   } // 2) Utilitaires pour catégories et filtrage
@@ -933,6 +901,34 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
         return name.contains(q) || desc.contains(q) || cat.contains(q);
       });
     }
+
+// AJOUTER CES LIGNES APRÈS LA RECHERCHE :
+// Filtre "Mis en avant"
+    if (_filterFeatured) {
+      visible.retainWhere((doc) {
+        final data = doc.data() as Map<String, dynamic>;
+        return data['featured'] == true;
+      });
+    }
+
+// Filtre "Avec badges"
+    if (_filterWithBadges) {
+      visible.retainWhere((doc) {
+        final data = doc.data() as Map<String, dynamic>;
+        final badges = data['badges'] as List?;
+        return badges != null && badges.isNotEmpty;
+      });
+    }
+
+// Filtre "Sans image"
+    if (_filterNoImage) {
+      visible.retainWhere((doc) {
+        final data = doc.data() as Map<String, dynamic>;
+        final imageUrl = _pickImageUrl(data);
+        return imageUrl.isEmpty;
+      });
+    }
+
 // Tri
     switch (_sortBy) {
       case 'name':

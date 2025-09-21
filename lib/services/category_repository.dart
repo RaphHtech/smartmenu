@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/foundation.dart';
 import 'package:rxdart/rxdart.dart';
 import '../models/category.dart';
 
@@ -255,6 +256,6 @@ class CategoryManager {
         .collection('info')
         .doc('details')
         .update({'categoriesOrder': newOrder}).catchError(
-            (e) => print('Erreur réconciliation: $e'));
+            (e) => debugPrint('Erreur réconciliation: $e'));
   }
 }

@@ -61,6 +61,26 @@ class AdminTokens {
   static const double elevation4 = 4.0;
   static const double elevation8 = 8.0;
 
+// ===== BREAKPOINTS RESPONSIVE =====
+  static const double breakpointMobile = 480.0;
+  static const double breakpointTablet = 768.0;
+  static const double breakpointDesktop = 1024.0;
+
+// Padding responsive
+  static double responsivePadding(BuildContext context) {
+    final width = MediaQuery.of(context).size.width;
+    if (width < breakpointMobile) return space12;
+    if (width < breakpointTablet) return space16;
+    return space20;
+  }
+
+// Container max width responsive
+  static double responsiveMaxWidth(BuildContext context) {
+    final width = MediaQuery.of(context).size.width;
+    if (width < breakpointMobile) return width - (space16 * 2);
+    return 440.0;
+  }
+
   // ===== OMBRES PREMIUM =====
 
   static List<BoxShadow> get shadowSm => [

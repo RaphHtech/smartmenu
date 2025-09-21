@@ -17,30 +17,46 @@
   <link rel="icon" type="image/png" sizes="512x512" href="icons/Icon-512.png">
   
   <style>
-    body { margin: 0; background: #000; }
-    .loading { 
-      display: flex; align-items: center; justify-content: center; 
-      height: 100vh; color: #fff; font-family: sans-serif; 
-    }
-  </style>
+  html, body {
+    height: 100%;
+    margin: 0;
+    background: #F9FAFB; /* même fond que l'admin */
+  }
+  /* évite les à-coups de scroll mobile et garde le scroll si nécessaire */
+  body { overscroll-behavior-y: none; }
+  #flutter_host, .loading {
+    min-height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .loading {
+    color: #6B7280;
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, Ubuntu, Cantarell, "Noto Sans", sans-serif;
+  }
+</style>
+
 </head>
 <body>
-  <div class="loading">Chargement du menu...</div>
-  
+  <div id="flutter_host">
+    <div class="loading">Chargement…</div>
+  </div>
+
   <script>
-  window.addEventListener('load', function(ev) {
-    _flutter.loader.loadEntrypoint({
-      entrypointUrl: "/main.dart.js", // Force le chemin absolu
-      onEntrypointLoaded: function(engineInitializer) {
-        engineInitializer.initializeEngine({
-          renderer: "html",
-        }).then(function(appRunner) {
-          appRunner.runApp();
-        });
-      }
+    window.addEventListener('load', function () {
+      const host = document.querySelector('#flutter_host');
+      _flutter.loader.loadEntrypoint({
+        // important: sans '/' initial pour respecter <base href="/">
+        entrypointUrl: "main.dart.js",
+        onEntrypointLoaded: function (engineInitializer) {
+          engineInitializer.initializeEngine({ hostElement: host }).then(function (appRunner) {
+            host.querySelector('.loading')?.remove();
+            appRunner.runApp();
+          });
+        }
+      });
     });
-  });
-</script>
-<script src="flutter.js" defer></script>
+  </script>
+  <script src="flutter.js" defer></script>
 </body>
 </html>

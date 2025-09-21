@@ -57,35 +57,35 @@ class BadgesLegendWidget extends StatelessWidget {
         'badge': 'populaire',
         'title': 'Populaire',
         'desc': 'Les plats les plus commandés',
-        'color': Color(0xFFFF8C00),
+        'color': const Color(0xFFFF8C00),
         'icon': Icons.star
       },
       {
         'badge': 'nouveau',
         'title': 'Nouveau',
         'desc': 'Nouveautés de la carte',
-        'color': Color(0xFF4F46E5),
+        'color': const Color(0xFF4F46E5),
         'icon': Icons.fiber_new
       },
       {
         'badge': 'spécialité',
         'title': 'Spécialité',
         'desc': 'Spécialités de la maison',
-        'color': Color(0xFF7C3AED),
+        'color': const Color(0xFF7C3AED),
         'icon': Icons.restaurant
       },
       {
         'badge': 'chef',
         'title': 'Choix du chef',
         'desc': 'Recommandations du chef',
-        'color': Color(0xFF0891B2),
+        'color': const Color(0xFF0891B2),
         'icon': Icons.person
       },
       {
         'badge': 'saisonnier',
         'title': 'Saisonnier',
         'desc': 'Plats de saison',
-        'color': Color(0xFF059669),
+        'color': const Color(0xFF059669),
         'icon': Icons.eco
       },
     ];
