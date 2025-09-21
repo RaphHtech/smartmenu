@@ -496,6 +496,36 @@ Widget _buildResponsive() {
 }
 ```
 
+### Auth Mobile Responsive
+
+**Patterns viewport-safe :**
+
+````dart
+// AdminTokens responsive utilities
+static double responsivePadding(BuildContext context) {
+  final width = MediaQuery.of(context).size.width;
+  if (width < breakpointMobile) return space16;
+  if (width < breakpointTablet) return space20;
+  return space24;
+}
+
+static double responsiveMaxWidth(BuildContext context) {
+  final width = MediaQuery.of(context).size.width;
+  if (width < breakpointMobile) return width - (space16 * 2);
+  return 440.0;
+}
+
+// LayoutBuilder pattern anti-overflow
+body: SafeArea(
+  child: LayoutBuilder(
+    builder: (context, constraints) {
+      final maxCard = (math.min(440.0, constraints.maxWidth - 32)).floorToDouble();
+
+      return Align(
+        alignment: Alignment.topCenter,
+        child: SingleChildScrollView(
+          // ... reste du code
+
 ## Performance
 
 ### Optimisations Build
@@ -511,7 +541,7 @@ flutter build web --source-maps
 
 # Analyse bundle size
 flutter build web --analyze-size
-```
+````
 
 ### Patterns Performance
 

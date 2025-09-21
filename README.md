@@ -94,15 +94,16 @@ flutter run -d chrome
 
 ## État du projet
 
-**Version** : 2.7.x — Consolidation technique (voir [CHANGELOG.md](CHANGELOG.md))  
+**Version** : 2.7.1 — Auth mobile responsive corrigé  
 **Tests** : Repository catégories complets (9/9 passing)  
 **Code quality** : 8 issues mineurs (flutter analyze)
 
-### Phase actuelle : Consolidation terminée
+### Phase actuelle : Auth mobile perfectionné ✅
 
 - ✅ Architecture catégories unifiée (`CategoryManager`)
-- ✅ Design system premium (`AdminTokens`)
-- ✅ Interface mobile optimisée (overflow fixes)
+- ✅ Design system premium (`AdminTokens`) avec responsive utilities
+- ✅ Auth screens mobile pixel-perfect (overflow fixes)
+- ✅ Interface mobile optimisée
 - ✅ Tests unitaires avec mocks Firestore
 - ✅ Documentation structurée
 
