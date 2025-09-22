@@ -40,10 +40,12 @@ class _HomeScreenState extends State<HomeScreen> {
   bool get _isScannerSupported {
     if (!kIsWeb) return true;
 
+    // Desktop HTTPS uniquement
+    final isMobile = MediaQuery.of(context).size.width < 768;
+    if (isMobile) return false;
+
     final uri = Uri.base;
-    return uri.scheme == 'https' ||
-        uri.host == 'localhost' ||
-        uri.host == '127.0.0.1';
+    return uri.scheme == 'https' || uri.host == 'localhost';
   }
 
   Future<void> _accessRestaurant() async {
