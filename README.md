@@ -12,10 +12,10 @@ Une solution SaaS complète permettant aux restaurants de digitaliser leurs menu
 
 ### Architecture
 
-- **Client PWA** (`/r/{restaurantId}`) — Menu accessible via QR, panier, commandes
+- **Client PWA** (`/r/{slug}`) — Menu accessible via QR, panier, commandes
 - **Admin Dashboard** (`/admin`) — Interface SaaS premium pour gérer menus, médias, branding
 - **Multi-tenant** — Données isolées par restaurant avec sécurité Firestore
-- **Landing Page** (`/`) — Saisie code restaurant avec validation
+- **Landing Page** (`/`) — Scanner QR intégré + saisie code restaurant
 
 ## Démarrage rapide
 
@@ -59,6 +59,15 @@ flutter run -d chrome
 
 ## Fonctionnalités principales
 
+### Système QR Code Complet ✅
+
+- **Scanner QR intégré** avec mobile_scanner et interface moderne
+- **Génération QR codes** personnalisables avec preview temps réel
+- **URLs propres** : `/r/nom-restaurant` automatiquement générées
+- **Résolution intelligente** slug → restaurant ID avec fallbacks
+- **Interface admin** pour visualiser, générer et partager les QR codes
+- **Support multi-formats** : téléchargement et partage multi-canaux
+
 ### URLs Propres et Partage
 
 - Système de slugs automatiques `/r/nom-restaurant`
@@ -80,6 +89,7 @@ flutter run -d chrome
 
 - Interface SaaS inspirée Stripe/Notion/Linear
 - CRUD complet des plats avec upload d'images
+- **Générateur QR intégré** avec personnalisation
 - Gestion catégories unifiée (même éditeur depuis Menu et Paramètres)
 - Réorganisation drag & drop avec sauvegarde temps réel
 - Branding personnalisé (logo, couleurs)
@@ -97,25 +107,30 @@ flutter run -d chrome
 
 - **Frontend** : Flutter Web (PWA + Admin)
 - **Backend** : Firebase (Firestore + Auth + Storage)
-- **Design** : Material 3 + Design System custom
+- **QR** : mobile_scanner (scan) + qr_flutter (génération)
+- **Design** : Material 3 + Design System custom AdminTokens
 - **Tests** : Unit tests avec mocks Firestore
 
 ## État du projet
 
-**Version** : 2.8.0 — URLs propres avec système de slugs ✅
+**Version** : 2.9.0 — Système QR code complet ✅
 
-### Phase actuelle : URLs professionnelles ✅
+### Phase actuelle : QR Code bout-en-bout ✅
 
-- ✅ Système de slugs automatiques pour URLs lisibles
+- ✅ Scanner QR avec interface moderne et animations
+- ✅ Génération QR codes avec personnalisation
+- ✅ URLs propres avec système de slugs automatiques
 - ✅ Résolution slug → restaurant ID avec fallbacks
-- ✅ Interface admin mise à jour avec URLs propres
+- ✅ Interface admin QR complète (générer, télécharger, partager)
+- ✅ Support multi-canaux de partage (Email, SMS, WhatsApp, Facebook)
 - ✅ Migration transparente des restaurants existants
-- ✅ Prévisualisation avec URLs professionnelles### Prochaines phases
 
-- **QR Scanner fonctionnel** avec mobile_scanner
+### Prochaines phases
+
+- **Internationalisation RTL** (hébreu/anglais/français)
+- **Système de commandes** avec transmission automatique
 - **Gestion d'équipe** (invitations, rôles manager/staff)
 - **Analytics avancées** (tendances, plats populaires)
-- **Export PDF** des menus pour impression
 
 ## Support et contact
 

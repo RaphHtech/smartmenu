@@ -1,4 +1,3 @@
-// lib/screens/home_screen.dart - Version Premium optimisée
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 import 'qr_scanner_screen.dart';
@@ -39,14 +38,12 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   bool get _isScannerSupported {
-    if (kIsWeb) {
-      final uri = Uri.base;
-      final isSecure = uri.scheme == 'https' ||
-          uri.host == 'localhost' ||
-          uri.host == '127.0.0.1';
-      return isSecure;
-    }
-    return true;
+    if (!kIsWeb) return true;
+
+    final uri = Uri.base;
+    return uri.scheme == 'https' ||
+        uri.host == 'localhost' ||
+        uri.host == '127.0.0.1';
   }
 
   Future<void> _accessRestaurant() async {
@@ -399,92 +396,55 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _buildScannerSection(bool isMobile, [bool isSmallMobile = false]) {
+    final screenWidth = MediaQuery.of(context).size.width;
+
     return Container(
       padding: EdgeInsets.all(isSmallMobile ? 20 : (isMobile ? 24 : 28)),
       decoration: BoxDecoration(
-        gradient: const LinearGradient(
-          colors: [Color(0xFFF8FAFC), Color(0xFFF1F5F9)],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
+        color: const Color(0xFFF8FAFC),
         borderRadius: BorderRadius.circular(16),
         border: Border.all(color: const Color(0xFFE2E8F0)),
       ),
       child: Column(
         children: [
-          // Icône avec gradient
-          Container(
-            width: isSmallMobile ? 56 : 64,
-            height: isSmallMobile ? 56 : 64,
-            decoration: BoxDecoration(
-              gradient: const LinearGradient(
-                colors: [Color(0xFF6366F1), Color(0xFF8B5CF6)],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-              ),
-              borderRadius: BorderRadius.circular(16),
-              boxShadow: [
-                BoxShadow(
-                  color: const Color(0xFF6366F1).withAlpha((255 * 0.2).round()),
-                  blurRadius: 12,
-                  offset: const Offset(0, 4),
-                ),
-              ],
-            ),
-            child: Icon(
-              Icons.qr_code_scanner,
-              size: isSmallMobile ? 28 : 32,
-              color: Colors.white,
-            ),
+          Icon(
+            Icons.qr_code_scanner,
+            size: isSmallMobile ? 40 : 48,
+            color: const Color(0xFF6366F1),
           ),
-
-          SizedBox(height: isSmallMobile ? 16 : 20),
-
+          SizedBox(height: isSmallMobile ? 12 : 16),
           Text(
             'Scanner QR Code',
             style: TextStyle(
-              fontSize: isSmallMobile ? 18 : 20,
+              fontSize: isSmallMobile ? 16 : 18,
               fontWeight: FontWeight.w600,
               color: const Color(0xFF1F2937),
             ),
           ),
-
           SizedBox(height: isSmallMobile ? 6 : 8),
-
           Text(
             'Scannez le QR code sur votre table',
             style: TextStyle(
               fontSize: isSmallMobile ? 13 : 14,
               color: Colors.grey[600],
             ),
-            textAlign: TextAlign.center,
           ),
-
-          SizedBox(height: isSmallMobile ? 18 : 24),
-
+          SizedBox(height: isSmallMobile ? 16 : 20),
           SizedBox(
             width: double.infinity,
-            height: isSmallMobile ? 48 : 52,
+            height: isSmallMobile ? 44 : 48,
             child: OutlinedButton.icon(
               onPressed: _openScanner,
               icon: const Icon(
                 Icons.camera_alt_outlined,
-                size: 20,
               ),
-              label: Text(
-                'Ouvrir la caméra',
-                style: TextStyle(
-                  fontSize: isSmallMobile ? 15 : 16,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
+              label: const Text('Ouvrir la caméra'),
               style: OutlinedButton.styleFrom(
                 foregroundColor: const Color(0xFF6366F1),
-                side: const BorderSide(color: Color(0xFF6366F1), width: 1.5),
+                side: const BorderSide(color: Color(0xFF6366F1)),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),
                 ),
-                backgroundColor: Colors.white,
               ),
             ),
           ),

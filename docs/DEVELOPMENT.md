@@ -19,6 +19,74 @@ Le système génère automatiquement des URLs propres :
 - `slugs/{slug}` → `{ rid: "restaurant-id" }`
 - `restaurants/{rid}/info/details.slug` → nom du slug
 
+### Système QR Code
+
+#### Dépendances
+
+```yaml
+dependencies:
+  mobile_scanner: ^3.5.7 # Scanner QR
+  qr_flutter: ^4.1.0 # Génération QR
+```
+
+#### Structure Firestore QR
+
+```
+restaurants/{rid}/
+└── qr_config/
+    └── settings
+        ├── customMessage: string?
+        ├── showLogo: boolean
+        ├── size: "small"|"medium"|"large"
+        └── updated_at: timestamp
+```
+
+#### Usage Patterns
+
+```dart
+// Scanner depuis home_screen.dart
+Navigator.push(
+  context,
+  MaterialPageRoute(builder: (_) => const QRScannerScreen()),
+);
+
+// Génération depuis admin_settings_screen.dart
+void _generateQRCode(String code) {
+  showDialog(
+    context: context,
+    builder: (_) => _QRGeneratorDialog(
+      restaurantId: widget.restaurantId,
+      restaurantName: _currentName ?? 'Mon Restaurant',
+      slug: code,
+    ),
+  );
+}
+```
+
+#### Services QR
+
+**`qr_service.dart` - Service principal :**
+
+```dart
+class QRService {
+  static String generateRestaurantUrl(String slug) {
+    return '${Uri.base.origin}/r/$slug';
+  }
+
+  static bool isValidSmartMenuQR(String qrData) {
+    return qrData.contains('/r/') && Uri.tryParse(qrData) != null;
+  }
+
+  static String? extractSlugFromUrl(String url) {
+    final uri = Uri.tryParse(url);
+    if (uri?.pathSegments.length == 2 && uri?.pathSegments[0] == 'r') {
+      return uri!.pathSegments[1];
+    }
+    return null;
+  }
+}
+```
+
 ### Outils Requis
 
 - **Flutter SDK** 3.16+ avec support web activé
@@ -511,36 +579,6 @@ Widget _buildResponsive() {
 }
 ```
 
-### Auth Mobile Responsive
-
-**Patterns viewport-safe :**
-
-````dart
-// AdminTokens responsive utilities
-static double responsivePadding(BuildContext context) {
-  final width = MediaQuery.of(context).size.width;
-  if (width < breakpointMobile) return space16;
-  if (width < breakpointTablet) return space20;
-  return space24;
-}
-
-static double responsiveMaxWidth(BuildContext context) {
-  final width = MediaQuery.of(context).size.width;
-  if (width < breakpointMobile) return width - (space16 * 2);
-  return 440.0;
-}
-
-// LayoutBuilder pattern anti-overflow
-body: SafeArea(
-  child: LayoutBuilder(
-    builder: (context, constraints) {
-      final maxCard = (math.min(440.0, constraints.maxWidth - 32)).floorToDouble();
-
-      return Align(
-        alignment: Alignment.topCenter,
-        child: SingleChildScrollView(
-          // ... reste du code
-
 ## Performance
 
 ### Optimisations Build
@@ -556,7 +594,7 @@ flutter build web --source-maps
 
 # Analyse bundle size
 flutter build web --analyze-size
-````
+```
 
 ### Patterns Performance
 
