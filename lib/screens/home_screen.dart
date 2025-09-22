@@ -1,8 +1,12 @@
+// lib/screens/home_screen.dart - Version Premium optimisée
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
+import 'qr_scanner_screen.dart';
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key});
+  final String? errorMessage;
+
+  const HomeScreen({super.key, this.errorMessage});
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -21,8 +25,20 @@ class _HomeScreenState extends State<HomeScreen> {
     super.dispose();
   }
 
+  @override
+  void initState() {
+    super.initState();
+    if (widget.errorMessage != null) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        setState(() {
+          _errorMessage = widget.errorMessage;
+        });
+        _codeFocus.requestFocus();
+      });
+    }
+  }
+
   bool get _isScannerSupported {
-    // Scanner disponible uniquement sur HTTPS/localhost avec support caméra
     if (kIsWeb) {
       final uri = Uri.base;
       final isSecure = uri.scheme == 'https' ||
@@ -30,7 +46,7 @@ class _HomeScreenState extends State<HomeScreen> {
           uri.host == '127.0.0.1';
       return isSecure;
     }
-    return true; // Mobile toujours supporté
+    return true;
   }
 
   Future<void> _accessRestaurant() async {
@@ -42,7 +58,6 @@ class _HomeScreenState extends State<HomeScreen> {
       _isLoading = true;
     });
 
-    // Validation
     if (code.isEmpty) {
       setState(() {
         _errorMessage = 'Veuillez saisir un code restaurant';
@@ -61,7 +76,6 @@ class _HomeScreenState extends State<HomeScreen> {
       return;
     }
 
-    // Validation format simple (lettres, chiffres, tirets)
     if (!RegExp(r'^[a-z0-9-]{3,32}$').hasMatch(code)) {
       setState(() {
         _errorMessage =
@@ -72,115 +86,143 @@ class _HomeScreenState extends State<HomeScreen> {
       return;
     }
 
-    // Simulation délai réseau
     await Future.delayed(const Duration(milliseconds: 500));
 
     if (!mounted) return;
 
-    // Unfocus clavier
     _codeFocus.unfocus();
-
     setState(() => _isLoading = false);
-
-    // Navigation vers le menu restaurant
     Navigator.of(context).pushReplacementNamed('/r/$code');
   }
 
   void _openScanner() {
-    // TODO: Implémenter scanner QR (Étape 5.2)
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Scanner QR - Fonctionnalité en développement'),
-        duration: Duration(seconds: 2),
+    if (!_isScannerSupported) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Scanner non disponible - Utilisez HTTPS ou localhost'),
+          duration: Duration(seconds: 3),
+        ),
+      );
+      return;
+    }
+
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => const QRScannerScreen(),
+        fullscreenDialog: true,
       ),
     );
   }
 
   @override
   Widget build(BuildContext context) {
+    final screenHeight = MediaQuery.of(context).size.height;
+    final screenWidth = MediaQuery.of(context).size.width;
+    final isMobile = screenWidth < 768;
+    final isSmallMobile = screenHeight < 700; // iPhone SE, etc.
+
     return Scaffold(
       backgroundColor: const Color(0xFFFAFAFA),
       body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              const SizedBox(height: 60),
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            // Calculer l'espace disponible
+            final availableHeight = constraints.maxHeight;
+            final contentPadding = isMobile ? 20.0 : 32.0;
 
-              // Header logo + titre
-              _buildHeader(),
+            return SingleChildScrollView(
+              physics: const BouncingScrollPhysics(),
+              child: ConstrainedBox(
+                constraints: BoxConstraints(
+                  minHeight: availableHeight,
+                ),
+                child: Padding(
+                  padding: EdgeInsets.symmetric(
+                    horizontal: contentPadding,
+                    vertical: isSmallMobile ? 16 : 24,
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      // Header compact - moins d'espace
+                      SizedBox(height: isSmallMobile ? 20 : 40),
+                      _buildCompactHeader(isMobile, isSmallMobile),
 
-              const SizedBox(height: 80),
+                      // Espace réduit entre header et contenu
+                      SizedBox(height: isSmallMobile ? 32 : 48),
 
-              // Section principale : Code restaurant
-              _buildCodeSection(),
+                      // Contenu principal en colonnes sur desktop
+                      if (!isMobile)
+                        _buildDesktopLayout()
+                      else
+                        _buildMobileLayout(isSmallMobile),
 
-              const SizedBox(height: 40),
+                      // Spacer flexible pour pousser le footer
+                      SizedBox(height: isSmallMobile ? 20 : 32),
 
-              // Section scanner (conditionnel)
-              if (_isScannerSupported) _buildScannerSection(),
-
-              const SizedBox(height: 60),
-
-              // Footer
-              _buildFooter(),
-            ],
-          ),
+                      _buildFooter(),
+                    ],
+                  ),
+                ),
+              ),
+            );
+          },
         ),
       ),
     );
   }
 
-  Widget _buildHeader() {
+  Widget _buildCompactHeader(bool isMobile, bool isSmallMobile) {
+    final logoSize = isSmallMobile ? 60.0 : (isMobile ? 70.0 : 80.0);
+
     return Column(
       children: [
-        // Logo
+        // Logo compact
         Container(
-          width: 80,
-          height: 80,
+          width: logoSize,
+          height: logoSize,
           decoration: BoxDecoration(
             gradient: const LinearGradient(
               colors: [Color(0xFF6366F1), Color(0xFF8B5CF6)],
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
             ),
-            borderRadius: BorderRadius.circular(20),
+            borderRadius: BorderRadius.circular(16),
             boxShadow: [
               BoxShadow(
-                color: const Color(0xFF6366F1).withAlpha((255 * 0.3).round()),
-                blurRadius: 20,
-                offset: const Offset(0, 8),
+                color: const Color(0xFF6366F1).withAlpha((255 * 0.25).round()),
+                blurRadius: 16,
+                offset: const Offset(0, 6),
               ),
             ],
           ),
-          child: const Icon(
+          child: Icon(
             Icons.restaurant_menu,
             color: Colors.white,
-            size: 40,
+            size: logoSize * 0.5,
           ),
         ),
 
-        const SizedBox(height: 24),
+        SizedBox(height: isSmallMobile ? 16 : 20),
 
-        // Titre principal
-        const Text(
+        // Titre
+        Text(
           'SmartMenu',
           style: TextStyle(
-            fontSize: 32,
+            fontSize: isSmallMobile ? 28 : (isMobile ? 30 : 32),
             fontWeight: FontWeight.w800,
-            color: Color(0xFF1F2937),
+            color: const Color(0xFF1F2937),
             letterSpacing: -0.5,
           ),
         ),
 
-        const SizedBox(height: 12),
+        SizedBox(height: isSmallMobile ? 8 : 12),
 
         // Sous-titre
         Text(
           'Accédez au menu de votre restaurant',
           style: TextStyle(
-            fontSize: 18,
+            fontSize: isSmallMobile ? 16 : 18,
             color: Colors.grey[600],
             fontWeight: FontWeight.w400,
           ),
@@ -190,16 +232,58 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _buildCodeSection() {
+  Widget _buildDesktopLayout() {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // Colonne gauche : Code restaurant
+        Expanded(
+          flex: 1,
+          child: _buildCodeSection(false),
+        ),
+
+        const SizedBox(width: 32),
+
+        // Colonne droite : Scanner
+        Expanded(
+          flex: 1,
+          child: _isScannerSupported
+              ? _buildScannerSection(false)
+              : const SizedBox.shrink(),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildMobileLayout(bool isSmallMobile) {
+    return Column(
+      children: [
+        // Code restaurant en premier (action principale)
+        _buildCodeSection(true, isSmallMobile),
+
+        SizedBox(height: isSmallMobile ? 20 : 24),
+
+        // Scanner en second
+        if (_isScannerSupported) _buildScannerSection(true, isSmallMobile),
+      ],
+    );
+  }
+
+  Widget _buildCodeSection(bool isMobile, [bool isSmallMobile = false]) {
     return Container(
-      padding: const EdgeInsets.all(32),
+      padding: EdgeInsets.all(isSmallMobile ? 24 : (isMobile ? 28 : 32)),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withAlpha((255 * 0.5).round()),
-            blurRadius: 10,
+            color: Colors.black.withAlpha((255 * 0.04).round()),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+          BoxShadow(
+            color: Colors.black.withAlpha((255 * 0.06).round()),
+            blurRadius: 16,
             offset: const Offset(0, 4),
           ),
         ],
@@ -207,26 +291,26 @@ class _HomeScreenState extends State<HomeScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          const Text(
+          Text(
             'Code restaurant',
             style: TextStyle(
-              fontSize: 20,
+              fontSize: isSmallMobile ? 18 : 20,
               fontWeight: FontWeight.w600,
-              color: Color(0xFF1F2937),
+              color: const Color(0xFF1F2937),
             ),
           ),
 
-          const SizedBox(height: 8),
+          SizedBox(height: isSmallMobile ? 6 : 8),
 
           Text(
             'Saisissez le code fourni par votre restaurant',
             style: TextStyle(
-              fontSize: 14,
+              fontSize: isSmallMobile ? 13 : 14,
               color: Colors.grey[600],
             ),
           ),
 
-          const SizedBox(height: 24),
+          SizedBox(height: isSmallMobile ? 20 : 24),
 
           // Champ de saisie
           TextField(
@@ -235,9 +319,14 @@ class _HomeScreenState extends State<HomeScreen> {
             textCapitalization: TextCapitalization.none,
             autocorrect: false,
             textInputAction: TextInputAction.go,
+            style: const TextStyle(fontSize: 16),
             decoration: InputDecoration(
-              hintText: 'Exemple: newtest',
-              prefixIcon: const Icon(Icons.store_outlined),
+              hintText: 'Exemple: pizza-mario',
+              hintStyle: TextStyle(color: Colors.grey[400]),
+              prefixIcon: const Icon(
+                Icons.store_outlined,
+                color: Color(0xFF6366F1),
+              ),
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
                 borderSide: const BorderSide(color: Color(0xFFE5E7EB)),
@@ -257,24 +346,30 @@ class _HomeScreenState extends State<HomeScreen> {
                 borderSide:
                     const BorderSide(color: Color(0xFFEF4444), width: 2),
               ),
-              contentPadding:
-                  const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+              contentPadding: const EdgeInsets.symmetric(
+                horizontal: 16,
+                vertical: 16,
+              ),
               errorText: _errorMessage,
+              filled: true,
+              fillColor: const Color(0xFFFAFAFA),
             ),
             onSubmitted: (_) => _accessRestaurant(),
           ),
 
-          const SizedBox(height: 24),
+          SizedBox(height: isSmallMobile ? 20 : 24),
 
           // Bouton d'accès
           SizedBox(
-            height: 56,
+            height: isSmallMobile ? 52 : 56,
             child: ElevatedButton(
               onPressed: _isLoading ? null : _accessRestaurant,
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFF6366F1),
                 foregroundColor: Colors.white,
                 elevation: 0,
+                shadowColor:
+                    const Color(0xFF6366F1).withAlpha((255 * 0.3).round()),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),
                 ),
@@ -289,10 +384,10 @@ class _HomeScreenState extends State<HomeScreen> {
                         valueColor: AlwaysStoppedAnimation(Colors.white),
                       ),
                     )
-                  : const Text(
+                  : Text(
                       'Accéder au menu',
                       style: TextStyle(
-                        fontSize: 16,
+                        fontSize: isSmallMobile ? 15 : 16,
                         fontWeight: FontWeight.w600,
                       ),
                     ),
@@ -303,50 +398,94 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _buildScannerSection() {
+  Widget _buildScannerSection(bool isMobile, [bool isSmallMobile = false]) {
     return Container(
-      padding: const EdgeInsets.all(24),
+      padding: EdgeInsets.all(isSmallMobile ? 20 : (isMobile ? 24 : 28)),
       decoration: BoxDecoration(
-        color: const Color(0xFFF8FAFC),
+        gradient: const LinearGradient(
+          colors: [Color(0xFFF8FAFC), Color(0xFFF1F5F9)],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
         borderRadius: BorderRadius.circular(16),
         border: Border.all(color: const Color(0xFFE2E8F0)),
       ),
       child: Column(
         children: [
-          const Icon(
-            Icons.qr_code_scanner,
-            size: 48,
-            color: Color(0xFF6366F1),
+          // Icône avec gradient
+          Container(
+            width: isSmallMobile ? 56 : 64,
+            height: isSmallMobile ? 56 : 64,
+            decoration: BoxDecoration(
+              gradient: const LinearGradient(
+                colors: [Color(0xFF6366F1), Color(0xFF8B5CF6)],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+              borderRadius: BorderRadius.circular(16),
+              boxShadow: [
+                BoxShadow(
+                  color: const Color(0xFF6366F1).withAlpha((255 * 0.2).round()),
+                  blurRadius: 12,
+                  offset: const Offset(0, 4),
+                ),
+              ],
+            ),
+            child: Icon(
+              Icons.qr_code_scanner,
+              size: isSmallMobile ? 28 : 32,
+              color: Colors.white,
+            ),
           ),
-          const SizedBox(height: 16),
-          const Text(
+
+          SizedBox(height: isSmallMobile ? 16 : 20),
+
+          Text(
             'Scanner QR Code',
             style: TextStyle(
-              fontSize: 18,
+              fontSize: isSmallMobile ? 18 : 20,
               fontWeight: FontWeight.w600,
-              color: Color(0xFF1F2937),
+              color: const Color(0xFF1F2937),
             ),
           ),
-          const SizedBox(height: 8),
+
+          SizedBox(height: isSmallMobile ? 6 : 8),
+
           Text(
-            'Scannez le QR code sur votre table (Beta)',
+            'Scannez le QR code sur votre table',
             style: TextStyle(
-              fontSize: 14,
+              fontSize: isSmallMobile ? 13 : 14,
               color: Colors.grey[600],
             ),
+            textAlign: TextAlign.center,
           ),
-          const SizedBox(height: 20),
-          OutlinedButton.icon(
-            onPressed: _openScanner,
-            icon: const Icon(Icons.camera_alt_outlined),
-            label: const Text('Ouvrir la caméra'),
-            style: OutlinedButton.styleFrom(
-              foregroundColor: const Color(0xFF6366F1),
-              side: const BorderSide(color: Color(0xFF6366F1)),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
+
+          SizedBox(height: isSmallMobile ? 18 : 24),
+
+          SizedBox(
+            width: double.infinity,
+            height: isSmallMobile ? 48 : 52,
+            child: OutlinedButton.icon(
+              onPressed: _openScanner,
+              icon: const Icon(
+                Icons.camera_alt_outlined,
+                size: 20,
               ),
-              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+              label: Text(
+                'Ouvrir la caméra',
+                style: TextStyle(
+                  fontSize: isSmallMobile ? 15 : 16,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              style: OutlinedButton.styleFrom(
+                foregroundColor: const Color(0xFF6366F1),
+                side: const BorderSide(color: Color(0xFF6366F1), width: 1.5),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                backgroundColor: Colors.white,
+              ),
             ),
           ),
         ],
@@ -359,8 +498,9 @@ class _HomeScreenState extends State<HomeScreen> {
       child: Text(
         'SmartMenu - Solution digitale pour restaurants',
         style: TextStyle(
-          fontSize: 12,
-          color: Colors.grey[500],
+          fontSize: 11,
+          color: Colors.grey[400],
+          fontWeight: FontWeight.w400,
         ),
       ),
     );

@@ -4,6 +4,21 @@ Ce guide couvre la configuration de l'environnement de développement, les workf
 
 ## Prérequis
 
+### Système de Slugs
+
+#### Configuration
+
+Le système génère automatiquement des URLs propres :
+
+- `/r/pizza-corner` au lieu de `/r/mpzzZ4GAnsJUjpYO6X7d`
+- Génération automatique à la création du restaurant
+- Résolution via collection Firestore `slugs`
+
+#### Structure Firestore
+
+- `slugs/{slug}` → `{ rid: "restaurant-id" }`
+- `restaurants/{rid}/info/details.slug` → nom du slug
+
 ### Outils Requis
 
 - **Flutter SDK** 3.16+ avec support web activé

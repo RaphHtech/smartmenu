@@ -59,6 +59,14 @@ flutter run -d chrome
 
 ## Fonctionnalités principales
 
+### URLs Propres et Partage
+
+- Système de slugs automatiques `/r/nom-restaurant`
+- Génération automatique à partir du nom du restaurant
+- Résolution intelligente slug → ID restaurant
+- Interface admin pour visualiser et partager les URLs
+- Compatibilité avec les restaurants existants
+
 ### Interface Client (PWA)
 
 - Navigation par catégories avec design glassmorphism
@@ -94,20 +102,15 @@ flutter run -d chrome
 
 ## État du projet
 
-**Version** : 2.7.1 — Auth mobile responsive corrigé  
-**Tests** : Repository catégories complets (9/9 passing)  
-**Code quality** : 8 issues mineurs (flutter analyze)
+**Version** : 2.8.0 — URLs propres avec système de slugs ✅
 
-### Phase actuelle : Auth mobile perfectionné ✅
+### Phase actuelle : URLs professionnelles ✅
 
-- ✅ Architecture catégories unifiée (`CategoryManager`)
-- ✅ Design system premium (`AdminTokens`) avec responsive utilities
-- ✅ Auth screens mobile pixel-perfect (overflow fixes)
-- ✅ Interface mobile optimisée
-- ✅ Tests unitaires avec mocks Firestore
-- ✅ Documentation structurée
-
-### Prochaines phases
+- ✅ Système de slugs automatiques pour URLs lisibles
+- ✅ Résolution slug → restaurant ID avec fallbacks
+- ✅ Interface admin mise à jour avec URLs propres
+- ✅ Migration transparente des restaurants existants
+- ✅ Prévisualisation avec URLs professionnelles### Prochaines phases
 
 - **QR Scanner fonctionnel** avec mobile_scanner
 - **Gestion d'équipe** (invitations, rôles manager/staff)

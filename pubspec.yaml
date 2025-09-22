@@ -14,6 +14,7 @@ dependencies:
   mobile_scanner: ^3.5.7
   file_picker: ^8.0.0+1
   rxdart: ^0.27.7
+  qr_flutter: ^4.1.0
 
   # Navigation et état
   go_router: ^12.0.0
@@ -23,10 +24,6 @@ dependencies:
   google_fonts: ^6.1.0
   flutter_svg: ^2.0.7
   cached_network_image: ^3.3.0
-
-  # QR Code
-  # qr_code_scanner: ^1.0.1
-  qr_flutter: ^4.1.0
 
   # Stockage local
   shared_preferences: ^2.2.2

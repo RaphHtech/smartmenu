@@ -5,7 +5,6 @@ import 'firebase_options.dart';
 
 // Import screens
 import 'screens/home_screen.dart';
-import 'screens/menu/menu_screen.dart';
 import 'screens/admin/admin_login_screen.dart';
 import 'screens/admin/admin_signup_screen.dart';
 import 'package:smartmenu_app/screens/admin/auth/admin_reset_screen.dart';

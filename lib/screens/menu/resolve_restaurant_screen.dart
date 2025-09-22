@@ -42,7 +42,10 @@ class ResolveRestaurantScreen extends StatelessWidget {
         }
         final rid = snap.data;
         if (rid == null || rid.isEmpty) {
-          return const HomeScreen();
+          return HomeScreen(
+            errorMessage:
+                'Restaurant "$idOrSlug" introuvable. Vérifiez le code.',
+          );
         }
         return MenuScreen(restaurantId: rid);
       },
