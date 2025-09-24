@@ -401,6 +401,12 @@ gsutil cors set cors.json gs://<your-storage-bucket>
 - Permissions caméra cross-platform
 - Fallback gallery upload
 
+**QR Scanner Mobile Web**
+
+- Solution photo upload + décodage client-side
+- Integration zxing2 pour décodage QR
+- Progressive enhancement mobile/desktop
+
 **RBAC Complet**
 
 - Système de rôles owner/manager/staff

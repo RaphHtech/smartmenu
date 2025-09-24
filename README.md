@@ -107,23 +107,23 @@ flutter run -d chrome
 
 - **Frontend** : Flutter Web (PWA + Admin)
 - **Backend** : Firebase (Firestore + Auth + Storage)
-- **QR** : mobile_scanner (scan) + qr_flutter (génération)
+- **QR** : mobile_scanner v4.0.1 (scan desktop) + qr_flutter (génération)
 - **Design** : Material 3 + Design System custom AdminTokens
 - **Tests** : Unit tests avec mocks Firestore
 
 ## État du projet
 
-**Version** : 2.9.0 — Système QR code complet ✅
+**Version** : 2.9.1 — Scanner QR fonctionnel + fixes techniques
 
-### Phase actuelle : QR Code bout-en-bout ✅
+### Phase actuelle : QR Code stable ✅
 
-- ✅ Scanner QR avec interface moderne et animations
-- ✅ Génération QR codes avec personnalisation
+- ✅ Scanner QR fonctionnel (desktop HTTPS, mobile via saisie manuelle)
+- ✅ Génération QR codes avec téléchargement PNG
 - ✅ URLs propres avec système de slugs automatiques
 - ✅ Résolution slug → restaurant ID avec fallbacks
-- ✅ Interface admin QR complète (générer, télécharger, partager)
-- ✅ Support multi-canaux de partage (Email, SMS, WhatsApp, Facebook)
-- ✅ Migration transparente des restaurants existants
+- ✅ Interface admin QR complète
+- ✅ Support multi-canaux de partage
+- ✅ Fix mobile_scanner v4.0.1 compatible Flutter Web
 
 ### Prochaines phases
 

@@ -25,7 +25,7 @@ Le système génère automatiquement des URLs propres :
 
 ```yaml
 dependencies:
-  mobile_scanner: ^3.5.7 # Scanner QR
+  mobile_scanner: ^4.0.1 # Scanner QR (stable Flutter Web)
   qr_flutter: ^4.1.0 # Génération QR
 ```
 
@@ -108,6 +108,19 @@ gcloud --version
 - Flutter : aucun problème sur web support
 - Firebase CLI : connecté à un projet
 - gcloud : authentifié
+
+## Limitations Actuelles
+
+### Scanner QR Mobile Web
+
+- **Desktop HTTPS** : Scanner live fonctionnel
+- **Mobile Web** : Saisie manuelle uniquement (limitation technique)
+- **Alternative** : QR generators externes + codes manuels
+
+### Téléchargement QR
+
+- **Format** : PNG basique (placeholder avec texte)
+- **Production future** : Intégration lib QR-to-canvas dédiée
 
 ## Configuration Environnement
 

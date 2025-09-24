@@ -14,8 +14,7 @@ class QRService {
 
   /// Génère l'URL publique complète pour un restaurant
   static String generateRestaurantUrl(String slug) {
-    final baseUrl = kIsWeb ? Uri.base.origin : 'https://smartmenu-app.web.app';
-    return '$baseUrl/r/$slug';
+    return 'https://smartmenu-mvp.web.app/r/$slug';
   }
 
   /// Récupère le slug d'un restaurant pour générer son QR
