@@ -119,6 +119,8 @@ class _AdminOrdersScreenState extends State<AdminOrdersScreen>
 
   @override
   Widget build(BuildContext context) {
+    final isCompact = MediaQuery.of(context).size.width < 420;
+
     return AdminShell(
       title: 'Commandes',
       restaurantId: widget.restaurantId,
@@ -127,36 +129,37 @@ class _AdminOrdersScreenState extends State<AdminOrdersScreen>
       child: Column(
         children: [
           // Onglets
+
           Container(
-            decoration: BoxDecoration(
+            decoration: const BoxDecoration(
               color: Colors.white,
-              borderRadius: BorderRadius.circular(AdminTokens.radius8),
-              boxShadow: AdminTokens.shadowSm,
+              borderRadius: BorderRadius.all(Radius.circular(8)),
+              border: Border(
+                bottom: BorderSide(color: AdminTokens.neutral200),
+              ),
             ),
-            child: TabBar(
-              controller: _tabController,
-              tabs: _statusTabs.map((status) {
-                return Tab(
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Container(
-                        width: 8,
-                        height: 8,
-                        decoration: BoxDecoration(
-                          color: _getStatusColor(status),
-                          shape: BoxShape.circle,
-                        ),
-                      ),
-                      const SizedBox(width: AdminTokens.space8),
-                      Text(_getStatusLabel(status)),
-                    ],
-                  ),
-                );
-              }).toList(),
-              labelColor: AdminTokens.primary600,
-              unselectedLabelColor: AdminTokens.neutral500,
-              indicatorColor: AdminTokens.primary600,
+            child: SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              padding: const EdgeInsets.symmetric(horizontal: 8),
+              child: TabBar(
+                controller: _tabController,
+                isScrollable: true,
+                labelColor: AdminTokens.primary600,
+                unselectedLabelColor: AdminTokens.neutral600,
+                indicatorColor: AdminTokens.primary600,
+                indicatorSize: TabBarIndicatorSize.label,
+                labelPadding: const EdgeInsets.symmetric(horizontal: 12),
+                tabs: [
+                  _statusTab(isCompact ? 'Reçues' : 'Reçues',
+                      models.OrderStatus.received),
+                  _statusTab(isCompact ? 'Prépa.' : 'Préparation',
+                      models.OrderStatus.preparing),
+                  _statusTab(isCompact ? 'Prêtes' : 'Prêtes',
+                      models.OrderStatus.ready),
+                  _statusTab(isCompact ? 'Servies' : 'Servies',
+                      models.OrderStatus.served),
+                ],
+              ),
             ),
           ),
 
@@ -293,7 +296,7 @@ class _AdminOrdersScreenState extends State<AdminOrdersScreen>
                     vertical: AdminTokens.space4,
                   ),
                   decoration: BoxDecoration(
-                    color: _getStatusColor(order.status).withOpacity(0.1),
+                    color: _getStatusColor(order.status).withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(AdminTokens.radius4),
                   ),
                   child: Text(
@@ -325,7 +328,7 @@ class _AdminOrdersScreenState extends State<AdminOrdersScreen>
                   ),
                 ),
                 const SizedBox(width: AdminTokens.space16),
-                Icon(
+                const Icon(
                   Icons.schedule,
                   size: AdminTokens.iconSm,
                   color: AdminTokens.neutral500,
@@ -349,8 +352,6 @@ class _AdminOrdersScreenState extends State<AdminOrdersScreen>
             ),
 
             const SizedBox(height: AdminTokens.space12),
-
-            // Items
             ...order.items.map((item) {
               return Padding(
                 padding: const EdgeInsets.only(bottom: AdminTokens.space4),
@@ -378,6 +379,9 @@ class _AdminOrdersScreenState extends State<AdminOrdersScreen>
                       child: Text(
                         item.name,
                         style: AdminTypography.bodySmall,
+                        // ← AJOUTER CES LIGNES POUR FIXER L'OVERFLOW :
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 1,
                       ),
                     ),
                     Text(
@@ -390,7 +394,6 @@ class _AdminOrdersScreenState extends State<AdminOrdersScreen>
                 ),
               );
             }).toList(),
-
             const SizedBox(height: AdminTokens.space16),
 
             // Actions
@@ -550,5 +553,52 @@ class _AdminOrdersScreenState extends State<AdminOrdersScreen>
     if (html.Notification.permission == 'granted') {
       html.Notification(title, body: body);
     }
+  }
+
+  Widget _statusTab(String label, models.OrderStatus status) {
+    return StreamBuilder<List<models.Order>>(
+      stream: OrderService.getOrdersByStatusStream(widget.restaurantId, status),
+      builder: (context, snapshot) {
+        final count = snapshot.data?.length ?? 0;
+
+        return Tab(
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                width: 8,
+                height: 8,
+                decoration: BoxDecoration(
+                  color: _getStatusColor(status),
+                  shape: BoxShape.circle,
+                ),
+              ),
+              const SizedBox(width: 8),
+              Text(label, softWrap: false, overflow: TextOverflow.fade),
+              if (count > 0) ...[
+                const SizedBox(width: 8),
+                Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                  decoration: BoxDecoration(
+                    color: _getStatusColor(status),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Text(
+                    count > 99 ? '99+' : '$count',
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 11,
+                      fontWeight: FontWeight.w600,
+                      height: 1,
+                    ),
+                  ),
+                ),
+              ],
+            ],
+          ),
+        );
+      },
+    );
   }
 }

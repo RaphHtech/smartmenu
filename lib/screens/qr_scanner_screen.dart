@@ -62,7 +62,7 @@ class _QRScannerScreenState extends State<QRScannerScreen>
                   padding: const EdgeInsets.all(24),
                   margin: const EdgeInsets.all(24),
                   decoration: BoxDecoration(
-                    color: Colors.red.withOpacity(0.1),
+                    color: Colors.red.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(16),
                     border: Border.all(color: Colors.red),
                   ),
@@ -246,7 +246,7 @@ class _QRScannerScreenState extends State<QRScannerScreen>
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       decoration: BoxDecoration(
-        color: Colors.black.withOpacity(0.7),
+        color: Colors.black.withValues(alpha: 0.7),
         borderRadius: BorderRadius.circular(24),
       ),
       child: Row(
@@ -292,7 +292,7 @@ class _QRScannerScreenState extends State<QRScannerScreen>
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: Colors.black.withOpacity(0.8),
+        color: Colors.black.withValues(alpha: 0.8),
         borderRadius: BorderRadius.circular(16),
       ),
       child: const Column(
@@ -331,7 +331,7 @@ class _QRScannerScreenState extends State<QRScannerScreen>
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.red.withOpacity(0.9),
+        color: Colors.red.withValues(alpha: 0.9),
         borderRadius: BorderRadius.circular(12),
       ),
       child: Row(
@@ -374,7 +374,7 @@ class _ScanOverlayPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint()
-      ..color = Colors.black.withOpacity(0.6)
+      ..color = Colors.black.withValues(alpha: 0.6)
       ..style = PaintingStyle.fill;
 
     // Dimensions du cadre de scan
@@ -452,7 +452,7 @@ class _ScanOverlayPainter extends CustomPainter {
 
     // Ligne de scan animée
     final scanLinePaint = Paint()
-      ..color = AppColors.primary.withOpacity(0.8)
+      ..color = AppColors.primary.withValues(alpha: 0.8)
       ..style = PaintingStyle.stroke
       ..strokeWidth = 2;
 

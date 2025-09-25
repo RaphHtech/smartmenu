@@ -1149,11 +1149,11 @@ class _ShareDialog extends StatelessWidget {
     Navigator.of(context).pop();
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Row(
+        content: const Row(
           children: [
-            const Icon(Icons.check_circle, color: Colors.white, size: 20),
-            const SizedBox(width: 12),
-            const Text('URL copiée dans le presse-papier'),
+            Icon(Icons.check_circle, color: Colors.white, size: 20),
+            SizedBox(width: 12),
+            Text('URL copiée dans le presse-papier'),
           ],
         ),
         backgroundColor: AdminTokens.success500,
@@ -1414,9 +1414,9 @@ class _CompactShareOption extends StatelessWidget {
                 width: 40,
                 height: 40,
                 decoration: BoxDecoration(
-                  color: color.withOpacity(0.1),
+                  color: color.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: color.withOpacity(0.3)),
+                  border: Border.all(color: color.withValues(alpha: 0.3)),
                 ),
                 child: Icon(
                   icon,
