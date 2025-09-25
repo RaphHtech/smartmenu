@@ -108,6 +108,37 @@ class CategoryLiveState {
 }
 ```
 
+### CurrencyService
+
+Service centralisé de formatage monétaire avec support multi-locale.
+
+**Dépendances** : `intl: ^0.19.0`
+
+#### Configuration supportée
+
+```dart
+static const _configs = {
+  'ILS': CurrencyConfig(code: 'ILS', symbol: '₪', locale: 'he_IL'),
+  'EUR': CurrencyConfig(code: 'EUR', symbol: '€', locale: 'fr_FR'),
+  'USD': CurrencyConfig(code: 'USD', symbol: '$', locale: 'en_US'),
+};
+```
+
+#### Usage avec CurrencyScope
+
+```dart
+// Injection restaurant-level
+CurrencyScope(
+  code: restaurant.currency, // 'ILS', 'EUR', 'USD'
+  child: MenuScreen(),
+)
+
+// Usage dans widgets
+Text(context.money(46.0)); // "₪46" ou "46,00 €" ou "$46.00"
+```
+
+**Architecture** : CurrencyScope (InheritedWidget) injecte le code currency au niveau restaurant, extension `MoneyX` fournit `context.money()` dans tout l'arbre widget.
+
 ### Patterns de Synchronisation
 
 **Optimistic Updates**

@@ -890,6 +890,23 @@ if (lastDocument != null) {
 }
 ```
 
+### Currency Management
+
+**Service centralisé** : Tous les prix passent par `CurrencyService.format()`
+
+```dart
+// ❌ Éviter
+Text('₪${price.toStringAsFixed(2)}');
+Text('$currencySymbol$price');
+
+// ✅ Utiliser
+Text(context.money(price));
+Text(CurrencyService.format(price, currencyCode));
+```
+
+**Architecture** : InheritedWidget scope restaurant-level, extension helper élégante.
+**Stockage Firestore** : `restaurants/{rid}/info/details.currency: "ILS"`
+
 ## Débogage
 
 ### Outils Debug

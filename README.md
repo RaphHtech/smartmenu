@@ -132,29 +132,28 @@ flutter run -d chrome
 - **Tests** : Unit tests avec mocks Firestore
 - **Cloud Functions** : Firebase Functions v2 (notifications Slack)
 - **Notifications** : Notifications API + AudioElement (Flutter Web)
+- **Currency** : intl ^0.19.0 (formatage multi-locale)
+- **State** : InheritedWidget (CurrencyScope injection)
 
 ## État du projet
 
-**Version** : 3.0.0 - Système de commandes MVP complet
+**Version** : 3.1.0 - Currency System & Client Design Foundations
 
-### Phase actuelle : Orders MVP + Server Calls stables ✅
+### Phase actuelle : Currency Unifiée + Design System Client ✅
 
-- ✅ Scanner QR fonctionnel (desktop HTTPS, mobile via saisie manuelle)
-- ✅ Génération QR codes avec téléchargement PNG
-- ✅ URLs propres avec système de slugs automatiques
-- ✅ **Système de commandes complet** avec transmission automatique
-- ✅ Interface admin orders avec onglets de statut
-- ✅ Notifications multi-canal (son + navigateur + Slack)
-- ✅ Idempotence anti-doublon robuste
-- ✅ Cloud Functions pour notifications automatiques
-- ✅ **Système d'appel serveur** avec interface admin temps réel
+- ✅ **Système currency centralisé** avec CurrencyService + CurrencyScope
+- ✅ Extension `context.money()` pour affichage unifié des prix
+- ✅ Support multi-currency (ILS/EUR/USD) avec formatage localisé
+- ✅ Migration complète des widgets menu (MenuItem, CartFloat, OrderReview)
+- ✅ **ClientTokens** - Design system client (spacing, radius, elevation)
+- ✅ Architecture InheritedWidget scalable pour multi-tenant
+- ✅ Suppression de tous les hardcoded `₪` et `currencySymbol`
 
 ### Prochaines phases
 
-- **Internationalisation RTL** (hébreu/anglais/français) - EN COURS
-- **Web Push notifications** (PWA installée, alertes onglet fermé)
-- **Gestion d'équipe** (invitations, rôles manager/staff)
-- **Analytics avancées** (tendances, plats populaires)
+- **Accessibilité complète** (Semantics, tooltips, touch targets 44×44)
+- **Design system migration** (3 composants : MenuItemCard, PromoBanner, CategoryChips)
+- **Internationalisation RTL** (hébreu/anglais/français)
 
 ## Support et contact
 

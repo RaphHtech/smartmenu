@@ -4,6 +4,58 @@ Cette documentation décrit les services, modèles et contrats de données de Sm
 
 ## Services Core
 
+### CurrencyService
+
+Service statique de formatage monétaire avec support multi-locale et fallback robuste.
+
+#### Méthodes Principales
+
+##### `format(num amount, String? currencyCode, {int? decimals})`
+
+Formate un montant selon la locale et currency spécifiées.
+
+```dart
+static String format(num amount, String? currencyCode, {int? decimals})
+```
+
+**Paramètres**
+
+- `amount` : Montant numérique à formater
+- `currencyCode` : Code ISO currency ('ILS', 'EUR', 'USD')
+- `decimals` : Décimales forcées (optionnel, auto-déterminé par défaut)
+
+**Retour**
+
+- `String` : Montant formaté avec symbole et locale ('₪46', '46,00 €', '$46.00')
+
+**Fallbacks**
+
+- Currency inconnue → ILS par défaut
+- Code null → ILS par défaut
+- Decimals null → 0 si entier, 2 si décimal
+
+#### CurrencyScope
+
+InheritedWidget pour injection de currency au niveau restaurant.
+
+#### Usage Pattern
+
+```dart
+// Niveau restaurant (menu_screen.dart)
+final code = _restaurantCurrency.toUpperCase();
+return CurrencyScope(
+  code: code,
+  child: Scaffold(...),
+);
+
+// Dans les widgets enfants
+final currency = CurrencyScope.of(context).code;
+Text(CurrencyService.format(price, currency));
+
+// Ou via extension
+Text(context.money(price));
+```
+
 ### CategoryManager
 
 Service principal pour la gestion des catégories avec streams temps réel et opérations optimistes.
