@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:smartmenu_app/core/design/client_tokens.dart';
 import 'package:smartmenu_app/services/analytics_service.dart';
 import 'package:smartmenu_app/services/order_service.dart';
 import 'package:smartmenu_app/services/table_service.dart';
@@ -409,7 +410,8 @@ class SimpleMenuScreenState extends State<MenuScreen> {
     if (!_promoEnabled || _promoText.isEmpty) return const SizedBox.shrink();
 
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      margin: const EdgeInsets.symmetric(
+          horizontal: ClientTokens.space16, vertical: ClientTokens.space8),
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [
@@ -417,7 +419,7 @@ class SimpleMenuScreenState extends State<MenuScreen> {
             Colors.white.withValues(alpha: 0.10),
           ],
         ),
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(ClientTokens.radius16),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.08),
@@ -427,7 +429,7 @@ class SimpleMenuScreenState extends State<MenuScreen> {
         ],
       ),
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(ClientTokens.space16),
         child: Row(
           children: [
             Container(
@@ -440,7 +442,7 @@ class SimpleMenuScreenState extends State<MenuScreen> {
               child: const Icon(Icons.local_offer_rounded,
                   size: 14, color: Colors.white),
             ),
-            const SizedBox(width: 12),
+            const SizedBox(width: ClientTokens.space12),
             Expanded(
               child: Text(
                 _promoText,

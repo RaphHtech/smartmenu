@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:smartmenu_app/core/design/client_tokens.dart';
 
 class CategoryPill extends StatelessWidget {
   final String label;
@@ -28,7 +29,8 @@ class CategoryPill extends StatelessWidget {
                 : Theme.of(context).colorScheme.onSurface.withOpacity(0.9),
           ),
       materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      padding: const EdgeInsets.symmetric(
+          horizontal: ClientTokens.space12, vertical: ClientTokens.space8),
     );
   }
 }

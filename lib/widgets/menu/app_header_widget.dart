@@ -1,5 +1,6 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:smartmenu_app/core/design/client_tokens.dart';
 import '../../core/constants/colors.dart';
 
 class AppHeaderWidget extends StatelessWidget {
@@ -46,7 +47,11 @@ class AppHeaderWidget extends StatelessWidget {
         child: BackdropFilter(
           filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
           child: Container(
-            padding: const EdgeInsets.fromLTRB(20, 16, 20, 16),
+            padding: const EdgeInsets.fromLTRB(
+                ClientTokens.space24,
+                ClientTokens.space16,
+                ClientTokens.space24,
+                ClientTokens.space16),
             decoration: const BoxDecoration(
               color: AppColors.headerOverlay,
               border: Border(
@@ -74,7 +79,8 @@ class AppHeaderWidget extends StatelessWidget {
                                 shape: const StadiumBorder(),
                                 elevation: 0,
                                 padding: const EdgeInsets.symmetric(
-                                    horizontal: 16, vertical: 10),
+                                    horizontal: ClientTokens.space16,
+                                    vertical: 10),
                               ),
                             ),
                           )
@@ -117,7 +123,7 @@ class AppHeaderWidget extends StatelessWidget {
                             mainAxisSize: MainAxisSize.min,
                             children: [
                               _brandAvatar(restaurantName, logoUrl),
-                              const SizedBox(width: 8),
+                              const SizedBox(width: ClientTokens.space8),
                               Text(
                                 restaurantName.isEmpty
                                     ? 'RESTAURANT'
@@ -159,7 +165,8 @@ class AppHeaderWidget extends StatelessWidget {
                         foregroundColor: AppColors.primary,
                         shape: const StadiumBorder(),
                         padding: const EdgeInsets.symmetric(
-                            horizontal: 20, vertical: 12),
+                            horizontal: ClientTokens.space24,
+                            vertical: ClientTokens.space12),
                       ),
                     ),
                   ),

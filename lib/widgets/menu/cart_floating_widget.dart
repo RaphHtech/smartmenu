@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import '../../core/constants/colors.dart';
-import '../../services/currency_service.dart';
+import 'package:smartmenu_app/core/design/client_tokens.dart';
+// import '../../core/constants/colors.dart';
+// import '../../services/currency_service.dart';
 import '../../state/currency_scope.dart';
 
 class CartFloatingWidget extends StatelessWidget {
@@ -20,7 +21,7 @@ class CartFloatingWidget extends StatelessWidget {
     if (cartItemCount == 0) return const SizedBox.shrink();
 
     return SafeArea(
-      minimum: const EdgeInsets.only(bottom: 100, right: 16),
+      minimum: const EdgeInsets.only(bottom: 100, right: ClientTokens.space16),
       child: Align(
         alignment: Alignment.bottomRight,
         child: AnimatedSwitcher(
@@ -30,7 +31,9 @@ class CartFloatingWidget extends StatelessWidget {
           child: FilledButton.tonal(
             onPressed: onViewOrder,
             style: FilledButton.styleFrom(
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+              padding: const EdgeInsets.symmetric(
+                  horizontal: ClientTokens.space24,
+                  vertical: ClientTokens.space16),
               elevation: 8,
               shape: const StadiumBorder(),
               textStyle: const TextStyle(fontWeight: FontWeight.w700),
@@ -39,7 +42,7 @@ class CartFloatingWidget extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               children: [
                 Container(
-                  padding: const EdgeInsets.all(6),
+                  padding: const EdgeInsets.all(ClientTokens.space8),
                   decoration: BoxDecoration(
                     color: Theme.of(context).colorScheme.primary,
                     shape: BoxShape.circle,
@@ -53,7 +56,7 @@ class CartFloatingWidget extends StatelessWidget {
                     ),
                   ),
                 ),
-                const SizedBox(width: 12),
+                const SizedBox(width: ClientTokens.space12),
                 Text(context.money(cartTotal)),
               ],
             ),
