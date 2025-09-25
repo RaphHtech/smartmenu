@@ -15,6 +15,7 @@ import 'package:flutter/foundation.dart' show kIsWeb;
 import 'dart:html' as html;
 import '../../widgets/premium_app_header_widget.dart';
 import '../../services/server_call_service.dart';
+import '../../state/currency_scope.dart';
 
 List<String> applyOrderAndHide(
   Set<String> allCats,
@@ -73,19 +74,6 @@ class SimpleMenuScreenState extends State<MenuScreen> {
         return '🍹';
       default:
         return '⭐';
-    }
-  }
-
-  String _symbolFor(String code) {
-    switch (code) {
-      case 'ILS':
-        return '₪';
-      case 'EUR':
-        return '€';
-      case 'USD':
-        return '\$';
-      default:
-        return code; // fallback: affiche 'GBP', 'CAD', etc.
     }
   }
 
@@ -417,347 +405,383 @@ class SimpleMenuScreenState extends State<MenuScreen> {
     }
   }
 
+  Widget _buildPromoBanner() {
+    if (!_promoEnabled || _promoText.isEmpty) return const SizedBox.shrink();
+
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: [
+            Colors.white.withValues(alpha: 0.15),
+            Colors.white.withValues(alpha: 0.10),
+          ],
+        ),
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.08),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Row(
+          children: [
+            Container(
+              width: 24,
+              height: 24,
+              decoration: BoxDecoration(
+                color: Colors.amber.withValues(alpha: 0.2),
+                shape: BoxShape.circle,
+              ),
+              child: const Icon(Icons.local_offer_rounded,
+                  size: 14, color: Colors.white),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Text(
+                _promoText,
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                  height: 1.3,
+                ),
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                textAlign: TextAlign.center,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      clipBehavior: Clip.none,
-      children: [
-        // 1) Fond diagonal (135°)
-        const Positioned.fill(
-          child: DecoratedBox(
-            decoration: BoxDecoration(
-              gradient: AppColors.bgGradientWarm,
+    final code = _restaurantCurrency.toUpperCase();
+    return CurrencyScope(
+      code: code,
+      child: Stack(
+        clipBehavior: Clip.none,
+        children: [
+          // 1) Fond diagonal (135°)
+          const Positioned.fill(
+            child: DecoratedBox(
+              decoration: BoxDecoration(
+                gradient: AppColors.bgGradientWarm,
+              ),
             ),
           ),
-        ),
 
-        // 2) Voile global léger
-        const Positioned.fill(
-          child: DecoratedBox(
-            decoration: BoxDecoration(gradient: AppColors.pageOverlay),
+          // 2) Voile global léger
+          const Positioned.fill(
+            child: DecoratedBox(
+              decoration: BoxDecoration(gradient: AppColors.pageOverlay),
+            ),
           ),
-        ),
 
-        Scaffold(
-          backgroundColor: Colors.transparent,
-          body: SafeArea(
-            bottom: false,
-            child: CustomScrollView(
-              controller: _mainScrollController,
-              physics: const BouncingScrollPhysics(),
-              slivers: [
-                // ===== HEADER (en dur) =====
-                PremiumAppHeaderWidget(
-                  tagline: _tagline,
-                  onServerCall: _isLoading
-                      ? null
-                      : () {
-                          final tableId = TableService.getTableId();
-                          if (tableId == null) {
-                            _showCustomNotification('Table non identifiée');
-                            return;
-                          }
-
-                          setState(() => _isLoading = true);
-
-                          ServerCallService.callServer(
-                            rid: widget.restaurantId,
-                            table: 'table$tableId',
-                          ).then((_) {
-                            if (mounted) {
-                              _showCustomNotification(
-                                'Serveur appelé !\nUn membre de notre équipe arrive.',
-                                persistent: true,
-                              );
-                            }
-                          }).catchError((e) {
-                            if (mounted) {
-                              _showCustomNotification('Erreur: $e');
-                            }
-                          }).whenComplete(() {
-                            if (mounted) setState(() => _isLoading = false);
-                          });
-                        },
-                  restaurantName: _restaurantName,
-                  showAdminReturn: _isAdminPreview,
-                  onAdminReturn: _isAdminPreview
-                      ? () => _handleAdminReturn(context)
-                      : null,
-                  logoUrl: _logoUrl,
-                ),
-                // ===== SECTION PROMO (glassmorphism) =====
-                SliverToBoxAdapter(
-                  child: AnimatedContainer(
-                    duration: const Duration(milliseconds: 200),
-                    height: (_promoEnabled &&
-                            _promoText.isNotEmpty &&
-                            !_isHeaderCollapsed)
+          Scaffold(
+            backgroundColor: Colors.transparent,
+            body: SafeArea(
+              bottom: false,
+              child: CustomScrollView(
+                controller: _mainScrollController,
+                physics: const BouncingScrollPhysics(),
+                slivers: [
+                  // ===== HEADER (en dur) =====
+                  PremiumAppHeaderWidget(
+                    tagline: _tagline,
+                    onServerCall: _isLoading
                         ? null
-                        : 0,
-                    child: AnimatedOpacity(
-                      duration: const Duration(milliseconds: 180),
-                      opacity: _isHeaderCollapsed ? 0 : 1,
-                      child: (_promoEnabled && _promoText.isNotEmpty)
-                          ? Container(
-                              margin: const EdgeInsets.symmetric(
-                                  horizontal: 20, vertical: 8),
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 16, vertical: 12),
-                              decoration: BoxDecoration(
-                                color: const Color(0x26F59E0B),
-                                borderRadius: BorderRadius.circular(12),
-                                border:
-                                    Border.all(color: const Color(0x33F59E0B)),
-                              ),
-                              child: Row(
-                                children: [
-                                  const Icon(Icons.local_offer,
-                                      size: 18, color: Color(0xFFF59E0B)),
-                                  const SizedBox(width: 8),
-                                  Expanded(
-                                    child: Text(
-                                      _promoText,
-                                      textAlign: TextAlign.center,
-                                      maxLines: 1,
-                                      overflow: TextOverflow.ellipsis,
-                                      style: const TextStyle(
-                                        fontWeight: FontWeight.w600,
-                                        color: Color(0xFF92400E),
-                                      ),
+                        : () {
+                            final tableId = TableService.getTableId();
+                            if (tableId == null) {
+                              _showCustomNotification('Table non identifiée');
+                              return;
+                            }
+
+                            setState(() => _isLoading = true);
+
+                            ServerCallService.callServer(
+                              rid: widget.restaurantId,
+                              table: 'table$tableId',
+                            ).then((_) {
+                              if (mounted) {
+                                _showCustomNotification(
+                                  'Serveur appelé !\nUn membre de notre équipe arrive.',
+                                  persistent: true,
+                                );
+                              }
+                            }).catchError((e) {
+                              if (mounted) {
+                                _showCustomNotification('Erreur: $e');
+                              }
+                            }).whenComplete(() {
+                              if (mounted) setState(() => _isLoading = false);
+                            });
+                          },
+                    restaurantName: _restaurantName,
+                    showAdminReturn: _isAdminPreview,
+                    onAdminReturn: _isAdminPreview
+                        ? () => _handleAdminReturn(context)
+                        : null,
+                    logoUrl: _logoUrl,
+                  ),
+                  // ===== SECTION PROMO (glassmorphism) =====
+                  SliverToBoxAdapter(
+                    child: AnimatedContainer(
+                      duration: const Duration(milliseconds: 200),
+                      height: (_promoEnabled &&
+                              _promoText.isNotEmpty &&
+                              !_isHeaderCollapsed)
+                          ? null
+                          : 0,
+                      child: AnimatedOpacity(
+                        duration: const Duration(milliseconds: 180),
+                        opacity: _isHeaderCollapsed ? 0 : 1,
+                        child: _buildPromoBanner(),
+                      ),
+                    ),
+                  ),
+
+                  const SliverToBoxAdapter(child: SizedBox(height: 12)),
+
+                  // ===== NAVIGATION CATÉGORIES =====
+                  SliverAppBar(
+                    pinned: true,
+                    toolbarHeight: 0,
+                    backgroundColor: Colors.transparent,
+                    elevation: 0,
+                    shadowColor: Colors.transparent,
+                    surfaceTintColor: Colors.transparent,
+                    flexibleSpace: Container(
+                      decoration: BoxDecoration(
+                        boxShadow: _isHeaderCollapsed
+                            ? [
+                                BoxShadow(
+                                  color: Colors.black.withValues(alpha: 0.1),
+                                  blurRadius: 4,
+                                  offset: const Offset(0, 2),
+                                ),
+                              ]
+                            : [],
+                      ),
+                    ),
+                    bottom: PreferredSize(
+                      preferredSize: const Size.fromHeight(88),
+                      child: Container(
+                        height: 88,
+                        padding: const EdgeInsets.symmetric(vertical: 20),
+                        child: SingleChildScrollView(
+                          controller: _categoryScrollController,
+                          scrollDirection: Axis.horizontal,
+                          physics: const AlwaysScrollableScrollPhysics(),
+                          child: Padding(
+                            padding: const EdgeInsets.only(left: 20),
+                            child: Row(
+                              children: [
+                                for (final cat in _orderedCategories)
+                                  Padding(
+                                    padding: const EdgeInsets.only(right: 12),
+                                    child: CategoryPill(
+                                      label: '${_emojiFor(cat)} $cat',
+                                      isActive: _selectedCategory == cat,
+                                      onTap: () => _selectCategory(cat),
                                     ),
                                   ),
-                                ],
-                              ),
-                            )
-                          : const SizedBox.shrink(),
-                    ),
-                  ),
-                ),
-
-                const SliverToBoxAdapter(child: SizedBox(height: 12)),
-
-                // ===== NAVIGATION CATÉGORIES =====
-                SliverAppBar(
-                  pinned: true,
-                  toolbarHeight: 0,
-                  backgroundColor: Colors.transparent,
-                  elevation: 0,
-                  shadowColor: Colors.transparent,
-                  surfaceTintColor: Colors.transparent,
-                  flexibleSpace: Container(
-                    decoration: BoxDecoration(
-                      boxShadow: _isHeaderCollapsed
-                          ? [
-                              BoxShadow(
-                                color: Colors.black.withValues(alpha: 0.1),
-                                blurRadius: 4,
-                                offset: const Offset(0, 2),
-                              ),
-                            ]
-                          : [],
-                    ),
-                  ),
-                  bottom: PreferredSize(
-                    preferredSize: const Size.fromHeight(88),
-                    child: Container(
-                      height: 88,
-                      padding: const EdgeInsets.symmetric(vertical: 20),
-                      child: SingleChildScrollView(
-                        controller: _categoryScrollController,
-                        scrollDirection: Axis.horizontal,
-                        physics: const AlwaysScrollableScrollPhysics(),
-                        child: Padding(
-                          padding: const EdgeInsets.only(left: 20),
-                          child: Row(
-                            children: [
-                              for (final cat in _orderedCategories)
-                                Padding(
-                                  padding: const EdgeInsets.only(right: 12),
-                                  child: CategoryPill(
-                                    label: '${_emojiFor(cat)} $cat',
-                                    isActive: _selectedCategory == cat,
-                                    onTap: () => _selectCategory(cat),
-                                  ),
-                                ),
-                              const SizedBox(width: 20),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-
-                const SliverToBoxAdapter(child: SizedBox(height: 12)),
-
-                // ===== TITRE DE SECTION AVEC INFO BADGES =====
-                SliverToBoxAdapter(
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 20, vertical: 12),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          _selectedCategory.isEmpty
-                              ? 'Menu'
-                              : _selectedCategory,
-                          style: const TextStyle(
-                            fontSize: 24,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white,
-                            shadows: [
-                              Shadow(
-                                  offset: Offset(0, 1),
-                                  blurRadius: 2,
-                                  color: Colors.black26)
-                            ],
-                          ),
-                        ),
-                        GestureDetector(
-                          onTap: () {
-                            showModalBottomSheet(
-                              context: context,
-                              backgroundColor: Colors.transparent,
-                              builder: (_) => const BadgesLegendWidget(),
-                            );
-                          },
-                          child: Container(
-                            padding: const EdgeInsets.all(8),
-                            decoration: BoxDecoration(
-                              color: Colors.white.withValues(alpha: 0.2),
-                              borderRadius: BorderRadius.circular(20),
-                            ),
-                            child: const Icon(
-                              Icons.info_outline,
-                              size: 20,
-                              color: Colors.white,
+                                const SizedBox(width: 20),
+                              ],
                             ),
                           ),
                         ),
-                      ],
+                      ),
                     ),
                   ),
-                ),
-                // ===== ITEMS DU MENU =====
-                (() {
-                  if (_isLoading) {
-                    return const SliverToBoxAdapter(
-                      child: Center(
-                        child: Padding(
-                          padding: EdgeInsets.all(40),
-                          child: CircularProgressIndicator(
-                            color: AppColors.accent,
-                          ),
-                        ),
-                      ),
-                    );
-                  } else {
-                    final currentItems = _selectedCategory.isEmpty
-                        ? _menuData.values.expand((v) => v).toList()
-                        : (_menuData[_selectedCategory] ??
-                            const <Map<String, dynamic>>[]);
-                    return SliverPadding(
-                      padding: const EdgeInsets.symmetric(horizontal: 20)
-                          .copyWith(bottom: 96),
-                      sliver: SliverList(
-                        delegate: SliverChildBuilderDelegate(
-                          (context, index) {
-                            final item = currentItems[index];
 
-                            // make sure MenuItem gets both 'image' and 'imageUrl'
-                            final adapted = {
-                              ...item,
-                              'image': (item['imageUrl'] ?? item['image'])
-                                      as String? ??
-                                  '',
-                              'imageUrl': (item['imageUrl'] ?? item['image'])
-                                      as String? ??
-                                  '',
-                            };
+                  const SliverToBoxAdapter(child: SizedBox(height: 12)),
 
-                            final nameKey = (item['name'] ?? '') as String;
-
-                            return Padding(
-                              padding: const EdgeInsets.only(bottom: 16),
-                              child: MenuItem(
-                                pizza: adapted,
-                                quantity: itemQuantities[nameKey] ?? 0,
-                                onAddToCart: addToCart,
-                                onSetQuantity: setItemQuantity, // ← NOUVEAU
-                                onIncreaseQuantity: increaseQuantity,
-                                onDecreaseQuantity: decreaseQuantity,
-                                currencySymbol: _symbolFor(_restaurantCurrency),
-                              ),
-                            );
-                          },
-                          childCount: currentItems.length,
-                        ),
-                      ),
-                    );
-                  }
-                })(),
-
-                if (!_isAdminPreview)
+                  // ===== TITRE DE SECTION AVEC INFO BADGES =====
                   SliverToBoxAdapter(
-                    child: Container(
-                      padding: const EdgeInsets.all(16),
-                      child: Center(
-                        child: Text(
-                          'Powered by SmartMenu',
-                          style: TextStyle(
-                            fontSize: 10,
-                            color: Colors.white..withValues(alpha: 0.65),
-                            fontWeight: FontWeight.w400,
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 20, vertical: 12),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            _selectedCategory.isEmpty
+                                ? 'Menu'
+                                : _selectedCategory,
+                            style: Theme.of(context)
+                                .textTheme
+                                .titleLarge
+                                ?.copyWith(
+                                  fontWeight: FontWeight.w800,
+                                  letterSpacing: 0.1,
+                                  color:
+                                      Theme.of(context).colorScheme.onSurface,
+                                ),
+                          ),
+                          GestureDetector(
+                            onTap: () {
+                              showModalBottomSheet(
+                                context: context,
+                                backgroundColor: Colors.transparent,
+                                builder: (_) => const BadgesLegendWidget(),
+                              );
+                            },
+                            child: Container(
+                              padding: const EdgeInsets.all(8),
+                              decoration: BoxDecoration(
+                                color: Colors.white.withValues(alpha: 0.2),
+                                borderRadius: BorderRadius.circular(20),
+                              ),
+                              child: const Icon(
+                                Icons.info_outline,
+                                size: 20,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  // ===== ITEMS DU MENU =====
+                  (() {
+                    if (_isLoading) {
+                      return const SliverToBoxAdapter(
+                        child: Center(
+                          child: Padding(
+                            padding: EdgeInsets.all(40),
+                            child: CircularProgressIndicator(
+                              color: AppColors.accent,
+                            ),
+                          ),
+                        ),
+                      );
+                    } else {
+                      final currentItems = _selectedCategory.isEmpty
+                          ? _menuData.values.expand((v) => v).toList()
+                          : (_menuData[_selectedCategory] ??
+                              const <Map<String, dynamic>>[]);
+                      return SliverPadding(
+                        padding: const EdgeInsets.symmetric(horizontal: 20)
+                            .copyWith(bottom: 96),
+                        sliver: SliverList(
+                          delegate: SliverChildBuilderDelegate(
+                            (context, index) {
+                              final item = currentItems[index];
+
+                              // make sure MenuItem gets both 'image' and 'imageUrl'
+                              final adapted = {
+                                ...item,
+                                'image': (item['imageUrl'] ?? item['image'])
+                                        as String? ??
+                                    '',
+                                'imageUrl': (item['imageUrl'] ?? item['image'])
+                                        as String? ??
+                                    '',
+                              };
+
+                              final nameKey = (item['name'] ?? '') as String;
+
+                              return Padding(
+                                padding: const EdgeInsets.only(bottom: 16),
+                                child: MenuItem(
+                                  pizza: adapted,
+                                  quantity: itemQuantities[nameKey] ?? 0,
+                                  onAddToCart: addToCart,
+                                  onSetQuantity: setItemQuantity, // ← NOUVEAU
+                                  onIncreaseQuantity: increaseQuantity,
+                                  onDecreaseQuantity: decreaseQuantity,
+                                ),
+                              );
+                            },
+                            childCount: currentItems.length,
+                          ),
+                        ),
+                      );
+                    }
+                  })(),
+
+                  if (!_isAdminPreview)
+                    SliverToBoxAdapter(
+                      child: Container(
+                        padding: const EdgeInsets.all(16),
+                        child: Center(
+                          child: Text(
+                            'Powered by SmartMenu',
+                            style: TextStyle(
+                              fontSize: 10,
+                              color: Colors.white..withValues(alpha: 0.65),
+                              fontWeight: FontWeight.w400,
+                            ),
                           ),
                         ),
                       ),
                     ),
+
+                  const SliverToBoxAdapter(
+                    child: SizedBox(height: 96), // Espace pour le FAB
                   ),
-
-                const SliverToBoxAdapter(
-                  child: SizedBox(height: 96), // Espace pour le FAB
-                ),
-              ],
+                ],
+              ),
             ),
           ),
-        ),
 
-        // ===== PANIER FLOTTANT =====
-        Positioned(
-          right: 16,
-          bottom: 16 + MediaQuery.viewPaddingOf(context).bottom,
-          child: IgnorePointer(
-            ignoring: _cartItemCount == 0,
-            child: CartFloatingWidget(
-              cartItemCount: _cartItemCount,
+          // ===== PANIER FLOTTANT =====
+          Positioned(
+            right: 16,
+            bottom: 16 + MediaQuery.viewPaddingOf(context).bottom,
+            child: IgnorePointer(
+              ignoring: _cartItemCount == 0,
+              child: CartFloatingWidget(
+                cartItemCount: _cartItemCount,
+                cartTotal: _cartTotal,
+                onViewOrder: _showOrderReview,
+              ),
+            ),
+          ),
+
+          // Modal de révision de commande
+          if (_showOrderModal)
+            OrderReviewModal(
+              itemQuantities: itemQuantities,
+              menuData: _menuData,
               cartTotal: _cartTotal,
-              onViewOrder: _showOrderReview,
-            ),
-          ),
-        ),
-
-        // Modal de révision de commande
-        if (_showOrderModal)
-          OrderReviewModal(
-            itemQuantities: itemQuantities,
-            menuData: _menuData,
-            cartTotal: _cartTotal,
-            onClose: _closeOrderReview,
-            onIncreaseQuantity: (itemName) {
-              setState(() {
-                itemQuantities[itemName] = itemQuantities[itemName]! + 1;
-                _cartItemCount++;
-                _cartTotal += _getItemPrice(itemName);
-              });
-            },
-            onDecreaseQuantity: (itemName) {
-              setState(() {
-                if (itemQuantities[itemName]! > 1) {
-                  itemQuantities[itemName] = itemQuantities[itemName]! - 1;
-                  _cartItemCount--;
-                  _cartTotal -= _getItemPrice(itemName);
-                } else {
+              onClose: _closeOrderReview,
+              onIncreaseQuantity: (itemName) {
+                setState(() {
+                  itemQuantities[itemName] = itemQuantities[itemName]! + 1;
+                  _cartItemCount++;
+                  _cartTotal += _getItemPrice(itemName);
+                });
+              },
+              onDecreaseQuantity: (itemName) {
+                setState(() {
+                  if (itemQuantities[itemName]! > 1) {
+                    itemQuantities[itemName] = itemQuantities[itemName]! - 1;
+                    _cartItemCount--;
+                    _cartTotal -= _getItemPrice(itemName);
+                  } else {
+                    _cartItemCount -= itemQuantities[itemName]!;
+                    _cartTotal -=
+                        _getItemPrice(itemName) * itemQuantities[itemName]!;
+                    itemQuantities.remove(itemName);
+                    if (itemQuantities.isEmpty) {
+                      _closeOrderReview();
+                    }
+                  }
+                });
+              },
+              onRemoveItem: (itemName) {
+                setState(() {
                   _cartItemCount -= itemQuantities[itemName]!;
                   _cartTotal -=
                       _getItemPrice(itemName) * itemQuantities[itemName]!;
@@ -765,23 +789,12 @@ class SimpleMenuScreenState extends State<MenuScreen> {
                   if (itemQuantities.isEmpty) {
                     _closeOrderReview();
                   }
-                }
-              });
-            },
-            onRemoveItem: (itemName) {
-              setState(() {
-                _cartItemCount -= itemQuantities[itemName]!;
-                _cartTotal -=
-                    _getItemPrice(itemName) * itemQuantities[itemName]!;
-                itemQuantities.remove(itemName);
-                if (itemQuantities.isEmpty) {
-                  _closeOrderReview();
-                }
-              });
-            },
-            onConfirmOrder: _confirmOrder,
-          ),
-      ],
+                });
+              },
+              onConfirmOrder: _confirmOrder,
+            ),
+        ],
+      ),
     );
   }
 }
