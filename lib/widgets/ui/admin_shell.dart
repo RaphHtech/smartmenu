@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:smartmenu_app/screens/admin/admin_branding_screen.dart';
+import 'package:smartmenu_app/screens/admin/admin_orders_screen.dart';
 import '../../screens/admin/admin_dashboard_overview_screen.dart';
 import '../../core/design/admin_tokens.dart';
 import '../../core/design/admin_typography.dart';
@@ -72,6 +73,13 @@ class _AdminShellState extends State<AdminShell> {
       icon: Icons.restaurant_menu_outlined,
       activeIcon: Icons.restaurant_menu,
       label: 'Menu',
+    ),
+    const AdminNavItem(
+      route: '/orders',
+      icon: Icons.receipt_outlined,
+      activeIcon: Icons.receipt,
+      label: 'Commandes',
+      showBadge: true,
     ),
     const AdminNavItem(
       route: '/media',
@@ -265,6 +273,24 @@ class _AdminShellState extends State<AdminShell> {
                             isActive ? FontWeight.w600 : FontWeight.w400,
                       ),
                     ),
+                    const Spacer(),
+
+                    // Badge pour les commandes
+                    if (item.showBadge && item.route == '/orders')
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 6, vertical: 2),
+                        decoration: BoxDecoration(
+                          color: AdminTokens.neutral100,
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: Text(
+                          '0',
+                          style: AdminTypography.labelSmall.copyWith(
+                            color: AdminTokens.neutral500,
+                          ),
+                        ),
+                      ),
                   ],
                 ),
               ),
@@ -497,6 +523,9 @@ class _AdminShellState extends State<AdminShell> {
       case '/menu':
         screen = AdminDashboardScreen(restaurantId: rid);
         break;
+      case '/orders':
+        screen = AdminOrdersScreen(restaurantId: rid);
+        break;
       case '/media':
         screen = AdminMediaScreen(restaurantId: rid);
         break;
@@ -534,11 +563,13 @@ class AdminNavItem {
   final IconData icon;
   final IconData activeIcon;
   final String label;
+  final bool showBadge; // Ajouter cette ligne
 
   const AdminNavItem({
     required this.route,
     required this.icon,
     required this.activeIcon,
     required this.label,
+    this.showBadge = false, // Ajouter cette ligne
   });
 }

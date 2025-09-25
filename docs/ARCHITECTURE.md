@@ -277,6 +277,64 @@ position = (previousPosition + nextPosition) / 2
 - Chunking : batches limitées à 500 opérations
 - Dirty tracking : suivi précis des modifications
 
+## Système de Commandes
+
+### Architecture Multi-Canal
+
+SmartMenu implémente une approche hybride inspirée des grandes plateformes :
+
+```
+Client Commande → Firestore → Cloud Function → Slack
+                      ↓
+                 Admin UI ← Notifications (Son + Bureau)
+```
+
+### Modèles de Données Orders
+
+**Order** - Commande restaurant complète
+
+```dart
+class Order {
+  final String oid;           // Hash idempotent
+  final String rid;           // Restaurant ID
+  final String table;         // "table5", "table12"
+  final List<OrderItem> items;
+  final double total;
+  final String currency;      // "ILS", "EUR", "USD"
+  final OrderStatus status;   // received|preparing|ready|served
+  final DateTime createdAt;
+  final Map<String, dynamic> channel; // État notifications
+}
+```
+
+### Patterns de Notification
+
+**Notifications Temps Réel**
+
+- Son instantané (AudioElement) pour alertes immédiates
+- Notifications navigateur avec détails commande
+- Badge dynamique sidebar avec compteur live
+
+**Canal de Secours**
+
+- Webhook Slack pour notification mobile restaurateur
+- Marquage état d'envoi dans Firestore
+- Rate-limiting naturel (onCreate unique par commande)
+
+### Sécurité et Validation
+
+**Rules Firestore Orders**
+
+- Création publique strictement validée (tous champs requis)
+- Lecture/modification admin authentifié uniquement
+- Validation types et contraintes business
+
+**Idempotence Robuste**
+
+- Hash basé sur : `rid|table|timeslot30s|itemCount|totalRounded`
+- Évite doublons même en cas de double-clic rapide
+- Compatible avec retry automatique côté client
+
 ## Patterns de Performance
 
 ### Optimisations Client

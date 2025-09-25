@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:smartmenu_app/services/analytics_service.dart';
+import 'package:smartmenu_app/services/order_service.dart';
 import 'package:smartmenu_app/services/table_service.dart';
 import 'package:smartmenu_app/widgets/badges_legend_widget.dart';
 import '../../core/constants/colors.dart';
@@ -352,10 +353,37 @@ class SimpleMenuScreenState extends State<MenuScreen> {
     });
   }
 
-  void _confirmOrder() {
-    String orderSummary =
-        CartService.buildOrderSummary(itemQuantities, _menuData);
-    _showCustomNotification(orderSummary, persistent: true);
+  void _confirmOrder() async {
+    try {
+      // Soumettre la commande via OrderService
+      final orderId = await OrderService.submitOrder(
+        restaurantId: widget.restaurantId,
+        itemQuantities: itemQuantities,
+        menuData: _menuData,
+        currency: _restaurantCurrency,
+      );
+
+      // Vider le panier
+      setState(() {
+        itemQuantities.clear();
+        _cartItemCount = 0;
+        _cartTotal = 0.0;
+        _showOrderModal = false;
+      });
+
+      // Notification de succès
+      _showCustomNotification(
+        '✅ Commande #${orderId.substring(0, 8)} créée !\n'
+        'Le restaurant a été notifié.',
+        persistent: true,
+      );
+    } catch (e) {
+      // Gestion d'erreur
+      _showCustomNotification(
+        '❌ Erreur lors de la commande: $e',
+        persistent: true,
+      );
+    }
   }
 
   double _getItemPrice(String itemName) {

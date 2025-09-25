@@ -87,6 +87,121 @@ class QRService {
 }
 ```
 
+### Système de Commandes
+
+#### Architecture MVP
+
+Le système implémente l'expérience complète des grandes plateformes (Uber Eats, DoorDash) :
+
+- Notifications temps réel (son + navigateur)
+- Canal de secours automatique (Slack webhook)
+- Interface admin professionnelle avec onglets de statut
+
+#### Dépendances
+
+```yaml
+dependencies:
+  crypto: ^3.0.3 # Hash idempotent pour anti-doublon
+  # Notifications navigateur intégrées Flutter Web
+```
+
+#### Structure Firestore Orders
+
+```
+restaurants/{rid}/orders/{oid}
+├── oid: string (hash déterministe)
+├── rid: string
+├── table: string ("table1", "table12")
+├── items: array<{name, price, quantity}>
+├── total: number
+├── currency: string ("ILS", "EUR", "USD")
+├── status: string ("received"|"preparing"|"ready"|"served")
+├── created_at: timestamp (serverTimestamp)
+└── channel: map
+    ├── source: "web"
+    └── slack: {sent: boolean, at: timestamp}
+```
+
+#### Services Orders
+
+`OrderService` - Service principal :
+
+```dart
+class OrderService {
+  // Idempotence via hash robuste (30s timeslot)
+  static String generateOrderId(String rid, String table,
+                                Map<String, int> items, double total);
+
+  // Soumission avec validation stricte
+  static Future<String> submitOrder({
+    required String restaurantId,
+    required Map<String, int> itemQuantities,
+    required Map<String, List<Map<String, dynamic>>> menuData,
+    required String currency,
+  });
+
+  // Streams temps réel par statut
+  static Stream<List<Order>> getOrdersByStatusStream(
+    String restaurantId,
+    OrderStatus status
+  );
+}
+```
+
+#### Cloud Functions Integration
+
+**Configuration Slack :**
+
+```bash
+firebase functions:secrets:set SLACK_WEBHOOK_URL
+```
+
+**Pattern Function v2 :**
+
+```javascript
+const { onDocumentCreated } = require("firebase-functions/v2/firestore");
+
+exports.onNewOrderNotifySlack = onDocumentCreated(
+  "restaurants/{rid}/orders/{oid}",
+  async (event) => {
+    // Notification Slack automatique + marquage état
+  }
+);
+```
+
+#### Notifications Temps Réel
+
+**Notifications navigateur (admin) :**
+
+```dart
+// Son d'alerte
+html.AudioElement('/assets/sounds/new_order.mp3')..play();
+
+// Notification bureau
+if (html.Notification.permission == 'granted') {
+  html.Notification('Nouvelle commande',
+    body: 'Table 5 • 3 items • 45 ₪');
+}
+```
+
+### Modèles de Données Orders
+
+**Order** - Commande restaurant complète
+
+```dart
+class Order {
+  final String oid;           // Hash idempotent
+  final String rid;           // Restaurant ID
+  final String table;         // "table5", "table12"
+  final List<OrderItem> items;
+  final double total;
+  final String currency;      // "ILS", "EUR", "USD"
+  final OrderStatus status;   // received|preparing|ready|served
+  final DateTime createdAt;
+  final Map<String, dynamic> channel; // État notifications
+}
+```
+
 ### Outils Requis
 
 - **Flutter SDK** 3.16+ avec support web activé

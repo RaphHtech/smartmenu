@@ -85,6 +85,16 @@ flutter run -d chrome
 - Support multi-devises (₪, €, $)
 - Mode offline partiel
 
+### Système de Commandes Professionnel ✅
+
+- **Commandes temps réel** avec panier interactif et modal de révision
+- **Notifications multi-canal** : son + navigateur + Slack automatique
+- **Interface admin complète** : onglets par statut (Reçues → Préparation → Prêtes → Servies)
+- **Idempotence robuste** : anti-doublon via hash déterministe
+- **Cloud Functions v2** : notifications automatiques restaurant
+- **Sécurité Firestore** : rules strictes, validation complète
+- **Architecture scalable** : prêt pour Web Push et intégrations POS
+
 ### Admin Dashboard Premium
 
 - Interface SaaS inspirée Stripe/Notion/Linear
@@ -110,25 +120,28 @@ flutter run -d chrome
 - **QR** : mobile_scanner v4.0.1 (scan desktop) + qr_flutter (génération)
 - **Design** : Material 3 + Design System custom AdminTokens
 - **Tests** : Unit tests avec mocks Firestore
+- **Cloud Functions** : Firebase Functions v2 (notifications Slack)
+- **Notifications** : Notifications API + AudioElement (Flutter Web)
 
 ## État du projet
 
-**Version** : 2.9.1 — Scanner QR fonctionnel + fixes techniques
+**Version** : 3.0.0 - Système de commandes MVP complet
 
-### Phase actuelle : QR Code stable ✅
+### Phase actuelle : Orders MVP stable ✅
 
 - ✅ Scanner QR fonctionnel (desktop HTTPS, mobile via saisie manuelle)
 - ✅ Génération QR codes avec téléchargement PNG
 - ✅ URLs propres avec système de slugs automatiques
-- ✅ Résolution slug → restaurant ID avec fallbacks
-- ✅ Interface admin QR complète
-- ✅ Support multi-canaux de partage
-- ✅ Fix mobile_scanner v4.0.1 compatible Flutter Web
+- ✅ **Système de commandes complet** avec transmission automatique
+- ✅ Interface admin orders avec onglets de statut
+- ✅ Notifications multi-canal (son + navigateur + Slack)
+- ✅ Idempotence anti-doublon robuste
+- ✅ Cloud Functions pour notifications automatiques
 
 ### Prochaines phases
 
 - **Internationalisation RTL** (hébreu/anglais/français)
-- **Système de commandes** avec transmission automatique
+- **Web Push notifications** (PWA installée, alertes onglet fermé)
 - **Gestion d'équipe** (invitations, rôles manager/staff)
 - **Analytics avancées** (tendances, plats populaires)
 
