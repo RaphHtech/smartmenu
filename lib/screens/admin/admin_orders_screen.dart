@@ -9,6 +9,7 @@ import '../../core/design/admin_tokens.dart';
 import '../../core/design/admin_typography.dart';
 import 'dart:html' as html;
 import 'package:flutter/foundation.dart' show kIsWeb;
+import '../../services/server_call_service.dart';
 
 class AdminOrdersScreen extends StatefulWidget {
   final String restaurantId;
@@ -117,6 +118,218 @@ class _AdminOrdersScreenState extends State<AdminOrdersScreen>
     }
   }
 
+  Widget _buildServerCallsBanner() {
+    return StreamBuilder<List<ServerCall>>(
+      stream: ServerCallService.getServerCalls(widget.restaurantId),
+      builder: (context, snapshot) {
+        if (!snapshot.hasData) return const SizedBox.shrink();
+
+        final openCalls = snapshot.data!
+            .where((call) => call.status == 'open' || call.status == 'acked')
+            .toList();
+
+        if (openCalls.isEmpty) return const SizedBox.shrink();
+
+        // Jouer le son pour les nouveaux appels
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          _handleNewServerCalls(openCalls);
+        });
+
+        return Container(
+          margin: const EdgeInsets.only(bottom: 16),
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: Colors.orange.shade50,
+            borderRadius: BorderRadius.circular(8),
+            border: Border.all(color: Colors.orange.shade200),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Icon(Icons.support_agent,
+                      color: Colors.orange.shade700, size: 20),
+                  const SizedBox(width: 8),
+                  Text(
+                    'Appels serveur (${openCalls.length})',
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: Colors.orange.shade700,
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 12),
+              ...openCalls.map((call) => _buildServerCallCard(call)),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+// Dans admin_orders_screen.dart, remplacer la méthode _buildServerCallCard par :
+
+  Widget _buildServerCallCard(ServerCall call) {
+    final elapsed = DateTime.now().difference(call.createdAt);
+    final timeAgo = elapsed.inMinutes > 0
+        ? 'il y a ${elapsed.inMinutes}min'
+        : 'à l\'instant';
+
+    return Container(
+      margin: EdgeInsets.only(bottom: 8),
+      padding: EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(6),
+        border: Border.all(
+          color: call.status == 'open' ? Colors.orange : Colors.blue.shade200,
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Ligne infos avec point de statut
+          Row(
+            children: [
+              Container(
+                width: 8,
+                height: 8,
+                decoration: BoxDecoration(
+                  color: call.status == 'open' ? Colors.orange : Colors.blue,
+                  shape: BoxShape.circle,
+                ),
+              ),
+              SizedBox(width: 12),
+              Expanded(
+                child: Text(
+                  '${call.table} • $timeAgo',
+                  style: TextStyle(
+                    fontWeight: FontWeight.w500,
+                    fontSize: 14,
+                  ),
+                ),
+              ),
+            ],
+          ),
+
+          SizedBox(height: 12),
+
+          // Boutons d'action sur mobile - stack vertical sur petits écrans
+          LayoutBuilder(
+            builder: (context, constraints) {
+              if (constraints.maxWidth < 400) {
+                // Mobile : boutons empilés
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    if (call.status == 'open')
+                      Padding(
+                        padding: EdgeInsets.only(bottom: 8),
+                        child: OutlinedButton(
+                          onPressed: () => _acknowledgeServerCall(call.id),
+                          child: Text('Pris en compte'),
+                        ),
+                      ),
+                    ElevatedButton(
+                      onPressed: () => _resolveServerCall(call.id),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.green,
+                      ),
+                      child:
+                          Text('Résolu', style: TextStyle(color: Colors.white)),
+                    ),
+                  ],
+                );
+              } else {
+                // Desktop : boutons côte à côte
+                return Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    if (call.status == 'open')
+                      TextButton(
+                        onPressed: () => _acknowledgeServerCall(call.id),
+                        child: Text('Pris en compte',
+                            style: TextStyle(fontSize: 12)),
+                      ),
+                    SizedBox(width: 8),
+                    ElevatedButton(
+                      onPressed: () => _resolveServerCall(call.id),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.green,
+                        padding:
+                            EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                      ),
+                      child: Text('Résolu',
+                          style: TextStyle(fontSize: 12, color: Colors.white)),
+                    ),
+                  ],
+                );
+              }
+            },
+          ),
+        ],
+      ),
+    );
+  } // 4. AJOUTER les méthodes d'action
+
+  Future<void> _acknowledgeServerCall(String callId) async {
+    try {
+      await ServerCallService.acknowledgeCall(widget.restaurantId, callId);
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Erreur: $e'), backgroundColor: Colors.red),
+      );
+    }
+  }
+
+  Future<void> _resolveServerCall(String callId) async {
+    try {
+      await ServerCallService.closeCall(widget.restaurantId, callId);
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Erreur: $e'), backgroundColor: Colors.red),
+      );
+    }
+  }
+
+// 5. AJOUTER la gestion des nouveaux appels (son)
+  Set<String> _seenServerCalls = {};
+
+  void _handleNewServerCalls(List<ServerCall> calls) {
+    if (!kIsWeb) return;
+
+    for (final call in calls) {
+      if (call.status == 'open' && !_seenServerCalls.contains(call.id)) {
+        _seenServerCalls.add(call.id);
+        _playServerCallSound();
+        _notifyServerCall(call.table);
+        break; // Un seul son même pour plusieurs appels
+      }
+    }
+  }
+
+  void _playServerCallSound() {
+    try {
+      // Son différent des commandes
+      html.AudioElement('assets/sounds/server_call.mp3')..play();
+    } catch (e) {
+      debugPrint('Erreur son serveur: $e');
+    }
+  }
+
+  void _notifyServerCall(String table) {
+    if (html.Notification.supported &&
+        html.Notification.permission == 'granted') {
+      html.Notification(
+        'Appel serveur - SmartMenu',
+        body: '$table demande de l\'assistance',
+        icon: '/favicon.png',
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final isCompact = MediaQuery.of(context).size.width < 420;
@@ -128,8 +341,8 @@ class _AdminOrdersScreenState extends State<AdminOrdersScreen>
       breadcrumbs: const ['Dashboard', 'Commandes'],
       child: Column(
         children: [
+          _buildServerCallsBanner(),
           // Onglets
-
           Container(
             decoration: const BoxDecoration(
               color: Colors.white,

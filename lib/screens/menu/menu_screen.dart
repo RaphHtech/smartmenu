@@ -14,6 +14,7 @@ import '../../services/cart_service.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'dart:html' as html;
 import '../../widgets/premium_app_header_widget.dart';
+import '../../services/server_call_service.dart';
 
 List<String> applyOrderAndHide(
   Set<String> allCats,
@@ -419,6 +420,7 @@ class SimpleMenuScreenState extends State<MenuScreen> {
   @override
   Widget build(BuildContext context) {
     return Stack(
+      clipBehavior: Clip.none,
       children: [
         // 1) Fond diagonal (135°)
         const Positioned.fill(
@@ -447,20 +449,42 @@ class SimpleMenuScreenState extends State<MenuScreen> {
                 // ===== HEADER (en dur) =====
                 PremiumAppHeaderWidget(
                   tagline: _tagline,
-                  onServerCall: () {
-                    _showCustomNotification(
-                      'Appel du serveur...\nUn membre de notre équipe arrive à votre table !',
-                    );
-                  },
-                  restaurantName:
-                      _restaurantName, // Pas de .toUpperCase() (fait dans le widget)
+                  onServerCall: _isLoading
+                      ? null
+                      : () {
+                          final tableId = TableService.getTableId();
+                          if (tableId == null) {
+                            _showCustomNotification('Table non identifiée');
+                            return;
+                          }
+
+                          setState(() => _isLoading = true);
+
+                          ServerCallService.callServer(
+                            rid: widget.restaurantId,
+                            table: 'table$tableId',
+                          ).then((_) {
+                            if (mounted) {
+                              _showCustomNotification(
+                                'Serveur appelé !\nUn membre de notre équipe arrive.',
+                                persistent: true,
+                              );
+                            }
+                          }).catchError((e) {
+                            if (mounted) {
+                              _showCustomNotification('Erreur: $e');
+                            }
+                          }).whenComplete(() {
+                            if (mounted) setState(() => _isLoading = false);
+                          });
+                        },
+                  restaurantName: _restaurantName,
                   showAdminReturn: _isAdminPreview,
                   onAdminReturn: _isAdminPreview
                       ? () => _handleAdminReturn(context)
                       : null,
                   logoUrl: _logoUrl,
                 ),
-
                 // ===== SECTION PROMO (glassmorphism) =====
                 SliverToBoxAdapter(
                   child: AnimatedContainer(
@@ -700,10 +724,17 @@ class SimpleMenuScreenState extends State<MenuScreen> {
         ),
 
         // ===== PANIER FLOTTANT =====
-        CartFloatingWidget(
-          cartItemCount: _cartItemCount,
-          cartTotal: _cartTotal,
-          onViewOrder: _showOrderReview,
+        Positioned(
+          right: 16,
+          bottom: 16 + MediaQuery.viewPaddingOf(context).bottom,
+          child: IgnorePointer(
+            ignoring: _cartItemCount == 0,
+            child: CartFloatingWidget(
+              cartItemCount: _cartItemCount,
+              cartTotal: _cartTotal,
+              onViewOrder: _showOrderReview,
+            ),
+          ),
         ),
 
         // Modal de révision de commande

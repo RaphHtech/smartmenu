@@ -2,7 +2,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 
 class PremiumAppHeaderWidget extends StatelessWidget {
-  final VoidCallback onServerCall;
+  final VoidCallback? onServerCall;
   final String restaurantName;
   final String? logoUrl;
   final String? tagline;
@@ -11,7 +11,7 @@ class PremiumAppHeaderWidget extends StatelessWidget {
 
   const PremiumAppHeaderWidget({
     super.key,
-    required this.onServerCall,
+    this.onServerCall,
     required this.restaurantName,
     this.tagline,
     this.showAdminReturn = false,
