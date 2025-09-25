@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import '../../core/constants/colors.dart';
+import '../../state/currency_scope.dart';
+import '../../services/currency_service.dart';
 
 class OrderReviewModal extends StatelessWidget {
   final Map<String, int> itemQuantities;
   final Map<String, dynamic> menuData;
   final double cartTotal;
+  final String currency; // ← AJOUTER
   final VoidCallback onClose;
   final Function(String itemName) onIncreaseQuantity;
   final Function(String itemName) onDecreaseQuantity;
@@ -16,6 +19,7 @@ class OrderReviewModal extends StatelessWidget {
     required this.itemQuantities,
     required this.menuData,
     required this.cartTotal,
+    required this.currency,
     required this.onClose,
     required this.onIncreaseQuantity,
     required this.onDecreaseQuantity,
@@ -77,9 +81,10 @@ class OrderReviewModal extends StatelessWidget {
                         for (var category in menuData.values) {
                           for (var item in category) {
                             if (item['name'] == entry.key) {
-                              final priceText =
-                                  item['price'].toString().replaceAll('₪', '');
-                              itemPrice = double.tryParse(priceText) ?? 0.0;
+                              itemPrice = (item['price'] is num)
+                                  ? (item['price'] as num).toDouble()
+                                  : double.tryParse(item['price'].toString()) ??
+                                      0.0;
                               break;
                             }
                           }
@@ -194,7 +199,8 @@ class OrderReviewModal extends StatelessWidget {
                             final priceText = Directionality(
                               textDirection: TextDirection.ltr, // pour '₪'
                               child: Text(
-                                '₪${(itemPrice * entry.value).toStringAsFixed(2)}',
+                                CurrencyService.format(
+                                    itemPrice * entry.value, currency),
                                 style: const TextStyle(
                                   color: AppColors.accent,
                                   fontWeight: FontWeight.w800,
@@ -270,7 +276,7 @@ class OrderReviewModal extends StatelessWidget {
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Text(
-                    'TOTAL: ₪${cartTotal.toStringAsFixed(2)}',
+                    'TOTAL: ${CurrencyService.format(cartTotal, currency)}',
                     style: const TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.w800,

@@ -46,11 +46,11 @@ class CartService {
     for (var entry in itemQuantities.entries) {
       double itemPrice = getItemPrice(entry.key, menuData);
       orderSummary +=
-          '• ${entry.key} x${entry.value} - ₪${(itemPrice * entry.value).toStringAsFixed(2)}\n';
+          '• ${entry.key} x${entry.value} - ${(itemPrice * entry.value).toStringAsFixed(2)}\n';
     }
 
     double total = calculateTotal(itemQuantities, menuData);
-    orderSummary += '\nTOTAL: ₪${total.toStringAsFixed(2)}\n\n';
+    orderSummary += '\nTOTAL: ${total.toStringAsFixed(2)}\n\n';
     orderSummary += 'Votre commande a été transmise à la cuisine !\n';
     orderSummary += 'Temps d\'attente estimé: 15-20 minutes';
 

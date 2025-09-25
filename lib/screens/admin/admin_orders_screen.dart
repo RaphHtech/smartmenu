@@ -178,8 +178,8 @@ class _AdminOrdersScreenState extends State<AdminOrdersScreen>
         : 'à l\'instant';
 
     return Container(
-      margin: EdgeInsets.only(bottom: 8),
-      padding: EdgeInsets.all(12),
+      margin: const EdgeInsets.only(bottom: 8),
+      padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(6),
@@ -201,11 +201,11 @@ class _AdminOrdersScreenState extends State<AdminOrdersScreen>
                   shape: BoxShape.circle,
                 ),
               ),
-              SizedBox(width: 12),
+              const SizedBox(width: 12),
               Expanded(
                 child: Text(
                   '${call.table} • $timeAgo',
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontWeight: FontWeight.w500,
                     fontSize: 14,
                   ),
@@ -214,7 +214,7 @@ class _AdminOrdersScreenState extends State<AdminOrdersScreen>
             ],
           ),
 
-          SizedBox(height: 12),
+          const SizedBox(height: 12),
 
           // Boutons d'action sur mobile - stack vertical sur petits écrans
           LayoutBuilder(
@@ -226,10 +226,10 @@ class _AdminOrdersScreenState extends State<AdminOrdersScreen>
                   children: [
                     if (call.status == 'open')
                       Padding(
-                        padding: EdgeInsets.only(bottom: 8),
+                        padding: const EdgeInsets.only(bottom: 8),
                         child: OutlinedButton(
                           onPressed: () => _acknowledgeServerCall(call.id),
-                          child: Text('Pris en compte'),
+                          child: const Text('Pris en compte'),
                         ),
                       ),
                     ElevatedButton(
@@ -237,8 +237,8 @@ class _AdminOrdersScreenState extends State<AdminOrdersScreen>
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.green,
                       ),
-                      child:
-                          Text('Résolu', style: TextStyle(color: Colors.white)),
+                      child: const Text('Résolu',
+                          style: TextStyle(color: Colors.white)),
                     ),
                   ],
                 );
@@ -250,18 +250,18 @@ class _AdminOrdersScreenState extends State<AdminOrdersScreen>
                     if (call.status == 'open')
                       TextButton(
                         onPressed: () => _acknowledgeServerCall(call.id),
-                        child: Text('Pris en compte',
+                        child: const Text('Pris en compte',
                             style: TextStyle(fontSize: 12)),
                       ),
-                    SizedBox(width: 8),
+                    const SizedBox(width: 8),
                     ElevatedButton(
                       onPressed: () => _resolveServerCall(call.id),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.green,
-                        padding:
-                            EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 12, vertical: 6),
                       ),
-                      child: Text('Résolu',
+                      child: const Text('Résolu',
                           style: TextStyle(fontSize: 12, color: Colors.white)),
                     ),
                   ],
@@ -295,7 +295,7 @@ class _AdminOrdersScreenState extends State<AdminOrdersScreen>
   }
 
 // 5. AJOUTER la gestion des nouveaux appels (son)
-  Set<String> _seenServerCalls = {};
+  final Set<String> _seenServerCalls = {};
 
   void _handleNewServerCalls(List<ServerCall> calls) {
     if (!kIsWeb) return;

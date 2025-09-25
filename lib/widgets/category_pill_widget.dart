@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import '../../core/constants/colors.dart';
 
 class CategoryPill extends StatelessWidget {
   final String label;
@@ -15,45 +14,21 @@ class CategoryPill extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Semantics(
-      button: true,
+    return ChoiceChip(
       selected: isActive,
-      label: 'Catégorie $label',
-      child: ConstrainedBox(
-        constraints: const BoxConstraints(minHeight: 44),
-        child: Material(
-          type: MaterialType.transparency,
-          child: InkWell(
-            onTap: onTap,
-            borderRadius: BorderRadius.circular(25),
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-              decoration: BoxDecoration(
-                color: isActive
-                    ? const Color.fromRGBO(255, 255, 255, 0.9)
-                    : const Color.fromRGBO(255, 255, 255, 0.1),
-                border: Border.all(
-                  color: isActive
-                      ? Colors.white
-                      : const Color.fromRGBO(255, 255, 255, 0.3),
-                  width: 2,
-                ),
-                borderRadius: BorderRadius.circular(25),
-              ),
-              child: Text(
-                label,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: TextStyle(
-                  color: isActive ? AppColors.primary : Colors.white,
-                  fontWeight: FontWeight.w600,
-                  fontSize: 15.2,
-                ),
-              ),
-            ),
+      onSelected: (_) => onTap(),
+      label: Text(label, maxLines: 1, overflow: TextOverflow.fade),
+      shape: const StadiumBorder(),
+      selectedColor: Theme.of(context).colorScheme.primaryContainer,
+      backgroundColor: Theme.of(context).colorScheme.surface.withOpacity(0.72),
+      labelStyle: Theme.of(context).textTheme.labelLarge?.copyWith(
+            fontWeight: isActive ? FontWeight.w700 : FontWeight.w600,
+            color: isActive
+                ? Theme.of(context).colorScheme.onPrimaryContainer
+                : Theme.of(context).colorScheme.onSurface.withOpacity(0.9),
           ),
-        ),
-      ),
+      materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
     );
   }
 }

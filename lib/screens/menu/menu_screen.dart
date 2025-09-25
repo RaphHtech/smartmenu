@@ -755,6 +755,7 @@ class SimpleMenuScreenState extends State<MenuScreen> {
               itemQuantities: itemQuantities,
               menuData: _menuData,
               cartTotal: _cartTotal,
+              currency: _restaurantCurrency,
               onClose: _closeOrderReview,
               onIncreaseQuantity: (itemName) {
                 setState(() {

@@ -39,31 +39,36 @@ class PremiumAppHeaderWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
     final isMobile = screenWidth < 768;
-    final showTagline = ((!isMobile) || (isMobile && screenWidth >= 360)) &&
-        (tagline?.isNotEmpty == true);
+    final showTagline = !isMobile && (tagline?.isNotEmpty == true);
+
+    // LARGEURS FIXES pour centrage parfait
+    const double sideWidth = 80.0; // Identique gauche/droite
 
     return SliverAppBar(
       pinned: true,
       toolbarHeight: showTagline ? 72 : (isMobile ? 64 : 80),
       collapsedHeight: showTagline ? 72 : (isMobile ? 64 : 80),
       backgroundColor: Colors.transparent,
-      leadingWidth: isMobile ? 80 : 120,
-      leading: showAdminReturn
-          ? Align(
-              alignment: Alignment.center,
-              child: ConstrainedBox(
-                constraints: const BoxConstraints(
-                    minWidth: 44, minHeight: 36, maxHeight: 36),
-                child: _buildAdminReturnButton(),
-              ),
-            )
-          : const SizedBox.shrink(),
+      automaticallyImplyLeading: false,
+      leadingWidth: sideWidth,
+      leading: Container(
+        width: sideWidth,
+        alignment: Alignment.centerLeft,
+        padding: const EdgeInsets.only(left: 16),
+        child: showAdminReturn
+            ? _buildAdminButton()
+            : _buildServerButton(compact: screenWidth < 360),
+      ),
       centerTitle: true,
       title: _buildRestaurantBranding(showTagline: showTagline),
       actions: [
-        Padding(
-          padding: EdgeInsets.only(right: isMobile ? 12 : 20),
-          child: _buildCallButton(compact: screenWidth < 360),
+        Container(
+          width: sideWidth,
+          alignment: Alignment.centerRight,
+          padding: const EdgeInsets.only(right: 16),
+          child: showAdminReturn
+              ? _buildServerButton(compact: screenWidth < 360)
+              : null, // Vide en mode client normal
         ),
       ],
       flexibleSpace: ClipRect(
@@ -97,60 +102,74 @@ class PremiumAppHeaderWidget extends StatelessWidget {
     );
   }
 
-  Widget _buildAdminReturnButton() {
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        final bool compact = constraints.maxWidth < 76; // seuil mobile étroit
-        return ConstrainedBox(
-          constraints:
-              const BoxConstraints(minWidth: 44, minHeight: 44), // a11y
-          child: Container(
-            decoration: BoxDecoration(
-              color: const Color(0xFF3B82F6),
-              borderRadius: BorderRadius.circular(6),
-              boxShadow: [
-                BoxShadow(
-                  color: const Color(0xFF3B82F6).withValues(alpha: 0.2),
-                  blurRadius: 4,
-                  offset: const Offset(0, 1),
-                ),
-              ],
-            ),
-            child: Material(
-              color: Colors.transparent,
-              child: InkWell(
-                onTap: onAdminReturn,
-                borderRadius: BorderRadius.circular(6),
-                child: Padding(
-                  padding: EdgeInsets.symmetric(
-                    horizontal: compact ? 8 : 12,
-                    vertical: 10,
-                  ),
-                  child: compact
-                      ? const Icon(Icons.arrow_back_ios,
-                          size: 12, color: Colors.white)
-                      : const Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Icon(Icons.arrow_back_ios,
-                                size: 12, color: Colors.white),
-                            SizedBox(width: 4),
-                            Text(
-                              'Admin',
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 12,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                          ],
-                        ),
-                ),
-              ),
-            ),
+// Boutons avec tailles FIXES (pas de surprise)
+  Widget _buildServerButton({bool compact = false}) {
+    return Container(
+      height: 36,
+      width: compact ? 48 : 64,
+      decoration: BoxDecoration(
+        color: const Color(0xFF6366F1),
+        borderRadius: BorderRadius.circular(18),
+        boxShadow: [
+          BoxShadow(
+            color: const Color(0xFF6366F1).withValues(alpha: 0.3),
+            blurRadius: 4,
+            offset: const Offset(0, 2),
           ),
-        );
-      },
+        ],
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: onServerCall,
+          borderRadius: BorderRadius.circular(18),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Icon(Icons.support_agent, size: 16, color: Colors.white),
+              if (!compact) ...[
+                const SizedBox(width: 4),
+                const Text('Serveur',
+                    style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 11,
+                        fontWeight: FontWeight.w600)),
+              ],
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildAdminButton() {
+    return Container(
+      height: 36,
+      width: 64,
+      decoration: BoxDecoration(
+        color: Colors.transparent,
+        border: Border.all(color: Colors.white.withValues(alpha: 0.3)),
+        borderRadius: BorderRadius.circular(18),
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: onAdminReturn,
+          borderRadius: BorderRadius.circular(18),
+          child: const Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(Icons.arrow_back, size: 14, color: Colors.white),
+              SizedBox(width: 2),
+              Text('Admin',
+                  style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 11,
+                      fontWeight: FontWeight.w600)),
+            ],
+          ),
+        ),
+      ),
     );
   }
 
@@ -280,55 +299,5 @@ class PremiumAppHeaderWidget extends StatelessWidget {
       );
     }
     return fallback;
-  }
-
-  Widget _buildCallButton({bool compact = false}) {
-    return Container(
-      decoration: BoxDecoration(
-        color: const Color(0xFF6366F1),
-        borderRadius: BorderRadius.circular(compact ? 16 : 6),
-        boxShadow: [
-          BoxShadow(
-            color: const Color(0xFF6366F1).withValues(alpha: 0.2),
-            blurRadius: 4,
-            offset: const Offset(0, 1),
-          ),
-        ],
-      ),
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          onTap: onServerCall,
-          borderRadius: BorderRadius.circular(compact ? 16 : 6),
-          child: Padding(
-            padding: EdgeInsets.symmetric(
-              horizontal: compact ? 12 : 14,
-              vertical: compact ? 10 : 8,
-            ),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                const Icon(
-                  Icons.support_agent,
-                  size: 14,
-                  color: Colors.white,
-                ),
-                if (!compact) ...[
-                  const SizedBox(width: 4),
-                  const Text(
-                    'Serveur',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 12,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                ],
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
   }
 }
