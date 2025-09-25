@@ -59,6 +59,16 @@ flutter run -d chrome
 
 ## Fonctionnalités principales
 
+### Système d'Appel Serveur ✅
+
+- **Bouton d'appel intégré** dans l'interface client avec gestion d'état
+- **Notifications admin temps réel** : banner avec statuts open/acked/done
+- **Cooldown anti-spam** : 45 secondes entre appels par table
+- **Interface responsive** : actions mobile (empilées) vs desktop (côte à côte)
+- **Sons d'alerte différenciés** : distincts des notifications commandes
+- **Architecture scalable** : collection Firestore avec règles sécurisées
+- **Gestion des états** : "Pris en compte" → "Résolu" avec timestamps
+
 ### Système QR Code Complet ✅
 
 - **Scanner QR intégré** avec mobile_scanner et interface moderne
@@ -127,7 +137,7 @@ flutter run -d chrome
 
 **Version** : 3.0.0 - Système de commandes MVP complet
 
-### Phase actuelle : Orders MVP stable ✅
+### Phase actuelle : Orders MVP + Server Calls stables ✅
 
 - ✅ Scanner QR fonctionnel (desktop HTTPS, mobile via saisie manuelle)
 - ✅ Génération QR codes avec téléchargement PNG
@@ -137,10 +147,11 @@ flutter run -d chrome
 - ✅ Notifications multi-canal (son + navigateur + Slack)
 - ✅ Idempotence anti-doublon robuste
 - ✅ Cloud Functions pour notifications automatiques
+- ✅ **Système d'appel serveur** avec interface admin temps réel
 
 ### Prochaines phases
 
-- **Internationalisation RTL** (hébreu/anglais/français)
+- **Internationalisation RTL** (hébreu/anglais/français) - EN COURS
 - **Web Push notifications** (PWA installée, alertes onglet fermé)
 - **Gestion d'équipe** (invitations, rôles manager/staff)
 - **Analytics avancées** (tendances, plats populaires)

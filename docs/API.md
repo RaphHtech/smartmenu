@@ -191,6 +191,276 @@ tearDown(() {
 });
 ```
 
+## ServerCallService
+
+Service de gestion des appels serveur avec cooldown et notifications temps réel.
+
+### Configuration
+
+**Dépendances requises**
+
+```dart
+import 'package:smartmenu_app/services/server_call_service.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+```
+
+### Méthodes Principales
+
+#### `callServer({required String rid, required String table})`
+
+Crée un appel serveur avec validations anti-spam.
+
+```dart
+static Future callServer({
+  required String rid,
+  required String table,
+})
+```
+
+**Paramètres**
+
+- `rid` : Restaurant ID
+- `table` : Identifiant table format "tableX" (ex: "table5")
+
+**Validations**
+
+- Cooldown 45 secondes par table
+- Vérification absence d'appel ouvert existant
+- Format table validé (`table\d+`)
+
+**Exceptions**
+
+- `'Veuillez attendre 45s entre les appels'` : Cooldown actif
+- `'Un appel serveur est déjà en cours pour votre table'` : Appel existant
+
+**Usage**
+
+```dart
+try {
+  await ServerCallService.callServer(
+    rid: 'resto-123',
+    table: 'table5',
+  );
+  // Notification succès
+} catch (e) {
+  // Afficher erreur à l'utilisateur
+}
+```
+
+#### `getServerCalls(String rid)`
+
+Stream temps réel des appels serveur par ordre chronologique inverse.
+
+```dart
+static Stream<List> getServerCalls(String rid)
+```
+
+**Paramètres**
+
+- `rid` : Restaurant ID
+
+**Retour**
+
+- `Stream<List<ServerCall>>` : Liste triée par created_at DESC, limitée à 50
+
+**Usage**
+
+```dart
+StreamBuilder<List>(
+  stream: ServerCallService.getServerCalls('resto-123'),
+  builder: (context, snapshot) {
+    final calls = snapshot.data ?? [];
+    final openCalls = calls.where((c) => c.status != 'done').toList();
+
+    return ListView(
+      children: openCalls.map(_buildCallCard).toList(),
+    );
+  },
+)
+```
+
+#### `acknowledgeCall(String rid, String callId)`
+
+Marque un appel comme "pris en compte".
+
+```dart
+static Future acknowledgeCall(String rid, String callId)
+```
+
+**Paramètres**
+
+- `rid` : Restaurant ID
+- `callId` : ID document Firestore
+
+**Comportement**
+
+- Status passe de "open" → "acked"
+- Ajoute timestamp `acked_at`
+
+#### `closeCall(String rid, String callId)`
+
+Marque un appel comme "résolu".
+
+```dart
+static Future closeCall(String rid, String callId)
+```
+
+**Paramètres**
+
+- `rid` : Restaurant ID
+- `callId` : ID document Firestore
+
+**Comportement**
+
+- Status passe de "open|acked" → "done"
+- Ajoute timestamp `closed_at`
+
+## Modèles ServerCall
+
+### ServerCall
+
+Représente une demande d'assistance table.
+
+```dart
+class ServerCall {
+  final String id;
+  final String table;
+  final String status;
+  final DateTime createdAt;
+  final DateTime? ackedAt;
+  final DateTime? closedAt;
+
+  ServerCall({
+    required this.id,
+    required this.table,
+    required this.status,
+    required this.createdAt,
+    this.ackedAt,
+    this.closedAt,
+  });
+}
+```
+
+#### Propriétés
+
+**`id : String`**
+
+- ID unique du document Firestore
+- Généré automatiquement à la création
+
+**`table : String`**
+
+- Format : "table12", "table5"
+- Utilisé pour l'affichage UI
+
+**`status : String`**
+
+- **"open"** : Nouvel appel non traité
+- **"acked"** : Pris en compte par staff
+- **"done"** : Résolu et fermé
+
+**`createdAt : DateTime`**
+
+- Timestamp création de l'appel
+- Utilisé pour tri chronologique et calcul "il y a X min"
+
+**`ackedAt : DateTime?`**
+
+- Null si status = "open"
+- Timestamp quand status devient "acked"
+
+**`closedAt : DateTime?`**
+
+- Null si status != "done"
+- Timestamp final de résolution
+
+#### Factory fromDoc
+
+```dart
+factory ServerCall.fromDoc(DocumentSnapshot doc) {
+  final data = doc.data() as Map;
+  return ServerCall(
+    id: doc.id,
+    table: data['table'] ?? 'table1',
+    status: data['status'] ?? 'open',
+    createdAt: (data['created_at'] as Timestamp?)?.toDate() ?? DateTime.now(),
+    ackedAt: (data['acked_at'] as Timestamp?)?.toDate(),
+    closedAt: (data['closed_at'] as Timestamp?)?.toDate(),
+  );
+}
+```
+
+## Structure Firestore Server Calls
+
+### Collection `restaurants/{rid}/server_calls/{callId}`
+
+```typescript
+{
+  rid: string;                 // Restaurant ID (validation)
+  table: string;               // "table12"
+  status: "open"|"acked"|"done";
+  created_at: Timestamp;       // serverTimestamp()
+  acked_at?: Timestamp;        // null si open
+  closed_at?: Timestamp;       // null si !done
+  repeat: number;              // Compteur (défaut: 0)
+}
+```
+
+### Index Recommandés
+
+**Server calls par status**
+
+```
+Collection: restaurants/{rid}/server_calls
+Fields: status (Ascending), created_at (Descending)
+```
+
+## Patterns d'Usage Server Calls
+
+### Interface Admin Responsive
+
+```dart
+Widget _buildServerCallCard(ServerCall call) {
+  return LayoutBuilder(
+    builder: (context, constraints) {
+      if (constraints.maxWidth < 400) {
+        // Mobile: boutons empilés
+        return Column(
+          children: [
+            _buildCallInfo(call),
+            _buildActionButtons(call, mobile: true),
+          ],
+        );
+      } else {
+        // Desktop: boutons côte à côte
+        return Row(
+          children: [
+            Expanded(child: _buildCallInfo(call)),
+            _buildActionButtons(call, mobile: false),
+          ],
+        );
+      }
+    },
+  );
+}
+```
+
+### Gestion Son Admin
+
+```dart
+class AdminSounds {
+  static void playServerCallAlert() {
+    if (kIsWeb) {
+      try {
+        html.AudioElement('assets/sounds/server_call.mp3')..play();
+      } catch (e) {
+        debugPrint('Erreur son: $e');
+      }
+    }
+  }
+}
+```
+
 ## Modèles de Données
 
 ### CategoryLiveState

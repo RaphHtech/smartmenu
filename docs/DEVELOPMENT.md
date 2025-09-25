@@ -184,6 +184,133 @@ if (html.Notification.permission == 'granted') {
 }
 ```
 
+## Système d'Appel Serveur
+
+### Architecture Notification Interne
+
+SmartMenu implémente le pattern standard des POS modernes (Toast, Resy) :
+
+```
+Client Appel → Firestore → Admin UI (Son + Banner)
+                  ↓
+              Collection server_calls
+```
+
+### Modèles de Données Server Calls
+
+**ServerCall** - Demande d'assistance table
+
+```dart
+class ServerCall {
+  final String id;            // Document ID auto-généré
+  final String table;         // "table5", "table12"
+  final String status;        // "open"|"acked"|"done"
+  final DateTime createdAt;   // Timestamp création
+  final DateTime? ackedAt;    // Timestamp pris en compte
+  final DateTime? closedAt;   // Timestamp résolu
+}
+```
+
+### Structure Firestore Server Calls
+
+```
+restaurants/{rid}/server_calls/{callId}
+├── rid: string                 // Restaurant ID
+├── table: string              // "table12"
+├── status: string             // "open"|"acked"|"done"
+├── created_at: timestamp      // serverTimestamp
+├── acked_at: timestamp?       // null si status != "acked"|"done"
+├── closed_at: timestamp?      // null si status != "done"
+└── repeat: number             // Compteur rappels (futur)
+```
+
+### Services Server Calls
+
+`ServerCallService` - Service principal :
+
+```dart
+class ServerCallService {
+  // Anti-spam côté client (45s cooldown)
+  static final Map _lastCallPerTable = {};
+  static const _cooldown = Duration(seconds: 45);
+
+  // Création appel avec validations
+  static Future callServer({
+    required String rid,
+    required String table,
+  });
+
+  // Streams temps réel pour admin
+  static Stream<List> getServerCalls(String rid);
+
+  // Actions admin
+  static Future acknowledgeCall(String rid, String callId);
+  static Future closeCall(String rid, String callId);
+}
+```
+
+### Patterns de Notification Admin
+
+**Interface Admin Responsive**
+
+- Banner au-dessus des onglets commandes
+- Mobile : boutons empilés (pleine largeur)
+- Desktop : boutons côte à côte (alignés droite)
+
+**Sons Différenciés**
+
+- `new_order.mp3` : Son commandes (plus doux)
+- `server_call.mp3` : Son appels serveur (plus urgent)
+
+**États Visuels**
+
+- **Orange** : Status "open" (nouveau)
+- **Bleu** : Status "acked" (pris en compte)
+- **Disparition** : Status "done" (résolu)
+
+### Sécurité et Validation
+
+**Rules Firestore Server Calls**
+
+```javascript
+match /restaurants/{rid}/server_calls/{callId} {
+  allow create: if
+    request.resource.data.rid == rid &&
+    request.resource.data.table.matches('^table\\d+$') &&
+    request.resource.data.status == 'open' &&
+    request.resource.data.created_at == request.time;
+
+  allow read, update: if isMember(rid);
+  allow delete: if isOwner(rid);
+}
+```
+
+**Validations Business**
+
+- Cooldown 45s entre appels par table
+- Vérification appel existant (pas de doublon open/acked)
+- Validation format table (`table\d+`)
+
+### Interface Client
+
+**Intégration PremiumAppHeaderWidget**
+
+```dart
+PremiumAppHeaderWidget(
+  onServerCall: _isLoading ? null : () {
+    // Logique appel avec gestion d'état
+    final tableId = TableService.getTableId();
+    ServerCallService.callServer(rid: restaurantId, table: 'table$tableId');
+  },
+)
+```
+
+**UX Patterns**
+
+- Bouton désactivé pendant traitement
+- Notification succès persistante
+- Gestion d'erreurs avec messages clairs
+
 ### Modèles de Données Orders
 
 **Order** - Commande restaurant complète
