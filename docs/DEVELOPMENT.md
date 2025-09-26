@@ -812,6 +812,46 @@ Container(
 )
 ```
 
+## Design System Client
+
+### ClientTokens Usage
+
+**Espacements standardisés :**
+
+```dart
+// ✅ Utiliser
+EdgeInsets.all(ClientTokens.space16)
+const SizedBox(width: ClientTokens.space12)
+
+// ❌ Éviter
+EdgeInsets.all(16)
+const SizedBox(width: 12)
+```
+
+**Rayons standardisés :**
+
+```dart
+// ✅ Utiliser
+BorderRadius.circular(ClientTokens.radius16)
+
+// ❌ Éviter
+BorderRadius.circular(16)
+```
+
+**Touch targets :**
+
+```dart
+// ✅ Utiliser
+IconButton(
+  constraints: BoxConstraints(
+    minWidth: ClientTokens.minTouchTarget,
+    minHeight: ClientTokens.minTouchTarget,
+  ),
+)
+```
+
+**Architecture** : ClientTokens évite les couleurs figées, utilise uniquement spacing/radius/elevation pour compatibilité thème Material 3.
+
 ### Responsive Patterns
 
 **Breakpoints :**
@@ -834,6 +874,21 @@ Widget _buildResponsive() {
 }
 ```
 
+## Design System Client
+
+### ClientTokens Usage
+
+**Espacements standardisés :**
+
+````dart
+// ✅ Utiliser
+EdgeInsets.all(ClientTokens.space16)
+const SizedBox(width: ClientTokens.space12)
+
+// ❌ Éviter
+EdgeInsets.all(16)
+const SizedBox(width: 12)
+
 ## Performance
 
 ### Optimisations Build
@@ -849,7 +904,7 @@ flutter build web --source-maps
 
 # Analyse bundle size
 flutter build web --analyze-size
-```
+````
 
 ### Patterns Performance
 

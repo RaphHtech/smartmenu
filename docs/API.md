@@ -816,6 +816,56 @@ Container(
 )
 ```
 
+### ClientTokens
+
+Constantes de design pour l'interface client PWA.
+
+```dart
+import 'package:smartmenu_app/core/design/client_tokens.dart';
+```
+
+#### Tokens Disponibles
+
+**Espacements**
+
+- `ClientTokens.space8` à `ClientTokens.space32`
+
+**Rayons**
+
+- `ClientTokens.radius8` à `ClientTokens.radius16`
+- `ClientTokens.radiusPill` (999.0)
+
+**Élévations**
+
+- `ClientTokens.elevationCard` (2.0)
+- `ClientTokens.elevationModal` (8.0)
+- `ClientTokens.elevationFab` (6.0)
+
+**Composants**
+
+- `ClientTokens.minTouchTarget` (44.0)
+
+**Durées**
+
+- `ClientTokens.durationFast` (150ms)
+- `ClientTokens.durationNormal` (250ms)
+
+#### Usage Pattern
+
+```dart
+Container(
+  padding: EdgeInsets.all(ClientTokens.space16),
+  decoration: BoxDecoration(
+    borderRadius: BorderRadius.circular(ClientTokens.radius12),
+    color: Theme.of(context).colorScheme.surface,
+  ),
+)
+```
+
+#### Philosophie Design
+
+Pas de couleurs figées - utilise exclusivement `Theme.of(context).colorScheme` pour compatibilité dark/light mode et branding restaurant.
+
 ## Gestion des Erreurs
 
 ### Types d'Erreurs

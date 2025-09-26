@@ -137,7 +137,7 @@ flutter run -d chrome
 
 ## État du projet
 
-**Version** : 3.1.0 - Currency System & Client Design Foundations
+**Version** : 3.2.0 - Currency System & ClientTokens Design Foundations
 
 ### Phase actuelle : Currency Unifiée + Design System Client ✅
 
@@ -145,9 +145,10 @@ flutter run -d chrome
 - ✅ Extension `context.money()` pour affichage unifié des prix
 - ✅ Support multi-currency (ILS/EUR/USD) avec formatage localisé
 - ✅ Migration complète des widgets menu (MenuItem, CartFloat, OrderReview)
-- ✅ **ClientTokens** - Design system client (spacing, radius, elevation)
+- ✅ **ClientTokens** - Design system client complet (spacing, radius, elevation)
+- ✅ **Migration design system** - 4 composants migrés vers ClientTokens
 - ✅ Architecture InheritedWidget scalable pour multi-tenant
-- ✅ Suppression de tous les hardcoded `₪` et `currencySymbol`
+- ✅ Suppression de tous les hardcoded spacing/radius côté client
 
 ### Prochaines phases
 
