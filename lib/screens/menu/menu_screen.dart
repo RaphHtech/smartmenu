@@ -17,6 +17,7 @@ import 'dart:html' as html;
 import '../../widgets/premium_app_header_widget.dart';
 import '../../services/server_call_service.dart';
 import '../../state/currency_scope.dart';
+import '../../widgets/common/top_toast.dart';
 
 List<String> applyOrderAndHide(
   Set<String> allCats,
@@ -240,7 +241,11 @@ class SimpleMenuScreenState extends State<MenuScreen> {
         tableId: TableService.getTableId());
 
     // Animation visuelle (optionnel)
-    _showCustomNotification('✅ $itemName ajouté au panier !');
+    TopToast.show(
+      context,
+      message: '$itemName ajouté au panier !',
+      variant: ToastVariant.success,
+    );
   }
 
   void setItemQuantity(String itemName, double price, int newQuantity) {
@@ -329,7 +334,12 @@ class SimpleMenuScreenState extends State<MenuScreen> {
 
   void _showOrderReview() {
     if (_cartItemCount == 0) {
-      _showCustomNotification('🛒 Votre panier est vide !');
+// Panier vide
+      TopToast.show(
+        context,
+        message: 'Votre panier est vide !',
+        variant: ToastVariant.info,
+      );
       return;
     }
     setState(() {
@@ -346,12 +356,12 @@ class SimpleMenuScreenState extends State<MenuScreen> {
   void _confirmOrder() async {
     try {
       // Soumettre la commande via OrderService
-      final orderId = await OrderService.submitOrder(
-        restaurantId: widget.restaurantId,
-        itemQuantities: itemQuantities,
-        menuData: _menuData,
-        currency: _restaurantCurrency,
-      );
+      // final orderId = await OrderService.submitOrder(
+      // //   restaurantId: widget.restaurantId,
+      //   itemQuantities: itemQuantities,
+      //   menuData: _menuData,
+      //   currency: _restaurantCurrency,
+      // );
 
       // Vider le panier
       setState(() {
@@ -362,16 +372,20 @@ class SimpleMenuScreenState extends State<MenuScreen> {
       });
 
       // Notification de succès
-      _showCustomNotification(
-        '✅ Commande #${orderId.substring(0, 8)} créée !\n'
-        'Le restaurant a été notifié.',
-        persistent: true,
+      TopToast.show(
+        context,
+        message: 'Commande créée !',
+        subtitle: 'Le restaurant a été notifié.',
+        variant: ToastVariant.success,
       );
     } catch (e) {
       // Gestion d'erreur
-      _showCustomNotification(
-        '❌ Erreur lors de la commande: $e',
-        persistent: true,
+      TopToast.show(
+        context,
+        message: 'Erreur lors de la commande',
+        subtitle: e.toString(),
+        variant: ToastVariant.error,
+        duration: const Duration(seconds: 4),
       );
     }
   }
@@ -513,17 +527,38 @@ class SimpleMenuScreenState extends State<MenuScreen> {
                               rid: widget.restaurantId,
                               table: 'table$tableId',
                             ).then((_) {
+                              // Succès
                               if (mounted) {
-                                _showCustomNotification(
-                                  'Serveur appelé !\nUn membre de notre équipe arrive.',
-                                  persistent: true,
+                                // ← AJOUTER
+                                TopToast.show(
+                                  context,
+                                  message: 'Serveur appelé !',
+                                  subtitle: 'Un membre de notre équipe arrive.',
+                                  variant: ToastVariant.info,
                                 );
                               }
                             }).catchError((e) {
                               if (mounted) {
-                                _showCustomNotification('Erreur: $e');
+                                // ← AJOUTER
+                                final error = e.toString();
+                                if (error.contains('COOLDOWN_ACTIVE:')) {
+                                  final seconds = error.split(':')[1];
+                                  TopToast.show(
+                                    context,
+                                    message:
+                                        'Veuillez attendre ${seconds}s entre les appels',
+                                    variant: ToastVariant.warning,
+                                  );
+                                } else {
+                                  TopToast.show(
+                                    context,
+                                    message: 'Erreur: $e',
+                                    variant: ToastVariant.error,
+                                  );
+                                }
                               }
                             }).whenComplete(() {
+                              // ← AJOUTER ce bloc
                               if (mounted) setState(() => _isLoading = false);
                             });
                           },
@@ -739,10 +774,11 @@ class SimpleMenuScreenState extends State<MenuScreen> {
 
           // ===== PANIER FLOTTANT =====
           Positioned(
-            right: 16,
-            bottom: 16 + MediaQuery.viewPaddingOf(context).bottom,
-            child: IgnorePointer(
-              ignoring: _cartItemCount == 0,
+            left: 0,
+            right: 0,
+            bottom: 80 + MediaQuery.of(context).padding.bottom,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
               child: CartFloatingWidget(
                 cartItemCount: _cartItemCount,
                 cartTotal: _cartTotal,

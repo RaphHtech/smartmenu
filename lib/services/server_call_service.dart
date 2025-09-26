@@ -45,7 +45,8 @@ class ServerCallService {
     final last = _lastCallPerTable[key];
 
     if (last != null && now.difference(last) < _cooldown) {
-      throw 'Veuillez attendre ${_cooldown.inSeconds}s entre les appels';
+      final remaining = _cooldown - now.difference(last);
+      throw Exception('COOLDOWN_ACTIVE:${remaining.inSeconds}');
     }
 
     // Vérifier s'il y a déjà un appel ouvert pour cette table
