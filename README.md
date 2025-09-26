@@ -137,18 +137,24 @@ flutter run -d chrome
 
 ## État du projet
 
-**Version** : 3.2.0 - Currency System & ClientTokens Design Foundations
+**Version** : 3.3.0 - Premium Modals & Toast System
 
-### Phase actuelle : Currency Unifiée + Design System Client ✅
+### Phase actuelle : Interfaces Premium & Migration Design System ✅
 
-- ✅ **Système currency centralisé** avec CurrencyService + CurrencyScope
-- ✅ Extension `context.money()` pour affichage unifié des prix
-- ✅ Support multi-currency (ILS/EUR/USD) avec formatage localisé
-- ✅ Migration complète des widgets menu (MenuItem, CartFloat, OrderReview)
-- ✅ **ClientTokens** - Design system client complet (spacing, radius, elevation)
-- ✅ **Migration design system** - 4 composants migrés vers ClientTokens
-- ✅ Architecture InheritedWidget scalable pour multi-tenant
-- ✅ Suppression de tous les hardcoded spacing/radius côté client
+- ✅ **Modal révision commande** niveau premium (Uber Eats/DoorDash standard)
+- ✅ Layout gauche-droite pour section Total (scan visuel optimisé)
+- ✅ Migration partielle TopToast (remplace dégradés legacy)
+- ✅ Responsive patterns avec OverflowBar anti-wrap
+- ✅ Bouton semantics améliorés ("RETOUR" vs "MODIFIER")
+- ✅ Hauteur modal 65% écran (benchmark apps premium)
+- ✅ **Currency system + CurrencyScope** opérationnels
+- ✅ **ClientTokens** foundation complète (spacing, radius, elevation)
+
+### Prochaines phases
+
+- **Migration toasts complète** (éliminer tous les anciens dégradés)
+- **3 composants restants** vers ClientTokens (MenuItemCard, PromoBanner, CategoryChips finalisés)
+- **Internationalisation RTL** (hébreu/anglais/français)
 
 ### Prochaines phases
 
