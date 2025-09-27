@@ -184,6 +184,29 @@ if (html.Notification.permission == 'granted') {
 }
 ```
 
+## Phase 1 : QR System Achievements
+
+### Scanner QR Complet
+
+- **Mobile Scanner** : `mobile_scanner: ^4.0.1` intégré avec permissions
+- **Fallback saisie** : TextField pour codes manuels si caméra indisponible
+- **Parsing robuste** : URLs modernes + legacy `smartmenu://` support
+- **Analytics hooks** : `qr_scanned`, `qr_scan_failed`, `qr_manual_submit`
+
+### Génération QR Admin
+
+- **Interface complète** : preview + personnalisation + export
+- **Multi-formats** : PNG individuel + Template A5 bilingue
+- **Configuration** : messages custom + tailles variables
+- **Persistance** : QRService.saveQRConfig() avec Firestore
+
+### Production Ready
+
+- **URLs propres** : `/r/{slug}` générées automatiquement
+- **Téléchargement fonctionnel** : QR PNG scannables via RepaintBoundary
+- **Templates impression** : A5 bilingues FR/EN prêts découpe
+- **Système bout-en-bout** : validation terrain par utilisateurs
+
 ## Système d'Appel Serveur
 
 ### Architecture Notification Interne
