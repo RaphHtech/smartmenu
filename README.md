@@ -137,32 +137,28 @@ flutter run -d chrome
 
 ## État du projet
 
-**Version** : 3.3.0 - Premium Modals & Toast System
+**Version** : 4.0.0 - QR Code System Complete
 
-### Phase actuelle : Interfaces Premium & Migration Design System ✅
+### Phase 1 : Système QR Complet ✅
 
-- ✅ **Modal révision commande** niveau premium (Uber Eats/DoorDash standard)
-- ✅ Layout gauche-droite pour section Total (scan visuel optimisé)
-- ✅ Migration partielle TopToast (remplace dégradés legacy)
-- ✅ Responsive patterns avec OverflowBar anti-wrap
-- ✅ Bouton semantics améliorés ("RETOUR" vs "MODIFIER")
-- ✅ Hauteur modal 65% écran (benchmark apps premium)
-- ✅ **Currency system + CurrencyScope** opérationnels
-- ✅ **ClientTokens** foundation complète (spacing, radius, elevation)
+- ✅ **Scanner QR fonctionnel** avec mobile_scanner et fallback saisie manuelle
+- ✅ **Interface admin génération QR** avec personnalisation et preview temps réel
+- ✅ **Téléchargement QR PNG** fonctionnel et scannable
+- ✅ **Templates A5 imprimables** bilingues pour tables restaurant
+- ✅ **URLs propres** `/r/nom-restaurant` avec résolution automatique
+- ✅ **Système bout-en-bout** : admin crée → client scanne → menu accessible
 
-### Prochaines phases
+### Phase Actuelle : Internationalisation RTL (J+5-J+8)
 
-- **Migration toasts complète** (éliminer tous les anciens dégradés)
-- **3 composants restants** vers ClientTokens (MenuItemCard, PromoBanner, CategoryChips finalisés)
-- **Internationalisation RTL** (hébreu/anglais/français)
+- **Architecture i18n** : extraction libellés + flutter_localizations
+- **RTL Implementation** : direction complète pour hébreu + formatage ₪ 25
+- **Tests multilingues** : HE/EN/FR sans reload
 
 ### Prochaines phases
 
-- **Accessibilité complète** (Semantics, tooltips, touch targets 44×44)
-- **Design system migration** (3 composants : MenuItemCard, PromoBanner, CategoryChips)
-- **Internationalisation RTL** (hébreu/anglais/français)
-
-## Support et contact
+- **Système commandes** temps réel avec notifications admin
+- **RBAC complet** (owner/manager/staff)
+- **Analytics avancées** (métriques conversion + insights)## Support et contact
 
 - **Développeur** : Raphaël Benitah
 - **Email** : rafaelbenitah@gmail.com

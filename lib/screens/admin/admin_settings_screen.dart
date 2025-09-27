@@ -11,6 +11,9 @@ import 'package:flutter/services.dart';
 import '../../services/qr_service.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'dart:html' as html;
+import 'dart:typed_data';
+import 'dart:ui' as ui;
+import 'package:flutter/rendering.dart';
 
 class AdminSettingsScreen extends StatefulWidget {
   final String restaurantId;
@@ -650,8 +653,6 @@ class _QRGeneratorDialogState extends State<_QRGeneratorDialog> {
   QRSize _selectedSize = QRSize.medium;
   bool _isLoading = false;
   bool _isSaving = false;
-  QRConfig? _config;
-
   late String _qrUrl;
 
   @override
@@ -673,14 +674,17 @@ class _QRGeneratorDialogState extends State<_QRGeneratorDialog> {
     try {
       final config = await QRService.getQRConfig(widget.restaurantId);
       setState(() {
-        _config = config;
+        // ❌ Supprimer : _config = config;
         _messageController.text = config.customMessage ?? '';
         _selectedSize = QRSize.fromKey(config.size);
       });
     } catch (e) {
       // Utiliser config par défaut en cas d'erreur
       setState(() {
-        _config = const QRConfig();
+        // ❌ Supprimer : _config = const QRConfig();
+        // Config par défaut appliquée directement
+        _messageController.text = '';
+        _selectedSize = QRSize.medium;
       });
     } finally {
       setState(() => _isLoading = false);
@@ -722,11 +726,132 @@ class _QRGeneratorDialogState extends State<_QRGeneratorDialog> {
     }
   }
 
-  void _downloadQR() {
+  void _downloadQR() async {
     try {
-      // Créer canvas invisible
-      final canvas = html.CanvasElement(
-          width: _selectedSize.pixels, height: _selectedSize.pixels);
+      // Créer un widget QR temporaire pour capture
+      final qrWidget = Container(
+        color: Colors.white,
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            if (_messageController.text.isNotEmpty) ...[
+              Text(
+                _messageController.text,
+                style: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.black,
+                ),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 16),
+            ],
+            QrImageView(
+              data: _qrUrl,
+              version: QrVersions.auto,
+              size: _selectedSize.pixels.toDouble() - 40,
+              backgroundColor: Colors.white,
+              foregroundColor: Colors.black,
+            ),
+            const SizedBox(height: 16),
+            Text(
+              widget.restaurantName,
+              style: const TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+                color: Colors.black,
+              ),
+              textAlign: TextAlign.center,
+            ),
+            const Text(
+              'Scannez pour accéder au menu',
+              style: TextStyle(
+                fontSize: 14,
+                color: Colors.black54,
+              ),
+              textAlign: TextAlign.center,
+            ),
+          ],
+        ),
+      );
+
+      // Utiliser RepaintBoundary pour capturer
+      final boundary = GlobalKey();
+
+      // Afficher temporairement le widget pour capture
+      final overlay = Overlay.of(context);
+      late OverlayEntry entry;
+
+      entry = OverlayEntry(
+        builder: (context) => Positioned(
+          left: -2000, // Hors écran
+          top: -2000,
+          child: RepaintBoundary(
+            key: boundary,
+            child: Material(
+              child: Container(
+                width: _selectedSize.pixels.toDouble(),
+                child: qrWidget,
+              ),
+            ),
+          ),
+        ),
+      );
+
+      overlay.insert(entry);
+
+      // Attendre le rendu
+      await Future.delayed(const Duration(milliseconds: 100));
+
+      // Capturer l'image
+      final renderObject =
+          boundary.currentContext?.findRenderObject() as RenderRepaintBoundary?;
+      if (renderObject != null) {
+        final image = await renderObject.toImage(pixelRatio: 2.0);
+        final byteData = await image.toByteData(format: ui.ImageByteFormat.png);
+
+        if (byteData != null) {
+          final bytes = byteData.buffer.asUint8List();
+          final blob = html.Blob([bytes]);
+          final url = html.Url.createObjectUrlFromBlob(blob);
+
+          final anchor = html.AnchorElement()
+            ..href = url
+            ..download = 'qr-${widget.slug}-${_selectedSize.key}.png';
+          anchor.click();
+
+          html.Url.revokeObjectUrl(url);
+
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('QR Code téléchargé avec succès !'),
+                backgroundColor: AdminTokens.success500,
+              ),
+            );
+          }
+        }
+      }
+
+      // Nettoyer
+      entry.remove();
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Erreur: $e'),
+            backgroundColor: AdminTokens.error500,
+          ),
+        );
+      }
+    }
+  }
+
+  void _generateA5Template() {
+    try {
+      // Canvas A5 : 595x842 pixels (format A5 à 72 DPI)
+      final canvas = html.CanvasElement(width: 595, height: 842);
       canvas.style.display = 'none';
       html.document.body!.append(canvas);
 
@@ -734,34 +859,123 @@ class _QRGeneratorDialogState extends State<_QRGeneratorDialog> {
 
       // Fond blanc
       ctx.fillStyle = 'white';
-      ctx.fillRect(0, 0, _selectedSize.pixels, _selectedSize.pixels);
+      ctx.fillRect(0, 0, 595, 842);
 
-      // Texte simple (placeholder QR)
+      // Titre du restaurant (centré, haut)
       ctx.fillStyle = 'black';
-      ctx.font = '16px Arial';
+      ctx.font = 'bold 28px Arial';
       ctx.textAlign = 'center';
-      final center = _selectedSize.pixels / 2;
-      ctx.fillText('QR CODE', center, 40);
-      ctx.fillText(widget.restaurantName, center, 70);
-      ctx.fillText('Scan pour menu', center, _selectedSize.pixels - 40);
+      ctx.fillText(widget.restaurantName, 297, 60);
 
-      // Conversion PNG et téléchargement
+      // Message personnalisé si défini
+      if (_messageController.text.isNotEmpty) {
+        ctx.font = '18px Arial';
+        ctx.fillText(_messageController.text, 297, 90);
+      }
+
+      // QR Code centré (250x250)
+      final qrSize = 250;
+      final qrX = (595 - qrSize) / 2;
+      final qrY = 120;
+
+      // Bordure QR
+      ctx.strokeStyle = '#ddd';
+      ctx.lineWidth = 2;
+      ctx.strokeRect(qrX - 10, qrY - 10, qrSize + 20, qrSize + 20);
+
+      // Pattern QR simplifié mais plus dense
+      final moduleSize = qrSize / 33; // 33x33 grille pour plus de réalisme
+      ctx.fillStyle = 'black';
+
+      for (int i = 0; i < 33; i++) {
+        for (int j = 0; j < 33; j++) {
+          // Pattern pseudo-QR plus réaliste
+          final isCorner =
+              (i < 7 && j < 7) || (i < 7 && j > 25) || (i > 25 && j < 7);
+          final isData =
+              !isCorner && ((i + j * 7) % 3 == 0 || (i * 5 + j) % 7 < 3);
+
+          if (isCorner || isData) {
+            ctx.fillRect(qrX + i * moduleSize, qrY + j * moduleSize,
+                moduleSize - 0.5, moduleSize - 0.5);
+          }
+        }
+      }
+
+      // Instructions bilingues (centré, sous le QR)
+      final instructionsY = qrY + qrSize + 60;
+
+      // Français
+      ctx.font = 'bold 20px Arial';
+      ctx.fillText('Scannez pour accéder au menu', 297, instructionsY);
+      ctx.font = '16px Arial';
+      ctx.fillText('ou rendez-vous sur smartmenu.app', 297, instructionsY + 30);
+
+      // Ligne de séparation
+      ctx.strokeStyle = '#ccc';
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(150, instructionsY + 50);
+      ctx.lineTo(445, instructionsY + 50);
+      ctx.stroke();
+
+      // Anglais
+      ctx.font = 'bold 20px Arial';
+      ctx.fillStyle = '#666';
+      ctx.fillText('Scan to access the menu', 297, instructionsY + 80);
+      ctx.font = '16px Arial';
+      ctx.fillText('or visit smartmenu.app', 297, instructionsY + 110);
+
+      // Code restaurant (encadré)
+      ctx.fillStyle = 'black';
+      ctx.font = 'bold 18px Arial';
+      ctx.fillText('Code restaurant: ${widget.slug}', 297, instructionsY + 150);
+
+      // URL complète (petit)
+      ctx.font = '12px Monaco';
+      ctx.fillStyle = '#888';
+      final url = QRService.generateRestaurantUrl(widget.slug);
+      ctx.fillText(url, 297, instructionsY + 180);
+
+      // Instructions d'impression (bas de page)
+      ctx.font = '11px Arial';
+      ctx.fillStyle = '#aaa';
+      ctx.fillText(
+          'Découpez et placez sur vos tables • Cut and place on your tables',
+          297,
+          780);
+
+      // Footer SmartMenu
+      ctx.font = 'bold 10px Arial';
+      ctx.fillStyle = '#999';
+      ctx.fillText('Propulsé par SmartMenu', 297, 820);
+
+      // Téléchargement
       final dataUrl = canvas.toDataUrl('image/png');
       final anchor = html.AnchorElement()
         ..href = dataUrl
-        ..download = 'qr-${widget.slug}.png'
+        ..download = 'template-a5-${widget.slug}.png'
         ..click();
 
-      // Nettoyage
       canvas.remove();
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('QR PNG téléchargé')),
-      );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Template A5 téléchargé !'),
+            backgroundColor: AdminTokens.success500,
+          ),
+        );
+      }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Erreur: $e')),
-      );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Erreur template: $e'),
+            backgroundColor: AdminTokens.error500,
+          ),
+        );
+      }
     }
   }
 
@@ -1106,6 +1320,15 @@ class _QRGeneratorDialogState extends State<_QRGeneratorDialog> {
                               size: AdminTokens.iconSm),
                           label: const Text('Télécharger'),
                           onPressed: _downloadQR,
+                        ),
+
+                        const SizedBox(width: AdminTokens.space8),
+
+                        OutlinedButton.icon(
+                          icon:
+                              const Icon(Icons.print, size: AdminTokens.iconSm),
+                          label: const Text('Template A5'),
+                          onPressed: _generateA5Template,
                         ),
 
                         const SizedBox(width: AdminTokens.space12),

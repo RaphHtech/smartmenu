@@ -9,7 +9,7 @@ class FirebaseMenuService {
       String restaurantId) async {
     try {
       QuerySnapshot snapshot = await _firestore
-          .collection('restaurant')
+          .collection('restaurants') // CORRECTION: avec 's'
           .doc(restaurantId)
           .collection('menus')
           .get();
@@ -38,8 +38,10 @@ class FirebaseMenuService {
   static Future<Map<String, dynamic>?> getRestaurant(
       String restaurantId) async {
     try {
-      DocumentSnapshot snapshot =
-          await _firestore.collection('restaurant').doc(restaurantId).get();
+      DocumentSnapshot snapshot = await _firestore
+          .collection('restaurants')
+          .doc(restaurantId)
+          .get(); // CORRECTION: avec 's'
 
       if (snapshot.exists) {
         return snapshot.data() as Map<String, dynamic>;
@@ -51,7 +53,7 @@ class FirebaseMenuService {
     }
   }
 
-  // Organiser les items par catégorie (comme votre ancien menu_data.dart)
+  // Le reste du code reste identique...
   static Map<String, List<Map<String, dynamic>>> organizeByCategory(
       List<Map<String, dynamic>> items) {
     Map<String, List<Map<String, dynamic>>> organized = {};

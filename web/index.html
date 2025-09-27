@@ -6,11 +6,15 @@
   <meta content="IE=Edge" http-equiv="X-UA-Compatible">
   <meta name="description" content="SmartMenu - Menu digital pour restaurants">
   <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="SmartMenu">
   <meta name="msapplication-TileColor" content="#000000">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  
+  <!-- OPTIMISATIONS iOS Safari -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="format-detection" content="telephone=no">
+  <meta name="apple-touch-fullscreen" content="yes">
   
   <title>SmartMenu</title>
   <link rel="manifest" href="manifest.json">
@@ -22,17 +26,34 @@
   html, body {
     height: 100%;
     margin: 0;
-    background: #F9FAFB; /* même fond que l'admin */
+    background: #F9FAFB;
+    /* IMPORTANT pour iOS Safari */
+    -webkit-overflow-scrolling: touch;
+    -webkit-user-select: none;
+    -webkit-touch-callout: none;
   }
-  /* évite les à-coups de scroll mobile et garde le scroll si nécessaire */
-  body { overscroll-behavior-y: none; }
-  #flutter_host, .loading {
+  
+  body { 
+    overscroll-behavior-y: none;
+    /* Fix iOS bounce */
+    position: fixed;
+    overflow: hidden;
+    width: 100%;
+    height: 100%;
+  }
+  
+  #flutter_host {
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  .loading {
     min-height: 100%;
     display: flex;
     align-items: center;
     justify-content: center;
-  }
-  .loading {
     color: #6B7280;
     font-family: system-ui, -apple-system, "Segoe UI", Roboto, Ubuntu, Cantarell, "Noto Sans", sans-serif;
   }
@@ -45,14 +66,28 @@
   </div>
 
   <script>
+  // Fix iOS Safari routing
+  if (/iPad|iPhone|iPod/.test(navigator.userAgent)) {
+    // Force reload on iOS if needed
+    window.addEventListener('pageshow', function(event) {
+      if (event.persisted) {
+        window.location.reload();
+      }
+    });
+  }
+  
   window.addEventListener('load', function () {
     const host = document.querySelector('#flutter_host');
     const loading = host.querySelector('.loading');
     
     _flutter.loader.loadEntrypoint({
-      entrypointUrl: '/main.dart.js', // CHEMIN ABSOLU (ajout du /)
+      entrypointUrl: '/main.dart.js',
       onEntrypointLoaded: function (engineInitializer) {
-        engineInitializer.initializeEngine({ hostElement: host }).then(function (appRunner) {
+        engineInitializer.initializeEngine({ 
+          hostElement: host,
+          // Optimisations iOS
+          renderer: "html"
+        }).then(function (appRunner) {
           loading?.remove();
           appRunner.runApp();
         });
