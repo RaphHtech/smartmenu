@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:smartmenu_app/core/design/admin_tokens.dart';
 import 'package:smartmenu_app/screens/admin/admin_menu_reorder_screen.dart';
 import '../../core/constants/colors.dart';
 import 'menu_item_form_screen.dart';
@@ -176,8 +177,20 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
         label: Text('Toutes ($totalCount)'),
         selected: isSelected,
         onSelected: (selected) => setState(() => _selectedCategory = null),
-        selectedColor: AppColors.primary.withAlpha(51),
-        backgroundColor: Colors.blue[50],
+        backgroundColor: Colors.white,
+        selectedColor: AdminTokens.primary50,
+        checkmarkColor: AdminTokens.primary600,
+        labelStyle: TextStyle(
+          fontSize: 14,
+          fontWeight: FontWeight.w500,
+          color: isSelected ? AdminTokens.primary600 : AdminTokens.neutral700,
+        ),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(AdminTokens.radius12),
+          side: BorderSide(
+            color: isSelected ? AdminTokens.primary600 : AdminTokens.border,
+          ),
+        ),
       ),
     );
   }
@@ -190,7 +203,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
     final isMobile = MediaQuery.of(context).size.width < 375;
 
     return Padding(
-      padding: const EdgeInsets.only(right: 8),
+      padding: const EdgeInsets.only(right: AdminTokens.space8),
       child: Opacity(
         opacity: isHidden ? 0.4 : 1.0,
         child: FilterChip(
@@ -198,7 +211,8 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
             mainAxisSize: MainAxisSize.min,
             children: [
               if (isHidden) ...[
-                Icon(Icons.visibility_off, size: 12, color: Colors.grey[600]),
+                Icon(Icons.visibility_off,
+                    size: 12, color: AdminTokens.neutral600),
                 const SizedBox(width: 4),
               ],
               Text(isMobile ? category : '$category ($itemCount)'),
@@ -209,8 +223,20 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
               ? (_) => _quickToggleVisibility(category)
               : (selected) => setState(
                   () => _selectedCategory = selected ? category : null),
-          backgroundColor: isHidden ? Colors.grey[300] : Colors.grey[200],
-          selectedColor: AppColors.primary.withAlpha(51),
+          backgroundColor: isHidden ? AdminTokens.neutral300 : Colors.white,
+          selectedColor: AdminTokens.primary50,
+          checkmarkColor: AdminTokens.primary600,
+          labelStyle: TextStyle(
+            fontSize: 14,
+            fontWeight: FontWeight.w500,
+            color: isSelected ? AdminTokens.primary600 : AdminTokens.neutral700,
+          ),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(AdminTokens.radius12),
+            side: BorderSide(
+              color: isSelected ? AdminTokens.primary600 : AdminTokens.border,
+            ),
+          ),
         ),
       ),
     );
@@ -395,9 +421,6 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                     // Calcul des compteurs par catégorie
                     final visibleDocs = _filterDocs(docs);
 
-                    // Log debug optionnel
-                    // debugPrint('SEARCH q="${_searchText.trim()}" cat=${_selectedCategory ?? "Toutes"} sort=$_sortBy -> docs=${docs.length} filtered=${visibleDocs.length}');
-
                     // --- Rendu liste (identique à ton code, mais sur visibleDocs) ---
                     if (visibleDocs.isEmpty) {
                       return Center(
@@ -439,8 +462,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
 
                     return ListView.builder(
                       padding: const EdgeInsets.symmetric(
-                          horizontal: 16,
-                          vertical: 12), // Garde 16px comme ChatGPT recommande
+                          horizontal: 16, vertical: 12),
                       itemCount: visibleDocs.length,
                       itemBuilder: (context, index) {
                         final doc = visibleDocs[index];
@@ -453,217 +475,232 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                         final imgUrl = _pickImageUrl(data);
                         return Card(
                           margin: EdgeInsets.only(
-                            bottom: 8,
+                            bottom: AdminTokens.space8,
                             left: MediaQuery.of(context).size.width < 600
                                 ? 0
-                                : 4, // Pas de margin latéral sur mobile
-                            right:
-                                MediaQuery.of(context).size.width < 600 ? 0 : 4,
+                                : AdminTokens.space4,
+                            right: MediaQuery.of(context).size.width < 600
+                                ? 0
+                                : AdminTokens.space4,
                           ),
                           elevation: 0,
                           shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(14),
-                            side: BorderSide(color: Colors.grey.shade100),
+                            borderRadius:
+                                BorderRadius.circular(AdminTokens.radius16),
+                            side: const BorderSide(color: AdminTokens.border),
                           ),
-                          child: LayoutBuilder(
-                            builder: (context, constraints) {
-                              final isXs = constraints.maxWidth < 360;
-                              final thumbnailSize =
-                                  isXs ? 64.0 : 72.0; // ← AJOUTER cette ligne
-                              final cardPadding =
-                                  constraints.maxWidth >= 768 ? 20.0 : 16.0;
+                          child: Container(
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius:
+                                  BorderRadius.circular(AdminTokens.radius16),
+                              boxShadow: AdminTokens.shadowMd,
+                            ),
+                            child: LayoutBuilder(
+                              builder: (context, constraints) {
+                                final isXs = constraints.maxWidth < 360;
+                                final thumbnailSize = isXs ? 64.0 : 72.0;
+                                final cardPadding =
+                                    constraints.maxWidth >= 768 ? 20.0 : 16.0;
 
-                              return Padding(
-                                padding: EdgeInsets.all(cardPadding),
-                                child: Row(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    // Thumbnail avec taille responsive
-                                    SizedBox(
-                                      width: thumbnailSize,
-                                      height: thumbnailSize,
-                                      child: ClipRRect(
-                                        borderRadius: BorderRadius.circular(12),
-                                        child: imgUrl.isNotEmpty
-                                            ? Image.network(
-                                                imgUrl,
-                                                fit: BoxFit.cover,
-                                                errorBuilder: (_, __, ___) =>
-                                                    _buildThumbnailPlaceholder(),
-                                              )
-                                            : _buildThumbnailPlaceholder(),
+                                return Padding(
+                                  padding: EdgeInsets.all(cardPadding),
+                                  child: Row(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      // Thumbnail avec taille responsive
+                                      SizedBox(
+                                        width: thumbnailSize,
+                                        height: thumbnailSize,
+                                        child: ClipRRect(
+                                          borderRadius:
+                                              BorderRadius.circular(12),
+                                          child: imgUrl.isNotEmpty
+                                              ? Image.network(
+                                                  imgUrl,
+                                                  fit: BoxFit.cover,
+                                                  errorBuilder: (_, __, ___) =>
+                                                      _buildThumbnailPlaceholder(),
+                                                )
+                                              : _buildThumbnailPlaceholder(),
+                                        ),
                                       ),
-                                    ),
-                                    const SizedBox(width: 16),
+                                      const SizedBox(width: 16),
 
-                                    // Content avec réservation kebab
-                                    Expanded(
-                                      child: Container(
-                                        padding:
-                                            const EdgeInsets.only(right: 8),
-                                        child: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            // Ligne 1: Titre + Badge selon breakpoint
-                                            Row(
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.start,
-                                              children: [
-                                                Expanded(
-                                                  child: Text(
-                                                    name,
-                                                    maxLines: 1,
-                                                    overflow:
-                                                        TextOverflow.ellipsis,
-                                                    style: const TextStyle(
-                                                      fontSize: 16,
-                                                      fontWeight: FontWeight
-                                                          .w600, // semi-bold
-                                                      color: Color(
-                                                          0xFF171717), // neutral-900
-                                                      height: 1.3,
-                                                    ),
-                                                  ),
-                                                ),
-                                                if (!isXs) ...[
-                                                  const SizedBox(width: 12),
-                                                  Text(
-                                                    '${_formatPriceNumber(data['price'])}\u00A0₪', // Espace insécable
-                                                    style: TextStyle(
-                                                      fontSize: 18,
-                                                      fontWeight:
-                                                          FontWeight.w700,
-                                                      color: Colors
-                                                          .indigo.shade600,
-                                                    ),
-                                                  ),
-                                                ],
-                                              ],
-                                            ),
-
-                                            const SizedBox(height: 8),
-
-                                            // Ligne 2: Métas + Badge/Prix mobile
-                                            Row(
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.start,
-                                              children: [
-                                                Flexible(
-                                                  child: Column(
-                                                    crossAxisAlignment:
-                                                        CrossAxisAlignment
-                                                            .start,
-                                                    children: [
-                                                      Text(
-                                                        category.isEmpty
-                                                            ? 'Sans catégorie'
-                                                            : category,
-                                                        maxLines: 1,
-                                                        overflow: TextOverflow
-                                                            .ellipsis,
-                                                        style: const TextStyle(
-                                                          fontSize: 13,
-                                                          fontWeight: FontWeight
-                                                              .w500, // medium
-                                                          color: Color(
-                                                              0xFF525252), // neutral-600
-                                                        ),
+                                      // Content avec réservation kebab
+                                      Expanded(
+                                        child: Container(
+                                          padding:
+                                              const EdgeInsets.only(right: 8),
+                                          child: Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              // Ligne 1: Titre + Badge selon breakpoint
+                                              Row(
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.start,
+                                                children: [
+                                                  Expanded(
+                                                    child: Text(
+                                                      name,
+                                                      maxLines: 1,
+                                                      overflow:
+                                                          TextOverflow.ellipsis,
+                                                      style: const TextStyle(
+                                                        fontSize: 16,
+                                                        fontWeight:
+                                                            FontWeight.w600,
+                                                        color: AdminTokens
+                                                            .neutral900,
+                                                        height: 1.3,
                                                       ),
-                                                      if (desc.isNotEmpty) ...[
-                                                        const SizedBox(
-                                                            height: 4),
+                                                    ),
+                                                  ),
+                                                  if (!isXs) ...[
+                                                    const SizedBox(width: 12),
+                                                    Text(
+                                                      '${_formatPriceNumber(data['price'])}\u00A0₪', // Espace insécable
+                                                      style: TextStyle(
+                                                        fontSize: 18,
+                                                        fontWeight:
+                                                            FontWeight.w700,
+                                                        color: Colors
+                                                            .indigo.shade600,
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ],
+                                              ),
+
+                                              const SizedBox(height: 8),
+
+                                              // Ligne 2: Métas + Badge/Prix mobile
+                                              Row(
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.start,
+                                                children: [
+                                                  Flexible(
+                                                    child: Column(
+                                                      crossAxisAlignment:
+                                                          CrossAxisAlignment
+                                                              .start,
+                                                      children: [
                                                         Text(
-                                                          desc,
-                                                          maxLines: 2,
+                                                          category.isEmpty
+                                                              ? 'Sans catégorie'
+                                                              : category,
+                                                          maxLines: 1,
                                                           overflow: TextOverflow
                                                               .ellipsis,
                                                           style:
                                                               const TextStyle(
                                                             fontSize: 13,
-                                                            color: Color(
-                                                                0xFF404040), // neutral-700
-                                                            height: 1.4,
+                                                            fontWeight:
+                                                                FontWeight.w500,
+                                                            color: AdminTokens
+                                                                .neutral600,
+                                                          ),
+                                                        ),
+                                                        if (desc
+                                                            .isNotEmpty) ...[
+                                                          const SizedBox(
+                                                              height: 4),
+                                                          Text(
+                                                            desc,
+                                                            maxLines: 2,
+                                                            overflow:
+                                                                TextOverflow
+                                                                    .ellipsis,
+                                                            style:
+                                                                const TextStyle(
+                                                              fontSize: 13,
+                                                              color: AdminTokens
+                                                                  .neutral700,
+                                                              height: 1.4,
+                                                            ),
+                                                          ),
+                                                        ],
+                                                      ],
+                                                    ),
+                                                  ),
+                                                  if (isXs) ...[
+                                                    const SizedBox(width: 12),
+                                                    Column(
+                                                      crossAxisAlignment:
+                                                          CrossAxisAlignment
+                                                              .end,
+                                                      children: [
+                                                        Text(
+                                                          '${_formatPriceNumber(data['price'])}\u00A0₪',
+                                                          style: TextStyle(
+                                                            fontSize: 19,
+                                                            fontWeight:
+                                                                FontWeight.w700,
+                                                            color: Colors.indigo
+                                                                .shade600,
                                                           ),
                                                         ),
                                                       ],
-                                                    ],
-                                                  ),
-                                                ),
-                                                if (isXs) ...[
-                                                  const SizedBox(width: 12),
-                                                  Column(
-                                                    crossAxisAlignment:
-                                                        CrossAxisAlignment.end,
-                                                    children: [
-                                                      Text(
-                                                        '${_formatPriceNumber(data['price'])}\u00A0₪',
-                                                        style: TextStyle(
-                                                          fontSize: 19,
-                                                          fontWeight:
-                                                              FontWeight.w700,
-                                                          color: Colors.indigo
-                                                              .shade600, // primary-600
-                                                        ),
-                                                      ),
-                                                    ],
-                                                  ),
+                                                    ),
+                                                  ],
                                                 ],
-                                              ],
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+
+                                      // Kebab menu avec touch target 44px
+                                      SizedBox(
+                                        width: 44,
+                                        height: 44,
+                                        child: PopupMenuButton<String>(
+                                          padding: EdgeInsets.zero,
+                                          onSelected: (value) {
+                                            switch (value) {
+                                              case 'edit':
+                                                _editMenuItem(itemId, data);
+                                                break;
+                                              case 'delete':
+                                                _deleteMenuItem(itemId, name);
+                                                break;
+                                            }
+                                          },
+                                          itemBuilder: (context) => const [
+                                            PopupMenuItem(
+                                              value: 'edit',
+                                              child: Row(
+                                                children: [
+                                                  Icon(Icons.edit, size: 18),
+                                                  SizedBox(width: 8),
+                                                  Text('Modifier'),
+                                                ],
+                                              ),
+                                            ),
+                                            PopupMenuItem(
+                                              value: 'delete',
+                                              child: Row(
+                                                children: [
+                                                  Icon(Icons.delete,
+                                                      size: 18,
+                                                      color: Colors.red),
+                                                  SizedBox(width: 8),
+                                                  Text('Supprimer',
+                                                      style: TextStyle(
+                                                          color: Colors.red)),
+                                                ],
+                                              ),
                                             ),
                                           ],
                                         ),
                                       ),
-                                    ),
-
-                                    // Kebab menu avec touch target 44px
-                                    SizedBox(
-                                      width: 44,
-                                      height: 44,
-                                      child: PopupMenuButton<String>(
-                                        padding: EdgeInsets.zero,
-                                        onSelected: (value) {
-                                          switch (value) {
-                                            case 'edit':
-                                              _editMenuItem(itemId, data);
-                                              break;
-                                            case 'delete':
-                                              _deleteMenuItem(itemId, name);
-                                              break;
-                                          }
-                                        },
-                                        itemBuilder: (context) => const [
-                                          PopupMenuItem(
-                                            value: 'edit',
-                                            child: Row(
-                                              children: [
-                                                Icon(Icons.edit, size: 18),
-                                                SizedBox(width: 8),
-                                                Text('Modifier'),
-                                              ],
-                                            ),
-                                          ),
-                                          PopupMenuItem(
-                                            value: 'delete',
-                                            child: Row(
-                                              children: [
-                                                Icon(Icons.delete,
-                                                    size: 18,
-                                                    color: Colors.red),
-                                                SizedBox(width: 8),
-                                                Text('Supprimer',
-                                                    style: TextStyle(
-                                                        color: Colors.red)),
-                                              ],
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              );
-                            },
+                                    ],
+                                  ),
+                                );
+                              },
+                            ),
                           ),
                         );
                       },
@@ -806,6 +843,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
   Widget _buildSearchInterface(CategoryLiveState state) {
     return Column(
       children: [
+        // Barre de recherche + dropdown
         Padding(
           padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
           child: Row(
@@ -863,36 +901,53 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
             ],
           ),
         ),
-        // AJOUTER CES LIGNES :
+
+        // Filtres en ligne horizontale
         Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16),
-          child: Wrap(
-            spacing: 8,
-            children: [
-              FilterChip(
-                label: const Text('Mis en avant'),
-                selected: _filterFeatured,
-                onSelected: (selected) =>
-                    setState(() => _filterFeatured = selected),
-              ),
-              FilterChip(
-                label: const Text('Avec badges'),
-                selected: _filterWithBadges,
-                onSelected: (selected) =>
-                    setState(() => _filterWithBadges = selected),
-              ),
-              FilterChip(
-                label: const Text('Sans image'),
-                selected: _filterNoImage,
-                onSelected: (selected) =>
-                    setState(() => _filterNoImage = selected),
-              ),
-            ],
+          padding: const EdgeInsets.symmetric(horizontal: AdminTokens.space16),
+          child: SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: Row(
+              children: [
+                _buildFilterChip('Mis en avant', _filterFeatured,
+                    (selected) => setState(() => _filterFeatured = selected)),
+                const SizedBox(width: AdminTokens.space8),
+                _buildFilterChip('Avec badges', _filterWithBadges,
+                    (selected) => setState(() => _filterWithBadges = selected)),
+                const SizedBox(width: AdminTokens.space8),
+                _buildFilterChip('Sans image', _filterNoImage,
+                    (selected) => setState(() => _filterNoImage = selected)),
+              ],
+            ),
           ),
         ),
+        const SizedBox(height: AdminTokens.space8), // Espacement après filtres
       ],
     );
-  } // 2) Utilitaires pour catégories et filtrage
+  }
+
+  Widget _buildFilterChip(
+      String label, bool selected, Function(bool) onSelected) {
+    return FilterChip(
+      label: Text(label),
+      selected: selected,
+      onSelected: onSelected,
+      backgroundColor: Colors.white,
+      selectedColor: AdminTokens.primary50,
+      checkmarkColor: AdminTokens.primary600,
+      labelStyle: TextStyle(
+        fontSize: 14,
+        fontWeight: FontWeight.w500,
+        color: selected ? AdminTokens.primary600 : AdminTokens.neutral700,
+      ),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(AdminTokens.radius12),
+        side: BorderSide(
+          color: selected ? AdminTokens.primary600 : AdminTokens.border,
+        ),
+      ),
+    );
+  }
 
   List<QueryDocumentSnapshot> _filterDocs(List<QueryDocumentSnapshot> docs) {
     final visible = List<QueryDocumentSnapshot>.of(docs);
