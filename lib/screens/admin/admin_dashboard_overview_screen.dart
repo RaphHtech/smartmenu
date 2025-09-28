@@ -97,47 +97,28 @@ class AdminDashboardOverviewScreen extends StatelessWidget {
     return SingleChildScrollView(
       padding: EdgeInsets.all(isTiny ? 12 : 16),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           // Header contextuel
           _buildMobileHeader(context),
-          const SizedBox(height: 20),
-
-          // CTA principal
-          SizedBox(
-            width: double.infinity,
-            height: 52,
-            child: ElevatedButton.icon(
-              onPressed: () => context.pushAdminScreen(
-                MenuItemFormScreen(restaurantId: restaurantId),
-              ),
-              icon: const Icon(Icons.add, size: 20),
-              label: const Text('Ajouter un plat',
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: AdminTokens.primary500,
-                foregroundColor: Colors.white,
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12)),
-              ),
-            ),
-          ),
-          const SizedBox(height: 24),
-
-          // Chips actions rapides
-          _buildActionChips(context),
-          const SizedBox(height: 24),
+          const SizedBox(height: AdminTokens.space24),
 
           // Micro-cartes 2x2
           _buildMicroCards(context, metrics),
 
-          // Alerte conditionnelle
+          // Alerte conditionnelle (remontée ici)
           if (metrics['noImage']! > 0) ...[
-            const SizedBox(height: 20),
+            const SizedBox(height: AdminTokens.space16),
             _buildNoImageAlert(context, metrics['noImage']!, isTiny),
           ],
 
-          const SizedBox(height: 20),
+          const SizedBox(height: AdminTokens.space24),
+
+          // Chips actions rapides
+          _buildActionChips(context),
+
+          const SizedBox(height: AdminTokens.space24),
+
           // Aperçu client
           _buildClientPreview(context),
         ],
@@ -150,7 +131,7 @@ class AdminDashboardOverviewScreen extends StatelessWidget {
     return SingleChildScrollView(
       padding: const EdgeInsets.all(AdminTokens.space24),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           // Métriques desktop (ton code actuel)
           Wrap(
@@ -248,14 +229,11 @@ class AdminDashboardOverviewScreen extends StatelessWidget {
 
         return Container(
           width: double.infinity,
-          padding: const EdgeInsets.all(16),
+          padding: const EdgeInsets.all(AdminTokens.space24),
           decoration: BoxDecoration(
-            gradient: const LinearGradient(
-              colors: [AdminTokens.primary500, AdminTokens.primary600],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-            ),
-            borderRadius: BorderRadius.circular(12),
+            gradient: AdminTokens.heroGradient,
+            borderRadius: BorderRadius.circular(AdminTokens.radius16),
+            boxShadow: AdminTokens.shadowMd,
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -264,17 +242,58 @@ class AdminDashboardOverviewScreen extends StatelessWidget {
                 'Tableau de bord',
                 style: TextStyle(
                   color: Colors.white,
-                  fontSize: 18,
-                  fontWeight: FontWeight.w700,
+                  fontSize: 24,
+                  fontWeight: FontWeight.w600,
+                  height: 1.33,
                 ),
               ),
-              const SizedBox(height: 4),
+              const SizedBox(height: AdminTokens.space8),
               Text(
                 restaurantName,
                 style: TextStyle(
-                  color: Colors.white.withValues(alpha: 0.9),
+                  color: Colors.white.withOpacity(0.9),
                   fontSize: 14,
+                  height: 1.43,
                 ),
+              ),
+              const SizedBox(height: AdminTokens.space24),
+              Row(
+                children: [
+                  Expanded(
+                    child: ElevatedButton.icon(
+                      onPressed: () => context.pushAdminScreen(
+                        MenuItemFormScreen(restaurantId: restaurantId),
+                      ),
+                      icon: const Icon(Icons.add, size: 20),
+                      label: const Text('Ajouter un plat'),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.white,
+                        foregroundColor: AdminTokens.primary600,
+                        elevation: 0,
+                        shape: RoundedRectangleBorder(
+                          borderRadius:
+                              BorderRadius.circular(AdminTokens.radius12),
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: AdminTokens.space12),
+                  OutlinedButton.icon(
+                    onPressed: () => context.pushAdminScreen(
+                      AdminMediaScreen(restaurantId: restaurantId),
+                    ),
+                    icon: const Icon(Icons.photo_library_outlined, size: 20),
+                    label: const Text('Médias'),
+                    style: OutlinedButton.styleFrom(
+                      foregroundColor: Colors.white,
+                      side: const BorderSide(color: Colors.white, width: 1),
+                      shape: RoundedRectangleBorder(
+                        borderRadius:
+                            BorderRadius.circular(AdminTokens.radius12),
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ],
           ),
@@ -285,59 +304,61 @@ class AdminDashboardOverviewScreen extends StatelessWidget {
 
   Widget _buildActionChips(BuildContext context) {
     final actions = [
-      {'icon': Icons.photo_library_outlined, 'label': 'Médias'},
       {'icon': Icons.info_outline, 'label': 'Infos resto'},
       {'icon': Icons.visibility_outlined, 'label': 'Prévisualiser'},
       {'icon': Icons.settings_outlined, 'label': 'Paramètres'},
     ];
 
     return SizedBox(
-      height: 48,
+      height: 48, // Hauteur suffisante pour le contenu
       child: ListView.separated(
         scrollDirection: Axis.horizontal,
         physics: const BouncingScrollPhysics(),
         itemCount: actions.length,
-        separatorBuilder: (_, __) => const SizedBox(width: 12),
+        separatorBuilder: (_, __) => const SizedBox(width: AdminTokens.space12),
         itemBuilder: (context, index) {
           final action = actions[index];
-          return Material(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(24),
-            child: InkWell(
-              borderRadius: BorderRadius.circular(24),
-              onTap: () {
-                switch (index) {
-                  case 0: // Médias
-                    context.pushAdminScreen(
-                        AdminMediaScreen(restaurantId: restaurantId));
-                    break;
-                  case 1: // Infos resto
-                    context.pushAdminScreen(AdminRestaurantInfoScreen(
-                        restaurantId: restaurantId, showBack: true));
-                    break;
-                  case 2: // Prévisualiser
-                    _previewMenu(context);
-                    break;
-                  case 3: // Paramètres
-                    // TODO: navigation paramètres
-                    break;
-                }
-              },
-              child: Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Icon(action['icon'] as IconData,
-                        size: 20, color: AdminTokens.primary600),
-                    const SizedBox(width: 8),
-                    Text(
-                      action['label'] as String,
-                      style: const TextStyle(
-                          fontSize: 14, fontWeight: FontWeight.w600),
-                    ),
-                  ],
+          return Container(
+            constraints: const BoxConstraints(minHeight: 48),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(999),
+              border: Border.all(color: AdminTokens.border),
+              boxShadow: AdminTokens.shadowMd,
+            ),
+            child: Material(
+              color: Colors.transparent,
+              child: InkWell(
+                borderRadius: BorderRadius.circular(999),
+                onTap: () => _handleChipTap(context, index),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: AdminTokens.space16,
+                    vertical: 12, // Padding réduit
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(
+                        action['icon'] as IconData,
+                        size: 18,
+                        color: AdminTokens.primary600,
+                      ),
+                      const SizedBox(width: AdminTokens.space8),
+                      Text(
+                        action['label'] as String,
+                        style: const TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600,
+                          color: AdminTokens.neutral900,
+                          height: 1.2, // Évite le clipping
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),
@@ -345,6 +366,23 @@ class AdminDashboardOverviewScreen extends StatelessWidget {
         },
       ),
     );
+  }
+
+  void _handleChipTap(BuildContext context, int index) {
+    switch (index) {
+      case 0: // Infos resto
+        context.pushAdminScreen(AdminRestaurantInfoScreen(
+          restaurantId: restaurantId,
+          showBack: true,
+        ));
+        break;
+      case 1: // Prévisualiser
+        _previewMenu(context);
+        break;
+      case 2: // Paramètres
+        // TODO: navigation paramètres
+        break;
+    }
   }
 
   Widget _buildMicroCards(BuildContext context, Map<String, int> metrics) {
@@ -361,7 +399,7 @@ class AdminDashboardOverviewScreen extends StatelessWidget {
                 onTap: () {},
               ),
             ),
-            const SizedBox(width: 12),
+            const SizedBox(width: AdminTokens.space12),
             Expanded(
               child: _MicroCard(
                 icon: Icons.category_outlined,
@@ -385,7 +423,7 @@ class AdminDashboardOverviewScreen extends StatelessWidget {
                 onTap: () {},
               ),
             ),
-            const SizedBox(width: 12),
+            const SizedBox(width: AdminTokens.space12),
             Expanded(
               child: _MicroCard(
                 icon: Icons.image_not_supported_outlined,
@@ -407,31 +445,37 @@ class AdminDashboardOverviewScreen extends StatelessWidget {
       BuildContext context, int noImageCount, bool isTiny) {
     return Container(
       padding: const EdgeInsets.all(16),
+      margin: const EdgeInsets.symmetric(horizontal: 4),
       decoration: BoxDecoration(
-        color: Colors.orange.shade50,
+        color: Colors.orange.shade100,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.orange.shade200),
+        border: Border.all(color: Colors.orange, width: 2),
       ),
       child: Row(
         children: [
-          Icon(Icons.warning_amber_rounded,
-              color: Colors.orange.shade600, size: 20),
+          Icon(Icons.warning, color: Colors.orange.shade700, size: 20),
           const SizedBox(width: 12),
           Expanded(
             child: Text(
-                '$noImageCount éléments sans image - ajoutez des visuels.'),
+              '$noImageCount éléments sans image',
+              style: TextStyle(
+                color: Colors.orange.shade900,
+                fontSize: 14,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
           ),
           ElevatedButton(
             onPressed: () {
-              // Navigation vers l'écran menu via AdminShell
               context.pushAdminScreen(
                 AdminDashboardScreen(restaurantId: restaurantId),
               );
             },
             style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.orange.shade600),
-            child:
-                const Text('Corriger', style: TextStyle(color: Colors.white)),
+              backgroundColor: Colors.orange.shade600,
+              foregroundColor: Colors.white,
+            ),
+            child: const Text('Corriger'),
           ),
         ],
       ),
@@ -441,11 +485,12 @@ class AdminDashboardOverviewScreen extends StatelessWidget {
   Widget _buildClientPreview(BuildContext context) {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(AdminTokens.space16),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: AdminTokens.neutral200),
+        borderRadius: BorderRadius.circular(AdminTokens.radius16),
+        border: Border.all(color: AdminTokens.border),
+        boxShadow: AdminTokens.shadowMd,
       ),
       child: Row(
         children: [
@@ -458,8 +503,14 @@ class AdminDashboardOverviewScreen extends StatelessWidget {
           ElevatedButton(
             onPressed: () => _previewMenu(context),
             style: ElevatedButton.styleFrom(
-                backgroundColor: AdminTokens.primary500),
-            child: const Text('Ouvrir', style: TextStyle(color: Colors.white)),
+              backgroundColor: AdminTokens.primary600,
+              foregroundColor: Colors.white,
+              elevation: 0,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(AdminTokens.radius12),
+              ),
+            ),
+            child: const Text('Ouvrir'),
           ),
         ],
       ),
@@ -492,12 +543,9 @@ class AdminDashboardOverviewScreen extends StatelessWidget {
 
           return LayoutBuilder(
             builder: (context, constraints) {
-              final isMobile = constraints.maxWidth < 481;
               final isTiny = constraints.maxWidth < 361;
-
-              return isMobile
-                  ? _buildMobileLayout(context, metrics, isTiny)
-                  : _buildDesktopLayout(context, metrics);
+              // Force toujours le layout mobile pour cohérence
+              return _buildMobileLayout(context, metrics, isTiny);
             },
           );
         },
@@ -530,14 +578,8 @@ class _MetricCard extends StatelessWidget {
         color: isWarn ? Colors.orange.shade50 : Colors.white,
         borderRadius: BorderRadius.circular(AdminTokens.radius12),
         border: Border.all(
-            color: isWarn ? Colors.orange.shade200 : AdminTokens.neutral200),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.04),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
-          ),
-        ],
+            color: isWarn ? Colors.orange.shade200 : AdminTokens.border),
+        boxShadow: AdminTokens.shadowMd,
       ),
       child: Row(
         children: [
@@ -548,11 +590,13 @@ class _MetricCard extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(value, style: AdminTypography.displaySmall),
+                Text(value,
+                    style: const TextStyle(
+                        fontSize: 18, fontWeight: FontWeight.w700)),
                 const SizedBox(height: 2),
                 Text(label,
-                    style: AdminTypography.bodyMedium
-                        .copyWith(color: AdminTokens.neutral600)),
+                    style: const TextStyle(
+                        fontSize: 12, color: AdminTokens.neutral600)),
               ],
             ),
           ),
@@ -574,7 +618,7 @@ class _QuickAction extends StatelessWidget {
     return Material(
       color: Colors.white,
       shape: RoundedRectangleBorder(
-        side: const BorderSide(color: AdminTokens.neutral200),
+        side: const BorderSide(color: AdminTokens.border),
         borderRadius: BorderRadius.circular(AdminTokens.radius12),
       ),
       child: InkWell(
@@ -592,7 +636,7 @@ class _QuickAction extends StatelessWidget {
                 textAlign: TextAlign.center,
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
-                style: AdminTypography.bodyMedium.copyWith(
+                style: const TextStyle(
                   fontWeight: FontWeight.w600,
                   fontSize: 12,
                   height: 1.2,
@@ -632,12 +676,14 @@ class _MicroCard extends StatelessWidget {
         child: Container(
           padding: const EdgeInsets.all(12),
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: AdminTokens.neutral200),
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(AdminTokens.radius16),
+            border: Border.all(color: AdminTokens.border),
+            boxShadow: AdminTokens.shadowMd,
           ),
           child: Row(
             children: [
-              Icon(icon, color: color, size: 18),
+              Icon(icon, color: color, size: 16),
               const SizedBox(width: 8),
               Expanded(
                 child: Column(
