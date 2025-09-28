@@ -5,6 +5,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:image_picker/image_picker.dart';
 import '../../core/constants/colors.dart';
 import '../../models/menu_item.dart';
+import '../../core/design/admin_tokens.dart';
 
 class MenuItemFormScreen extends StatefulWidget {
   final String restaurantId;
@@ -423,287 +424,361 @@ class _MenuItemFormScreenState extends State<MenuItemFormScreen> {
       ),
       body: Form(
         key: _formKey,
-        child: ListView(
-          padding: const EdgeInsets.all(16),
-          children: [
-            // --- IMAGE + ACTIONS ---
-            SizedBox(
-              height: 200,
-              child: Stack(
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            final isDesktop = constraints.maxWidth >= 768;
+
+            if (isDesktop) {
+              return Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Aperçu (bytes > url > placeholder)
-                  Positioned.fill(
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(12),
-                      child: () {
-                        if (_pickedBytes != null) {
-                          return Image.memory(_pickedBytes!, fit: BoxFit.cover);
-                        }
-                        if (_imageUrl != null && _imageUrl!.isNotEmpty) {
-                          return Image.network(
-                            _imageUrl!,
-                            fit: BoxFit.cover,
-                            errorBuilder: (_, __, ___) =>
-                                _buildImagePlaceholder(),
-                          );
-                        }
-                        return _buildImagePlaceholder();
-                      }(),
+                  // Sidebar image (gauche)
+                  SizedBox(
+                    width: 300,
+                    child: Padding(
+                      padding: const EdgeInsets.all(AdminTokens.space24),
+                      child: _buildImageSection(),
                     ),
                   ),
-
-                  // Bouton "Retirer" en overlay si on a une image
-                  if (_pickedBytes != null || (_imageUrl?.isNotEmpty ?? false))
-                    Positioned(
-                      top: 8,
-                      right: 8,
-                      child: Material(
-                        color: Colors.black54,
-                        borderRadius: BorderRadius.circular(20),
-                        child: IconButton(
-                          tooltip: 'Retirer la photo',
-                          icon: const Icon(Icons.delete_outline,
-                              color: Colors.white),
-                          onPressed: () {
-                            setState(() {
-                              _pickedBytes = null;
-                              _imageUrl = null;
-                              _removeImage =
-                                  true; // <- important pour la sauvegarde
-                            });
-                          },
-                        ),
-                      ),
+                  // Formulaire (droite)
+                  Expanded(
+                    child: ListView(
+                      padding: const EdgeInsets.all(AdminTokens.space24),
+                      children: _buildFormFields(),
                     ),
+                  ),
                 ],
-              ),
-            ),
+              );
+            } else {
+              // Mobile - layout vertical existant
+              return ListView(
+                padding: const EdgeInsets.all(16),
+                children: [
+                  _buildImageSection(),
+                  const SizedBox(height: 24),
+                  ..._buildFormFields(),
+                ],
+              );
+            }
+          },
+        ),
+      ),
+    );
+  }
 
-            const SizedBox(height: 8),
+  List<Widget> _buildFormFields() {
+    return [
+      // Nom
+      TextFormField(
+        controller: _nameController,
+        decoration: InputDecoration(
+          labelText: 'Nom du plat *',
+          prefixIcon: const Icon(Icons.restaurant_menu),
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(AdminTokens.radius12),
+          ),
+        ),
+        validator: (value) {
+          if (value == null || value.trim().isEmpty) {
+            return 'Le nom est obligatoire';
+          }
+          return null;
+        },
+      ),
+      const SizedBox(height: 16),
 
-            // Boutons sous l’image
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                TextButton.icon(
-                  onPressed: () async {
-                    await _pickImage();
-                    setState(() {
-                      _removeImage =
-                          false; // on annule la suppression si on met une nouvelle image
-                    });
-                  },
-                  icon: const Icon(Icons.camera_alt),
-                  label: Text(
-                    _pickedBytes != null || (_imageUrl?.isNotEmpty ?? false)
-                        ? 'Changer la photo'
-                        : 'Ajouter une photo',
-                  ),
+      // Description
+      TextFormField(
+        controller: _descriptionController,
+        decoration: InputDecoration(
+          labelText: 'Description',
+          prefixIcon: const Icon(Icons.description),
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(AdminTokens.radius12),
+          ),
+          alignLabelWithHint: true,
+        ),
+        maxLines: 3,
+      ),
+      const SizedBox(height: 16),
+
+      // Prix et catégorie
+      Row(
+        children: [
+          Expanded(
+            flex: 2,
+            child: TextFormField(
+              controller: _priceController,
+              decoration: InputDecoration(
+                labelText: 'Prix *',
+                prefixText: '${_getCurrencySymbol()} ',
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(AdminTokens.radius12),
                 ),
-                if (_pickedBytes != null || (_imageUrl?.isNotEmpty ?? false))
-                  TextButton.icon(
-                    onPressed: () {
-                      setState(() {
-                        _pickedBytes = null;
-                        _imageUrl = null;
-                        _removeImage = true;
-                      });
-                    },
-                    icon: const Icon(Icons.delete_outline, color: Colors.red),
-                    label: const Text('Retirer',
-                        style: TextStyle(color: Colors.red)),
-                  ),
-              ],
-            ),
-
-            const SizedBox(height: 24),
-
-            // Nom
-            TextFormField(
-              controller: _nameController,
-              decoration: const InputDecoration(
-                labelText: 'Nom du plat *',
-                prefixIcon: Icon(Icons.restaurant_menu),
-                border: OutlineInputBorder(),
               ),
+              keyboardType:
+                  const TextInputType.numberWithOptions(decimal: true),
+              inputFormatters: [
+                FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d{0,2}')),
+              ],
               validator: (value) {
-                if (value == null || value.trim().isEmpty) {
-                  return 'Le nom est obligatoire';
+                if (value == null || value.isEmpty) {
+                  return 'Prix obligatoire';
+                }
+                final price = double.tryParse(value);
+                if (price == null || price <= 0) {
+                  return 'Prix invalide';
                 }
                 return null;
               },
             ),
-            const SizedBox(height: 16),
-
-            // Description
-            TextFormField(
-              controller: _descriptionController,
-              decoration: const InputDecoration(
-                labelText: 'Description',
-                prefixIcon: Icon(Icons.description),
-                border: OutlineInputBorder(),
-                alignLabelWithHint: true,
-              ),
-              maxLines: 3,
-            ),
-            const SizedBox(height: 16),
-
-            // Prix et catégorie
-            Row(
-              children: [
-                Expanded(
-                  flex: 2,
-                  child: TextFormField(
-                    controller: _priceController,
+          ),
+          const SizedBox(width: 16),
+          Expanded(
+            flex: 3,
+            child: _categoriesLoaded
+                ? DropdownButtonFormField<String>(
+                    value: _categories.contains(_selectedCategory)
+                        ? _selectedCategory
+                        : null,
                     decoration: InputDecoration(
-                      labelText: 'Prix *',
-                      prefixText: '${_getCurrencySymbol()} ',
-                      border: const OutlineInputBorder(),
+                      labelText: 'Catégorie',
+                      prefixIcon: const Icon(Icons.category),
+                      border: OutlineInputBorder(
+                        borderRadius:
+                            BorderRadius.circular(AdminTokens.radius12),
+                      ),
                     ),
-                    keyboardType:
-                        const TextInputType.numberWithOptions(decimal: true),
-                    inputFormatters: [
-                      FilteringTextInputFormatter.allow(
-                          RegExp(r'^\d*\.?\d{0,2}')),
-                    ],
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Prix obligatoire';
-                      }
-                      final price = double.tryParse(value);
-                      if (price == null || price <= 0) {
-                        return 'Prix invalide';
-                      }
-                      return null;
-                    },
-                  ),
-                ),
-                const SizedBox(width: 16),
-                Expanded(
-                  flex: 3,
-                  child: _categoriesLoaded
-                      ? DropdownButtonFormField<String>(
-                          value: _categories.contains(_selectedCategory)
-                              ? _selectedCategory
-                              : null,
-                          decoration: const InputDecoration(
-                            labelText: 'Catégorie',
-                            prefixIcon: Icon(Icons.category),
-                            border: OutlineInputBorder(),
-                          ),
-                          items: _categories.map((category) {
-                            return DropdownMenuItem(
-                              value: category,
-                              child: Text(category),
-                            );
-                          }).toList(),
-                          onChanged: (value) {
-                            if (value != null) {
-                              setState(() {
-                                _selectedCategory = value;
-                              });
-                            }
-                          },
-                        )
-                      : const CircularProgressIndicator(), // Loading pendant le chargement
-                ),
-              ],
-            ),
-            const SizedBox(height: 24),
-
-            // Options
-            Card(
-              child: Padding(
-                padding: const EdgeInsets.all(16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Options',
-                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                            fontWeight: FontWeight.bold,
-                          ),
+                    elevation: 12,
+                    dropdownColor: Colors.white,
+                    style: const TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w500,
+                      color: AdminTokens.neutral700,
                     ),
-                    const SizedBox(height: 12),
-                    SwitchListTile(
-                      title: const Text('Mettre en avant'),
-                      subtitle: const Text('Épingler en haut de la catégorie'),
-                      value: _featured,
-                      onChanged: (value) => setState(() => _featured = value),
-                    ),
-                    const SizedBox(height: 16),
-                    Text('Badges',
-                        style: Theme.of(context).textTheme.titleMedium),
-                    const SizedBox(height: 8),
-                    Wrap(
-                      spacing: 8,
-                      children: [
-                        'populaire',
-                        'nouveau',
-                        'spécialité',
-                        'chef',
-                        'saisonnier'
-                      ]
-                          .map((badge) => FilterChip(
-                                label: Text(badge),
-                                selected: _badges.contains(badge),
-                                onSelected: (selected) {
-                                  setState(() {
-                                    if (selected)
-                                      _badges.add(badge);
-                                    else
-                                      _badges.remove(badge);
-                                  });
-                                },
-                              ))
-                          .toList(),
-                    ),
-                    const SizedBox(height: 16),
-                    SwitchListTile(
-                      title: const Text('Visible sur le menu'),
-                      subtitle: const Text('Les clients peuvent voir ce plat'),
-                      value: _isVisible,
-                      activeColor: AppColors.primary,
-                      onChanged: (value) {
+                    items: _categories.map((category) {
+                      return DropdownMenuItem(
+                        value: category,
+                        child: Text(category),
+                      );
+                    }).toList(),
+                    onChanged: (value) {
+                      if (value != null) {
                         setState(() {
-                          _isVisible = value;
+                          _selectedCategory = value;
+                        });
+                      }
+                    },
+                  )
+                : const CircularProgressIndicator(),
+          ),
+        ],
+      ),
+      const SizedBox(height: 24),
+
+      // Options
+      Container(
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(AdminTokens.radius16),
+          boxShadow: AdminTokens.shadowMd,
+          border: Border.all(color: AdminTokens.border),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Options',
+                style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
+              ),
+              const SizedBox(height: 12),
+              SwitchListTile(
+                title: const Text('Mettre en avant'),
+                subtitle: const Text('Épingler en haut de la catégorie'),
+                value: _featured,
+                onChanged: (value) => setState(() => _featured = value),
+              ),
+              const SizedBox(height: 16),
+              Text('Badges', style: Theme.of(context).textTheme.titleMedium),
+              const SizedBox(height: 8),
+              Wrap(
+                spacing: 8,
+                children:
+                    ['populaire', 'nouveau', 'spécialité', 'chef', 'saisonnier']
+                        .map((badge) => FilterChip(
+                              label: Text(badge),
+                              selected: _badges.contains(badge),
+                              onSelected: (selected) {
+                                setState(() {
+                                  if (selected)
+                                    _badges.add(badge);
+                                  else
+                                    _badges.remove(badge);
+                                });
+                              },
+                              backgroundColor: Colors.white,
+                              selectedColor: AdminTokens.primary50,
+                              checkmarkColor: AdminTokens.primary600,
+                              labelStyle: TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w500,
+                                color: _badges.contains(badge)
+                                    ? AdminTokens.primary600
+                                    : AdminTokens.neutral700,
+                              ),
+                              shape: RoundedRectangleBorder(
+                                borderRadius:
+                                    BorderRadius.circular(AdminTokens.radius12),
+                                side: BorderSide(
+                                  color: _badges.contains(badge)
+                                      ? AdminTokens.primary600
+                                      : AdminTokens.border,
+                                ),
+                              ),
+                            ))
+                        .toList(),
+              ),
+              const SizedBox(height: 16),
+              SwitchListTile(
+                title: const Text('Visible sur le menu'),
+                subtitle: const Text('Les clients peuvent voir ce plat'),
+                value: _isVisible,
+                activeColor: AdminTokens.primary600,
+                onChanged: (value) {
+                  setState(() {
+                    _isVisible = value;
+                  });
+                },
+              ),
+            ],
+          ),
+        ),
+      ),
+      const SizedBox(height: 32),
+
+      // Boutons
+      Row(
+        children: [
+          Expanded(
+            child: OutlinedButton(
+              onPressed: _isLoading ? null : () => Navigator.of(context).pop(),
+              child: const Text('Annuler'),
+            ),
+          ),
+          const SizedBox(width: 16),
+          Expanded(
+            child: ElevatedButton(
+              onPressed: _isLoading ? null : _saveMenuItem,
+              child: _isLoading
+                  ? const SizedBox(
+                      height: 20,
+                      width: 20,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    )
+                  : Text(widget.itemId != null ? 'Modifier' : 'Ajouter'),
+            ),
+          ),
+        ],
+      ),
+    ];
+  }
+
+  Widget _buildImageSection() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Container(
+          height: 240,
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(AdminTokens.radius16),
+            boxShadow: AdminTokens.shadowMd,
+            border: Border.all(color: AdminTokens.border),
+          ),
+          child: Stack(
+            children: [
+              Positioned.fill(
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(AdminTokens.radius16),
+                  child: () {
+                    if (_pickedBytes != null) {
+                      return Image.memory(_pickedBytes!, fit: BoxFit.cover);
+                    }
+                    if (_imageUrl != null && _imageUrl!.isNotEmpty) {
+                      return Image.network(
+                        _imageUrl!,
+                        fit: BoxFit.cover,
+                        errorBuilder: (_, __, ___) => _buildImagePlaceholder(),
+                      );
+                    }
+                    return _buildImagePlaceholder();
+                  }(),
+                ),
+              ),
+              // Bouton supprimer si image présente
+              if (_pickedBytes != null || (_imageUrl?.isNotEmpty ?? false))
+                Positioned(
+                  top: AdminTokens.space8,
+                  right: AdminTokens.space8,
+                  child: Material(
+                    color: Colors.black54,
+                    borderRadius: BorderRadius.circular(20),
+                    child: IconButton(
+                      tooltip: 'Retirer la photo',
+                      icon:
+                          const Icon(Icons.delete_outline, color: Colors.white),
+                      onPressed: () {
+                        setState(() {
+                          _pickedBytes = null;
+                          _imageUrl = null;
+                          _removeImage = true;
                         });
                       },
                     ),
-                  ],
+                  ),
                 ),
+            ],
+          ),
+        ),
+        const SizedBox(height: AdminTokens.space16),
+        // Boutons d'action image
+        Row(
+          children: [
+            Expanded(
+              child: OutlinedButton.icon(
+                onPressed: () async {
+                  await _pickImage();
+                  setState(() => _removeImage = false);
+                },
+                icon: const Icon(Icons.camera_alt),
+                label: Text(
+                    _pickedBytes != null || (_imageUrl?.isNotEmpty ?? false)
+                        ? 'Changer'
+                        : 'Ajouter'),
               ),
             ),
-            const SizedBox(height: 32),
-
-            // Boutons
-            Row(
-              children: [
-                Expanded(
-                  child: OutlinedButton(
-                    onPressed:
-                        _isLoading ? null : () => Navigator.of(context).pop(),
-                    child: const Text('Annuler'),
-                  ),
-                ),
-                const SizedBox(width: 16),
-                Expanded(
-                  child: ElevatedButton(
-                    onPressed: _isLoading ? null : _saveMenuItem,
-                    child: _isLoading
-                        ? const SizedBox(
-                            height: 20,
-                            width: 20,
-                            child: CircularProgressIndicator(strokeWidth: 2),
-                          )
-                        : Text(isEditing ? 'Modifier' : 'Ajouter'),
-                  ),
-                ),
-              ],
-            ),
+            if (_pickedBytes != null || (_imageUrl?.isNotEmpty ?? false)) ...[
+              const SizedBox(width: AdminTokens.space8),
+              OutlinedButton.icon(
+                onPressed: () {
+                  setState(() {
+                    _pickedBytes = null;
+                    _imageUrl = null;
+                    _removeImage = true;
+                  });
+                },
+                icon: const Icon(Icons.delete_outline, color: Colors.red),
+                label:
+                    const Text('Retirer', style: TextStyle(color: Colors.red)),
+              ),
+            ],
           ],
         ),
-      ),
+      ],
     );
   }
 

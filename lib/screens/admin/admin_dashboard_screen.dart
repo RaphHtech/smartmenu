@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:smartmenu_app/core/design/admin_tokens.dart';
 import 'package:smartmenu_app/screens/admin/admin_menu_reorder_screen.dart';
-import '../../core/constants/colors.dart';
 import 'menu_item_form_screen.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../widgets/ui/admin_shell.dart';
@@ -158,7 +157,14 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                   ],
                 ),
                 onPressed: _showAddCategoryDialog,
-                backgroundColor: Colors.green[50],
+                backgroundColor: AdminTokens.primary50,
+                labelStyle: const TextStyle(
+                  color: AdminTokens.primary600,
+                  fontWeight: FontWeight.w500,
+                ),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(AdminTokens.radius12),
+                ),
               ),
             ),
           ],
@@ -331,7 +337,6 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
 
   @override
   Widget build(BuildContext context) {
-    print('Dashboard rebuild ${DateTime.now().millisecond}'); // Debug
     return StreamBuilder<CategoryLiveState>(
       stream: CategoryManager.getLiveState(widget.restaurantId),
       builder: (context, snapshot) {
@@ -369,14 +374,68 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
               PopupMenuButton<String>(
                 icon: const Icon(Icons.more_vert),
                 onSelected: (value) => _handleAppBarAction(value, state),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(AdminTokens.radius12),
+                  side: const BorderSide(
+                      color: AdminTokens.border, width: 1), // Ajoute ça
+                ),
+                elevation: 8,
+                color: Colors.white,
                 itemBuilder: (context) => [
                   const PopupMenuItem(
-                      value: 'manage_categories',
-                      child: Text('Gérer catégories')),
+                    value: 'manage_categories',
+                    child: Row(
+                      children: [
+                        Icon(Icons.settings,
+                            size: 18, color: AdminTokens.neutral600),
+                        SizedBox(width: AdminTokens.space12),
+                        Text(
+                          'Gérer catégories',
+                          style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w500,
+                            color: AdminTokens.neutral700,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
                   const PopupMenuItem(
-                      value: 'reorder', child: Text('Réorganiser plats')),
+                    value: 'reorder',
+                    child: Row(
+                      children: [
+                        Icon(Icons.reorder,
+                            size: 18, color: AdminTokens.neutral600),
+                        SizedBox(width: AdminTokens.space12),
+                        Text(
+                          'Réorganiser plats',
+                          style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w500,
+                            color: AdminTokens.neutral700,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
                   const PopupMenuItem(
-                      value: 'preview', child: Text('Prévisualiser')),
+                    value: 'preview',
+                    child: Row(
+                      children: [
+                        Icon(Icons.preview,
+                            size: 18, color: AdminTokens.neutral600),
+                        SizedBox(width: AdminTokens.space12),
+                        Text(
+                          'Prévisualiser',
+                          style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w500,
+                            color: AdminTokens.neutral700,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
                 ],
               ),
             ],
@@ -634,12 +693,13 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                                                       children: [
                                                         Text(
                                                           '${_formatPriceNumber(data['price'])}\u00A0₪',
-                                                          style: TextStyle(
+                                                          style:
+                                                              const TextStyle(
                                                             fontSize: 19,
                                                             fontWeight:
                                                                 FontWeight.w700,
-                                                            color: Colors.indigo
-                                                                .shade600,
+                                                            color: AdminTokens
+                                                                .primary600,
                                                           ),
                                                         ),
                                                       ],
@@ -658,6 +718,15 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                                         height: 44,
                                         child: PopupMenuButton<String>(
                                           padding: EdgeInsets.zero,
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.circular(
+                                                AdminTokens.radius12),
+                                            side: const BorderSide(
+                                                color: AdminTokens.border,
+                                                width: 1), // Ajoute ça
+                                          ),
+                                          elevation: 12,
+                                          color: Colors.white,
                                           onSelected: (value) {
                                             switch (value) {
                                               case 'edit':
@@ -668,28 +737,50 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                                                 break;
                                             }
                                           },
-                                          itemBuilder: (context) => const [
-                                            PopupMenuItem(
+                                          itemBuilder: (context) => [
+                                            const PopupMenuItem(
                                               value: 'edit',
                                               child: Row(
                                                 children: [
-                                                  Icon(Icons.edit, size: 18),
-                                                  SizedBox(width: 8),
-                                                  Text('Modifier'),
+                                                  Icon(Icons.edit,
+                                                      size: 18,
+                                                      color: AdminTokens
+                                                          .neutral600),
+                                                  SizedBox(
+                                                      width:
+                                                          AdminTokens.space8),
+                                                  Text(
+                                                    'Modifier',
+                                                    style: TextStyle(
+                                                      fontSize: 14,
+                                                      fontWeight:
+                                                          FontWeight.w500,
+                                                      color: AdminTokens
+                                                          .neutral700,
+                                                    ),
+                                                  ),
                                                 ],
                                               ),
                                             ),
-                                            PopupMenuItem(
+                                            const PopupMenuItem(
                                               value: 'delete',
                                               child: Row(
                                                 children: [
                                                   Icon(Icons.delete,
                                                       size: 18,
                                                       color: Colors.red),
-                                                  SizedBox(width: 8),
-                                                  Text('Supprimer',
-                                                      style: TextStyle(
-                                                          color: Colors.red)),
+                                                  SizedBox(
+                                                      width:
+                                                          AdminTokens.space8),
+                                                  Text(
+                                                    'Supprimer',
+                                                    style: TextStyle(
+                                                      fontSize: 14,
+                                                      fontWeight:
+                                                          FontWeight.w500,
+                                                      color: Colors.red,
+                                                    ),
+                                                  ),
                                                 ],
                                               ),
                                             ),
@@ -866,7 +957,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                           )
                         : null,
                     border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8),
+                      borderRadius: BorderRadius.circular(AdminTokens.radius12),
                     ),
                     contentPadding:
                         const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
@@ -880,11 +971,13 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                   value: _sortBy,
                   decoration: InputDecoration(
                     border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8),
+                      borderRadius: BorderRadius.circular(AdminTokens.radius12),
                     ),
                     contentPadding:
                         const EdgeInsets.symmetric(horizontal: 6, vertical: 8),
                   ),
+                  elevation: 12,
+                  dropdownColor: Colors.white,
                   items: const [
                     DropdownMenuItem(
                         value: 'category', child: Text('Catégorie')),
