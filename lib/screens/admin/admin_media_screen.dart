@@ -47,7 +47,7 @@ class _AdminMediaScreenState extends State<AdminMediaScreen> {
           items.add(MediaItem(
             name: item.name,
             url: url,
-            path: 'restaurants/${widget.restaurantId}/menu/${item.name}',
+            path: 'restaurants/${widget.restaurantId}/media/${item.name}',
             size: metadata.size ?? 0,
             uploadDate: metadata.timeCreated ?? DateTime.now(),
           ));

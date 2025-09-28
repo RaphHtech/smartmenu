@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:smartmenu_app/core/breakpoint_controller.dart';
 import 'package:smartmenu_app/screens/admin/admin_branding_screen.dart';
 import 'package:smartmenu_app/screens/admin/admin_orders_screen.dart';
 import '../../screens/admin/admin_dashboard_overview_screen.dart';
@@ -40,18 +41,23 @@ class _AdminShellState extends State<AdminShell> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   String _selectedRoute = '/dashboard';
   String get _currentRoute => widget.activeRoute ?? _selectedRoute;
-
+  late final BreakpointController _breakpointController;
   @override
   void initState() {
     super.initState();
     if (widget.activeRoute != null) {
       _selectedRoute = widget.activeRoute!;
     }
+
+    // ✅ CORRECT
+    _breakpointController = BreakpointController(false);
   }
 
   @override
   void didUpdateWidget(covariant AdminShell oldWidget) {
     super.didUpdateWidget(oldWidget);
+    print(
+        'AdminShell didUpdateWidget - old: ${oldWidget.activeRoute}, new: ${widget.activeRoute}');
     if (widget.activeRoute != null &&
         widget.activeRoute != oldWidget.activeRoute) {
       setState(() => _selectedRoute = widget.activeRoute!);
@@ -108,37 +114,52 @@ class _AdminShellState extends State<AdminShell> {
   ];
 
   @override
+  void dispose() {
+    _breakpointController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      key: _scaffoldKey,
-      backgroundColor: AdminTokens.neutral50,
+    print(
+        'AdminShell rebuild ${DateTime.now().millisecond} - route: $_currentRoute');
 
-      // Drawer pour mobile
-      drawer: _buildDrawer(),
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        // Mettre à jour le contrôleur avec la largeur actuelle
+        _breakpointController.update(constraints.maxWidth);
 
-      body: Row(
-        children: [
-          // Sidebar pour desktop
-          if (MediaQuery.of(context).size.width >= 1024) _buildSidebar(),
-
-          // Zone de contenu principal
-          Expanded(
-            child: Column(
-              children: [
-                _buildTopbar(),
-                _buildBreadcrumbs(),
-                Expanded(
-                  child: Container(
-                    width: double.infinity,
-                    padding: const EdgeInsets.all(AdminTokens.space24),
-                    child: widget.child,
+        return ValueListenableBuilder<bool>(
+          valueListenable: _breakpointController,
+          builder: (context, isDesktop, child) {
+            return Scaffold(
+              key: _scaffoldKey,
+              backgroundColor: AdminTokens.neutral50,
+              drawer: _buildDrawer(),
+              body: Row(
+                children: [
+                  if (isDesktop) _buildSidebar(),
+                  Expanded(
+                    child: Column(
+                      children: [
+                        _buildTopbar(),
+                        _buildBreadcrumbs(),
+                        Expanded(
+                          child: Container(
+                            width: double.infinity,
+                            padding: const EdgeInsets.all(AdminTokens.space24),
+                            child: widget.child,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
+                ],
+              ),
+            );
+          },
+        );
+      },
     );
   }
 
@@ -373,84 +394,86 @@ class _AdminShellState extends State<AdminShell> {
   }
 
   Widget _buildTopbar() {
-    return Container(
-      height: AdminTokens.topbarHeight,
-      decoration: const BoxDecoration(
-        color: Colors.white,
-        border: Border(
-          bottom: BorderSide(
-            color: AdminTokens.neutral200,
-            width: 1,
-          ),
-        ),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: AdminTokens.space24),
-        child: Row(
-          children: [
-            // Menu burger pour mobile
-            // Leading (back ou burger)
-            Builder(
-              builder: (context) {
-                final w = MediaQuery.of(context).size.width;
-                final canPop = Navigator.of(context).canPop();
-
-                // ✅ Utiliser activeRoute en priorité pour déterminer showBack
-                final currentRoute = _currentRoute;
-                final showBack =
-                    (currentRoute == '/dashboard') ? false : canPop;
-                if (w < 1024) {
-                  return IconButton(
-                    icon:
-                        Icon(showBack ? Icons.arrow_back_ios_new : Icons.menu),
-                    onPressed: () => showBack
-                        ? Navigator.maybePop(context)
-                        : _scaffoldKey.currentState?.openDrawer(),
-                  );
-                }
-
-                if (showBack) {
-                  return IconButton(
-                    icon: const Icon(Icons.arrow_back_ios_new),
-                    onPressed: () => Navigator.maybePop(context),
-                  );
-                }
-                return const SizedBox.shrink();
-              },
-            ),
-
-            // Titre adaptatif selon largeur
-            Flexible(
-              child: Text(
-                widget.title,
-                style: MediaQuery.of(context).size.width < 400
-                    ? AdminTypography
-                        .bodyLarge // Encore plus petit pour Galaxy S8+
-                    : MediaQuery.of(context).size.width < 600
-                        ? AdminTypography.headlineMedium
-                        : AdminTypography.headlineLarge,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
+    return ValueListenableBuilder<bool>(
+        valueListenable: _breakpointController,
+        builder: (context, isDesktop, child) {
+          return Container(
+            height: AdminTokens.topbarHeight,
+            decoration: const BoxDecoration(
+              color: Colors.white,
+              border: Border(
+                bottom: BorderSide(
+                  color: AdminTokens.neutral200,
+                  width: 1,
+                ),
               ),
             ),
+            child: Padding(
+              padding:
+                  const EdgeInsets.symmetric(horizontal: AdminTokens.space24),
+              child: Row(
+                children: [
+                  // Menu burger pour mobile
+                  // Leading (back ou burger)
+                  Builder(
+                    builder: (context) {
+                      final canPop = Navigator.of(context).canPop();
 
-            const Spacer(),
+                      // ✅ Utiliser activeRoute en priorité pour déterminer showBack
+                      final currentRoute = _currentRoute;
+                      final showBack =
+                          (currentRoute == '/dashboard') ? false : canPop;
+                      if (!isDesktop) {
+                        return IconButton(
+                          icon: Icon(
+                              showBack ? Icons.arrow_back_ios_new : Icons.menu),
+                          onPressed: () => showBack
+                              ? Navigator.maybePop(context)
+                              : _scaffoldKey.currentState?.openDrawer(),
+                        );
+                      }
 
-            // Actions personnalisées
-            if (widget.actions != null) ...widget.actions!,
+                      if (showBack) {
+                        return IconButton(
+                          icon: const Icon(Icons.arrow_back_ios_new),
+                          onPressed: () => Navigator.maybePop(context),
+                        );
+                      }
+                      return const SizedBox.shrink();
+                    },
+                  ),
 
-            // Sur mobile, quand on a "retour", on offre aussi un accès au menu (drawer)
-            if (MediaQuery.of(context).size.width < 1024 &&
-                Navigator.of(context).canPop())
-              IconButton(
-                icon: const Icon(Icons.menu),
-                tooltip: 'Menu',
-                onPressed: () => _scaffoldKey.currentState?.openDrawer(),
+                  // Titre adaptatif selon largeur
+                  Flexible(
+                    child: Text(
+                      widget.title,
+                      style: MediaQuery.of(context).size.width < 400
+                          ? AdminTypography.bodyLarge
+                          : MediaQuery.of(context).size.width < 600
+                              ? AdminTypography.headlineMedium
+                              : AdminTypography.headlineLarge,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+
+                  const Spacer(),
+
+                  // Actions personnalisées
+                  if (widget.actions != null) ...widget.actions!,
+
+                  // Sur mobile, quand on a "retour", on offre aussi un accès au menu (drawer)
+                  if (isDesktop && Navigator.of(context).canPop())
+                    IconButton(
+                      icon: const Icon(Icons.menu),
+                      tooltip: 'Menu',
+                      onPressed: () => _scaffoldKey.currentState?.openDrawer(),
+                    ),
+                ],
               ),
-          ],
-        ),
-      ),
-    );
+            ),
+          );
+        });
   }
 
   Widget _buildBreadcrumbs() {

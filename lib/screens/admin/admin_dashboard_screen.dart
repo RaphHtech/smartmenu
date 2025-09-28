@@ -305,6 +305,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
 
   @override
   Widget build(BuildContext context) {
+    print('Dashboard rebuild ${DateTime.now().millisecond}'); // Debug
     return StreamBuilder<CategoryLiveState>(
       stream: CategoryManager.getLiveState(widget.restaurantId),
       builder: (context, snapshot) {
@@ -368,7 +369,9 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                       .doc(widget.restaurantId)
                       .collection('menus')
                       .snapshots()
-                      .distinct(), // Évite les rebuilds identiques
+                      .where((snapshot) =>
+                          snapshot.metadata.isFromCache ==
+                          false), // Ignore cache
                   builder: (context, snapshot) {
                     if (snapshot.hasError) {
                       return const Center(

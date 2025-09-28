@@ -69,9 +69,9 @@ class CategoryManager {
         }
 
         // Réconciliation automatique si nouvelles catégories détectées
-        if (mergedOrder.length > configuredOrder.length) {
-          _reconcileCategories(restaurantId, mergedOrder);
-        }
+        // if (mergedOrder.length > configuredOrder.length) {
+        //   _reconcileCategories(restaurantId, mergedOrder);
+        // }
 
         return CategoryLiveState(
           order: mergedOrder,

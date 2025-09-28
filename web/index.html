@@ -23,41 +23,43 @@
   <link rel="icon" type="image/png" sizes="512x512" href="icons/Icon-512.png">
   
   <style>
-  html, body {
-    height: 100%;
-    margin: 0;
-    background: #F9FAFB;
-    /* IMPORTANT pour iOS Safari */
-    -webkit-overflow-scrolling: touch;
-    -webkit-user-select: none;
-    -webkit-touch-callout: none;
-  }
-  
-  body { 
-    overscroll-behavior-y: none;
-    /* Fix iOS bounce */
-    position: fixed;
-    overflow: hidden;
-    width: 100%;
-    height: 100%;
-  }
-  
-  #flutter_host {
-    width: 100%;
-    height: 100%;
-    overflow: auto;
-    -webkit-overflow-scrolling: touch;
-  }
-  
-  .loading {
-    min-height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: #6B7280;
-    font-family: system-ui, -apple-system, "Segoe UI", Roboto, Ubuntu, Cantarell, "Noto Sans", sans-serif;
-  }
-</style>
+    html, body {
+      height: 100%;
+      margin: 0;
+      background: #F9FAFB;
+      /* Pas de scroll de page sur desktop */
+      overflow: hidden;
+    }
+
+    /* Mobile uniquement : garde ton fix iOS */
+    @media (max-width: 1023px) {
+      body {
+        position: fixed;
+        overflow: hidden;
+        overscroll-behavior-y: none;
+        width: 100%;
+        height: 100%;
+        -webkit-overflow-scrolling: touch;
+        -webkit-user-select: none;
+        -webkit-touch-callout: none;
+      }
+    }
+
+    #flutter_host {
+      position: fixed; 
+      inset: 0; /* plein écran stable */
+      overflow: hidden; /* pas d'overflow auto ici */
+    }
+
+    .loading {
+      min-height: 100%;
+      display: flex; 
+      align-items: center; 
+      justify-content: center;
+      color: #6B7280;
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, Ubuntu, Cantarell, "Noto Sans", sans-serif;
+    }
+  </style>
 
 </head>
 <body>
@@ -79,14 +81,16 @@
   window.addEventListener('load', function () {
     const host = document.querySelector('#flutter_host');
     const loading = host.querySelector('.loading');
+
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+    const renderer = isIOS ? 'html' : 'canvaskit'; // html sur iOS, CanvasKit ailleurs
     
     _flutter.loader.loadEntrypoint({
       entrypointUrl: '/main.dart.js',
       onEntrypointLoaded: function (engineInitializer) {
         engineInitializer.initializeEngine({ 
           hostElement: host,
-          // Optimisations iOS
-          renderer: "html"
+          renderer
         }).then(function (appRunner) {
           loading?.remove();
           appRunner.runApp();
