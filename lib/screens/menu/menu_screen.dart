@@ -2,7 +2,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:smartmenu_app/core/design/client_tokens.dart';
 import 'package:smartmenu_app/services/analytics_service.dart';
-import 'package:smartmenu_app/services/order_service.dart';
 import 'package:smartmenu_app/services/table_service.dart';
 import 'package:smartmenu_app/widgets/badges_legend_widget.dart';
 import '../../core/constants/colors.dart';
@@ -12,12 +11,11 @@ import '../../widgets/modals/order_review_modal.dart';
 import '../../widgets/notifications/custom_notification.dart';
 import '../../widgets/menu/cart_floating_widget.dart';
 import '../../services/cart_service.dart';
-import 'package:flutter/foundation.dart' show kIsWeb;
-import 'dart:html' as html;
 import '../../widgets/premium_app_header_widget.dart';
 import '../../services/server_call_service.dart';
 import '../../state/currency_scope.dart';
 import '../../widgets/common/top_toast.dart';
+import '../../l10n/app_localizations.dart';
 
 List<String> applyOrderAndHide(
   Set<String> allCats,
@@ -44,7 +42,7 @@ class MenuScreen extends StatefulWidget {
 }
 
 class SimpleMenuScreenState extends State<MenuScreen> {
-  bool _isLoading = true; // État initial : en chargement
+  bool _isLoading = true;
   int _cartItemCount = 0;
   double _cartTotal = 0.0;
   bool _isAdminPreview = false;
@@ -55,13 +53,17 @@ class SimpleMenuScreenState extends State<MenuScreen> {
   bool _promoEnabled = true;
   String _restaurantName = '';
   String _logoUrl = '';
-  String _restaurantCurrency = 'ILS'; // <-- règle l'erreur "undefined name"
-  String _tagline = ''; // sous-titre (catch phrase)
-  String _promoText = ''; // bandeau promo
+  String _restaurantCurrency = 'ILS';
+  String _tagline = '';
+  String _promoText = '';
   Map<String, List<Map<String, dynamic>>> _menuData = {};
   List<String> _orderedCategories = [];
   final ScrollController _mainScrollController = ScrollController();
   bool _isHeaderCollapsed = false;
+
+  // Helper pour accéder facilement aux traductions
+  AppLocalizations _l10n(BuildContext context) => AppLocalizations.of(context)!;
+
   String _emojiFor(String cat) {
     switch (cat) {
       case 'Pizzas':
@@ -73,9 +75,30 @@ class SimpleMenuScreenState extends State<MenuScreen> {
       case 'Desserts':
         return '🍰';
       case 'Boissons':
-        return '🍹';
+        return '🹹';
       default:
         return '⭐';
+    }
+  }
+
+  // Traduit les catégories selon la langue active
+  String _translateCategory(BuildContext context, String category) {
+    final l10n = _l10n(context);
+    switch (category) {
+      case 'Pizzas':
+        return l10n.categoryPizzas;
+      case 'Entrées':
+        return l10n.categoryStarters;
+      case 'Pâtes':
+        return l10n.categoryPasta;
+      case 'Desserts':
+        return l10n.categoryDesserts;
+      case 'Boissons':
+        return l10n.categoryDrinks;
+      case 'Autres':
+        return l10n.categoryOther;
+      default:
+        return category;
     }
   }
 
@@ -94,7 +117,6 @@ class SimpleMenuScreenState extends State<MenuScreen> {
     }).toList();
   }
 
-// --- Groupage par catégorie + tri par nom ---
   Map<String, List<Map<String, dynamic>>> _groupByCategory(
       List<Map<String, dynamic>> items) {
     final Map<String, List<Map<String, dynamic>>> out = {};
@@ -103,30 +125,25 @@ class SimpleMenuScreenState extends State<MenuScreen> {
       (out[cat] ??= []).add(it);
     }
 
-    // Tri par : featured (true en premier), puis position, puis nom
     for (final v in out.values) {
       v.sort((a, b) {
-        // DEBUG: Affiche les valeurs
         final aFeatured = a['featured'] as bool? ?? false;
         final bFeatured = b['featured'] as bool? ?? false;
 
         debugPrint(
             'Tri: ${a['name']} (featured=$aFeatured) vs ${b['name']} (featured=$bFeatured)');
 
-        // 1. Featured en premier
         if (aFeatured != bFeatured) {
           final result = aFeatured ? -1 : 1;
           debugPrint('  → Featured différent, résultat: $result');
           return result;
         }
 
-        // 2. Puis par position
         final aPosition = (a['position'] as num?)?.toDouble() ?? 999999.0;
         final bPosition = (b['position'] as num?)?.toDouble() ?? 999999.0;
         final positionCompare = aPosition.compareTo(bPosition);
         if (positionCompare != 0) return positionCompare;
 
-        // 3. Enfin par nom
         return (a['name'] ?? '')
             .toString()
             .compareTo((b['name'] ?? '').toString());
@@ -139,14 +156,12 @@ class SimpleMenuScreenState extends State<MenuScreen> {
   Future<void> _hydrate() async {
     setState(() => _isLoading = true);
 
-    // Résolution RID unique
     final String resolvedRid = () {
       final q = Uri.base.queryParameters['rid'];
       if (q != null && q.isNotEmpty) return q;
       return widget.restaurantId;
     }();
 
-    // Fetch parallèle
     final futures = await Future.wait([
       _fetchMenuItems(resolvedRid),
       _loadRestaurantDetailsData(resolvedRid),
@@ -155,7 +170,6 @@ class SimpleMenuScreenState extends State<MenuScreen> {
     final items = futures[0] as List<Map<String, dynamic>>;
     final restaurantData = futures[1] as Map<String, dynamic>;
 
-    // Construction de l'ordre
     final organized = _groupByCategory(items);
     final categoriesOrder =
         List<String>.from(restaurantData['categoriesOrder'] ?? []);
@@ -169,7 +183,6 @@ class SimpleMenuScreenState extends State<MenuScreen> {
       ...allCats.difference(categoriesOrder.toSet()).toList()..sort(),
     ];
 
-    // Single setState
     if (mounted) {
       setState(() {
         _menuData = organized;
@@ -194,13 +207,11 @@ class SimpleMenuScreenState extends State<MenuScreen> {
     _isAdminPreview = qp.containsKey('preview') || qp.containsKey('admin');
     String? tableId = qp['t'] ?? qp['table'];
     if (tableId != null) {
-      // Nettoyer le format (accepter "table12" → "12")
       tableId = tableId.replaceFirst(RegExp(r'^table'), '');
       TableService.setTableId(tableId);
     }
 
     _hydrate();
-    // Log menu open
     AnalyticsService.logMenuOpen(widget.restaurantId,
         tableId: TableService.getTableId());
     _mainScrollController.addListener(_handleScroll);
@@ -236,14 +247,12 @@ class SimpleMenuScreenState extends State<MenuScreen> {
       _cartTotal += price;
     });
 
-    // Log add to cart (UNE SEULE LIGNE)
     AnalyticsService.logAddToCart(widget.restaurantId, itemName,
         tableId: TableService.getTableId());
 
-    // Animation visuelle (optionnel)
     TopToast.show(
       context,
-      message: '$itemName ajouté au panier !',
+      message: _l10n(context).itemAddedToCart(itemName),
       variant: ToastVariant.success,
     );
   }
@@ -263,10 +272,9 @@ class SimpleMenuScreenState extends State<MenuScreen> {
       _cartTotal += (price * quantityDiff);
     });
 
-    final currentQuantity =
-        itemQuantities[itemName] ?? 0; // Redéfini ici pour la comparaison
+    final currentQuantity = itemQuantities[itemName] ?? 0;
     if (newQuantity > currentQuantity) {
-      _showCustomNotification('✅ $itemName ajouté au panier !');
+      _showCustomNotification('✅ ${_l10n(context).itemAddedToCart(itemName)}');
     }
   }
 
@@ -313,7 +321,6 @@ class SimpleMenuScreenState extends State<MenuScreen> {
       _selectedCategory = category;
     });
 
-    // Post-frame pour éviter double animateTo
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (_categoryScrollController.hasClients && mounted) {
         final selectedIndex = _orderedCategories.indexOf(category);
@@ -334,10 +341,9 @@ class SimpleMenuScreenState extends State<MenuScreen> {
 
   void _showOrderReview() {
     if (_cartItemCount == 0) {
-// Panier vide
       TopToast.show(
         context,
-        message: 'Votre panier est vide !',
+        message: _l10n(context).cartEmpty,
         variant: ToastVariant.info,
       );
       return;
@@ -355,15 +361,6 @@ class SimpleMenuScreenState extends State<MenuScreen> {
 
   void _confirmOrder() async {
     try {
-      // Soumettre la commande via OrderService
-      // final orderId = await OrderService.submitOrder(
-      // //   restaurantId: widget.restaurantId,
-      //   itemQuantities: itemQuantities,
-      //   menuData: _menuData,
-      //   currency: _restaurantCurrency,
-      // );
-
-      // Vider le panier
       setState(() {
         itemQuantities.clear();
         _cartItemCount = 0;
@@ -371,18 +368,16 @@ class SimpleMenuScreenState extends State<MenuScreen> {
         _showOrderModal = false;
       });
 
-      // Notification de succès
       TopToast.show(
         context,
-        message: 'Commande créée !',
-        subtitle: 'Le restaurant a été notifié.',
+        message: _l10n(context).orderCreated,
+        subtitle: _l10n(context).restaurantNotified,
         variant: ToastVariant.success,
       );
     } catch (e) {
-      // Gestion d'erreur
       TopToast.show(
         context,
-        message: 'Erreur lors de la commande',
+        message: _l10n(context).orderError,
         subtitle: e.toString(),
         variant: ToastVariant.error,
         duration: const Duration(seconds: 4),
@@ -399,14 +394,8 @@ class SimpleMenuScreenState extends State<MenuScreen> {
       Navigator.pop(context);
       return;
     }
-    if (kIsWeb) {
-      try {
-        html.window.close();
-      } catch (_) {
-        final returnUrl = Uri.base.queryParameters['return'] ?? '/admin';
-        html.window.location.assign(returnUrl);
-      }
-    }
+    // Pour web, on pourrait ajouter un service d'abstraction
+    // Pour l'instant, on laisse vide pour compatibilité mobile
   }
 
   void _handleScroll() {
@@ -480,12 +469,13 @@ class SimpleMenuScreenState extends State<MenuScreen> {
   @override
   Widget build(BuildContext context) {
     final code = _restaurantCurrency.toUpperCase();
+    final l10n = _l10n(context);
+
     return CurrencyScope(
       code: code,
       child: Stack(
         clipBehavior: Clip.none,
         children: [
-          // 1) Fond diagonal (135°)
           const Positioned.fill(
             child: DecoratedBox(
               decoration: BoxDecoration(
@@ -493,14 +483,11 @@ class SimpleMenuScreenState extends State<MenuScreen> {
               ),
             ),
           ),
-
-          // 2) Voile global léger
           const Positioned.fill(
             child: DecoratedBox(
               decoration: BoxDecoration(gradient: AppColors.pageOverlay),
             ),
           ),
-
           Scaffold(
             backgroundColor: Colors.transparent,
             body: SafeArea(
@@ -509,7 +496,6 @@ class SimpleMenuScreenState extends State<MenuScreen> {
                 controller: _mainScrollController,
                 physics: const BouncingScrollPhysics(),
                 slivers: [
-                  // ===== HEADER (en dur) =====
                   PremiumAppHeaderWidget(
                     tagline: _tagline,
                     onServerCall: _isLoading
@@ -517,7 +503,7 @@ class SimpleMenuScreenState extends State<MenuScreen> {
                         : () {
                             final tableId = TableService.getTableId();
                             if (tableId == null) {
-                              _showCustomNotification('Table non identifiée');
+                              _showCustomNotification(l10n.tableNotIdentified);
                               return;
                             }
 
@@ -527,38 +513,33 @@ class SimpleMenuScreenState extends State<MenuScreen> {
                               rid: widget.restaurantId,
                               table: 'table$tableId',
                             ).then((_) {
-                              // Succès
                               if (mounted) {
-                                // ← AJOUTER
                                 TopToast.show(
                                   context,
-                                  message: 'Serveur appelé !',
-                                  subtitle: 'Un membre de notre équipe arrive.',
+                                  message: l10n.waiterCalled,
+                                  subtitle: l10n.staffComing,
                                   variant: ToastVariant.info,
                                 );
                               }
                             }).catchError((e) {
                               if (mounted) {
-                                // ← AJOUTER
                                 final error = e.toString();
                                 if (error.contains('COOLDOWN_ACTIVE:')) {
                                   final seconds = error.split(':')[1];
                                   TopToast.show(
                                     context,
-                                    message:
-                                        'Veuillez attendre ${seconds}s entre les appels',
+                                    message: l10n.cooldownWait(seconds),
                                     variant: ToastVariant.warning,
                                   );
                                 } else {
                                   TopToast.show(
                                     context,
-                                    message: 'Erreur: $e',
+                                    message: l10n.error(e.toString()),
                                     variant: ToastVariant.error,
                                   );
                                 }
                               }
                             }).whenComplete(() {
-                              // ← AJOUTER ce bloc
                               if (mounted) setState(() => _isLoading = false);
                             });
                           },
@@ -569,7 +550,6 @@ class SimpleMenuScreenState extends State<MenuScreen> {
                         : null,
                     logoUrl: _logoUrl,
                   ),
-                  // ===== SECTION PROMO (glassmorphism) =====
                   SliverToBoxAdapter(
                     child: AnimatedContainer(
                       duration: const Duration(milliseconds: 200),
@@ -585,10 +565,7 @@ class SimpleMenuScreenState extends State<MenuScreen> {
                       ),
                     ),
                   ),
-
                   const SliverToBoxAdapter(child: SizedBox(height: 12)),
-
-                  // ===== NAVIGATION CATÉGORIES =====
                   SliverAppBar(
                     pinned: true,
                     toolbarHeight: 0,
@@ -626,7 +603,8 @@ class SimpleMenuScreenState extends State<MenuScreen> {
                                   Padding(
                                     padding: const EdgeInsets.only(right: 12),
                                     child: CategoryPill(
-                                      label: '${_emojiFor(cat)} $cat',
+                                      label:
+                                          '${_emojiFor(cat)} ${_translateCategory(context, cat)}',
                                       isActive: _selectedCategory == cat,
                                       onTap: () => _selectCategory(cat),
                                     ),
@@ -639,10 +617,7 @@ class SimpleMenuScreenState extends State<MenuScreen> {
                       ),
                     ),
                   ),
-
                   const SliverToBoxAdapter(child: SizedBox(height: 12)),
-
-                  // ===== TITRE DE SECTION AVEC INFO BADGES =====
                   SliverToBoxAdapter(
                     child: Padding(
                       padding: const EdgeInsets.symmetric(
@@ -652,8 +627,9 @@ class SimpleMenuScreenState extends State<MenuScreen> {
                         children: [
                           Text(
                             _selectedCategory.isEmpty
-                                ? 'Menu'
-                                : _selectedCategory,
+                                ? l10n.menu
+                                : _translateCategory(
+                                    context, _selectedCategory),
                             style: Theme.of(context)
                                 .textTheme
                                 .titleLarge
@@ -689,7 +665,6 @@ class SimpleMenuScreenState extends State<MenuScreen> {
                       ),
                     ),
                   ),
-                  // ===== ITEMS DU MENU =====
                   (() {
                     if (_isLoading) {
                       return const SliverToBoxAdapter(
@@ -715,7 +690,6 @@ class SimpleMenuScreenState extends State<MenuScreen> {
                             (context, index) {
                               final item = currentItems[index];
 
-                              // make sure MenuItem gets both 'image' and 'imageUrl'
                               final adapted = {
                                 ...item,
                                 'image': (item['imageUrl'] ?? item['image'])
@@ -734,7 +708,7 @@ class SimpleMenuScreenState extends State<MenuScreen> {
                                   pizza: adapted,
                                   quantity: itemQuantities[nameKey] ?? 0,
                                   onAddToCart: addToCart,
-                                  onSetQuantity: setItemQuantity, // ← NOUVEAU
+                                  onSetQuantity: setItemQuantity,
                                   onIncreaseQuantity: increaseQuantity,
                                   onDecreaseQuantity: decreaseQuantity,
                                 ),
@@ -746,33 +720,29 @@ class SimpleMenuScreenState extends State<MenuScreen> {
                       );
                     }
                   })(),
-
                   if (!_isAdminPreview)
                     SliverToBoxAdapter(
                       child: Container(
                         padding: const EdgeInsets.all(16),
                         child: Center(
                           child: Text(
-                            'Powered by SmartMenu',
+                            l10n.poweredBy,
                             style: TextStyle(
                               fontSize: 10,
-                              color: Colors.white..withValues(alpha: 0.65),
+                              color: Colors.white.withValues(alpha: 0.65),
                               fontWeight: FontWeight.w400,
                             ),
                           ),
                         ),
                       ),
                     ),
-
                   const SliverToBoxAdapter(
-                    child: SizedBox(height: 96), // Espace pour le FAB
+                    child: SizedBox(height: 96),
                   ),
                 ],
               ),
             ),
           ),
-
-          // ===== PANIER FLOTTANT =====
           Positioned(
             left: 0,
             right: 0,
@@ -786,8 +756,6 @@ class SimpleMenuScreenState extends State<MenuScreen> {
               ),
             ),
           ),
-
-          // Modal de révision de commande
           if (_showOrderModal)
             OrderReviewModal(
               itemQuantities: itemQuantities,

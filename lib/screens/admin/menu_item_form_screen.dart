@@ -754,11 +754,18 @@ class _MenuItemFormScreenState extends State<MenuItemFormScreen> {
                   await _pickImage();
                   setState(() => _removeImage = false);
                 },
-                icon: const Icon(Icons.camera_alt),
+                icon: const Icon(Icons.camera_alt, size: 18),
                 label: Text(
-                    _pickedBytes != null || (_imageUrl?.isNotEmpty ?? false)
-                        ? 'Changer'
-                        : 'Ajouter'),
+                  _pickedBytes != null || (_imageUrl?.isNotEmpty ?? false)
+                      ? 'Changer'
+                      : 'Ajouter',
+                ),
+                style: OutlinedButton.styleFrom(
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(AdminTokens.radius12),
+                  ),
+                  side: const BorderSide(color: AdminTokens.border),
+                ),
               ),
             ),
             if (_pickedBytes != null || (_imageUrl?.isNotEmpty ?? false)) ...[
@@ -774,6 +781,12 @@ class _MenuItemFormScreenState extends State<MenuItemFormScreen> {
                 icon: const Icon(Icons.delete_outline, color: Colors.red),
                 label:
                     const Text('Retirer', style: TextStyle(color: Colors.red)),
+                style: OutlinedButton.styleFrom(
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(AdminTokens.radius12),
+                  ),
+                  side: const BorderSide(color: Colors.red),
+                ),
               ),
             ],
           ],

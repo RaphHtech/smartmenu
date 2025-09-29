@@ -1,6 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:smartmenu_app/core/design/admin_typography.dart';
 import '../../widgets/ui/admin_shell.dart';
+import '../../core/design/admin_tokens.dart';
 
 class AdminRestaurantInfoScreen extends StatefulWidget {
   final String restaurantId; // rid
@@ -126,10 +128,13 @@ class _AdminRestaurantInfoScreenState extends State<AdminRestaurantInfoScreen> {
                       const SizedBox(height: 8),
                       TextFormField(
                         controller: _taglineController,
-                        decoration: const InputDecoration(
+                        decoration: InputDecoration(
                           hintText: 'Ex. La vraie pizza italienne à Tel Aviv',
-                          prefixIcon: Icon(Icons.short_text),
-                          border: OutlineInputBorder(),
+                          prefixIcon: const Icon(Icons.short_text),
+                          border: OutlineInputBorder(
+                            borderRadius:
+                                BorderRadius.circular(AdminTokens.radius12),
+                          ),
                         ),
                         maxLength: 120,
                         validator: (v) => (v ?? '').length > 120
@@ -137,29 +142,38 @@ class _AdminRestaurantInfoScreenState extends State<AdminRestaurantInfoScreen> {
                             : null,
                       ),
                       const SizedBox(height: 8),
-                      SwitchListTile(
-                        title: const Text('Afficher le bandeau promo'),
-                        subtitle: const Text(
-                            'Décoche pour masquer la bannière sur le site'),
-                        value: _promoEnabled,
-                        onChanged: (v) => setState(() => _promoEnabled = v),
+                      Container(
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius:
+                              BorderRadius.circular(AdminTokens.radius12),
+                          boxShadow: AdminTokens.shadowMd,
+                          border: Border.all(color: AdminTokens.border),
+                        ),
+                        child: SwitchListTile(
+                          title: const Text('Afficher le bandeau promo'),
+                          subtitle: const Text(
+                              'Décoche pour masquer la bannière sur le site'),
+                          value: _promoEnabled,
+                          onChanged: (v) => setState(() => _promoEnabled = v),
+                        ),
                       ),
                       const SizedBox(height: 20),
                       const Text(
                         'Bandeau promotionnel (optionnel)',
-                        style: TextStyle(
-                          fontWeight: FontWeight.w700,
-                          fontSize: 16,
-                        ),
+                        style: AdminTypography.headlineMedium,
                       ),
                       const SizedBox(height: 8),
                       TextFormField(
                         controller: _promoController,
-                        decoration: const InputDecoration(
+                        decoration: InputDecoration(
                           hintText:
                               'Ex. ✨ 2ème pizza -50% • Livraison offerte dès 80₪ ✨',
-                          prefixIcon: Icon(Icons.campaign),
-                          border: OutlineInputBorder(),
+                          prefixIcon: const Icon(Icons.campaign),
+                          border: OutlineInputBorder(
+                            borderRadius:
+                                BorderRadius.circular(AdminTokens.radius12),
+                          ),
                         ),
                         maxLength: 140,
                         maxLines: 2,
@@ -176,6 +190,12 @@ class _AdminRestaurantInfoScreenState extends State<AdminRestaurantInfoScreen> {
                       SizedBox(
                         height: 48,
                         child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            shape: RoundedRectangleBorder(
+                              borderRadius:
+                                  BorderRadius.circular(AdminTokens.radius12),
+                            ),
+                          ),
                           onPressed: _saving ? null : _save,
                           child: _saving
                               ? const SizedBox(

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../../state/currency_scope.dart';
 import '../../services/currency_service.dart';
+import '../../l10n/app_localizations.dart';
 
 // petit helper robuste
 double _parsePrice(dynamic value) {
@@ -37,6 +38,8 @@ class MenuItem extends StatelessWidget {
     required this.onDecreaseQuantity,
     this.onSetQuantity,
   });
+
+  AppLocalizations _l10n(BuildContext context) => AppLocalizations.of(context)!;
 
   void _openDetails(BuildContext context) {
     final String name = (pizza['name'] ?? '').toString();
@@ -83,7 +86,6 @@ class MenuItem extends StatelessWidget {
   Widget _buildQuantitySelector(double unitPrice, BuildContext context,
       String name, int currentQuantity) {
     if (currentQuantity == 0) {
-      // État 1: Nouveau plat - bouton simple AJOUTER
       return SizedBox(
         width: double.infinity,
         child: FilledButton(
@@ -102,13 +104,12 @@ class MenuItem extends StatelessWidget {
                 const TextStyle(fontWeight: FontWeight.w700, fontSize: 16),
           ),
           child: Text(
-            'AJOUTER • ${context.money(unitPrice)}',
+            '${_l10n(context).add} • ${context.money(unitPrice)}',
           ),
         ),
       );
     }
 
-    // État 2: Plat au panier - juste les boutons + et - premium
     return _QuantityStepperWidget(
       initialQuantity: currentQuantity,
       unitPrice: unitPrice,
@@ -134,7 +135,6 @@ class MenuItem extends StatelessWidget {
       return '';
     }();
 
-    // Force toujours la vue liste compacte
     return _buildCompactBand(
       context,
       name,
@@ -148,7 +148,6 @@ class MenuItem extends StatelessWidget {
     );
   }
 
-// Bande fine premium
   Widget _buildCompactBand(
     BuildContext context,
     String name,
@@ -167,10 +166,8 @@ class MenuItem extends StatelessWidget {
       clipBehavior: Clip.antiAlias,
       child: InkWell(
         onTap: onTap,
-        splashColor:
-            Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
-        highlightColor:
-            Theme.of(context).colorScheme.primary.withValues(alpha: 0.05),
+        splashColor: Theme.of(context).colorScheme.primary.withOpacity(0.1),
+        highlightColor: Theme.of(context).colorScheme.primary.withOpacity(0.05),
         child: Padding(
           padding: const EdgeInsets.all(8),
           child: Row(
@@ -225,7 +222,7 @@ class MenuItem extends StatelessWidget {
                               color: Theme.of(context)
                                   .colorScheme
                                   .onSurface
-                                  .withValues(alpha: 0.80),
+                                  .withOpacity(0.80),
                             ),
                       ),
                     const SizedBox(height: 4),
@@ -256,7 +253,7 @@ class MenuItem extends StatelessWidget {
                                 .labelLarge
                                 ?.copyWith(fontWeight: FontWeight.w700),
                           ),
-                          child: const Text('AJOUTER'),
+                          child: Text(_l10n(context).add),
                         ),
                       ],
                     ),
@@ -283,7 +280,7 @@ class MenuItem extends StatelessWidget {
                     : const Color(0xFF6C5CE7);
 
     return Container(
-      color: bg.withValues(alpha: 0.9),
+      color: bg.withOpacity(0.9),
       alignment: Alignment.center,
       child: const Icon(Icons.restaurant_menu_rounded,
           size: 18, color: Colors.white),
@@ -297,23 +294,18 @@ class MenuItem extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Handle bar
           Center(
             child: Container(
               width: 40,
               height: 4,
               decoration: BoxDecoration(
-                color: Theme.of(context)
-                    .colorScheme
-                    .onSurface
-                    .withValues(alpha: 0.30),
+                color:
+                    Theme.of(context).colorScheme.onSurface.withOpacity(0.30),
                 borderRadius: BorderRadius.circular(2),
               ),
             ),
           ),
           const SizedBox(height: 24),
-
-          // Image ou placeholder
           Hero(
             tag: 'dish-${pizza['id'] ?? pizza['name']}',
             child: ClipRRect(
@@ -330,8 +322,6 @@ class MenuItem extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 24),
-
-          // Contenu
           Text(
             name,
             style: Theme.of(context).textTheme.headlineMedium?.copyWith(
@@ -344,15 +334,11 @@ class MenuItem extends StatelessWidget {
             description,
             style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                   height: 1.5,
-                  color: Theme.of(context)
-                      .colorScheme
-                      .onSurface
-                      .withValues(alpha: 0.80),
+                  color:
+                      Theme.of(context).colorScheme.onSurface.withOpacity(0.80),
                 ),
           ),
           const SizedBox(height: 24),
-
-          // Prix et quantité
           Text(
             priceText,
             style: Theme.of(context).textTheme.headlineSmall?.copyWith(
@@ -361,8 +347,6 @@ class MenuItem extends StatelessWidget {
                 ),
           ),
           const SizedBox(height: 24),
-
-          // Stepper quantité
           _buildQuantitySelector(unitPrice, context, name, quantity),
           SizedBox(height: 48 + MediaQuery.of(context).padding.bottom),
         ],
@@ -376,7 +360,7 @@ class MenuItem extends StatelessWidget {
 
     final displayBadge = badges.first;
     return [
-      _badgePill(context, _getBadgeText(displayBadge),
+      _badgePill(context, _getBadgeText(context, displayBadge),
           tone: displayBadge == 'populaire' ? 'tertiary' : 'primary')
     ];
   }
@@ -388,8 +372,9 @@ class MenuItem extends StatelessWidget {
         tone == 'tertiary' ? cs.tertiaryContainer : cs.primaryContainer;
     final Color fg =
         tone == 'tertiary' ? cs.onTertiaryContainer : cs.onPrimaryContainer;
-    final IconData icon =
-        label == 'Populaire' ? Icons.star_rounded : Icons.fiber_new_rounded;
+    final IconData icon = label == _l10n(context).badgePopular
+        ? Icons.star_rounded
+        : Icons.fiber_new_rounded;
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
@@ -410,22 +395,25 @@ class MenuItem extends StatelessWidget {
       ),
     );
   }
-}
 
-String _getBadgeText(String badge) {
-  switch (badge) {
-    case 'populaire':
-      return 'Populaire';
-    case 'nouveau':
-      return 'Nouveau';
-    case 'spécialité':
-      return 'Spécialité';
-    case 'chef':
-      return 'Choix du chef';
-    case 'saisonnier':
-      return 'Saisonnier';
-    default:
-      return badge;
+  String _getBadgeText(BuildContext context, String badge) {
+    final l10n = _l10n(context);
+    switch (badge) {
+      case 'populaire':
+        return l10n.badgePopular;
+      case 'nouveau':
+        return l10n.badgeNew;
+      case 'spécialité':
+        return l10n.badgeSpecialty;
+      case 'chef':
+        return l10n.badgeChef;
+      case 'saisonnier':
+        return l10n.badgeSeasonal;
+      case 'signature':
+        return l10n.badgeSignature;
+      default:
+        return badge;
+    }
   }
 }
 
@@ -450,6 +438,8 @@ class _QuantityStepperWidget extends StatefulWidget {
 
 class _QuantityStepperWidgetState extends State<_QuantityStepperWidget> {
   late int localQuantity;
+
+  AppLocalizations get _l10n => AppLocalizations.of(context)!;
 
   @override
   void initState() {
@@ -491,12 +481,10 @@ class _QuantityStepperWidgetState extends State<_QuantityStepperWidget> {
                     : null),
           ],
         ),
-
-        // Signal mode suppression
         if (isInDeleteMode) ...[
           const SizedBox(height: 12),
           Text(
-            'Retirer cet article ?',
+            _l10n.removeThisItem,
             style: TextStyle(
               fontSize: 14,
               color: Colors.red.shade300,
@@ -504,7 +492,6 @@ class _QuantityStepperWidgetState extends State<_QuantityStepperWidget> {
             ),
           ),
         ],
-
         const SizedBox(height: 24),
         SafeArea(
           top: false,
@@ -530,10 +517,10 @@ class _QuantityStepperWidgetState extends State<_QuantityStepperWidget> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Text(isInDeleteMode
-                    ? 'SUPPRIMER DU PANIER'
+                    ? _l10n.removeFromCart
                     : isUpdate
-                        ? 'METTRE À JOUR'
-                        : 'AJOUTER'),
+                        ? _l10n.update
+                        : _l10n.add),
                 if (!isInDeleteMode) ...[
                   const SizedBox(width: 8),
                   Text('• ${CurrencyService.format(total, widget.currency)}'),
@@ -552,9 +539,9 @@ class _QuantityStepperWidgetState extends State<_QuantityStepperWidget> {
     final isAdd = icon == Icons.add_rounded;
     return Semantics(
       button: true,
-      label: isAdd ? 'Augmenter la quantité' : 'Diminuer la quantité',
+      label: isAdd ? _l10n.increaseQuantity : _l10n.decreaseQuantity,
       child: IconButton.filledTonal(
-        tooltip: isAdd ? 'Augmenter' : 'Diminuer',
+        tooltip: isAdd ? _l10n.increase : _l10n.decrease,
         onPressed: onTap,
         icon: Icon(icon, size: 20),
         style: IconButton.styleFrom(

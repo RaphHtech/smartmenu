@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
+import '../../l10n/app_localizations.dart';
 
 class BadgesLegendWidget extends StatelessWidget {
   const BadgesLegendWidget({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: const BoxDecoration(
@@ -29,21 +32,21 @@ class BadgesLegendWidget extends StatelessWidget {
           const SizedBox(height: 20),
 
           Text(
-            'Guide des badges',
+            l10n.badgesGuide,
             style: Theme.of(context).textTheme.titleLarge?.copyWith(
                   fontWeight: FontWeight.bold,
                 ),
           ),
           const SizedBox(height: 16),
 
-          ..._buildLegendItems(),
+          ..._buildLegendItems(context),
 
           const SizedBox(height: 20),
           SizedBox(
             width: double.infinity,
             child: ElevatedButton(
               onPressed: () => Navigator.pop(context),
-              child: const Text('Compris'),
+              child: Text(l10n.understood),
             ),
           ),
         ],
@@ -51,40 +54,42 @@ class BadgesLegendWidget extends StatelessWidget {
     );
   }
 
-  List<Widget> _buildLegendItems() {
+  List<Widget> _buildLegendItems(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     final items = [
       {
         'badge': 'populaire',
-        'title': 'Populaire',
-        'desc': 'Les plats les plus commandés',
+        'title': l10n.badgePopular,
+        'desc': l10n.badgeDescPopular,
         'color': const Color(0xFFFF8C00),
         'icon': Icons.star
       },
       {
         'badge': 'nouveau',
-        'title': 'Nouveau',
-        'desc': 'Nouveautés de la carte',
+        'title': l10n.badgeNew,
+        'desc': l10n.badgeDescNew,
         'color': const Color(0xFF4F46E5),
         'icon': Icons.fiber_new
       },
       {
         'badge': 'spécialité',
-        'title': 'Spécialité',
-        'desc': 'Spécialités de la maison',
+        'title': l10n.badgeSpecialty,
+        'desc': l10n.badgeDescSpecialty,
         'color': const Color(0xFF7C3AED),
         'icon': Icons.restaurant
       },
       {
         'badge': 'chef',
-        'title': 'Choix du chef',
-        'desc': 'Recommandations du chef',
+        'title': l10n.badgeChef,
+        'desc': l10n.badgeDescChef,
         'color': const Color(0xFF0891B2),
         'icon': Icons.person
       },
       {
         'badge': 'saisonnier',
-        'title': 'Saisonnier',
-        'desc': 'Plats de saison',
+        'title': l10n.badgeSeasonal,
+        'desc': l10n.badgeDescSeasonal,
         'color': const Color(0xFF059669),
         'icon': Icons.eco
       },

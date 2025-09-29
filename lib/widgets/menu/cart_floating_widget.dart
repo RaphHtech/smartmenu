@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter/semantics.dart';
 import '../../core/design/client_tokens.dart';
 import '../../state/currency_scope.dart';
+import '../../l10n/app_localizations.dart';
 
 class CartFloatingWidget extends StatefulWidget {
   final int cartItemCount;
@@ -25,6 +26,8 @@ class _CartFloatingWidgetState extends State<CartFloatingWidget>
   late AnimationController _animationController;
   late Animation<double> _scaleAnimation;
   late Animation<Offset> _slideAnimation;
+
+  AppLocalizations get _l10n => AppLocalizations.of(context)!;
 
   @override
   void initState() {
@@ -55,25 +58,21 @@ class _CartFloatingWidgetState extends State<CartFloatingWidget>
   void didUpdateWidget(CartFloatingWidget oldWidget) {
     super.didUpdateWidget(oldWidget);
 
-    // Animation d'apparition quand panier passe de 0→1
     if (oldWidget.cartItemCount == 0 && widget.cartItemCount > 0) {
       _animationController.forward();
       HapticFeedback.selectionClick();
     }
 
-    // Animation de disparition quand panier devient vide
     if (oldWidget.cartItemCount > 0 && widget.cartItemCount == 0) {
       _animationController.reverse();
     }
 
-    // Micro-animation + annonce SR quand quantité change
     if (oldWidget.cartItemCount != widget.cartItemCount &&
         widget.cartItemCount > 0) {
       _animationController.forward(from: 0.98);
 
-      // Annonce screen reader non-verbeuse
       SemanticsService.announce(
-        'Commande ${widget.cartItemCount}, total ${context.money(widget.cartTotal)}',
+        '${_l10n.order} ${widget.cartItemCount}, ${_l10n.total} ${context.money(widget.cartTotal)}',
         Directionality.of(context),
       );
     }
@@ -103,12 +102,12 @@ class _CartFloatingWidgetState extends State<CartFloatingWidget>
           constraints: const BoxConstraints(maxWidth: 560),
           child: Semantics(
             button: true,
-            label: 'Finaliser ma commande, ${widget.cartItemCount} '
-                '${widget.cartItemCount > 1 ? 'articles' : 'article'}, '
-                'total ${context.money(widget.cartTotal)}',
+            label: '${_l10n.finalizeOrder}, ${widget.cartItemCount} '
+                '${widget.cartItemCount > 1 ? _l10n.items : _l10n.item}, '
+                '${_l10n.total} ${context.money(widget.cartTotal)}',
             child: Tooltip(
               message:
-                  'Finaliser ma commande • ${context.money(widget.cartTotal)}',
+                  '${_l10n.finalizeOrder} • ${context.money(widget.cartTotal)}',
               child: Material(
                 color: colorScheme.primary,
                 elevation: ClientTokens.elevationFab,
@@ -135,9 +134,7 @@ class _CartFloatingWidgetState extends State<CartFloatingWidget>
                         const SizedBox(width: ClientTokens.space12),
                         Expanded(
                           child: Text(
-                            widget.cartItemCount > 1
-                                ? 'Commande (${widget.cartItemCount})'
-                                : 'Commande (1)',
+                            _l10n.orderWithCount(widget.cartItemCount),
                             style: theme.textTheme.titleMedium?.copyWith(
                               fontWeight: FontWeight.w700,
                               color: colorScheme.onPrimary,

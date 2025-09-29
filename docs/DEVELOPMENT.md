@@ -374,6 +374,202 @@ gcloud --version
 - Firebase CLI : connecté à un projet
 - gcloud : authentifié
 
+## Système d'Internationalisation
+
+### Architecture I18N
+
+SmartMenu supporte 3 langues avec RTL automatique pour l'hébreu.
+
+**Dépendances requises**
+
+```yaml
+dependencies:
+  flutter_localizations:
+    sdk: flutter
+  intl: ^0.20.2
+  provider: ^6.0.5
+
+dev_dependencies:
+  intl_utils: ^2.8.7 # Optionnel
+```
+
+### Structure Fichiers
+
+lib/
+├── l10n/
+│ ├── app_en.arb # Anglais (template)
+│ ├── app_he.arb # Hébreu
+│ ├── app_fr.arb # Français
+│ ├── app_localizations.dart # Généré
+│ ├── app_localizations_en.dart # Généré
+│ ├── app_localizations_he.dart # Généré
+│ └── app_localizations_fr.dart # Généré
+├── services/
+│ └── language_service.dart
+├── state/
+│ └── language_provider.dart
+└── widgets/
+└── language_selector_widget.dart
+
+### Configuration
+
+l10n.yaml (racine du projet) :
+
+```
+yamlarb-dir: lib/l10n
+template-arb-file: app_en.arb
+output-localization-file: app_localizations.dart
+synthetic-package: false
+```
+
+### Génération Traductions
+
+bash
+
+```
+# Après modification des fichiers ARB
+flutter gen-l10n
+
+# Vérification
+ls lib/l10n/app_localizations*.dart
+```
+
+### Usage dans le Code
+
+#### Import et helper :
+
+dart
+
+```
+import '../../l10n/app_localizations.dart';
+
+class MyWidget extends StatelessWidget {
+  AppLocalizations _l10n(BuildContext context) => AppLocalizations.of(context)!;
+
+  @override
+  Widget build(BuildContext context) {
+    return Text(_l10n(context).menuTitle);
+  }
+}
+```
+
+#### Avec placeholders :
+
+dart
+
+```
+// ARB
+{
+  "itemAddedToCart": "{itemName} ajouté au panier !",
+  "@itemAddedToCart": {
+    "placeholders": {
+      "itemName": {"type": "String"}
+    }
+  }
+}
+
+// Dart
+Text(_l10n(context).itemAddedToCart("Pizza Margherita"));
+```
+
+### RTL Support
+
+#### Configuration automatique via MaterialApp :
+
+dart
+
+```
+MaterialApp(
+  localizationsDelegates: AppLocalizations.localizationsDelegates,
+  supportedLocales: AppLocalizations.supportedLocales,
+  locale: languageProvider.locale,  // Contrôlé par Provider
+)
+```
+
+#### Directionality adaptative :
+
+dart
+
+```// Détection automatique
+final isRTL = Directionality.of(context) == TextDirection.rtl;
+
+// Icônes directionnelles
+Icon(
+  isRTL ? Icons.arrow_back_rounded : Icons.arrow_forward_rounded,
+  matchTextDirection: true,
+)
+
+// Padding directionnel
+EdgeInsetsDirectional.only(start: 16, end: 8)
+```
+
+### Ajout de Nouvelles Traductions
+
+#### Ajouter clé dans les 3 ARB :
+
+json
+
+```
+// app_en.arb
+{
+  "newKey": "English text",
+  "@newKey": {
+    "description": "Description for translators"
+  }
+}
+```
+
+#### Régénérer :
+
+bash
+
+```
+flutter gen-l10n
+```
+
+#### Utiliser :
+
+dart
+
+```
+Text(_l10n(context).newKey)
+```
+
+### Langue Persistente
+
+#### Le système sauvegarde la préférence dans SharedPreferences :
+
+dart
+
+```
+// LanguageService
+static Future<void> setLocale(Locale locale) async {
+  final prefs = await SharedPreferences.getInstance();
+  await prefs.setString('app_language', locale.languageCode);
+}
+```
+
+### Tests I18N
+
+dart
+
+```
+testWidgets('Should display text in Hebrew', (tester) async {
+  await tester.pumpWidget(
+    ChangeNotifierProvider(
+      create: (_) => LanguageProvider()..setLocale(Locale('he')),
+      child: MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: MyWidget(),
+      ),
+    ),
+  );
+
+  expect(find.text('תפריט'), findsOneWidget);  // "Menu" en hébreu
+});
+```
+
 ## Limitations Actuelles
 
 ### Scanner QR Mobile Web

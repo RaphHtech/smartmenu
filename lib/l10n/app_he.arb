@@ -1,0 +1,328 @@
+{
+  "@@locale": "he",
+  
+  "appTitle": "סמארט-מניו",
+  "@appTitle": {
+    "description": "Application title"
+  },
+
+  "menu": "תפריט",
+  "@menu": {
+    "description": "Menu label"
+  },
+
+  "cart": "סל",
+  "@cart": {
+    "description": "Shopping cart label"
+  },
+
+  "orders": "הזמנות",
+  "@orders": {
+    "description": "Orders label"
+  },
+
+  "total": "סה״כ",
+  "@total": {
+    "description": "Total price label"
+  },
+
+  "addToCart": "הוסף לסל",
+  "@addToCart": {
+    "description": "Button to add item to cart"
+  },
+
+  "placeOrder": "בצע הזמנה",
+  "@placeOrder": {
+    "description": "Button to submit order"
+  },
+
+  "orderConfirmed": "ההזמנה אושרה!",
+  "@orderConfirmed": {
+    "description": "Order confirmation message"
+  },
+
+  "callWaiter": "קרא למלצר",
+  "@callWaiter": {
+    "description": "Button to call waiter"
+  },
+
+  "loading": "טוען...",
+  "@loading": {
+    "description": "Loading indicator text"
+  },
+
+  "cartEmpty": "הסל שלך ריק!",
+  "@cartEmpty": {
+    "description": "Empty cart message"
+  },
+
+  "itemAddedToCart": "{itemName} נוסף לסל!",
+  "@itemAddedToCart": {
+    "description": "Item added confirmation",
+    "placeholders": {
+      "itemName": {
+        "type": "String"
+      }
+    }
+  },
+
+  "orderCreated": "ההזמנה נוצרה!",
+  "@orderCreated": {
+    "description": "Order creation success"
+  },
+
+  "restaurantNotified": "המסעדה קיבלה התראה.",
+  "@restaurantNotified": {
+    "description": "Restaurant notification confirmation"
+  },
+
+  "orderError": "שגיאה ביצירת ההזמנה",
+  "@orderError": {
+    "description": "Order error message"
+  },
+
+  "tableNotIdentified": "השולחן לא זוהה",
+  "@tableNotIdentified": {
+    "description": "Table ID error"
+  },
+
+  "waiterCalled": "המלצר נקרא!",
+  "@waiterCalled": {
+    "description": "Waiter call confirmation"
+  },
+
+  "staffComing": "חבר צוות בדרך אליך.",
+  "@staffComing": {
+    "description": "Staff arrival message"
+  },
+
+  "cooldownWait": "נא להמתין {seconds} שניות בין קריאות",
+  "@cooldownWait": {
+    "description": "Cooldown message",
+    "placeholders": {
+      "seconds": {
+        "type": "String"
+      }
+    }
+  },
+
+  "error": "שגיאה: {error}",
+  "@error": {
+    "description": "Generic error message",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+
+  "categoryPizzas": "פיצות",
+  "@categoryPizzas": {
+    "description": "Pizzas category"
+  },
+
+  "categoryStarters": "מנות ראשונות",
+  "@categoryStarters": {
+    "description": "Starters category"
+  },
+
+  "categoryPasta": "פסטה",
+  "@categoryPasta": {
+    "description": "Pasta category"
+  },
+
+  "categoryDesserts": "קינוחים",
+  "@categoryDesserts": {
+    "description": "Desserts category"
+  },
+
+  "categoryDrinks": "משקאות",
+  "@categoryDrinks": {
+    "description": "Drinks category"
+  },
+
+  "categoryOther": "אחר",
+  "@categoryOther": {
+    "description": "Other category"
+  },
+
+  "poweredBy": "מופעל על ידי SmartMenu",
+  "@poweredBy": {
+    "description": "Footer branding"
+  },
+
+  "order": "הזמנה",
+  "@order": {
+    "description": "Order label"
+  },
+
+  "orderWithCount": "הזמנה ({count})",
+  "@orderWithCount": {
+    "description": "Order label with item count",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+
+  "items": "פריטים",
+  "@items": {
+    "description": "Items plural"
+  },
+
+  "item": "פריט",
+  "@item": {
+    "description": "Item singular"
+  },
+
+  "finalizeOrder": "סיום ההזמנה",
+  "@finalizeOrder": {
+    "description": "Finalize order action"
+  },
+
+  "orderReview": "סיכום הזמנה",
+  "@orderReview": {
+    "description": "Order review modal title"
+  },
+
+  "yourOrderReview": "סיכום ההזמנה",
+  "@yourOrderReview": {
+    "description": "Your order review header"
+  },
+
+  "close": "סגור",
+  "@close": {
+    "description": "Close button"
+  },
+
+  "articles": "פריטים",
+  "@articles": {
+    "description": "Items label"
+  },
+
+  "back": "חזור",
+  "@back": {
+    "description": "Back button"
+  },
+
+  "confirm": "אשר",
+  "@confirm": {
+    "description": "Confirm button"
+  },
+
+  "orderConfirmedAnnouncement": "ההזמנה אושרה",
+  "@orderConfirmedAnnouncement": {
+    "description": "Accessibility announcement"
+  },
+
+  "add": "הוסף",
+  "@add": {
+    "description": "Add button"
+  },
+
+  "badgePopular": "פופולרי",
+  "@badgePopular": {
+    "description": "Popular badge"
+  },
+
+  "badgeNew": "חדש",
+  "@badgeNew": {
+    "description": "New badge"
+  },
+
+  "badgeSpecialty": "המיוחדים",
+  "@badgeSpecialty": {
+    "description": "Specialty badge"
+  },
+
+  "badgeChef": "בחירת השף",
+  "@badgeChef": {
+    "description": "Chef's choice badge"
+  },
+
+  "badgeSeasonal": "עונתי",
+  "@badgeSeasonal": {
+    "description": "Seasonal badge"
+  },
+
+  "badgeSignature": "מנת חתימה",
+  "@badgeSignature": {
+    "description": "Signature dish badge"
+  },
+
+  "removeThisItem": "להסיר פריט זה?",
+  "@removeThisItem": {
+    "description": "Confirmation message for item removal"
+  },
+
+  "removeFromCart": "הסר מהסל",
+  "@removeFromCart": {
+    "description": "Button to remove item from cart"
+  },
+
+  "update": "עדכן",
+  "@update": {
+    "description": "Update button"
+  },
+
+  "increaseQuantity": "הגדל כמות",
+  "@increaseQuantity": {
+    "description": "Accessibility label"
+  },
+
+  "decreaseQuantity": "הקטן כמות",
+  "@decreaseQuantity": {
+    "description": "Accessibility label"
+  },
+
+  "increase": "הגדל",
+  "@increase": {
+    "description": "Tooltip increase"
+  },
+
+  "decrease": "הקטן",
+  "@decrease": {
+    "description": "Tooltip decrease"
+  },
+
+  "waiter": "מלצר",
+  "@waiter": {
+    "description": "Waiter button label"
+  },
+
+  "badgesGuide": "מדריך תגיות",
+  "@badgesGuide": {
+    "description": "Badges guide title"
+  },
+
+  "badgeDescPopular": "המנות המוזמנות ביותר",
+  "@badgeDescPopular": {
+    "description": "Popular badge description"
+  },
+
+  "badgeDescNew": "חדש בתפריט",
+  "@badgeDescNew": {
+    "description": "New badge description"
+  },
+
+  "badgeDescSpecialty": "המנות המיוחדות של הבית",
+  "@badgeDescSpecialty": {
+    "description": "Specialty badge description"
+  },
+
+  "badgeDescChef": "המלצות השף",
+  "@badgeDescChef": {
+    "description": "Chef badge description"
+  },
+
+  "badgeDescSeasonal": "מנות עונתיות",
+  "@badgeDescSeasonal": {
+    "description": "Seasonal badge description"
+  },
+
+  "understood": "הבנתי",
+  "@understood": {
+    "description": "Understood button"
+  }
+}

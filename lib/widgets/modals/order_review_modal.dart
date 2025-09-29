@@ -1,16 +1,15 @@
 import 'package:flutter/material.dart';
-// import '../../core/constants/colors.dart';
 import '../../state/currency_scope.dart';
-// import '../../services/currency_service.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/semantics.dart';
 import '../../core/design/client_tokens.dart';
+import '../../l10n/app_localizations.dart';
 
 class OrderReviewModal extends StatelessWidget {
   final Map<String, int> itemQuantities;
   final Map<String, dynamic> menuData;
   final double cartTotal;
-  final String currency; // ← AJOUTER
+  final String currency;
   final VoidCallback onClose;
   final Function(String itemName) onIncreaseQuantity;
   final Function(String itemName) onDecreaseQuantity;
@@ -30,11 +29,13 @@ class OrderReviewModal extends StatelessWidget {
     required this.onConfirmOrder,
   });
 
+  AppLocalizations _l10n(BuildContext context) => AppLocalizations.of(context)!;
+
   @override
   Widget build(BuildContext context) {
     return Semantics(
       container: true,
-      label: 'Révision de commande',
+      label: _l10n(context).orderReview,
       child: Center(
         child: ConstrainedBox(
           constraints: BoxConstraints(
@@ -49,29 +50,20 @@ class OrderReviewModal extends StatelessWidget {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                // 1. HEADER avec icône, titre, bouton fermer
                 _buildHeader(context),
-
-                // 2. CORPS SCROLLABLE
                 Flexible(
                   child: SingleChildScrollView(
                     padding:
                         const EdgeInsetsDirectional.all(ClientTokens.space24),
                     child: Column(
                       children: [
-                        // Vos items existants ici
                         _buildOrderItems(context),
-
                         const SizedBox(height: ClientTokens.space24),
-
-                        // 3. SECTION TOTAL mise en valeur
                         _buildTotalSection(context),
                       ],
                     ),
                   ),
                 ),
-
-                // 4. FOOTER STICKY avec boutons
                 _buildFooter(context),
               ],
             ),
@@ -81,7 +73,6 @@ class OrderReviewModal extends StatelessWidget {
     );
   }
 
-  // HEADER complet et accessible
   Widget _buildHeader(BuildContext context) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
@@ -103,12 +94,10 @@ class OrderReviewModal extends StatelessWidget {
             color: colorScheme.primary,
             size: 24,
           ),
-
           const SizedBox(width: ClientTokens.space12),
-
           Expanded(
             child: Text(
-              'Révision de votre commande',
+              _l10n(context).yourOrderReview,
               style: theme.textTheme.titleLarge?.copyWith(
                 fontWeight: FontWeight.w800,
                 color: colorScheme.onSurface,
@@ -117,10 +106,8 @@ class OrderReviewModal extends StatelessWidget {
               overflow: TextOverflow.ellipsis,
             ),
           ),
-
-          // Bouton fermer accessible
           IconButton(
-            tooltip: 'Fermer',
+            tooltip: _l10n(context).close,
             onPressed: onClose,
             icon: Icon(
               Icons.close_rounded,
@@ -135,11 +122,11 @@ class OrderReviewModal extends StatelessWidget {
     );
   }
 
-  // SECTION TOTAL en bloc surfaceVariant
   Widget _buildTotalSection(BuildContext context) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
     final totalItems = itemQuantities.values.fold(0, (sum, qty) => sum + qty);
+    final l10n = _l10n(context);
 
     return Container(
       width: double.infinity,
@@ -159,7 +146,7 @@ class OrderReviewModal extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'Total',
+                l10n.total,
                 style: theme.textTheme.titleMedium?.copyWith(
                   color: colorScheme.onSurfaceVariant,
                   fontWeight: FontWeight.w600,
@@ -167,15 +154,13 @@ class OrderReviewModal extends StatelessWidget {
               ),
               const SizedBox(height: ClientTokens.space4),
               Text(
-                '$totalItems ${totalItems > 1 ? 'articles' : 'article'}',
+                '$totalItems ${totalItems > 1 ? l10n.items : l10n.item}',
                 style: theme.textTheme.bodyMedium?.copyWith(
                   color: colorScheme.onSurfaceVariant,
                 ),
               ),
             ],
           ),
-
-          // Total avec animation fade
           AnimatedSwitcher(
             duration: ClientTokens.durationFast,
             transitionBuilder: (child, animation) =>
@@ -194,10 +179,10 @@ class OrderReviewModal extends StatelessWidget {
     );
   }
 
-  // FOOTER avec boutons et séparation
   Widget _buildFooter(BuildContext context) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
+    final l10n = _l10n(context);
 
     return Container(
       decoration: BoxDecoration(
@@ -214,7 +199,6 @@ class OrderReviewModal extends StatelessWidget {
           padding: const EdgeInsetsDirectional.all(ClientTokens.space16),
           child: Row(
             children: [
-              // Bouton RETOUR
               Expanded(
                 flex: 5,
                 child: OutlinedButton.icon(
@@ -225,8 +209,8 @@ class OrderReviewModal extends StatelessWidget {
                         : Icons.arrow_back_rounded,
                     size: 18,
                   ),
-                  label: const Text(
-                    'RETOUR',
+                  label: Text(
+                    l10n.back,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                   ),
@@ -242,10 +226,7 @@ class OrderReviewModal extends StatelessWidget {
                   ),
                 ),
               ),
-
               const SizedBox(width: ClientTokens.space16),
-
-              // Bouton CONFIRMER avec shortcuts clavier
               Expanded(
                 flex: 7,
                 child: FocusableActionDetector(
@@ -273,7 +254,7 @@ class OrderReviewModal extends StatelessWidget {
                         fontWeight: FontWeight.w800,
                       ),
                     ),
-                    child: const Text('CONFIRMER'),
+                    child: Text(l10n.confirm),
                   ),
                 ),
               ),
@@ -284,13 +265,11 @@ class OrderReviewModal extends StatelessWidget {
     );
   }
 
-  // Fonction confirm avec haptic + annonce
   void _confirmOrder(BuildContext context) {
     HapticFeedback.lightImpact();
 
-    // Annonce accessibilité
     SemanticsService.announce(
-      'Commande confirmée',
+      _l10n(context).orderConfirmedAnnouncement,
       Directionality.of(context),
     );
 
@@ -300,7 +279,6 @@ class OrderReviewModal extends StatelessWidget {
   Widget _buildOrderItems(BuildContext context) {
     return Column(
       children: itemQuantities.entries.map((entry) {
-        // Trouver le prix de l'article dans les données
         double itemPrice = 0.0;
         for (var category in menuData.values) {
           for (var item in category) {
@@ -348,8 +326,6 @@ class OrderReviewModal extends StatelessWidget {
                   ],
                 ),
               ),
-
-              // Contrôles quantité
               Row(
                 children: [
                   IconButton(

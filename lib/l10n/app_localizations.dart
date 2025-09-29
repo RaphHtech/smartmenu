@@ -1,0 +1,503 @@
+import 'dart:async';
+
+import 'package:flutter/foundation.dart';
+import 'package:flutter/widgets.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:intl/intl.dart' as intl;
+
+import 'app_localizations_en.dart';
+import 'app_localizations_fr.dart';
+import 'app_localizations_he.dart';
+
+// ignore_for_file: type=lint
+
+/// Callers can lookup localized strings with an instance of AppLocalizations
+/// returned by `AppLocalizations.of(context)`.
+///
+/// Applications need to include `AppLocalizations.delegate()` in their app's
+/// `localizationDelegates` list, and the locales they support in the app's
+/// `supportedLocales` list. For example:
+///
+/// ```dart
+/// import 'l10n/app_localizations.dart';
+///
+/// return MaterialApp(
+///   localizationsDelegates: AppLocalizations.localizationsDelegates,
+///   supportedLocales: AppLocalizations.supportedLocales,
+///   home: MyApplicationHome(),
+/// );
+/// ```
+///
+/// ## Update pubspec.yaml
+///
+/// Please make sure to update your pubspec.yaml to include the following
+/// packages:
+///
+/// ```yaml
+/// dependencies:
+///   # Internationalization support.
+///   flutter_localizations:
+///     sdk: flutter
+///   intl: any # Use the pinned version from flutter_localizations
+///
+///   # Rest of dependencies
+/// ```
+///
+/// ## iOS Applications
+///
+/// iOS applications define key application metadata, including supported
+/// locales, in an Info.plist file that is built into the application bundle.
+/// To configure the locales supported by your app, you’ll need to edit this
+/// file.
+///
+/// First, open your project’s ios/Runner.xcworkspace Xcode workspace file.
+/// Then, in the Project Navigator, open the Info.plist file under the Runner
+/// project’s Runner folder.
+///
+/// Next, select the Information Property List item, select Add Item from the
+/// Editor menu, then select Localizations from the pop-up menu.
+///
+/// Select and expand the newly-created Localizations item then, for each
+/// locale your application supports, add a new item and select the locale
+/// you wish to add from the pop-up menu in the Value field. This list should
+/// be consistent with the languages listed in the AppLocalizations.supportedLocales
+/// property.
+abstract class AppLocalizations {
+  AppLocalizations(String locale)
+      : localeName = intl.Intl.canonicalizedLocale(locale.toString());
+
+  final String localeName;
+
+  static AppLocalizations? of(BuildContext context) {
+    return Localizations.of<AppLocalizations>(context, AppLocalizations);
+  }
+
+  static const LocalizationsDelegate<AppLocalizations> delegate =
+      _AppLocalizationsDelegate();
+
+  /// A list of this localizations delegate along with the default localizations
+  /// delegates.
+  ///
+  /// Returns a list of localizations delegates containing this delegate along with
+  /// GlobalMaterialLocalizations.delegate, GlobalCupertinoLocalizations.delegate,
+  /// and GlobalWidgetsLocalizations.delegate.
+  ///
+  /// Additional delegates can be added by appending to this list in
+  /// MaterialApp. This list does not have to be used at all if a custom list
+  /// of delegates is preferred or required.
+  static const List<LocalizationsDelegate<dynamic>> localizationsDelegates =
+      <LocalizationsDelegate<dynamic>>[
+    delegate,
+    GlobalMaterialLocalizations.delegate,
+    GlobalCupertinoLocalizations.delegate,
+    GlobalWidgetsLocalizations.delegate,
+  ];
+
+  /// A list of this localizations delegate's supported locales.
+  static const List<Locale> supportedLocales = <Locale>[
+    Locale('en'),
+    Locale('fr'),
+    Locale('he')
+  ];
+
+  /// Application title
+  ///
+  /// In en, this message translates to:
+  /// **'SmartMenu'**
+  String get appTitle;
+
+  /// Menu label
+  ///
+  /// In en, this message translates to:
+  /// **'Menu'**
+  String get menu;
+
+  /// Shopping cart label
+  ///
+  /// In en, this message translates to:
+  /// **'Cart'**
+  String get cart;
+
+  /// Orders label
+  ///
+  /// In en, this message translates to:
+  /// **'Orders'**
+  String get orders;
+
+  /// Total price label
+  ///
+  /// In en, this message translates to:
+  /// **'Total'**
+  String get total;
+
+  /// Button to add item to cart
+  ///
+  /// In en, this message translates to:
+  /// **'Add to Cart'**
+  String get addToCart;
+
+  /// Button to submit order
+  ///
+  /// In en, this message translates to:
+  /// **'Place Order'**
+  String get placeOrder;
+
+  /// Order confirmation message
+  ///
+  /// In en, this message translates to:
+  /// **'Order Confirmed!'**
+  String get orderConfirmed;
+
+  /// Button to call waiter
+  ///
+  /// In en, this message translates to:
+  /// **'Call Waiter'**
+  String get callWaiter;
+
+  /// Loading indicator text
+  ///
+  /// In en, this message translates to:
+  /// **'Loading...'**
+  String get loading;
+
+  /// Empty cart message
+  ///
+  /// In en, this message translates to:
+  /// **'Your cart is empty!'**
+  String get cartEmpty;
+
+  /// Item added confirmation
+  ///
+  /// In en, this message translates to:
+  /// **'{itemName} added to cart!'**
+  String itemAddedToCart(String itemName);
+
+  /// Order creation success
+  ///
+  /// In en, this message translates to:
+  /// **'Order created!'**
+  String get orderCreated;
+
+  /// Restaurant notification confirmation
+  ///
+  /// In en, this message translates to:
+  /// **'The restaurant has been notified.'**
+  String get restaurantNotified;
+
+  /// Order error message
+  ///
+  /// In en, this message translates to:
+  /// **'Error placing order'**
+  String get orderError;
+
+  /// Table ID error
+  ///
+  /// In en, this message translates to:
+  /// **'Table not identified'**
+  String get tableNotIdentified;
+
+  /// Waiter call confirmation
+  ///
+  /// In en, this message translates to:
+  /// **'Waiter called!'**
+  String get waiterCalled;
+
+  /// Staff arrival message
+  ///
+  /// In en, this message translates to:
+  /// **'A member of our team is coming.'**
+  String get staffComing;
+
+  /// Cooldown message
+  ///
+  /// In en, this message translates to:
+  /// **'Please wait {seconds}s between calls'**
+  String cooldownWait(String seconds);
+
+  /// Generic error message
+  ///
+  /// In en, this message translates to:
+  /// **'Error: {error}'**
+  String error(String error);
+
+  /// Pizzas category
+  ///
+  /// In en, this message translates to:
+  /// **'Pizzas'**
+  String get categoryPizzas;
+
+  /// Starters category
+  ///
+  /// In en, this message translates to:
+  /// **'Starters'**
+  String get categoryStarters;
+
+  /// Pasta category
+  ///
+  /// In en, this message translates to:
+  /// **'Pasta'**
+  String get categoryPasta;
+
+  /// Desserts category
+  ///
+  /// In en, this message translates to:
+  /// **'Desserts'**
+  String get categoryDesserts;
+
+  /// Drinks category
+  ///
+  /// In en, this message translates to:
+  /// **'Drinks'**
+  String get categoryDrinks;
+
+  /// Other category
+  ///
+  /// In en, this message translates to:
+  /// **'Other'**
+  String get categoryOther;
+
+  /// Footer branding
+  ///
+  /// In en, this message translates to:
+  /// **'Powered by SmartMenu'**
+  String get poweredBy;
+
+  /// Order label
+  ///
+  /// In en, this message translates to:
+  /// **'Order'**
+  String get order;
+
+  /// Order label with item count
+  ///
+  /// In en, this message translates to:
+  /// **'Order ({count})'**
+  String orderWithCount(int count);
+
+  /// Items plural
+  ///
+  /// In en, this message translates to:
+  /// **'items'**
+  String get items;
+
+  /// Item singular
+  ///
+  /// In en, this message translates to:
+  /// **'item'**
+  String get item;
+
+  /// Finalize order action
+  ///
+  /// In en, this message translates to:
+  /// **'Finalize my order'**
+  String get finalizeOrder;
+
+  /// Order review modal title
+  ///
+  /// In en, this message translates to:
+  /// **'Order Review'**
+  String get orderReview;
+
+  /// Your order review header
+  ///
+  /// In en, this message translates to:
+  /// **'Review your order'**
+  String get yourOrderReview;
+
+  /// Close button
+  ///
+  /// In en, this message translates to:
+  /// **'Close'**
+  String get close;
+
+  /// Items label (already have items/item, this is alternative)
+  ///
+  /// In en, this message translates to:
+  /// **'items'**
+  String get articles;
+
+  /// Back button
+  ///
+  /// In en, this message translates to:
+  /// **'BACK'**
+  String get back;
+
+  /// Confirm button
+  ///
+  /// In en, this message translates to:
+  /// **'CONFIRM'**
+  String get confirm;
+
+  /// Accessibility announcement
+  ///
+  /// In en, this message translates to:
+  /// **'Order confirmed'**
+  String get orderConfirmedAnnouncement;
+
+  /// Add button
+  ///
+  /// In en, this message translates to:
+  /// **'ADD'**
+  String get add;
+
+  /// Popular badge
+  ///
+  /// In en, this message translates to:
+  /// **'Popular'**
+  String get badgePopular;
+
+  /// New badge
+  ///
+  /// In en, this message translates to:
+  /// **'New'**
+  String get badgeNew;
+
+  /// Specialty badge
+  ///
+  /// In en, this message translates to:
+  /// **'Specialty'**
+  String get badgeSpecialty;
+
+  /// Chef's choice badge
+  ///
+  /// In en, this message translates to:
+  /// **'Chef\'s choice'**
+  String get badgeChef;
+
+  /// Seasonal badge
+  ///
+  /// In en, this message translates to:
+  /// **'Seasonal'**
+  String get badgeSeasonal;
+
+  /// Signature dish badge
+  ///
+  /// In en, this message translates to:
+  /// **'Signature'**
+  String get badgeSignature;
+
+  /// Confirmation message for item removal
+  ///
+  /// In en, this message translates to:
+  /// **'Remove this item?'**
+  String get removeThisItem;
+
+  /// Button to remove item from cart
+  ///
+  /// In en, this message translates to:
+  /// **'REMOVE FROM CART'**
+  String get removeFromCart;
+
+  /// Update button
+  ///
+  /// In en, this message translates to:
+  /// **'UPDATE'**
+  String get update;
+
+  /// Accessibility label
+  ///
+  /// In en, this message translates to:
+  /// **'Increase quantity'**
+  String get increaseQuantity;
+
+  /// Accessibility label
+  ///
+  /// In en, this message translates to:
+  /// **'Decrease quantity'**
+  String get decreaseQuantity;
+
+  /// Tooltip increase
+  ///
+  /// In en, this message translates to:
+  /// **'Increase'**
+  String get increase;
+
+  /// Tooltip decrease
+  ///
+  /// In en, this message translates to:
+  /// **'Decrease'**
+  String get decrease;
+
+  /// Waiter button label
+  ///
+  /// In en, this message translates to:
+  /// **'Waiter'**
+  String get waiter;
+
+  /// Badges guide title
+  ///
+  /// In en, this message translates to:
+  /// **'Badges Guide'**
+  String get badgesGuide;
+
+  /// Popular badge description
+  ///
+  /// In en, this message translates to:
+  /// **'Most ordered dishes'**
+  String get badgeDescPopular;
+
+  /// New badge description
+  ///
+  /// In en, this message translates to:
+  /// **'New items on the menu'**
+  String get badgeDescNew;
+
+  /// Specialty badge description
+  ///
+  /// In en, this message translates to:
+  /// **'House specialties'**
+  String get badgeDescSpecialty;
+
+  /// Chef badge description
+  ///
+  /// In en, this message translates to:
+  /// **'Chef recommendations'**
+  String get badgeDescChef;
+
+  /// Seasonal badge description
+  ///
+  /// In en, this message translates to:
+  /// **'Seasonal dishes'**
+  String get badgeDescSeasonal;
+
+  /// Understood button
+  ///
+  /// In en, this message translates to:
+  /// **'Understood'**
+  String get understood;
+}
+
+class _AppLocalizationsDelegate
+    extends LocalizationsDelegate<AppLocalizations> {
+  const _AppLocalizationsDelegate();
+
+  @override
+  Future<AppLocalizations> load(Locale locale) {
+    return SynchronousFuture<AppLocalizations>(lookupAppLocalizations(locale));
+  }
+
+  @override
+  bool isSupported(Locale locale) =>
+      <String>['en', 'fr', 'he'].contains(locale.languageCode);
+
+  @override
+  bool shouldReload(_AppLocalizationsDelegate old) => false;
+}
+
+AppLocalizations lookupAppLocalizations(Locale locale) {
+  // Lookup logic when only language code is specified.
+  switch (locale.languageCode) {
+    case 'en':
+      return AppLocalizationsEn();
+    case 'fr':
+      return AppLocalizationsFr();
+    case 'he':
+      return AppLocalizationsHe();
+  }
+
+  throw FlutterError(
+      'AppLocalizations.delegate failed to load unsupported locale "$locale". This is likely '
+      'an issue with the localizations generation tool. Please file an issue '
+      'on GitHub with a reproducible sample app and the gen-l10n configuration '
+      'that was used.');
+}

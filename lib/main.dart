@@ -1,7 +1,14 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:provider/provider.dart';
 import 'firebase_options.dart';
+
+// Import i18n
+import 'l10n/app_localizations.dart';
+
+// Import state
+import 'state/language_provider.dart';
 
 // Import screens
 import 'screens/home_screen.dart';
@@ -20,7 +27,12 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  runApp(const SmartMenuApp());
+  runApp(
+    ChangeNotifierProvider(
+      create: (_) => LanguageProvider(),
+      child: const SmartMenuApp(),
+    ),
+  );
 }
 
 class SmartMenuApp extends StatelessWidget {
@@ -28,24 +40,34 @@ class SmartMenuApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'SmartMenu',
-      debugShowCheckedModeBanner: false,
-      home: _getInitialScreen(),
-      theme: _buildTheme(),
-      onGenerateRoute: (settings) {
-        final name = settings.name ?? '';
-        final uri = Uri.tryParse(name);
-        if (uri != null &&
-            uri.pathSegments.isNotEmpty &&
-            uri.pathSegments.first == 'r') {
-          final idOrSlug =
-              (uri.pathSegments.length > 1) ? uri.pathSegments[1] : '';
-          return MaterialPageRoute(
-            builder: (_) => ResolveRestaurantScreen(idOrSlug: idOrSlug),
-          );
-        }
-        return null;
+    return Consumer<LanguageProvider>(
+      builder: (context, languageProvider, child) {
+        return MaterialApp(
+          title: 'SmartMenu',
+          debugShowCheckedModeBanner: false,
+
+          // Configuration i18n avec provider
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          locale: languageProvider.locale, // Langue du provider
+
+          home: _getInitialScreen(),
+          theme: _buildTheme(),
+          onGenerateRoute: (settings) {
+            final name = settings.name ?? '';
+            final uri = Uri.tryParse(name);
+            if (uri != null &&
+                uri.pathSegments.isNotEmpty &&
+                uri.pathSegments.first == 'r') {
+              final idOrSlug =
+                  (uri.pathSegments.length > 1) ? uri.pathSegments[1] : '';
+              return MaterialPageRoute(
+                builder: (_) => ResolveRestaurantScreen(idOrSlug: idOrSlug),
+              );
+            }
+            return null;
+          },
+        );
       },
     );
   }
@@ -54,13 +76,11 @@ class SmartMenuApp extends StatelessWidget {
     if (kIsWeb) {
       final segments = Uri.base.pathSegments;
 
-      // 1) PRIORITÉ: Route /r/{restaurantId} → MenuScreen
       if (segments.isNotEmpty && segments[0] == 'r') {
         final idOrSlug = (segments.length > 1) ? segments[1] : '';
         return ResolveRestaurantScreen(idOrSlug: idOrSlug);
       }
 
-      // 2) Routes admin (après /r/)
       if (segments.isNotEmpty && segments[0] == 'admin') {
         final requestedPath = '/${segments.join('/')}';
         final redirectRoute = AuthGuard.getRedirectRoute(requestedPath);
@@ -79,7 +99,6 @@ class SmartMenuApp extends StatelessWidget {
           }
         }
 
-        // Routes directes admin
         if (segments.length > 1) {
           switch (segments[1]) {
             case 'login':
@@ -96,7 +115,6 @@ class SmartMenuApp extends StatelessWidget {
       }
     }
 
-    // 3) Route par défaut
     return const HomeScreen();
   }
 

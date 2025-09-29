@@ -147,139 +147,153 @@ class _AdminSettingsScreenState extends State<AdminSettingsScreen> {
 
             // Card nom restaurant
             Card(
-              child: Padding(
-                padding: const EdgeInsets.all(AdminTokens.space20),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        const Icon(
-                          Icons.restaurant,
-                          color: AdminTokens.primary600,
-                        ),
-                        const SizedBox(width: AdminTokens.space12),
-                        const Expanded(
-                          child: Text(
-                            'Nom du restaurant',
-                            style: AdminTypography.headlineMedium,
-                            overflow: TextOverflow.ellipsis,
+              elevation: 0,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(AdminTokens.radius16),
+                side: const BorderSide(color: AdminTokens.border),
+              ),
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(AdminTokens.radius16),
+                  boxShadow: AdminTokens.shadowMd,
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(AdminTokens.space20),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          const Icon(
+                            Icons.restaurant,
+                            color: AdminTokens.primary600,
                           ),
-                        ),
-                        if (!_isEditing)
-                          IconButton(
-                            onPressed: () {
-                              setState(() {
-                                _isEditing = true;
-                                _error = null;
-                              });
-                            },
-                            icon: const Icon(Icons.edit, size: 18),
-                            tooltip: 'Modifier',
-                          ),
-                      ],
-                    ),
-                    const SizedBox(height: AdminTokens.space16),
-                    if (!_isEditing) ...[
-                      // Mode lecture
-                      Container(
-                        width: double.infinity,
-                        padding: const EdgeInsets.all(AdminTokens.space16),
-                        decoration: BoxDecoration(
-                          color: AdminTokens.neutral50,
-                          borderRadius:
-                              BorderRadius.circular(AdminTokens.radius8),
-                          border: Border.all(color: AdminTokens.neutral200),
-                        ),
-                        child: Text(
-                          _currentName ?? 'Chargement...',
-                          style: AdminTypography.bodyLarge,
-                        ),
-                      ),
-                    ] else ...[
-                      // Mode édition
-                      Form(
-                        key: _formKey,
-                        child: Column(
-                          children: [
-                            TextFormField(
-                              controller: _nameController,
-                              decoration: const InputDecoration(
-                                labelText: 'Nom du restaurant',
-                                hintText: 'Ex: Pizza Mario',
-                                prefixIcon: Icon(Icons.restaurant),
-                              ),
-                              validator: (value) {
-                                if (value == null || value.trim().isEmpty) {
-                                  return 'Le nom du restaurant est obligatoire';
-                                }
-                                if (value.trim().length < 2) {
-                                  return 'Le nom doit contenir au moins 2 caractères';
-                                }
-                                if (value.trim().length > 50) {
-                                  return 'Le nom ne peut pas dépasser 50 caractères';
-                                }
-                                return null;
-                              },
-                              maxLength: 50,
+                          const SizedBox(width: AdminTokens.space12),
+                          const Expanded(
+                            child: Text(
+                              'Nom du restaurant',
+                              style: AdminTypography.headlineMedium,
+                              overflow: TextOverflow.ellipsis,
                             ),
-                            const SizedBox(height: AdminTokens.space16),
-
-                            if (_error != null) ...[
-                              Container(
-                                width: double.infinity,
-                                padding:
-                                    const EdgeInsets.all(AdminTokens.space12),
-                                decoration: BoxDecoration(
-                                  color: AdminTokens.error50,
-                                  borderRadius: BorderRadius.circular(
-                                      AdminTokens.radius8),
+                          ),
+                          if (!_isEditing)
+                            IconButton(
+                              onPressed: () {
+                                setState(() {
+                                  _isEditing = true;
+                                  _error = null;
+                                });
+                              },
+                              icon: const Icon(Icons.edit, size: 18),
+                              tooltip: 'Modifier',
+                            ),
+                        ],
+                      ),
+                      const SizedBox(height: AdminTokens.space16),
+                      if (!_isEditing) ...[
+                        // Mode lecture
+                        Container(
+                          width: double.infinity,
+                          padding: const EdgeInsets.all(AdminTokens.space16),
+                          decoration: BoxDecoration(
+                            color: AdminTokens.neutral50,
+                            borderRadius:
+                                BorderRadius.circular(AdminTokens.radius12),
+                            border: Border.all(color: AdminTokens.neutral200),
+                          ),
+                          child: Text(
+                            _currentName ?? 'Chargement...',
+                            style: AdminTypography.bodyLarge,
+                          ),
+                        ),
+                      ] else ...[
+                        // Mode édition
+                        Form(
+                          key: _formKey,
+                          child: Column(
+                            children: [
+                              TextFormField(
+                                controller: _nameController,
+                                decoration: const InputDecoration(
+                                  labelText: 'Nom du restaurant',
+                                  hintText: 'Ex: Pizza Mario',
+                                  prefixIcon: Icon(Icons.restaurant),
                                 ),
-                                child: Text(
-                                  _error!,
-                                  style: AdminTypography.bodySmall.copyWith(
-                                    color: AdminTokens.error500,
-                                  ),
-                                ),
+                                validator: (value) {
+                                  if (value == null || value.trim().isEmpty) {
+                                    return 'Le nom du restaurant est obligatoire';
+                                  }
+                                  if (value.trim().length < 2) {
+                                    return 'Le nom doit contenir au moins 2 caractères';
+                                  }
+                                  if (value.trim().length > 50) {
+                                    return 'Le nom ne peut pas dépasser 50 caractères';
+                                  }
+                                  return null;
+                                },
+                                maxLength: 50,
                               ),
                               const SizedBox(height: AdminTokens.space16),
-                            ],
 
-                            // Boutons d'action
-                            Row(
-                              children: [
-                                Expanded(
-                                  child: OutlinedButton(
-                                    onPressed: _isLoading ? null : _cancelEdit,
-                                    child: const Text('Annuler'),
+                              if (_error != null) ...[
+                                Container(
+                                  width: double.infinity,
+                                  padding:
+                                      const EdgeInsets.all(AdminTokens.space12),
+                                  decoration: BoxDecoration(
+                                    color: AdminTokens.error50,
+                                    borderRadius: BorderRadius.circular(
+                                        AdminTokens.radius12),
+                                  ),
+                                  child: Text(
+                                    _error!,
+                                    style: AdminTypography.bodySmall.copyWith(
+                                      color: AdminTokens.error500,
+                                    ),
                                   ),
                                 ),
-                                const SizedBox(width: AdminTokens.space16),
-                                Expanded(
-                                  child: ElevatedButton(
-                                    onPressed:
-                                        _isLoading ? null : _saveRestaurantName,
-                                    child: _isLoading
-                                        ? const SizedBox(
-                                            width: 20,
-                                            height: 20,
-                                            child: CircularProgressIndicator(
-                                              strokeWidth: 2,
-                                              valueColor:
-                                                  AlwaysStoppedAnimation<Color>(
-                                                      Colors.white),
-                                            ),
-                                          )
-                                        : const Text('Enregistrer'),
-                                  ),
-                                ),
+                                const SizedBox(height: AdminTokens.space16),
                               ],
-                            ),
-                          ],
+
+                              // Boutons d'action
+                              Row(
+                                children: [
+                                  Expanded(
+                                    child: OutlinedButton(
+                                      onPressed:
+                                          _isLoading ? null : _cancelEdit,
+                                      child: const Text('Annuler'),
+                                    ),
+                                  ),
+                                  const SizedBox(width: AdminTokens.space16),
+                                  Expanded(
+                                    child: ElevatedButton(
+                                      onPressed: _isLoading
+                                          ? null
+                                          : _saveRestaurantName,
+                                      child: _isLoading
+                                          ? const SizedBox(
+                                              width: 20,
+                                              height: 20,
+                                              child: CircularProgressIndicator(
+                                                strokeWidth: 2,
+                                                valueColor:
+                                                    AlwaysStoppedAnimation<
+                                                        Color>(Colors.white),
+                                              ),
+                                            )
+                                          : const Text('Enregistrer'),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
                         ),
-                      ),
+                      ],
                     ],
-                  ],
+                  ),
                 ),
               ),
             ),
@@ -288,19 +302,31 @@ class _AdminSettingsScreenState extends State<AdminSettingsScreen> {
 
             // Autres paramètres
             Card(
-              child: ListTile(
-                leading: const Icon(Icons.info_outline),
-                title: const Text('Informations détaillées'),
-                subtitle: const Text('Description, bandeau promo, devise'),
-                trailing: const Icon(Icons.chevron_right),
-                onTap: () {
-                  context.pushAdminScreen(
-                    AdminRestaurantInfoScreen(
-                      restaurantId: widget.restaurantId,
-                      showBack: true,
-                    ),
-                  );
-                },
+              elevation: 0,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(AdminTokens.radius16),
+                side: const BorderSide(color: AdminTokens.border),
+              ),
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(AdminTokens.radius16),
+                  boxShadow: AdminTokens.shadowMd,
+                ),
+                child: ListTile(
+                  leading: const Icon(Icons.info_outline),
+                  title: const Text('Informations détaillées'),
+                  subtitle: const Text('Description, bandeau promo, devise'),
+                  trailing: const Icon(Icons.chevron_right),
+                  onTap: () {
+                    context.pushAdminScreen(
+                      AdminRestaurantInfoScreen(
+                        restaurantId: widget.restaurantId,
+                        showBack: true,
+                      ),
+                    );
+                  },
+                ),
               ),
             ),
 
@@ -308,23 +334,35 @@ class _AdminSettingsScreenState extends State<AdminSettingsScreen> {
 
             // Section Gestion des catégories
             Card(
-              child: Padding(
-                padding: const EdgeInsets.all(AdminTokens.space20),
-                child: Card(
-                  child: ListTile(
-                    leading: const Icon(Icons.category),
-                    title: const Text('Gérer les catégories'),
-                    subtitle: const Text('Réorganiser, masquer et renommer'),
-                    trailing: const Icon(Icons.arrow_forward_ios),
-                    onTap: () async {
-                      final state = await CategoryManager.getLiveState(
-                              widget.restaurantId)
-                          .first;
-                      if (mounted) {
-                        CategoryManagerSheet.show(
-                            context, widget.restaurantId, state);
-                      }
-                    },
+              elevation: 0,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(AdminTokens.radius16),
+                side: const BorderSide(color: AdminTokens.border),
+              ),
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(AdminTokens.radius16),
+                  boxShadow: AdminTokens.shadowMd,
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(AdminTokens.space20),
+                  child: Card(
+                    child: ListTile(
+                      leading: const Icon(Icons.category),
+                      title: const Text('Gérer les catégories'),
+                      subtitle: const Text('Réorganiser, masquer et renommer'),
+                      trailing: const Icon(Icons.arrow_forward_ios),
+                      onTap: () async {
+                        final state = await CategoryManager.getLiveState(
+                                widget.restaurantId)
+                            .first;
+                        if (mounted) {
+                          CategoryManagerSheet.show(
+                              context, widget.restaurantId, state);
+                        }
+                      },
+                    ),
                   ),
                 ),
               ),
@@ -340,130 +378,145 @@ class _AdminSettingsScreenState extends State<AdminSettingsScreen> {
             const SizedBox(height: AdminTokens.space16),
 
             Card(
-              child: Padding(
-                padding: const EdgeInsets.all(AdminTokens.space20),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Row(
-                      children: [
-                        Icon(
-                          Icons.qr_code,
-                          color: AdminTokens.primary600,
-                        ),
-                        SizedBox(width: AdminTokens.space12),
-                        Text(
-                          'Code restaurant',
-                          style: AdminTypography.headlineMedium,
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: AdminTokens.space16),
-                    FutureBuilder<DocumentSnapshot>(
-                      future: FirebaseFirestore.instance
-                          .collection('restaurants')
-                          .doc(widget.restaurantId)
-                          .collection('info')
-                          .doc('details')
-                          .get(),
-                      builder: (context, snapshot) {
-                        if (!snapshot.hasData) {
-                          return const CircularProgressIndicator();
-                        }
+              elevation: 0,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(AdminTokens.radius16),
+                side: const BorderSide(color: AdminTokens.border),
+              ),
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(AdminTokens.radius16),
+                  boxShadow: AdminTokens.shadowMd,
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(AdminTokens.space20),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Row(
+                        children: [
+                          Icon(
+                            Icons.qr_code,
+                            color: AdminTokens.primary600,
+                          ),
+                          SizedBox(width: AdminTokens.space12),
+                          Text(
+                            'Code restaurant',
+                            style: AdminTypography.headlineMedium,
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: AdminTokens.space16),
+                      FutureBuilder<DocumentSnapshot>(
+                        future: FirebaseFirestore.instance
+                            .collection('restaurants')
+                            .doc(widget.restaurantId)
+                            .collection('info')
+                            .doc('details')
+                            .get(),
+                        builder: (context, snapshot) {
+                          if (!snapshot.hasData) {
+                            return const CircularProgressIndicator();
+                          }
 
-                        final data =
-                            snapshot.data!.data() as Map<String, dynamic>? ??
-                                {};
-                        final code =
-                            data['slug'] ?? data['code'] ?? widget.restaurantId;
+                          final data =
+                              snapshot.data!.data() as Map<String, dynamic>? ??
+                                  {};
+                          final code = data['slug'] ??
+                              data['code'] ??
+                              widget.restaurantId;
 
-                        return Column(
-                          children: [
-                            // Code restaurant - responsive
-                            _buildResponsiveInfoRow('Code restaurant', code),
-                            const SizedBox(height: AdminTokens.space12),
+                          return Column(
+                            children: [
+                              // Code restaurant - responsive
+                              _buildResponsiveInfoRow('Code restaurant', code),
+                              const SizedBox(height: AdminTokens.space12),
 
-                            // URL publique - responsive
-                            _buildResponsiveInfoRow(
-                              'URL publique',
-                              '${Uri.base.origin}/r/${data['slug'] ?? data['code'] ?? widget.restaurantId}',
-                              isUrl: true,
-                            ),
-                            const SizedBox(height: AdminTokens.space20),
+                              // URL publique - responsive
+                              _buildResponsiveInfoRow(
+                                'URL publique',
+                                '${Uri.base.origin}/r/${data['slug'] ?? data['code'] ?? widget.restaurantId}',
+                                isUrl: true,
+                              ),
+                              const SizedBox(height: AdminTokens.space20),
 
-                            // Boutons d'action - responsive
-                            LayoutBuilder(
-                              builder: (context, constraints) {
-                                final isMobile = constraints.maxWidth < 400;
+                              // Boutons d'action - responsive
+                              LayoutBuilder(
+                                builder: (context, constraints) {
+                                  final isMobile = constraints.maxWidth < 400;
 
-                                if (isMobile) {
-                                  return Column(
-                                    children: [
-                                      SizedBox(
-                                        width: double.infinity,
-                                        child: OutlinedButton.icon(
-                                          icon: const Icon(Icons.qr_code,
-                                              size: 18),
-                                          label: const Text('Générer QR'),
-                                          onPressed: () =>
-                                              _generateQRCode(code),
-                                          style: OutlinedButton.styleFrom(
-                                            padding: const EdgeInsets.symmetric(
-                                                vertical: 12),
+                                  if (isMobile) {
+                                    return Column(
+                                      children: [
+                                        SizedBox(
+                                          width: double.infinity,
+                                          child: OutlinedButton.icon(
+                                            icon: const Icon(Icons.qr_code,
+                                                size: 18),
+                                            label: const Text('Générer QR'),
+                                            onPressed: () =>
+                                                _generateQRCode(code),
+                                            style: OutlinedButton.styleFrom(
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                      vertical: 12),
+                                            ),
                                           ),
                                         ),
-                                      ),
-                                      const SizedBox(
-                                          height: AdminTokens.space12),
-                                      SizedBox(
-                                        width: double.infinity,
-                                        child: ElevatedButton.icon(
-                                          icon:
-                                              const Icon(Icons.share, size: 18),
-                                          label: const Text('Partager'),
-                                          onPressed: () =>
-                                              _shareRestaurant(code),
-                                          style: ElevatedButton.styleFrom(
-                                            padding: const EdgeInsets.symmetric(
-                                                vertical: 12),
+                                        const SizedBox(
+                                            height: AdminTokens.space12),
+                                        SizedBox(
+                                          width: double.infinity,
+                                          child: ElevatedButton.icon(
+                                            icon: const Icon(Icons.share,
+                                                size: 18),
+                                            label: const Text('Partager'),
+                                            onPressed: () =>
+                                                _shareRestaurant(code),
+                                            style: ElevatedButton.styleFrom(
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                      vertical: 12),
+                                            ),
                                           ),
                                         ),
-                                      ),
-                                    ],
-                                  );
-                                } else {
-                                  return Row(
-                                    children: [
-                                      Expanded(
-                                        child: OutlinedButton.icon(
-                                          icon: const Icon(Icons.qr_code,
-                                              size: 18),
-                                          label: const Text('Générer QR'),
-                                          onPressed: () =>
-                                              _generateQRCode(code),
+                                      ],
+                                    );
+                                  } else {
+                                    return Row(
+                                      children: [
+                                        Expanded(
+                                          child: OutlinedButton.icon(
+                                            icon: const Icon(Icons.qr_code,
+                                                size: 18),
+                                            label: const Text('Générer QR'),
+                                            onPressed: () =>
+                                                _generateQRCode(code),
+                                          ),
                                         ),
-                                      ),
-                                      const SizedBox(
-                                          width: AdminTokens.space12),
-                                      Expanded(
-                                        child: ElevatedButton.icon(
-                                          icon:
-                                              const Icon(Icons.share, size: 18),
-                                          label: const Text('Partager'),
-                                          onPressed: () =>
-                                              _shareRestaurant(code),
+                                        const SizedBox(
+                                            width: AdminTokens.space12),
+                                        Expanded(
+                                          child: ElevatedButton.icon(
+                                            icon: const Icon(Icons.share,
+                                                size: 18),
+                                            label: const Text('Partager'),
+                                            onPressed: () =>
+                                                _shareRestaurant(code),
+                                          ),
                                         ),
-                                      ),
-                                    ],
-                                  );
-                                }
-                              },
-                            ),
-                          ],
-                        );
-                      },
-                    ),
-                  ],
+                                      ],
+                                    );
+                                  }
+                                },
+                              ),
+                            ],
+                          );
+                        },
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),
@@ -1033,7 +1086,7 @@ class _QRGeneratorDialogState extends State<_QRGeneratorDialog> {
                     padding: EdgeInsets.all(isMobile ? 6 : AdminTokens.space8),
                     decoration: BoxDecoration(
                       color: AdminTokens.primary50,
-                      borderRadius: BorderRadius.circular(AdminTokens.radius8),
+                      borderRadius: BorderRadius.circular(AdminTokens.radius12),
                     ),
                     child: Icon(
                       Icons.qr_code,
@@ -1088,7 +1141,7 @@ class _QRGeneratorDialogState extends State<_QRGeneratorDialog> {
                       decoration: BoxDecoration(
                         color: Colors.white,
                         borderRadius:
-                            BorderRadius.circular(AdminTokens.radius8),
+                            BorderRadius.circular(AdminTokens.radius12),
                         border: Border.all(color: AdminTokens.neutral200),
                       ),
                       child: Column(
@@ -1112,7 +1165,7 @@ class _QRGeneratorDialogState extends State<_QRGeneratorDialog> {
                           Container(
                             decoration: BoxDecoration(
                               borderRadius:
-                                  BorderRadius.circular(AdminTokens.radius8),
+                                  BorderRadius.circular(AdminTokens.radius12),
                               border: Border.all(color: AdminTokens.neutral200),
                             ),
                             child: QrImageView(
@@ -1172,6 +1225,10 @@ class _QRGeneratorDialogState extends State<_QRGeneratorDialog> {
                         TextFormField(
                           controller: _messageController,
                           decoration: InputDecoration(
+                            border: OutlineInputBorder(
+                              borderRadius:
+                                  BorderRadius.circular(AdminTokens.radius12),
+                            ),
                             labelText: 'Message personnalisé (optionnel)',
                             hintText: 'Ex: Bienvenue chez nous !',
                             prefixIcon: Icon(Icons.message_outlined,

@@ -148,11 +148,14 @@ flutter run -d chrome
 - ✅ **URLs propres** `/r/nom-restaurant` avec résolution automatique
 - ✅ **Système bout-en-bout** : admin crée → client scanne → menu accessible
 
-### Phase Actuelle : Internationalisation RTL (J+5-J+8)
+### Phase 5 : Internationalisation RTL ✅ TERMINÉE
 
-- **Architecture i18n** : extraction libellés + flutter_localizations
-- **RTL Implementation** : direction complète pour hébreu + formatage ₪ 25
-- **Tests multilingues** : HE/EN/FR sans reload
+- ✅ **Architecture i18n complète** : flutter_localizations + ARB files (60+ clés)
+- ✅ **3 langues supportées** : Anglais, Hébreu (RTL), Français
+- ✅ **Sélecteur de langue** : Widget intégré avec persistence SharedPreferences
+- ✅ **RTL parfait** : Interface inversée automatique pour hébreu
+- ✅ **Widgets traduits** : Menu, Header, Panier, Modale commande, Items, Badges
+- ✅ **95%+ interface client** traduite et fonctionnelle
 
 ### Prochaines phases
 

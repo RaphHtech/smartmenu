@@ -1,0 +1,328 @@
+{
+  "@@locale": "fr",
+  
+  "appTitle": "SmartMenu",
+  "@appTitle": {
+    "description": "Application title"
+  },
+
+  "menu": "Menu",
+  "@menu": {
+    "description": "Menu label"
+  },
+
+  "cart": "Panier",
+  "@cart": {
+    "description": "Shopping cart label"
+  },
+
+  "orders": "Commandes",
+  "@orders": {
+    "description": "Orders label"
+  },
+
+  "total": "Total",
+  "@total": {
+    "description": "Total price label"
+  },
+
+  "addToCart": "Ajouter au panier",
+  "@addToCart": {
+    "description": "Button to add item to cart"
+  },
+
+  "placeOrder": "Passer commande",
+  "@placeOrder": {
+    "description": "Button to submit order"
+  },
+
+  "orderConfirmed": "Commande confirmée !",
+  "@orderConfirmed": {
+    "description": "Order confirmation message"
+  },
+
+  "callWaiter": "Appeler le serveur",
+  "@callWaiter": {
+    "description": "Button to call waiter"
+  },
+
+  "loading": "Chargement...",
+  "@loading": {
+    "description": "Loading indicator text"
+  },
+
+  "cartEmpty": "Votre panier est vide !",
+  "@cartEmpty": {
+    "description": "Empty cart message"
+  },
+
+  "itemAddedToCart": "{itemName} ajouté au panier !",
+  "@itemAddedToCart": {
+    "description": "Item added confirmation",
+    "placeholders": {
+      "itemName": {
+        "type": "String"
+      }
+    }
+  },
+
+  "orderCreated": "Commande créée !",
+  "@orderCreated": {
+    "description": "Order creation success"
+  },
+
+  "restaurantNotified": "Le restaurant a été notifié.",
+  "@restaurantNotified": {
+    "description": "Restaurant notification confirmation"
+  },
+
+  "orderError": "Erreur lors de la commande",
+  "@orderError": {
+    "description": "Order error message"
+  },
+
+  "tableNotIdentified": "Table non identifiée",
+  "@tableNotIdentified": {
+    "description": "Table ID error"
+  },
+
+  "waiterCalled": "Serveur appelé !",
+  "@waiterCalled": {
+    "description": "Waiter call confirmation"
+  },
+
+  "staffComing": "Un membre de notre équipe arrive.",
+  "@staffComing": {
+    "description": "Staff arrival message"
+  },
+
+  "cooldownWait": "Veuillez attendre {seconds}s entre les appels",
+  "@cooldownWait": {
+    "description": "Cooldown message",
+    "placeholders": {
+      "seconds": {
+        "type": "String"
+      }
+    }
+  },
+
+  "error": "Erreur : {error}",
+  "@error": {
+    "description": "Generic error message",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+
+  "categoryPizzas": "Pizzas",
+  "@categoryPizzas": {
+    "description": "Pizzas category"
+  },
+
+  "categoryStarters": "Entrées",
+  "@categoryStarters": {
+    "description": "Starters category"
+  },
+
+  "categoryPasta": "Pâtes",
+  "@categoryPasta": {
+    "description": "Pasta category"
+  },
+
+  "categoryDesserts": "Desserts",
+  "@categoryDesserts": {
+    "description": "Desserts category"
+  },
+
+  "categoryDrinks": "Boissons",
+  "@categoryDrinks": {
+    "description": "Drinks category"
+  },
+
+  "categoryOther": "Autres",
+  "@categoryOther": {
+    "description": "Other category"
+  },
+
+  "poweredBy": "Propulsé par SmartMenu",
+  "@poweredBy": {
+    "description": "Footer branding"
+  },
+
+  "order": "Commande",
+  "@order": {
+    "description": "Order label"
+  },
+
+  "orderWithCount": "Commande ({count})",
+  "@orderWithCount": {
+    "description": "Order label with item count",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+
+  "items": "articles",
+  "@items": {
+    "description": "Items plural"
+  },
+
+  "item": "article",
+  "@item": {
+    "description": "Item singular"
+  },
+
+  "finalizeOrder": "Finaliser ma commande",
+  "@finalizeOrder": {
+    "description": "Finalize order action"
+  },
+
+  "orderReview": "Révision de commande",
+  "@orderReview": {
+    "description": "Order review modal title"
+  },
+
+  "yourOrderReview": "Révision de votre commande",
+  "@yourOrderReview": {
+    "description": "Your order review header"
+  },
+
+  "close": "Fermer",
+  "@close": {
+    "description": "Close button"
+  },
+
+  "articles": "articles",
+  "@articles": {
+    "description": "Items label"
+  },
+
+  "back": "RETOUR",
+  "@back": {
+    "description": "Back button"
+  },
+
+  "confirm": "CONFIRMER",
+  "@confirm": {
+    "description": "Confirm button"
+  },
+
+  "orderConfirmedAnnouncement": "Commande confirmée",
+  "@orderConfirmedAnnouncement": {
+    "description": "Accessibility announcement"
+  },
+
+  "add": "AJOUTER",
+  "@add": {
+    "description": "Add button"
+  },
+
+  "badgePopular": "Populaire",
+  "@badgePopular": {
+    "description": "Popular badge"
+  },
+
+  "badgeNew": "Nouveau",
+  "@badgeNew": {
+    "description": "New badge"
+  },
+
+  "badgeSpecialty": "Spécialité",
+  "@badgeSpecialty": {
+    "description": "Specialty badge"
+  },
+
+  "badgeChef": "Choix du chef",
+  "@badgeChef": {
+    "description": "Chef's choice badge"
+  },
+
+  "badgeSeasonal": "Saisonnier",
+  "@badgeSeasonal": {
+    "description": "Seasonal badge"
+  },
+
+  "badgeSignature": "Signature",
+  "@badgeSignature": {
+    "description": "Signature dish badge"
+  },
+
+  "removeThisItem": "Retirer cet article ?",
+  "@removeThisItem": {
+    "description": "Confirmation message for item removal"
+  },
+
+  "removeFromCart": "SUPPRIMER DU PANIER",
+  "@removeFromCart": {
+    "description": "Button to remove item from cart"
+  },
+
+  "update": "METTRE À JOUR",
+  "@update": {
+    "description": "Update button"
+  },
+
+  "increaseQuantity": "Augmenter la quantité",
+  "@increaseQuantity": {
+    "description": "Accessibility label"
+  },
+
+  "decreaseQuantity": "Diminuer la quantité",
+  "@decreaseQuantity": {
+    "description": "Accessibility label"
+  },
+
+  "increase": "Augmenter",
+  "@increase": {
+    "description": "Tooltip increase"
+  },
+
+  "decrease": "Diminuer",
+  "@decrease": {
+    "description": "Tooltip decrease"
+  },
+
+  "waiter": "Serveur",
+  "@waiter": {
+    "description": "Waiter button label"
+  },
+
+  "badgesGuide": "Guide des badges",
+  "@badgesGuide": {
+    "description": "Badges guide title"
+  },
+
+  "badgeDescPopular": "Les plats les plus commandés",
+  "@badgeDescPopular": {
+    "description": "Popular badge description"
+  },
+
+  "badgeDescNew": "Nouveautés de la carte",
+  "@badgeDescNew": {
+    "description": "New badge description"
+  },
+
+  "badgeDescSpecialty": "Spécialités de la maison",
+  "@badgeDescSpecialty": {
+    "description": "Specialty badge description"
+  },
+
+  "badgeDescChef": "Recommandations du chef",
+  "@badgeDescChef": {
+    "description": "Chef badge description"
+  },
+
+  "badgeDescSeasonal": "Plats de saison",
+  "@badgeDescSeasonal": {
+    "description": "Seasonal badge description"
+  },
+
+  "understood": "Compris",
+  "@understood": {
+    "description": "Understood button"
+  }
+}

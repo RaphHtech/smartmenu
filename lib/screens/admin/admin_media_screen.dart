@@ -336,7 +336,7 @@ class _AdminMediaScreenState extends State<AdminMediaScreen> {
           if (_uploadError != null) _buildErrorAlert(),
           if (_uploadProgress != null) _buildProgressBar(),
 
-          const SizedBox(height: AdminTokens.space24),
+          const SizedBox(height: AdminTokens.space16),
 
           // Liste des médias
           Expanded(
@@ -353,9 +353,9 @@ class _AdminMediaScreenState extends State<AdminMediaScreen> {
 
   Widget _buildDropZone() {
     return Container(
-      margin: const EdgeInsets.all(AdminTokens.space16),
+      margin: const EdgeInsets.all(AdminTokens.space8),
       child: Container(
-        height: 180,
+        height: 120,
         decoration: BoxDecoration(
           border: Border.all(
             color: AdminTokens.neutral300,
@@ -481,104 +481,237 @@ class _AdminMediaScreenState extends State<AdminMediaScreen> {
   }
 
   Widget _buildMediaGrid() {
-    return GridView.builder(
-      padding: const EdgeInsets.all(AdminTokens.space16),
-      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: MediaQuery.of(context).size.width > 600 ? 4 : 2,
-        crossAxisSpacing: 12,
-        mainAxisSpacing: 20,
-        childAspectRatio: 0.80,
-      ),
-      itemCount: _mediaItems.length,
-      itemBuilder: (context, index) {
-        final item = _mediaItems[index];
-        return _buildMediaCard(item);
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        // 📱 Détection responsive basée sur la largeur
+        final isDesktop = constraints.maxWidth > 800;
+        final crossAxisCount = isDesktop ? 4 : 2; // 4 sur desktop, 2 sur mobile
+        final childAspectRatio =
+            isDesktop ? 0.85 : 0.9; // Ratio légèrement différent
+
+        return GridView.builder(
+          padding: EdgeInsets.all(
+              isDesktop ? 16.0 : 12.0), // Moins de padding sur mobile
+          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: crossAxisCount,
+            crossAxisSpacing: isDesktop ? 16 : 12, // Espacement adaptatif
+            mainAxisSpacing: isDesktop ? 16 : 12,
+            childAspectRatio: childAspectRatio,
+          ),
+          itemCount: _mediaItems.length,
+          itemBuilder: (context, index) => _buildMediaCard(_mediaItems[index]),
+        );
       },
     );
   }
 
   Widget _buildMediaCard(MediaItem item) {
-    return Card(
-      clipBehavior: Clip.antiAlias,
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(AdminTokens.radius12),
+        border: Border.all(color: AdminTokens.border),
+        boxShadow: AdminTokens.shadowMd,
+      ),
       child: Column(
         children: [
-          // Image 80% de la hauteur
-          Expanded(
-            flex: 3,
-            child: SizedBox(
-              width: double.infinity,
-              height: 28,
-              child: Image.network(
-                item.url,
-                fit: BoxFit.cover,
-                errorBuilder: (context, error, stackTrace) {
-                  return Container(
-                    color: AdminTokens.neutral100,
-                    child: const Icon(Icons.broken_image,
-                        color: AdminTokens.neutral400),
-                  );
-                },
+          // Image avec ratio 4:3 fixe + overlays
+          AspectRatio(
+            aspectRatio: 4 / 3,
+            child: Container(
+              decoration: const BoxDecoration(
+                borderRadius: BorderRadius.vertical(
+                  top: Radius.circular(AdminTokens.radius12),
+                ),
+                color: AdminTokens.neutral100,
+              ),
+              child: ClipRRect(
+                borderRadius: const BorderRadius.vertical(
+                  top: Radius.circular(AdminTokens.radius12),
+                ),
+                child: Stack(
+                  children: [
+                    // Image principale
+                    Positioned.fill(
+                      child: Image.network(
+                        item.url,
+                        fit: BoxFit.cover,
+                        errorBuilder: (context, error, stackTrace) {
+                          return Container(
+                            color: AdminTokens.neutral100,
+                            child: const Icon(
+                              Icons.broken_image_outlined,
+                              color: AdminTokens.neutral400,
+                              size: 32,
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+
+                    // Gradient pour lisibilité des overlays
+                    Positioned.fill(
+                      child: Container(
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            begin: Alignment.topCenter,
+                            end: Alignment.bottomCenter,
+                            colors: [
+                              Colors.black.withOpacity(0.1),
+                              Colors.black.withOpacity(0.4),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+
+                    // Taille en overlay (bas-gauche)
+                    Positioned(
+                      bottom: 8,
+                      left: 8,
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 8, vertical: 4),
+                        decoration: BoxDecoration(
+                          color: Colors.black.withOpacity(0.7),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            const Icon(
+                              Icons.image,
+                              size: 12,
+                              color: Colors.white,
+                            ),
+                            const SizedBox(width: 4),
+                            Text(
+                              _formatFileSize(item.size),
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 11,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+
+                    // Bouton supprimer (haut-droite)
+                    Positioned(
+                      top: 8,
+                      right: 8,
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: Colors.white.withOpacity(0.95),
+                          borderRadius: BorderRadius.circular(16),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.1),
+                              blurRadius: 4,
+                            ),
+                          ],
+                        ),
+                        child: Material(
+                          color: Colors.transparent,
+                          child: InkWell(
+                            borderRadius: BorderRadius.circular(16),
+                            onTap: () => _deleteMedia(item),
+                            child: const Padding(
+                              padding: EdgeInsets.all(6),
+                              child: Icon(
+                                Icons.delete_outline,
+                                size: 16,
+                                color: Colors.red,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
           ),
 
-          // Zone info compacte 25%
-          // Zone info compacte 25%
+          // 🎯 BARRE D'ACTION RESPONSIVE
           Expanded(
-            flex: 1,
-            child: Padding(
-              padding: const EdgeInsets.all(6),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  // Ligne taille + supprimer
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Expanded(
-                        child: Text(
-                          _formatFileSize(item.size),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: const TextStyle(
-                            fontSize: 10,
-                            fontWeight: FontWeight.w500,
-                            color: AdminTokens.neutral600,
+            child: Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(8), // Padding réduit
+              child: Center(
+                child: LayoutBuilder(
+                  builder: (context, constraints) {
+                    // 📱 Détection de la largeur disponible
+                    final isSmall = constraints.maxWidth < 140;
+
+                    return Container(
+                      decoration: BoxDecoration(
+                        gradient: const LinearGradient(
+                          colors: [
+                            AdminTokens.primary500,
+                            AdminTokens.primary600,
+                          ],
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                        ),
+                        borderRadius: BorderRadius.circular(8),
+                        boxShadow: [
+                          BoxShadow(
+                            color: AdminTokens.primary600.withOpacity(0.3),
+                            blurRadius: 6,
+                            offset: const Offset(0, 2),
+                          ),
+                        ],
+                      ),
+                      child: Material(
+                        color: Colors.transparent,
+                        child: InkWell(
+                          borderRadius: BorderRadius.circular(8),
+                          onTap: () => _assignToItem(item),
+                          child: Container(
+                            height: 36, // Hauteur réduite
+                            padding: EdgeInsets.symmetric(
+                              horizontal: isSmall ? 8 : 12,
+                            ),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                const Icon(
+                                  Icons.restaurant_menu,
+                                  size: 16, // Icône plus petite
+                                  color: Colors.white,
+                                ),
+                                if (!isSmall) ...[
+                                  const SizedBox(width: 6),
+                                  const Flexible(
+                                    child: Text(
+                                      'Assigner',
+                                      style: TextStyle(
+                                        fontSize: 12, // Texte plus petit
+                                        fontWeight: FontWeight.w600,
+                                        color: Colors.white,
+                                        letterSpacing: 0.2,
+                                      ),
+                                      overflow: TextOverflow.ellipsis,
+                                      maxLines: 1,
+                                    ),
+                                  ),
+                                ],
+                              ],
+                            ),
                           ),
                         ),
                       ),
-                      InkWell(
-                        onTap: () => _deleteMedia(item),
-                        child: const Icon(
-                          Icons.delete_outline,
-                          size: 14,
-                          color: Colors.red,
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 4),
-                  // Bouton utiliser
-                  SizedBox(
-                    width: double.infinity,
-                    child: TextButton(
-                      onPressed: () => _assignToItem(item),
-                      style: TextButton.styleFrom(
-                        padding: EdgeInsets.zero,
-                        minimumSize: const Size(0, 24),
-                        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                        visualDensity:
-                            const VisualDensity(horizontal: -4, vertical: -4),
-                        foregroundColor: Colors.blue,
-                      ),
-                      child: const Text('Utiliser',
-                          style: TextStyle(fontSize: 10)),
-                    ),
-                  ),
-                ],
+                    );
+                  },
+                ),
               ),
             ),
-          ), // Zone info compacte 25%
+          ),
         ],
       ),
     );
