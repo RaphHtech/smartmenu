@@ -11,6 +11,8 @@ import '../../services/category_repository.dart';
 import '../../models/category.dart';
 import '../../widgets/ui/admin_themed.dart';
 import '../../screens/admin/category_manager_sheet.dart';
+import '../../services/migration_service.dart';
+import '../../l10n/app_localizations.dart';
 
 List<String> applyOrderAndHide(
   Set<String> allCats,
@@ -120,6 +122,8 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
   }
 
   Widget _buildEditableCategoryBar(CategoryLiveState state) {
+    final l10n = AppLocalizations.of(context)!;
+
     final categoriesOrder = state.order;
     final categoriesHidden = state.hidden;
     final allCategories = {...state.counts.keys, ...categoriesOrder};
@@ -148,12 +152,12 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
             Container(
               margin: const EdgeInsets.only(left: 8),
               child: ActionChip(
-                label: const Row(
+                label: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Icon(Icons.add, size: 16),
-                    SizedBox(width: 4),
-                    Text('Catégorie')
+                    const Icon(Icons.add, size: 16),
+                    const SizedBox(width: 4),
+                    Text(l10n.adminMenuCategory)
                   ],
                 ),
                 onPressed: _showAddCategoryDialog,
@@ -174,13 +178,14 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
   }
 
   Widget _buildAllCategoriesChip(CategoryLiveState state) {
+    final l10n = AppLocalizations.of(context)!;
     final totalCount = state.counts.values.fold(0, (sum, count) => sum + count);
     final isSelected = _selectedCategory == null;
 
     return Padding(
       padding: const EdgeInsets.only(right: 8),
       child: FilterChip(
-        label: Text('Toutes ($totalCount)'),
+        label: Text('${l10n.adminMenuAll} ($totalCount)'),
         selected: isSelected,
         onSelected: (selected) => setState(() => _selectedCategory = null),
         backgroundColor: Colors.white,
@@ -217,7 +222,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
             mainAxisSize: MainAxisSize.min,
             children: [
               if (isHidden) ...[
-                Icon(Icons.visibility_off,
+                const Icon(Icons.visibility_off,
                     size: 12, color: AdminTokens.neutral600),
                 const SizedBox(width: 4),
               ],
@@ -255,13 +260,14 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
   }
 
   Future<void> _quickToggleVisibility(String category) async {
+    final l10n = AppLocalizations.of(context)!;
     try {
       await CategoryManager.toggleCategoryVisibility(
           widget.restaurantId, category);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Catégorie mise à jour.'),
+          SnackBar(
+            content: Text(l10n.adminMenuCategoryUpdated),
             backgroundColor: Colors.green,
             behavior: SnackBarBehavior.floating,
           ),
@@ -271,7 +277,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Erreur: $e'),
+            content: Text(l10n.commonError(e.toString())),
             backgroundColor: Colors.red,
           ),
         );
@@ -280,18 +286,19 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
   }
 
   void _showAddCategoryDialog() {
+    final l10n = AppLocalizations.of(context)!;
     final controller = TextEditingController();
 
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Nouvelle catégorie'),
+        title: Text(l10n.adminMenuNewCategory),
         content: TextField(
           controller: controller,
-          decoration: const InputDecoration(
-            labelText: 'Nom de la catégorie',
-            hintText: 'Ex: Desserts',
-            border: OutlineInputBorder(),
+          decoration: InputDecoration(
+            labelText: l10n.adminMenuCategoryName,
+            hintText: l10n.adminMenuCategoryExample,
+            border: const OutlineInputBorder(),
           ),
           maxLength: 24,
           textCapitalization: TextCapitalization.words,
@@ -300,7 +307,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Annuler'),
+            child: Text(l10n.commonCancel),
           ),
           FilledButton(
             onPressed: () async {
@@ -343,12 +350,13 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
         if (!snapshot.hasData) return const CircularProgressIndicator();
 
         final state = snapshot.data!;
+        final l10n = AppLocalizations.of(context)!;
 
         return AdminShell(
-          title: 'Menu',
+          title: l10n.adminMenuTitle,
           restaurantId: widget.restaurantId,
           activeRoute: '/menu',
-          breadcrumbs: const ['Dashboard', 'Menu'],
+          breadcrumbs: [l10n.adminDashboardTitle, l10n.adminMenuTitle],
           actions: [
             if (MediaQuery.of(context).size.width >= 768) ...[
               IconButton(
@@ -356,18 +364,18 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
               IconButton(
                 icon: const Icon(Icons.settings),
                 onPressed: () => _showManageCategoriesSheet(state),
-                tooltip: 'Gérer catégories',
+                tooltip: l10n.adminMenuManageCategories,
               ),
               const SizedBox(width: 8), // AJOUTER cette ligne
               OutlinedButton.icon(
                   onPressed: _openReorderScreen,
                   icon: const Icon(Icons.reorder),
-                  label: const Text('Réorganiser')),
+                  label: Text(l10n.adminMenuReorder)),
               const SizedBox(width: 8), // AJOUTER cette ligne
               FilledButton.icon(
                   onPressed: _addMenuItem,
                   icon: const Icon(Icons.add),
-                  label: const Text('Ajouter')),
+                  label: Text(l10n.commonAdd)),
             ] else ...[
               // Mobile minimaliste
               IconButton(icon: const Icon(Icons.add), onPressed: _addMenuItem),
@@ -382,16 +390,16 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                 elevation: 8,
                 color: Colors.white,
                 itemBuilder: (context) => [
-                  const PopupMenuItem(
+                  PopupMenuItem(
                     value: 'manage_categories',
                     child: Row(
                       children: [
-                        Icon(Icons.settings,
+                        const Icon(Icons.settings,
                             size: 18, color: AdminTokens.neutral600),
-                        SizedBox(width: AdminTokens.space12),
+                        const SizedBox(width: AdminTokens.space12),
                         Text(
-                          'Gérer catégories',
-                          style: TextStyle(
+                          l10n.adminMenuManageCategories,
+                          style: const TextStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.w500,
                             color: AdminTokens.neutral700,
@@ -400,16 +408,16 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                       ],
                     ),
                   ),
-                  const PopupMenuItem(
+                  PopupMenuItem(
                     value: 'reorder',
                     child: Row(
                       children: [
-                        Icon(Icons.reorder,
+                        const Icon(Icons.reorder,
                             size: 18, color: AdminTokens.neutral600),
-                        SizedBox(width: AdminTokens.space12),
+                        const SizedBox(width: AdminTokens.space12),
                         Text(
-                          'Réorganiser plats',
-                          style: TextStyle(
+                          l10n.adminMenuReorderDishes,
+                          style: const TextStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.w500,
                             color: AdminTokens.neutral700,
@@ -418,16 +426,16 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                       ],
                     ),
                   ),
-                  const PopupMenuItem(
+                  PopupMenuItem(
                     value: 'preview',
                     child: Row(
                       children: [
-                        Icon(Icons.preview,
+                        const Icon(Icons.preview,
                             size: 18, color: AdminTokens.neutral600),
-                        SizedBox(width: AdminTokens.space12),
+                        const SizedBox(width: AdminTokens.space12),
                         Text(
-                          'Prévisualiser',
-                          style: TextStyle(
+                          l10n.adminDashboardPreviewMenu,
+                          style: const TextStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.w500,
                             color: AdminTokens.neutral700,
@@ -442,6 +450,86 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
           ],
           child: Column(
             children: [
+              // BOUTON MIGRATION - DÉBUT
+              Container(
+                padding: const EdgeInsets.all(16),
+                color: Colors.orange.shade50,
+                child: Center(
+                  child: ElevatedButton.icon(
+                    onPressed: () async {
+                      final restaurantId = widget.restaurantId;
+
+                      final confirm = await showDialog<bool>(
+                        context: context,
+                        builder: (context) => AlertDialog(
+                          title: const Text('Migration Multilingue'),
+                          content: Text(
+                              'Migrer le restaurant $restaurantId vers la structure multilingue ?\n\n'
+                              'Cette opération :\n'
+                              '• Copie name/description vers translations.fr\n'
+                              '• Ajoute defaultLocale = "he"\n'
+                              '• Ajoute enabledLocales = ["he", "en", "fr"]'),
+                          actions: [
+                            TextButton(
+                              onPressed: () => Navigator.pop(context, false),
+                              child: const Text('Annuler'),
+                            ),
+                            ElevatedButton(
+                              onPressed: () => Navigator.pop(context, true),
+                              child: const Text('Migrer'),
+                            ),
+                          ],
+                        ),
+                      );
+
+                      if (confirm != true) return;
+
+                      showDialog(
+                        context: context,
+                        barrierDismissible: false,
+                        builder: (context) => const Center(
+                          child: CircularProgressIndicator(),
+                        ),
+                      );
+
+                      try {
+                        await MigrationService.migrateRestaurantConfig(
+                            restaurantId);
+                        await MigrationService.migrateRestaurantMenuItems(
+                            restaurantId);
+
+                        Navigator.pop(context);
+
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text('Migration terminée avec succès'),
+                            backgroundColor: Colors.green,
+                          ),
+                        );
+                      } catch (e) {
+                        Navigator.pop(context);
+
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text('Erreur migration: $e'),
+                            backgroundColor: Colors.red,
+                          ),
+                        );
+                      }
+                    },
+                    icon: const Icon(Icons.language),
+                    label: const Text('MIGRER VERS MULTILINGUE'),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.orange,
+                      foregroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 32, vertical: 16),
+                    ),
+                  ),
+                ),
+              ),
+              // BOUTON MIGRATION - FIN
+
               // 1) Tuile infos + UI de recherche/tri/chips HORS StreamBuilder
               _buildSearchInterface(state),
               _buildEditableCategoryBar(state),
@@ -490,7 +578,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                                 size: 64, color: Colors.grey[400]),
                             const SizedBox(height: 16),
                             Text(
-                              'Aucun plat au menu',
+                              l10n.adminMenuNoDishes,
                               style: Theme.of(context)
                                   .textTheme
                                   .headlineSmall
@@ -500,7 +588,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                             ),
                             const SizedBox(height: 8),
                             Text(
-                              'Ajoutez votre premier plat pour commencer',
+                              l10n.adminMenuAddFirstDish,
                               style: Theme.of(context)
                                   .textTheme
                                   .bodyMedium
@@ -512,7 +600,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                             ElevatedButton.icon(
                               onPressed: _addMenuItem,
                               icon: const Icon(Icons.add),
-                              label: const Text('Ajouter un plat'),
+                              label: Text(l10n.adminDashboardAddDish),
                             ),
                           ],
                         ),
@@ -648,7 +736,8 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                                                       children: [
                                                         Text(
                                                           category.isEmpty
-                                                              ? 'Sans catégorie'
+                                                              ? l10n
+                                                                  .adminMenuNoCategory
                                                               : category,
                                                           maxLines: 1,
                                                           overflow: TextOverflow
@@ -738,20 +827,20 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                                             }
                                           },
                                           itemBuilder: (context) => [
-                                            const PopupMenuItem(
+                                            PopupMenuItem(
                                               value: 'edit',
                                               child: Row(
                                                 children: [
-                                                  Icon(Icons.edit,
+                                                  const Icon(Icons.edit,
                                                       size: 18,
                                                       color: AdminTokens
                                                           .neutral600),
-                                                  SizedBox(
+                                                  const SizedBox(
                                                       width:
                                                           AdminTokens.space8),
                                                   Text(
-                                                    'Modifier',
-                                                    style: TextStyle(
+                                                    l10n.commonEdit,
+                                                    style: const TextStyle(
                                                       fontSize: 14,
                                                       fontWeight:
                                                           FontWeight.w500,
@@ -762,19 +851,19 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                                                 ],
                                               ),
                                             ),
-                                            const PopupMenuItem(
+                                            PopupMenuItem(
                                               value: 'delete',
                                               child: Row(
                                                 children: [
-                                                  Icon(Icons.delete,
+                                                  const Icon(Icons.delete,
                                                       size: 18,
                                                       color: Colors.red),
-                                                  SizedBox(
+                                                  const SizedBox(
                                                       width:
                                                           AdminTokens.space8),
                                                   Text(
-                                                    'Supprimer',
-                                                    style: TextStyle(
+                                                    l10n.commonDelete,
+                                                    style: const TextStyle(
                                                       fontSize: 14,
                                                       fontWeight:
                                                           FontWeight.w500,
@@ -871,20 +960,21 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
   }
 
   Future<void> _deleteMenuItem(String itemId, String name) async {
+    final l10n = AppLocalizations.of(context)!;
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Confirmer la suppression'),
-        content: Text('Voulez-vous vraiment supprimer "$name" ?'),
+        title: Text(l10n.adminMenuConfirmDelete),
+        content: Text(l10n.adminMenuConfirmDeleteMessage(name)),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(false),
-            child: const Text('Annuler'),
+            child: Text(l10n.commonCancel),
           ),
           TextButton(
             onPressed: () => Navigator.of(context).pop(true),
             style: TextButton.styleFrom(foregroundColor: Colors.red),
-            child: const Text('Supprimer'),
+            child: Text(l10n.commonDelete),
           ),
         ],
       ),
@@ -901,14 +991,14 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
 
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('$name supprimé avec succès')),
+            SnackBar(content: Text(l10n.adminMenuDeleteSuccess(name))),
           );
         }
       } catch (e) {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text('Erreur lors de la suppression: $e'),
+              content: Text(l10n.adminMenuDeleteError(e.toString())),
               backgroundColor: Colors.red,
             ),
           );
@@ -932,6 +1022,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
   }
 
   Widget _buildSearchInterface(CategoryLiveState state) {
+    final l10n = AppLocalizations.of(context)!;
     return Column(
       children: [
         // Barre de recherche + dropdown
@@ -945,7 +1036,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                   controller: _searchController,
                   focusNode: _searchFocus,
                   decoration: InputDecoration(
-                    hintText: 'Rechercher...',
+                    hintText: l10n.commonSearch,
                     prefixIcon: const Icon(Icons.search),
                     suffixIcon: _searchText.isNotEmpty
                         ? IconButton(
@@ -978,11 +1069,13 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                   ),
                   elevation: 12,
                   dropdownColor: Colors.white,
-                  items: const [
+                  items: [
                     DropdownMenuItem(
-                        value: 'category', child: Text('Catégorie')),
-                    DropdownMenuItem(value: 'name', child: Text('Nom')),
-                    DropdownMenuItem(value: 'price', child: Text('Prix')),
+                        value: 'category', child: Text(l10n.adminMenuCategory)),
+                    DropdownMenuItem(
+                        value: 'name', child: Text(l10n.adminMenuName)),
+                    DropdownMenuItem(
+                        value: 'price', child: Text(l10n.adminMenuPrice)),
                   ],
                   onChanged: (value) {
                     if (value != null) {
@@ -1002,13 +1095,13 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
             scrollDirection: Axis.horizontal,
             child: Row(
               children: [
-                _buildFilterChip('Mis en avant', _filterFeatured,
+                _buildFilterChip(l10n.adminMenuFeatured, _filterFeatured,
                     (selected) => setState(() => _filterFeatured = selected)),
                 const SizedBox(width: AdminTokens.space8),
-                _buildFilterChip('Avec badges', _filterWithBadges,
+                _buildFilterChip(l10n.adminMenuWithBadges, _filterWithBadges,
                     (selected) => setState(() => _filterWithBadges = selected)),
                 const SizedBox(width: AdminTokens.space8),
-                _buildFilterChip('Sans image', _filterNoImage,
+                _buildFilterChip(l10n.adminMenuNoImage, _filterNoImage,
                     (selected) => setState(() => _filterNoImage = selected)),
               ],
             ),

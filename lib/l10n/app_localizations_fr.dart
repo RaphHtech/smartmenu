@@ -198,4 +198,196 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get understood => 'Compris';
+
+  @override
+  String get commonAdd => 'Ajouter';
+
+  @override
+  String get commonEdit => 'Modifier';
+
+  @override
+  String get commonDelete => 'Supprimer';
+
+  @override
+  String get commonCancel => 'Annuler';
+
+  @override
+  String get commonSave => 'Enregistrer';
+
+  @override
+  String get commonOpen => 'Ouvrir';
+
+  @override
+  String get commonClose => 'Fermer';
+
+  @override
+  String get commonSearch => 'Rechercher...';
+
+  @override
+  String get commonLoading => 'Chargement...';
+
+  @override
+  String commonError(String error) {
+    return 'Erreur : $error';
+  }
+
+  @override
+  String get adminShellAppName => 'SmartMenu';
+
+  @override
+  String get adminShellNavDashboard => 'Tableau de bord';
+
+  @override
+  String get adminShellNavMenu => 'Menu';
+
+  @override
+  String get adminShellNavOrders => 'Commandes';
+
+  @override
+  String get adminShellNavMedia => 'Médias';
+
+  @override
+  String get adminShellNavBranding => 'Branding';
+
+  @override
+  String get adminShellNavRestaurantInfo => 'Infos resto';
+
+  @override
+  String get adminShellNavSettings => 'Paramètres';
+
+  @override
+  String get adminShellUserRole => 'Propriétaire';
+
+  @override
+  String get adminShellUserDefault => 'Utilisateur';
+
+  @override
+  String get adminShellLogout => 'Se déconnecter';
+
+  @override
+  String get adminDashboardTitle => 'Tableau de bord';
+
+  @override
+  String get adminDashboardMetricDishes => 'Plats';
+
+  @override
+  String get adminDashboardMetricCategories => 'Catégories';
+
+  @override
+  String get adminDashboardMetricWithImage => 'Avec image';
+
+  @override
+  String get adminDashboardMetricNoImage => 'Sans image';
+
+  @override
+  String get adminDashboardMetricSignature => 'Signature';
+
+  @override
+  String get adminDashboardAddDish => 'Ajouter un plat';
+
+  @override
+  String get adminDashboardQuickActions => 'Actions rapides';
+
+  @override
+  String get adminDashboardManageMedia => 'Gérer les médias';
+
+  @override
+  String get adminDashboardEditInfo => 'Modifier les infos';
+
+  @override
+  String get adminDashboardPreviewMenu => 'Prévisualiser le menu';
+
+  @override
+  String get adminDashboardViewClientMenu => 'Voir votre menu côté client';
+
+  @override
+  String adminDashboardItemsWithoutImage(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count éléments sans image',
+      one: '$count élément sans image',
+      zero: 'Aucun élément sans image',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get adminDashboardFix => 'Corriger';
+
+  @override
+  String get adminDashboardMyRestaurant => 'Mon Restaurant';
+
+  @override
+  String get adminMenuTitle => 'Menu';
+
+  @override
+  String get adminMenuManageCategories => 'Gérer catégories';
+
+  @override
+  String get adminMenuReorder => 'Réorganiser';
+
+  @override
+  String get adminMenuReorderDishes => 'Réorganiser plats';
+
+  @override
+  String get adminMenuCategory => 'Catégorie';
+
+  @override
+  String get adminMenuName => 'Nom';
+
+  @override
+  String get adminMenuPrice => 'Prix';
+
+  @override
+  String get adminMenuFeatured => 'Mis en avant';
+
+  @override
+  String get adminMenuWithBadges => 'Avec badges';
+
+  @override
+  String get adminMenuNoImage => 'Sans image';
+
+  @override
+  String get adminMenuAll => 'Toutes';
+
+  @override
+  String get adminMenuNewCategory => 'Nouvelle catégorie';
+
+  @override
+  String get adminMenuCategoryName => 'Nom de la catégorie';
+
+  @override
+  String get adminMenuCategoryExample => 'Ex : Desserts';
+
+  @override
+  String get adminMenuNoCategory => 'Sans catégorie';
+
+  @override
+  String get adminMenuNoDishes => 'Aucun plat au menu';
+
+  @override
+  String get adminMenuAddFirstDish =>
+      'Ajoutez votre premier plat pour commencer';
+
+  @override
+  String get adminMenuConfirmDelete => 'Confirmer la suppression';
+
+  @override
+  String adminMenuConfirmDeleteMessage(String name) {
+    return 'Voulez-vous vraiment supprimer \"$name\" ?';
+  }
+
+  @override
+  String adminMenuDeleteSuccess(String name) {
+    return '\"$name\" supprimé avec succès';
+  }
+
+  @override
+  String adminMenuDeleteError(String error) {
+    return 'Erreur lors de la suppression : $error';
+  }
+
+  @override
+  String get adminMenuCategoryUpdated => 'Catégorie mise à jour.';
 }

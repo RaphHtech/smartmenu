@@ -465,6 +465,354 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Understood'**
   String get understood;
+
+  /// Generic add action
+  ///
+  /// In en, this message translates to:
+  /// **'Add'**
+  String get commonAdd;
+
+  /// Generic edit action
+  ///
+  /// In en, this message translates to:
+  /// **'Edit'**
+  String get commonEdit;
+
+  /// Generic delete action
+  ///
+  /// In en, this message translates to:
+  /// **'Delete'**
+  String get commonDelete;
+
+  /// Generic cancel action
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel'**
+  String get commonCancel;
+
+  /// Generic save action
+  ///
+  /// In en, this message translates to:
+  /// **'Save'**
+  String get commonSave;
+
+  /// Generic open action
+  ///
+  /// In en, this message translates to:
+  /// **'Open'**
+  String get commonOpen;
+
+  /// Generic close action
+  ///
+  /// In en, this message translates to:
+  /// **'Close'**
+  String get commonClose;
+
+  /// Search placeholder
+  ///
+  /// In en, this message translates to:
+  /// **'Search...'**
+  String get commonSearch;
+
+  /// Loading state
+  ///
+  /// In en, this message translates to:
+  /// **'Loading...'**
+  String get commonLoading;
+
+  /// Generic error message
+  ///
+  /// In en, this message translates to:
+  /// **'Error: {error}'**
+  String commonError(String error);
+
+  /// Application name in sidebar
+  ///
+  /// In en, this message translates to:
+  /// **'SmartMenu'**
+  String get adminShellAppName;
+
+  /// Dashboard navigation item
+  ///
+  /// In en, this message translates to:
+  /// **'Dashboard'**
+  String get adminShellNavDashboard;
+
+  /// Menu navigation item
+  ///
+  /// In en, this message translates to:
+  /// **'Menu'**
+  String get adminShellNavMenu;
+
+  /// Orders navigation item
+  ///
+  /// In en, this message translates to:
+  /// **'Orders'**
+  String get adminShellNavOrders;
+
+  /// Media navigation item
+  ///
+  /// In en, this message translates to:
+  /// **'Media'**
+  String get adminShellNavMedia;
+
+  /// Branding navigation item
+  ///
+  /// In en, this message translates to:
+  /// **'Branding'**
+  String get adminShellNavBranding;
+
+  /// Restaurant info navigation item
+  ///
+  /// In en, this message translates to:
+  /// **'Restaurant Info'**
+  String get adminShellNavRestaurantInfo;
+
+  /// Settings navigation item
+  ///
+  /// In en, this message translates to:
+  /// **'Settings'**
+  String get adminShellNavSettings;
+
+  /// User role label in footer
+  ///
+  /// In en, this message translates to:
+  /// **'Owner'**
+  String get adminShellUserRole;
+
+  /// Default user name fallback
+  ///
+  /// In en, this message translates to:
+  /// **'User'**
+  String get adminShellUserDefault;
+
+  /// Logout menu item
+  ///
+  /// In en, this message translates to:
+  /// **'Log out'**
+  String get adminShellLogout;
+
+  /// Dashboard page title
+  ///
+  /// In en, this message translates to:
+  /// **'Dashboard'**
+  String get adminDashboardTitle;
+
+  /// Dishes metric label
+  ///
+  /// In en, this message translates to:
+  /// **'Dishes'**
+  String get adminDashboardMetricDishes;
+
+  /// Categories metric label
+  ///
+  /// In en, this message translates to:
+  /// **'Categories'**
+  String get adminDashboardMetricCategories;
+
+  /// With image metric label
+  ///
+  /// In en, this message translates to:
+  /// **'With image'**
+  String get adminDashboardMetricWithImage;
+
+  /// No image metric label
+  ///
+  /// In en, this message translates to:
+  /// **'No image'**
+  String get adminDashboardMetricNoImage;
+
+  /// Signature dishes metric label
+  ///
+  /// In en, this message translates to:
+  /// **'Signature'**
+  String get adminDashboardMetricSignature;
+
+  /// Add dish button
+  ///
+  /// In en, this message translates to:
+  /// **'Add a dish'**
+  String get adminDashboardAddDish;
+
+  /// Quick actions section title
+  ///
+  /// In en, this message translates to:
+  /// **'Quick actions'**
+  String get adminDashboardQuickActions;
+
+  /// Manage media action
+  ///
+  /// In en, this message translates to:
+  /// **'Manage media'**
+  String get adminDashboardManageMedia;
+
+  /// Edit restaurant info action
+  ///
+  /// In en, this message translates to:
+  /// **'Edit info'**
+  String get adminDashboardEditInfo;
+
+  /// Preview menu action
+  ///
+  /// In en, this message translates to:
+  /// **'Preview menu'**
+  String get adminDashboardPreviewMenu;
+
+  /// Client menu preview description
+  ///
+  /// In en, this message translates to:
+  /// **'View your menu as a client'**
+  String get adminDashboardViewClientMenu;
+
+  /// Alert for items without images
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =0{No items without image} one{{count} item without image} other{{count} items without image}}'**
+  String adminDashboardItemsWithoutImage(int count);
+
+  /// Fix button in alerts
+  ///
+  /// In en, this message translates to:
+  /// **'Fix'**
+  String get adminDashboardFix;
+
+  /// Default restaurant name fallback
+  ///
+  /// In en, this message translates to:
+  /// **'My Restaurant'**
+  String get adminDashboardMyRestaurant;
+
+  /// Menu page title
+  ///
+  /// In en, this message translates to:
+  /// **'Menu'**
+  String get adminMenuTitle;
+
+  /// Manage categories action
+  ///
+  /// In en, this message translates to:
+  /// **'Manage categories'**
+  String get adminMenuManageCategories;
+
+  /// Reorder dishes action
+  ///
+  /// In en, this message translates to:
+  /// **'Reorder'**
+  String get adminMenuReorder;
+
+  /// Reorder dishes popup menu item
+  ///
+  /// In en, this message translates to:
+  /// **'Reorder dishes'**
+  String get adminMenuReorderDishes;
+
+  /// Category dropdown label
+  ///
+  /// In en, this message translates to:
+  /// **'Category'**
+  String get adminMenuCategory;
+
+  /// Sort by name option
+  ///
+  /// In en, this message translates to:
+  /// **'Name'**
+  String get adminMenuName;
+
+  /// Sort by price option
+  ///
+  /// In en, this message translates to:
+  /// **'Price'**
+  String get adminMenuPrice;
+
+  /// Featured filter
+  ///
+  /// In en, this message translates to:
+  /// **'Featured'**
+  String get adminMenuFeatured;
+
+  /// With badges filter
+  ///
+  /// In en, this message translates to:
+  /// **'With badges'**
+  String get adminMenuWithBadges;
+
+  /// No image filter
+  ///
+  /// In en, this message translates to:
+  /// **'No image'**
+  String get adminMenuNoImage;
+
+  /// All categories filter
+  ///
+  /// In en, this message translates to:
+  /// **'All'**
+  String get adminMenuAll;
+
+  /// New category dialog title
+  ///
+  /// In en, this message translates to:
+  /// **'New category'**
+  String get adminMenuNewCategory;
+
+  /// Category name field label
+  ///
+  /// In en, this message translates to:
+  /// **'Category name'**
+  String get adminMenuCategoryName;
+
+  /// Category name field hint
+  ///
+  /// In en, this message translates to:
+  /// **'E.g.: Desserts'**
+  String get adminMenuCategoryExample;
+
+  /// No category label for uncategorized dishes
+  ///
+  /// In en, this message translates to:
+  /// **'No category'**
+  String get adminMenuNoCategory;
+
+  /// Empty state title
+  ///
+  /// In en, this message translates to:
+  /// **'No dishes in menu'**
+  String get adminMenuNoDishes;
+
+  /// Empty state subtitle
+  ///
+  /// In en, this message translates to:
+  /// **'Add your first dish to get started'**
+  String get adminMenuAddFirstDish;
+
+  /// Delete confirmation dialog title
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm deletion'**
+  String get adminMenuConfirmDelete;
+
+  /// Delete confirmation message
+  ///
+  /// In en, this message translates to:
+  /// **'Do you really want to delete \"{name}\"?'**
+  String adminMenuConfirmDeleteMessage(String name);
+
+  /// Delete success message
+  ///
+  /// In en, this message translates to:
+  /// **'\"{name}\" deleted successfully'**
+  String adminMenuDeleteSuccess(String name);
+
+  /// Delete error message
+  ///
+  /// In en, this message translates to:
+  /// **'Error deleting: {error}'**
+  String adminMenuDeleteError(String error);
+
+  /// Category update success message
+  ///
+  /// In en, this message translates to:
+  /// **'Category updated.'**
+  String get adminMenuCategoryUpdated;
 }
 
 class _AppLocalizationsDelegate

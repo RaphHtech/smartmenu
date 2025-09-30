@@ -3,8 +3,8 @@ import 'package:flutter/services.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:image_picker/image_picker.dart';
-import '../../core/constants/colors.dart';
-import '../../models/menu_item.dart';
+// import '../../core/constants/colors.dart';
+// import '../../models/menu_item.dart';
 import '../../core/design/admin_tokens.dart';
 
 class MenuItemFormScreen extends StatefulWidget {
@@ -25,8 +25,6 @@ class MenuItemFormScreen extends StatefulWidget {
 
 class _MenuItemFormScreenState extends State<MenuItemFormScreen> {
   final _formKey = GlobalKey<FormState>();
-  final _nameController = TextEditingController();
-  final _descriptionController = TextEditingController();
   final _priceController = TextEditingController();
 
   String _selectedCategory = 'Pizzas';
@@ -44,6 +42,20 @@ class _MenuItemFormScreenState extends State<MenuItemFormScreen> {
   bool _categoriesLoaded = false;
   bool _featured = false;
   List<String> _badges = [];
+// NOUVEAU : Gestion multilingue
+  final Map<String, TextEditingController> _nameControllers = {
+    'he': TextEditingController(),
+    'en': TextEditingController(),
+    'fr': TextEditingController(),
+  };
+
+  final Map<String, TextEditingController> _descriptionControllers = {
+    'he': TextEditingController(),
+    'en': TextEditingController(),
+    'fr': TextEditingController(),
+  };
+
+  String _currentLang = 'he'; // Tab actif par défaut
 
   Future<void> ensureCategoryInOrder(
       String restaurantId, String newCategoryLabel) async {
@@ -119,18 +131,33 @@ class _MenuItemFormScreenState extends State<MenuItemFormScreen> {
   void _loadInitialData() {
     if (widget.initialData != null) {
       final data = widget.initialData!;
-      _nameController.text = data['name'] ?? '';
-      _descriptionController.text = data['description'] ?? '';
-      _priceController.text = (data['price'] ?? 0).toString();
-      _selectedCategory = data['category'] ?? _categories.first;
+
+      // Charger les traductions
+      final translations = data['translations'] as Map<String, dynamic>?;
+
+      if (translations != null) {
+        // Charger chaque langue
+        for (final lang in ['he', 'en', 'fr']) {
+          final trans = translations[lang] as Map<String, dynamic>?;
+          if (trans != null) {
+            _nameControllers[lang]?.text = trans['name']?.toString() ?? '';
+            _descriptionControllers[lang]?.text =
+                trans['description']?.toString() ?? '';
+          }
+        }
+      } else {
+        // Fallback ancien format
+        _nameControllers['fr']?.text = data['name']?.toString() ?? '';
+        _descriptionControllers['fr']?.text =
+            data['description']?.toString() ?? '';
+      }
+
+      _priceController.text = data['price']?.toString() ?? '';
+      _selectedCategory = data['category']?.toString() ?? 'Pizzas';
+      _isVisible = data['visible'] ?? true;
       _featured = data['featured'] ?? false;
       _badges = List<String>.from(data['badges'] ?? []);
-      _isVisible = data['visible'] ?? true;
-
-      // Très important pour préserver l'image existante
-      _imageUrl = data['imageUrl'] ?? data['image'] ?? '';
-    } else {
-      // Nouveau plat - pas de catégorie initiale
+      _imageUrl = data['imageUrl'] ?? data['image'];
     }
   }
 
@@ -210,9 +237,18 @@ class _MenuItemFormScreenState extends State<MenuItemFormScreen> {
 
   @override
   void dispose() {
-    _nameController.dispose();
-    _descriptionController.dispose();
+    _nameControllers[_currentLang]!.dispose();
+    _descriptionControllers[_currentLang]!.dispose();
     _priceController.dispose();
+
+    // NOUVEAU : Dispose des controllers multilingues
+    for (final controller in _nameControllers.values) {
+      controller.dispose();
+    }
+    for (final controller in _descriptionControllers.values) {
+      controller.dispose();
+    }
+
     super.dispose();
   }
 
@@ -286,10 +322,9 @@ class _MenuItemFormScreenState extends State<MenuItemFormScreen> {
 
     try {
       // Upload de l'image si nécessaire
-      String? finalImageUrl = _imageUrl; // Garde l'URL existante par défaut
+      String? finalImageUrl = _imageUrl;
 
       if (_pickedBytes != null) {
-        // Nouvelle image sélectionnée - on upload
         try {
           final newUrl = await _uploadImage();
           if (newUrl != null && newUrl.isNotEmpty) {
@@ -300,36 +335,61 @@ class _MenuItemFormScreenState extends State<MenuItemFormScreen> {
           }
         } catch (e) {
           debugPrint('DEBUG: Erreur upload = $e');
-          // On continue avec l'ancienne URL en cas d'erreur
         }
       }
 
-      // Données du plat
-      final menuItem = MenuItem(
-        id: widget.itemId ?? '',
-        name: _nameController.text.trim(),
-        description: _descriptionController.text.trim(),
-        price: double.parse(_priceController.text),
-        category: _selectedCategory,
-        signature: false,
-        featured: _featured,
-        badges: _badges,
-        visible: _isVisible,
-        createdAt: DateTime.now(),
-        updatedAt: DateTime.now(),
-      );
+      // NOUVEAU : Construire l'objet translations
+      final translations = <String, dynamic>{};
+      final translationStatus = <String, String>{};
 
-      final itemData = menuItem.toJson();
-      itemData['updated_at'] = FieldValue.serverTimestamp();
+      for (final lang in ['he', 'en', 'fr']) {
+        final name = _nameControllers[lang]!.text.trim();
+        final description = _descriptionControllers[lang]!.text.trim();
+
+        if (name.isNotEmpty || description.isNotEmpty) {
+          translations[lang] = {
+            'name': name,
+            'description': description,
+          };
+
+          // Statut : complete si nom ET description, partial si seulement l'un des deux
+          if (name.isNotEmpty && description.isNotEmpty) {
+            translationStatus[lang] = 'complete';
+          } else if (name.isNotEmpty || description.isNotEmpty) {
+            translationStatus[lang] = 'partial';
+          } else {
+            translationStatus[lang] = 'missing';
+          }
+        } else {
+          translationStatus[lang] = 'missing';
+        }
+      }
+
+      // Données du plat avec traductions
+      final itemData = <String, dynamic>{
+        'translations': translations,
+        'translationStatus': translationStatus,
+        'price': double.parse(_priceController.text),
+        'category': _selectedCategory,
+        'signature': false,
+        'featured': _featured,
+        'badges': _badges,
+        'visible': _isVisible,
+        'updated_at': FieldValue.serverTimestamp(),
+
+        // Cache legacy pour compatibilité (langue principale = hébreu)
+        'name': _nameControllers['he']!.text.trim(),
+        'description': _descriptionControllers['he']!.text.trim(),
+      };
 
       // Gestion de l'image
       if (finalImageUrl != null && finalImageUrl.isNotEmpty) {
         itemData['imageUrl'] = finalImageUrl;
-        itemData['image'] = finalImageUrl; // Pour compatibilité
+        itemData['image'] = finalImageUrl;
         debugPrint('DEBUG: Image sauvegardée avec URL = $finalImageUrl');
       }
 
-      // Cas suppression image en mode édition (aucune nouvelle image choisie)
+      // Suppression image
       if (widget.itemId != null && _removeImage && _pickedBytes == null) {
         itemData['imageUrl'] = FieldValue.delete();
         itemData['image'] = FieldValue.delete();
@@ -355,7 +415,6 @@ class _MenuItemFormScreenState extends State<MenuItemFormScreen> {
       }
 
       if (mounted) {
-        // Reset du flag de suppression après sauvegarde réussie
         setState(() {
           _removeImage = false;
         });
@@ -468,41 +527,115 @@ class _MenuItemFormScreenState extends State<MenuItemFormScreen> {
 
   List<Widget> _buildFormFields() {
     return [
-      // Nom
-      TextFormField(
-        controller: _nameController,
-        decoration: InputDecoration(
-          labelText: 'Nom du plat *',
-          prefixIcon: const Icon(Icons.restaurant_menu),
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(AdminTokens.radius12),
-          ),
+      // NOUVEAU : Tabs langues avec indicateurs de statut
+      Container(
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(AdminTokens.radius12),
+          border: Border.all(color: AdminTokens.border),
         ),
-        validator: (value) {
-          if (value == null || value.trim().isEmpty) {
-            return 'Le nom est obligatoire';
-          }
-          return null;
-        },
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Tabs
+            Row(
+              children: [
+                _buildLanguageTab('he', '🇮🇱 עברית'),
+                _buildLanguageTab('en', '🇬🇧 English'),
+                _buildLanguageTab('fr', '🇫🇷 Français'),
+              ],
+            ),
+            const Divider(height: 1),
+
+            // Contenu du tab actif
+            Padding(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                children: [
+                  // Nom
+                  TextFormField(
+                    controller: _nameControllers[_currentLang]!,
+                    decoration: InputDecoration(
+                      labelText: 'Nom du plat *',
+                      prefixIcon: const Icon(Icons.restaurant_menu),
+                      border: OutlineInputBorder(
+                        borderRadius:
+                            BorderRadius.circular(AdminTokens.radius12),
+                      ),
+                    ),
+                    validator: (value) {
+                      if (_currentLang == 'he' &&
+                          (value == null || value.trim().isEmpty)) {
+                        return 'Le nom en hébreu est obligatoire';
+                      }
+                      return null;
+                    },
+                  ),
+                  const SizedBox(height: 16),
+
+                  // Description
+                  TextFormField(
+                    controller: _descriptionControllers[_currentLang]!,
+                    decoration: InputDecoration(
+                      labelText: 'Description',
+                      prefixIcon: const Icon(Icons.description),
+                      border: OutlineInputBorder(
+                        borderRadius:
+                            BorderRadius.circular(AdminTokens.radius12),
+                      ),
+                      alignLabelWithHint: true,
+                    ),
+                    maxLines: 3,
+                  ),
+
+                  const SizedBox(height: 12),
+
+                  // Bouton copier depuis autre langue
+                  const SizedBox(height: 8),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      if (_currentLang != 'fr' &&
+                          _nameControllers['fr']!.text.trim().isNotEmpty)
+                        TextButton.icon(
+                          onPressed: () => _copyFromLanguage('fr'),
+                          icon: const Icon(Icons.copy, size: 16),
+                          label: const Text('Copier depuis français'),
+                          style: TextButton.styleFrom(
+                            foregroundColor: AdminTokens.primary600,
+                          ),
+                        ),
+                      if (_currentLang != 'he' &&
+                          _nameControllers['he']!.text.trim().isNotEmpty)
+                        TextButton.icon(
+                          onPressed: () => _copyFromLanguage('he'),
+                          icon: const Icon(Icons.copy, size: 16),
+                          label: const Text('Copier depuis hébreu'),
+                          style: TextButton.styleFrom(
+                            foregroundColor: AdminTokens.primary600,
+                          ),
+                        ),
+                      if (_currentLang != 'en' &&
+                          _nameControllers['en']!.text.trim().isNotEmpty)
+                        TextButton.icon(
+                          onPressed: () => _copyFromLanguage('en'),
+                          icon: const Icon(Icons.copy, size: 16),
+                          label: const Text('Copier depuis anglais'),
+                          style: TextButton.styleFrom(
+                            foregroundColor: AdminTokens.primary600,
+                          ),
+                        ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
       const SizedBox(height: 16),
 
-      // Description
-      TextFormField(
-        controller: _descriptionController,
-        decoration: InputDecoration(
-          labelText: 'Description',
-          prefixIcon: const Icon(Icons.description),
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(AdminTokens.radius12),
-          ),
-          alignLabelWithHint: true,
-        ),
-        maxLines: 3,
-      ),
-      const SizedBox(height: 16),
-
-      // Prix et catégorie
+      // Prix et catégorie (reste identique)
       Row(
         children: [
           Expanded(
@@ -576,7 +709,7 @@ class _MenuItemFormScreenState extends State<MenuItemFormScreen> {
       ),
       const SizedBox(height: 24),
 
-      // Options
+      // Options (reste identique)
       Container(
         decoration: BoxDecoration(
           color: Colors.white,
@@ -614,10 +747,11 @@ class _MenuItemFormScreenState extends State<MenuItemFormScreen> {
                               selected: _badges.contains(badge),
                               onSelected: (selected) {
                                 setState(() {
-                                  if (selected)
+                                  if (selected) {
                                     _badges.add(badge);
-                                  else
+                                  } else {
                                     _badges.remove(badge);
+                                  }
                                 });
                               },
                               backgroundColor: Colors.white,
@@ -660,7 +794,7 @@ class _MenuItemFormScreenState extends State<MenuItemFormScreen> {
       ),
       const SizedBox(height: 32),
 
-      // Boutons
+      // Boutons (reste identique)
       Row(
         children: [
           Expanded(
@@ -685,6 +819,84 @@ class _MenuItemFormScreenState extends State<MenuItemFormScreen> {
         ],
       ),
     ];
+  }
+
+// Construit un tab de langue avec indicateur de statut
+  Widget _buildLanguageTab(String langCode, String label) {
+    final isActive = _currentLang == langCode;
+    final hasContent = _nameControllers[langCode]!.text.trim().isNotEmpty;
+
+    Color statusColor;
+    if (hasContent) {
+      statusColor = Colors.green;
+    } else if (langCode == 'he') {
+      statusColor = Colors.orange; // Obligatoire mais vide
+    } else {
+      statusColor = Colors.grey.shade300; // Optionnel et vide
+    }
+
+    return Expanded(
+      child: InkWell(
+        onTap: () => setState(() => _currentLang = langCode),
+        child: Container(
+          padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
+          decoration: BoxDecoration(
+            color: isActive ? AdminTokens.primary50 : Colors.transparent,
+            border: Border(
+              bottom: BorderSide(
+                color: isActive ? AdminTokens.primary600 : Colors.transparent,
+                width: 2,
+              ),
+            ),
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Container(
+                width: 8,
+                height: 8,
+                decoration: BoxDecoration(
+                  color: statusColor,
+                  shape: BoxShape.circle,
+                ),
+              ),
+              const SizedBox(width: 8),
+              Flexible(
+                child: Text(
+                  label,
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: isActive ? FontWeight.w600 : FontWeight.w500,
+                    color: isActive
+                        ? AdminTokens.primary600
+                        : AdminTokens.neutral700,
+                  ),
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+// Copie le contenu depuis une autre langue
+  void _copyFromLanguage(String sourceLang) {
+    setState(() {
+      _nameControllers[_currentLang]!.text = _nameControllers[sourceLang]!.text;
+      _descriptionControllers[_currentLang]!.text =
+          _descriptionControllers[sourceLang]!.text;
+    });
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+            'Contenu copié depuis ${sourceLang == 'he' ? 'hébreu' : sourceLang == 'en' ? 'anglais' : 'français'}'),
+        backgroundColor: Colors.green,
+        duration: const Duration(seconds: 2),
+      ),
+    );
   }
 
   Widget _buildImageSection() {

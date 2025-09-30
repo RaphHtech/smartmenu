@@ -324,5 +324,325 @@
   "understood": "Understood",
   "@understood": {
     "description": "Understood button"
+  },
+
+  "commonAdd": "Add",
+  "@commonAdd": {
+    "description": "Generic add action"
+  },
+
+  "commonEdit": "Edit",
+  "@commonEdit": {
+    "description": "Generic edit action"
+  },
+
+  "commonDelete": "Delete",
+  "@commonDelete": {
+    "description": "Generic delete action"
+  },
+
+  "commonCancel": "Cancel",
+  "@commonCancel": {
+    "description": "Generic cancel action"
+  },
+
+  "commonSave": "Save",
+  "@commonSave": {
+    "description": "Generic save action"
+  },
+
+  "commonOpen": "Open",
+  "@commonOpen": {
+    "description": "Generic open action"
+  },
+
+  "commonClose": "Close",
+  "@commonClose": {
+    "description": "Generic close action"
+  },
+
+  "commonSearch": "Search...",
+  "@commonSearch": {
+    "description": "Search placeholder"
+  },
+
+  "commonLoading": "Loading...",
+  "@commonLoading": {
+    "description": "Loading state"
+  },
+
+  "commonError": "Error: {error}",
+  "@commonError": {
+    "description": "Generic error message",
+    "placeholders": {
+      "error": {
+        "type": "String",
+        "example": "Network timeout"
+      }
+    }
+  },
+
+  "adminShellAppName": "SmartMenu",
+  "@adminShellAppName": {
+    "description": "Application name in sidebar"
+  },
+
+  "adminShellNavDashboard": "Dashboard",
+  "@adminShellNavDashboard": {
+    "description": "Dashboard navigation item"
+  },
+
+  "adminShellNavMenu": "Menu",
+  "@adminShellNavMenu": {
+    "description": "Menu navigation item"
+  },
+
+  "adminShellNavOrders": "Orders",
+  "@adminShellNavOrders": {
+    "description": "Orders navigation item"
+  },
+
+  "adminShellNavMedia": "Media",
+  "@adminShellNavMedia": {
+    "description": "Media navigation item"
+  },
+
+  "adminShellNavBranding": "Branding",
+  "@adminShellNavBranding": {
+    "description": "Branding navigation item"
+  },
+
+  "adminShellNavRestaurantInfo": "Restaurant Info",
+  "@adminShellNavRestaurantInfo": {
+    "description": "Restaurant info navigation item"
+  },
+
+  "adminShellNavSettings": "Settings",
+  "@adminShellNavSettings": {
+    "description": "Settings navigation item"
+  },
+
+  "adminShellUserRole": "Owner",
+  "@adminShellUserRole": {
+    "description": "User role label in footer"
+  },
+
+  "adminShellUserDefault": "User",
+  "@adminShellUserDefault": {
+    "description": "Default user name fallback"
+  },
+
+  "adminShellLogout": "Log out",
+  "@adminShellLogout": {
+    "description": "Logout menu item"
+  },
+
+  "adminDashboardTitle": "Dashboard",
+  "@adminDashboardTitle": {
+    "description": "Dashboard page title"
+  },
+
+  "adminDashboardMetricDishes": "Dishes",
+  "@adminDashboardMetricDishes": {
+    "description": "Dishes metric label"
+  },
+
+  "adminDashboardMetricCategories": "Categories",
+  "@adminDashboardMetricCategories": {
+    "description": "Categories metric label"
+  },
+
+  "adminDashboardMetricWithImage": "With image",
+  "@adminDashboardMetricWithImage": {
+    "description": "With image metric label"
+  },
+
+  "adminDashboardMetricNoImage": "No image",
+  "@adminDashboardMetricNoImage": {
+    "description": "No image metric label"
+  },
+
+  "adminDashboardMetricSignature": "Signature",
+  "@adminDashboardMetricSignature": {
+    "description": "Signature dishes metric label"
+  },
+
+  "adminDashboardAddDish": "Add a dish",
+  "@adminDashboardAddDish": {
+    "description": "Add dish button"
+  },
+
+  "adminDashboardQuickActions": "Quick actions",
+  "@adminDashboardQuickActions": {
+    "description": "Quick actions section title"
+  },
+
+  "adminDashboardManageMedia": "Manage media",
+  "@adminDashboardManageMedia": {
+    "description": "Manage media action"
+  },
+
+  "adminDashboardEditInfo": "Edit info",
+  "@adminDashboardEditInfo": {
+    "description": "Edit restaurant info action"
+  },
+
+  "adminDashboardPreviewMenu": "Preview menu",
+  "@adminDashboardPreviewMenu": {
+    "description": "Preview menu action"
+  },
+
+  "adminDashboardViewClientMenu": "View your menu as a client",
+  "@adminDashboardViewClientMenu": {
+    "description": "Client menu preview description"
+  },
+
+  "adminDashboardItemsWithoutImage": "{count, plural, =0{No items without image} one{{count} item without image} other{{count} items without image}}",
+  "@adminDashboardItemsWithoutImage": {
+    "description": "Alert for items without images",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "4"
+      }
+    }
+  },
+
+  "adminDashboardFix": "Fix",
+  "@adminDashboardFix": {
+    "description": "Fix button in alerts"
+  },
+
+  "adminDashboardMyRestaurant": "My Restaurant",
+  "@adminDashboardMyRestaurant": {
+    "description": "Default restaurant name fallback"
+  },
+
+  "adminMenuTitle": "Menu",
+  "@adminMenuTitle": {
+    "description": "Menu page title"
+  },
+
+  "adminMenuManageCategories": "Manage categories",
+  "@adminMenuManageCategories": {
+    "description": "Manage categories action"
+  },
+
+  "adminMenuReorder": "Reorder",
+  "@adminMenuReorder": {
+    "description": "Reorder dishes action"
+  },
+
+  "adminMenuReorderDishes": "Reorder dishes",
+  "@adminMenuReorderDishes": {
+    "description": "Reorder dishes popup menu item"
+  },
+
+  "adminMenuCategory": "Category",
+  "@adminMenuCategory": {
+    "description": "Category dropdown label"
+  },
+
+  "adminMenuName": "Name",
+  "@adminMenuName": {
+    "description": "Sort by name option"
+  },
+
+  "adminMenuPrice": "Price",
+  "@adminMenuPrice": {
+    "description": "Sort by price option"
+  },
+
+  "adminMenuFeatured": "Featured",
+  "@adminMenuFeatured": {
+    "description": "Featured filter"
+  },
+
+  "adminMenuWithBadges": "With badges",
+  "@adminMenuWithBadges": {
+    "description": "With badges filter"
+  },
+
+  "adminMenuNoImage": "No image",
+  "@adminMenuNoImage": {
+    "description": "No image filter"
+  },
+
+  "adminMenuAll": "All",
+  "@adminMenuAll": {
+    "description": "All categories filter"
+  },
+
+  "adminMenuNewCategory": "New category",
+  "@adminMenuNewCategory": {
+    "description": "New category dialog title"
+  },
+
+  "adminMenuCategoryName": "Category name",
+  "@adminMenuCategoryName": {
+    "description": "Category name field label"
+  },
+
+  "adminMenuCategoryExample": "E.g.: Desserts",
+  "@adminMenuCategoryExample": {
+    "description": "Category name field hint"
+  },
+
+  "adminMenuNoCategory": "No category",
+  "@adminMenuNoCategory": {
+    "description": "No category label for uncategorized dishes"
+  },
+
+  "adminMenuNoDishes": "No dishes in menu",
+  "@adminMenuNoDishes": {
+    "description": "Empty state title"
+  },
+
+  "adminMenuAddFirstDish": "Add your first dish to get started",
+  "@adminMenuAddFirstDish": {
+    "description": "Empty state subtitle"
+  },
+
+  "adminMenuConfirmDelete": "Confirm deletion",
+  "@adminMenuConfirmDelete": {
+    "description": "Delete confirmation dialog title"
+  },
+
+  "adminMenuConfirmDeleteMessage": "Do you really want to delete \"{name}\"?",
+  "@adminMenuConfirmDeleteMessage": {
+    "description": "Delete confirmation message",
+    "placeholders": {
+      "name": {
+        "type": "String",
+        "example": "Margherita Pizza"
+      }
+    }
+  },
+
+  "adminMenuDeleteSuccess": "\"{name}\" deleted successfully",
+  "@adminMenuDeleteSuccess": {
+    "description": "Delete success message",
+    "placeholders": {
+      "name": {
+        "type": "String",
+        "example": "Margherita Pizza"
+      }
+    }
+  },
+
+  "adminMenuDeleteError": "Error deleting: {error}",
+  "@adminMenuDeleteError": {
+    "description": "Delete error message",
+    "placeholders": {
+      "error": {
+        "type": "String",
+        "example": "Network timeout"
+      }
+    }
+  },
+
+  "adminMenuCategoryUpdated": "Category updated.",
+  "@adminMenuCategoryUpdated": {
+    "description": "Category update success message"
   }
 }

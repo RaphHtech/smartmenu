@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:smartmenu_app/core/breakpoint_controller.dart';
+import 'package:smartmenu_app/l10n/app_localizations.dart';
 import 'package:smartmenu_app/screens/admin/admin_branding_screen.dart';
 import 'package:smartmenu_app/screens/admin/admin_orders_screen.dart';
 import '../../screens/admin/admin_dashboard_overview_screen.dart';
@@ -67,51 +68,55 @@ class _AdminShellState extends State<AdminShell> {
   final User? _currentUser = FirebaseAuth.instance.currentUser;
 
   // Navigation items
-  final List<AdminNavItem> _navItems = [
-    const AdminNavItem(
-      route: '/dashboard',
-      icon: Icons.dashboard_outlined,
-      activeIcon: Icons.dashboard,
-      label: 'Dashboard',
-    ),
-    const AdminNavItem(
-      route: '/menu',
-      icon: Icons.restaurant_menu_outlined,
-      activeIcon: Icons.restaurant_menu,
-      label: 'Menu',
-    ),
-    const AdminNavItem(
-      route: '/orders',
-      icon: Icons.receipt_outlined,
-      activeIcon: Icons.receipt,
-      label: 'Commandes',
-      showBadge: true,
-    ),
-    const AdminNavItem(
-      route: '/media',
-      icon: Icons.photo_library_outlined,
-      activeIcon: Icons.photo_library,
-      label: 'Médias',
-    ),
-    const AdminNavItem(
-      route: '/branding',
-      icon: Icons.palette_outlined,
-      activeIcon: Icons.palette,
-      label: 'Branding',
-    ),
-    const AdminNavItem(
-      route: '/info',
-      icon: Icons.info_outline,
-      activeIcon: Icons.info,
-      label: 'Infos resto',
-    ),
-    const AdminNavItem(
-      route: '/settings',
-      icon: Icons.settings_outlined,
-      activeIcon: Icons.settings,
-      label: 'Paramètres',
-    ),
-  ];
+// Navigation items (construits dynamiquement pour i18n)
+  List<AdminNavItem> _getNavItems(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    return [
+      AdminNavItem(
+        route: '/dashboard',
+        icon: Icons.dashboard_outlined,
+        activeIcon: Icons.dashboard,
+        label: l10n.adminShellNavDashboard,
+      ),
+      AdminNavItem(
+        route: '/menu',
+        icon: Icons.restaurant_menu_outlined,
+        activeIcon: Icons.restaurant_menu,
+        label: l10n.adminShellNavMenu,
+      ),
+      AdminNavItem(
+        route: '/orders',
+        icon: Icons.receipt_outlined,
+        activeIcon: Icons.receipt,
+        label: l10n.adminShellNavOrders,
+        showBadge: true,
+      ),
+      AdminNavItem(
+        route: '/media',
+        icon: Icons.photo_library_outlined,
+        activeIcon: Icons.photo_library,
+        label: l10n.adminShellNavMedia,
+      ),
+      AdminNavItem(
+        route: '/branding',
+        icon: Icons.palette_outlined,
+        activeIcon: Icons.palette,
+        label: l10n.adminShellNavBranding,
+      ),
+      AdminNavItem(
+        route: '/info',
+        icon: Icons.info_outline,
+        activeIcon: Icons.info,
+        label: l10n.adminShellNavRestaurantInfo,
+      ),
+      AdminNavItem(
+        route: '/settings',
+        icon: Icons.settings_outlined,
+        activeIcon: Icons.settings,
+        label: l10n.adminShellNavSettings,
+      ),
+    ];
+  }
 
   @override
   void dispose() {
@@ -232,7 +237,7 @@ class _AdminShellState extends State<AdminShell> {
           const SizedBox(width: AdminTokens.space12),
           //
           Text(
-            'SmartMenu',
+            AppLocalizations.of(context)!.adminShellAppName,
             style: AdminTypography.headlineLarge.copyWith(
               color: AdminTokens.neutral900,
               fontWeight: FontWeight.w700,
@@ -244,81 +249,87 @@ class _AdminShellState extends State<AdminShell> {
   }
 
   Widget _buildNavigation() {
-    return ListView(
-      padding: const EdgeInsets.symmetric(vertical: AdminTokens.space16),
-      children: _navItems.map((item) {
-        final isActive = _currentRoute == item.route;
-        return Padding(
-          padding: const EdgeInsets.symmetric(
-            horizontal: AdminTokens.space12,
-            vertical: AdminTokens.space4,
-          ),
-          child: Material(
-            color: Colors.transparent,
-            child: InkWell(
-              borderRadius: BorderRadius.circular(AdminTokens.radius8),
-              onTap: () => _onNavItemTap(item.route),
-              child: Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: AdminTokens.space12,
-                  vertical: AdminTokens.space12,
-                ),
-                // État actif plus visible avec barre latérale
-                decoration: BoxDecoration(
-                  color: isActive ? AdminTokens.primary50 : Colors.transparent,
+    return Builder(
+      builder: (context) {
+        final navItems = _getNavItems(context);
+        return ListView(
+          padding: const EdgeInsets.symmetric(vertical: AdminTokens.space16),
+          children: navItems.map((item) {
+            final isActive = _currentRoute == item.route;
+            return Padding(
+              padding: const EdgeInsets.symmetric(
+                horizontal: AdminTokens.space12,
+                vertical: AdminTokens.space4,
+              ),
+              child: Material(
+                color: Colors.transparent,
+                child: InkWell(
                   borderRadius: BorderRadius.circular(AdminTokens.radius8),
-                  border: isActive
-                      ? const Border(
-                          left: BorderSide(
-                              color: AdminTokens.primary600, width: 2),
-                        )
-                      : null,
-                ),
-                child: Row(
-                  children: [
-                    Icon(
-                      isActive ? item.activeIcon : item.icon,
-                      size: AdminTokens.iconMd,
-                      color: isActive
-                          ? AdminTokens.primary600
-                          : AdminTokens.neutral500,
+                  onTap: () => _onNavItemTap(item.route),
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: AdminTokens.space12,
+                      vertical: AdminTokens.space12,
                     ),
-                    const SizedBox(width: AdminTokens.space12),
-                    Text(
-                      item.label,
-                      style: AdminTypography.bodyMedium.copyWith(
-                        color: isActive
-                            ? AdminTokens.primary600
-                            : AdminTokens.neutral600,
-                        fontWeight:
-                            isActive ? FontWeight.w600 : FontWeight.w400,
-                      ),
+                    // État actif plus visible avec barre latérale
+                    decoration: BoxDecoration(
+                      color:
+                          isActive ? AdminTokens.primary50 : Colors.transparent,
+                      borderRadius: BorderRadius.circular(AdminTokens.radius8),
+                      border: isActive
+                          ? const Border(
+                              left: BorderSide(
+                                  color: AdminTokens.primary600, width: 2),
+                            )
+                          : null,
                     ),
-                    const Spacer(),
-
-                    // Badge pour les commandes
-                    if (item.showBadge && item.route == '/orders')
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 6, vertical: 2),
-                        decoration: BoxDecoration(
-                          color: AdminTokens.neutral100,
-                          borderRadius: BorderRadius.circular(10),
+                    child: Row(
+                      children: [
+                        Icon(
+                          isActive ? item.activeIcon : item.icon,
+                          size: AdminTokens.iconMd,
+                          color: isActive
+                              ? AdminTokens.primary600
+                              : AdminTokens.neutral500,
                         ),
-                        child: Text(
-                          '0',
-                          style: AdminTypography.labelSmall.copyWith(
-                            color: AdminTokens.neutral500,
+                        const SizedBox(width: AdminTokens.space12),
+                        Text(
+                          item.label,
+                          style: AdminTypography.bodyMedium.copyWith(
+                            color: isActive
+                                ? AdminTokens.primary600
+                                : AdminTokens.neutral600,
+                            fontWeight:
+                                isActive ? FontWeight.w600 : FontWeight.w400,
                           ),
                         ),
-                      ),
-                  ],
+                        const Spacer(),
+
+                        // Badge pour les commandes
+                        if (item.showBadge && item.route == '/orders')
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 6, vertical: 2),
+                            decoration: BoxDecoration(
+                              color: AdminTokens.neutral100,
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            child: Text(
+                              '0',
+                              style: AdminTypography.labelSmall.copyWith(
+                                color: AdminTokens.neutral500,
+                              ),
+                            ),
+                          ),
+                      ],
+                    ),
+                  ),
                 ),
               ),
-            ),
-          ),
+            );
+          }).toList(),
         );
-      }).toList(),
+      },
     );
   }
 
@@ -339,7 +350,8 @@ class _AdminShellState extends State<AdminShell> {
             radius: 16,
             backgroundColor: AdminTokens.primary50,
             child: Text(
-              (_currentUser?.email?.substring(0, 1).toUpperCase()) ?? 'U',
+              (_currentUser?.email?.split('@')[0]) ??
+                  AppLocalizations.of(context)!.adminShellUserDefault,
               style: AdminTypography.labelMedium.copyWith(
                 color: AdminTokens.primary600,
                 fontWeight: FontWeight.w600,
@@ -359,8 +371,8 @@ class _AdminShellState extends State<AdminShell> {
                   ),
                   overflow: TextOverflow.ellipsis,
                 ),
-                const Text(
-                  'Propriétaire',
+                Text(
+                  AppLocalizations.of(context)!.adminShellUserRole,
                   style: AdminTypography.labelSmall,
                 ),
               ],
@@ -376,13 +388,14 @@ class _AdminShellState extends State<AdminShell> {
               if (value == 'logout') _logout();
             },
             itemBuilder: (context) => [
-              const PopupMenuItem(
+              PopupMenuItem(
                 value: 'logout',
                 child: Row(
                   children: [
-                    Icon(Icons.logout, size: 16, color: AdminTokens.error500),
-                    SizedBox(width: 8),
-                    Text('Se déconnecter'),
+                    const Icon(Icons.logout,
+                        size: 16, color: AdminTokens.error500),
+                    const SizedBox(width: 8),
+                    Text(AppLocalizations.of(context)!.adminShellLogout),
                   ],
                 ),
               ),

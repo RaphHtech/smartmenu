@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:smartmenu_app/services/translation_helper.dart';
 import '../../state/currency_scope.dart';
 import '../../services/currency_service.dart';
 import '../../l10n/app_localizations.dart';
@@ -42,8 +43,19 @@ class MenuItem extends StatelessWidget {
   AppLocalizations _l10n(BuildContext context) => AppLocalizations.of(context)!;
 
   void _openDetails(BuildContext context) {
-    final String name = (pizza['name'] ?? '').toString();
-    final String description = (pizza['description'] ?? '').toString();
+    final String locale = Localizations.localeOf(context).languageCode;
+    final String name = TranslationHelper.getTranslatedField(
+      pizza,
+      locale,
+      'name',
+      restaurantDefaultLocale: 'he',
+    );
+    final String description = TranslationHelper.getTranslatedField(
+      pizza,
+      locale,
+      'description',
+      restaurantDefaultLocale: 'he',
+    );
     final double unitPrice = _parsePrice(pizza['price']);
     final String priceText = _formatPrice(context, unitPrice);
     final String img = () {
@@ -121,8 +133,19 @@ class MenuItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final String name = (pizza['name'] ?? '').toString();
-    final String description = (pizza['description'] ?? '').toString();
+    final String locale = Localizations.localeOf(context).languageCode;
+    final String name = TranslationHelper.getTranslatedField(
+      pizza,
+      locale,
+      'name',
+      restaurantDefaultLocale: 'he',
+    );
+    final String description = TranslationHelper.getTranslatedField(
+      pizza,
+      locale,
+      'description',
+      restaurantDefaultLocale: 'he',
+    );
     final double unitPrice = _parsePrice(pizza['price']);
     final String priceText = context.money(unitPrice);
 

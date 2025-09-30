@@ -188,7 +188,7 @@ class AppLocalizationsHe extends AppLocalizations {
   String get badgeDescNew => 'חדש בתפריט';
 
   @override
-  String get badgeDescSpecialty => 'מנות המיוחדים של הבית';
+  String get badgeDescSpecialty => 'המנות המיוחדות של הבית';
 
   @override
   String get badgeDescChef => 'המלצות השף';
@@ -198,4 +198,195 @@ class AppLocalizationsHe extends AppLocalizations {
 
   @override
   String get understood => 'הבנתי';
+
+  @override
+  String get commonAdd => 'הוסף';
+
+  @override
+  String get commonEdit => 'ערוך';
+
+  @override
+  String get commonDelete => 'מחק';
+
+  @override
+  String get commonCancel => 'ביטול';
+
+  @override
+  String get commonSave => 'שמור';
+
+  @override
+  String get commonOpen => 'פתח';
+
+  @override
+  String get commonClose => 'סגור';
+
+  @override
+  String get commonSearch => 'חיפוש...';
+
+  @override
+  String get commonLoading => 'טוען...';
+
+  @override
+  String commonError(String error) {
+    return 'שגיאה: $error';
+  }
+
+  @override
+  String get adminShellAppName => 'SmartMenu';
+
+  @override
+  String get adminShellNavDashboard => 'לוח בקרה';
+
+  @override
+  String get adminShellNavMenu => 'תפריט';
+
+  @override
+  String get adminShellNavOrders => 'הזמנות';
+
+  @override
+  String get adminShellNavMedia => 'מדיה';
+
+  @override
+  String get adminShellNavBranding => 'מיתוג';
+
+  @override
+  String get adminShellNavRestaurantInfo => 'פרטי מסעדה';
+
+  @override
+  String get adminShellNavSettings => 'הגדרות';
+
+  @override
+  String get adminShellUserRole => 'בעלים';
+
+  @override
+  String get adminShellUserDefault => 'משתמש';
+
+  @override
+  String get adminShellLogout => 'התנתק';
+
+  @override
+  String get adminDashboardTitle => 'לוח בקרה';
+
+  @override
+  String get adminDashboardMetricDishes => 'מנות';
+
+  @override
+  String get adminDashboardMetricCategories => 'קטגוריות';
+
+  @override
+  String get adminDashboardMetricWithImage => 'עם תמונה';
+
+  @override
+  String get adminDashboardMetricNoImage => 'ללא תמונה';
+
+  @override
+  String get adminDashboardMetricSignature => 'מנות חתימה';
+
+  @override
+  String get adminDashboardAddDish => 'הוסף מנה';
+
+  @override
+  String get adminDashboardQuickActions => 'פעולות מהירות';
+
+  @override
+  String get adminDashboardManageMedia => 'נהל מדיה';
+
+  @override
+  String get adminDashboardEditInfo => 'ערוך פרטים';
+
+  @override
+  String get adminDashboardPreviewMenu => 'תצוגה מקדימה של התפריט';
+
+  @override
+  String get adminDashboardViewClientMenu => 'צפה בתפריט שלך כלקוח';
+
+  @override
+  String adminDashboardItemsWithoutImage(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count פריטים ללא תמונה',
+      one: 'פריט אחד ללא תמונה',
+      zero: 'אין פריטים ללא תמונה',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get adminDashboardFix => 'עדקן';
+
+  @override
+  String get adminDashboardMyRestaurant => 'המסעדה שלי';
+
+  @override
+  String get adminMenuTitle => 'תפריט';
+
+  @override
+  String get adminMenuManageCategories => 'נהל קטגוריות';
+
+  @override
+  String get adminMenuReorder => 'סדר מחדש';
+
+  @override
+  String get adminMenuReorderDishes => 'סדר מנות מחדש';
+
+  @override
+  String get adminMenuCategory => 'קטגוריה';
+
+  @override
+  String get adminMenuName => 'שם';
+
+  @override
+  String get adminMenuPrice => 'מחיר';
+
+  @override
+  String get adminMenuFeatured => 'מומלץ';
+
+  @override
+  String get adminMenuWithBadges => 'עם תגיות';
+
+  @override
+  String get adminMenuNoImage => 'ללא תמונה';
+
+  @override
+  String get adminMenuAll => 'הכל';
+
+  @override
+  String get adminMenuNewCategory => 'קטגוריה חדשה';
+
+  @override
+  String get adminMenuCategoryName => 'שם הקטגוריה';
+
+  @override
+  String get adminMenuCategoryExample => 'לדוגמה: קינוחים';
+
+  @override
+  String get adminMenuNoCategory => 'ללא קטגוריה';
+
+  @override
+  String get adminMenuNoDishes => 'אין מנות בתפריט';
+
+  @override
+  String get adminMenuAddFirstDish => 'הוסף את המנה הראשונה שלך כדי להתחיל';
+
+  @override
+  String get adminMenuConfirmDelete => 'אישור מחיקה';
+
+  @override
+  String adminMenuConfirmDeleteMessage(String name) {
+    return 'האם אתה בטוח שברצונך למחוק את \"$name\"?';
+  }
+
+  @override
+  String adminMenuDeleteSuccess(String name) {
+    return '\"$name\" נמחק בהצלחה';
+  }
+
+  @override
+  String adminMenuDeleteError(String error) {
+    return 'שגיאה במחיקה: $error';
+  }
+
+  @override
+  String get adminMenuCategoryUpdated => 'הקטגוריה עודכנה.';
 }

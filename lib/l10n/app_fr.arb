@@ -324,5 +324,325 @@
   "understood": "Compris",
   "@understood": {
     "description": "Understood button"
+  },
+
+  "commonAdd": "Ajouter",
+  "@commonAdd": {
+    "description": "Generic add action"
+  },
+
+  "commonEdit": "Modifier",
+  "@commonEdit": {
+    "description": "Generic edit action"
+  },
+
+  "commonDelete": "Supprimer",
+  "@commonDelete": {
+    "description": "Generic delete action"
+  },
+
+  "commonCancel": "Annuler",
+  "@commonCancel": {
+    "description": "Generic cancel action"
+  },
+
+  "commonSave": "Enregistrer",
+  "@commonSave": {
+    "description": "Generic save action"
+  },
+
+  "commonOpen": "Ouvrir",
+  "@commonOpen": {
+    "description": "Generic open action"
+  },
+
+  "commonClose": "Fermer",
+  "@commonClose": {
+    "description": "Generic close action"
+  },
+
+  "commonSearch": "Rechercher...",
+  "@commonSearch": {
+    "description": "Search placeholder"
+  },
+
+  "commonLoading": "Chargement...",
+  "@commonLoading": {
+    "description": "Loading state"
+  },
+
+  "commonError": "Erreur : {error}",
+  "@commonError": {
+    "description": "Generic error message",
+    "placeholders": {
+      "error": {
+        "type": "String",
+        "example": "Network timeout"
+      }
+    }
+  },
+
+  "adminShellAppName": "SmartMenu",
+  "@adminShellAppName": {
+    "description": "Application name in sidebar"
+  },
+
+  "adminShellNavDashboard": "Tableau de bord",
+  "@adminShellNavDashboard": {
+    "description": "Dashboard navigation item"
+  },
+
+  "adminShellNavMenu": "Menu",
+  "@adminShellNavMenu": {
+    "description": "Menu navigation item"
+  },
+
+  "adminShellNavOrders": "Commandes",
+  "@adminShellNavOrders": {
+    "description": "Orders navigation item"
+  },
+
+  "adminShellNavMedia": "Médias",
+  "@adminShellNavMedia": {
+    "description": "Media navigation item"
+  },
+
+  "adminShellNavBranding": "Branding",
+  "@adminShellNavBranding": {
+    "description": "Branding navigation item"
+  },
+
+  "adminShellNavRestaurantInfo": "Infos resto",
+  "@adminShellNavRestaurantInfo": {
+    "description": "Restaurant info navigation item"
+  },
+
+  "adminShellNavSettings": "Paramètres",
+  "@adminShellNavSettings": {
+    "description": "Settings navigation item"
+  },
+
+  "adminShellUserRole": "Propriétaire",
+  "@adminShellUserRole": {
+    "description": "User role label in footer"
+  },
+
+  "adminShellUserDefault": "Utilisateur",
+  "@adminShellUserDefault": {
+    "description": "Default user name fallback"
+  },
+
+  "adminShellLogout": "Se déconnecter",
+  "@adminShellLogout": {
+    "description": "Logout menu item"
+  },
+
+  "adminDashboardTitle": "Tableau de bord",
+  "@adminDashboardTitle": {
+    "description": "Dashboard page title"
+  },
+
+  "adminDashboardMetricDishes": "Plats",
+  "@adminDashboardMetricDishes": {
+    "description": "Dishes metric label"
+  },
+
+  "adminDashboardMetricCategories": "Catégories",
+  "@adminDashboardMetricCategories": {
+    "description": "Categories metric label"
+  },
+
+  "adminDashboardMetricWithImage": "Avec image",
+  "@adminDashboardMetricWithImage": {
+    "description": "With image metric label"
+  },
+
+  "adminDashboardMetricNoImage": "Sans image",
+  "@adminDashboardMetricNoImage": {
+    "description": "No image metric label"
+  },
+
+  "adminDashboardMetricSignature": "Signature",
+  "@adminDashboardMetricSignature": {
+    "description": "Signature dishes metric label"
+  },
+
+  "adminDashboardAddDish": "Ajouter un plat",
+  "@adminDashboardAddDish": {
+    "description": "Add dish button"
+  },
+
+  "adminDashboardQuickActions": "Actions rapides",
+  "@adminDashboardQuickActions": {
+    "description": "Quick actions section title"
+  },
+
+  "adminDashboardManageMedia": "Gérer les médias",
+  "@adminDashboardManageMedia": {
+    "description": "Manage media action"
+  },
+
+  "adminDashboardEditInfo": "Modifier les infos",
+  "@adminDashboardEditInfo": {
+    "description": "Edit restaurant info action"
+  },
+
+  "adminDashboardPreviewMenu": "Prévisualiser le menu",
+  "@adminDashboardPreviewMenu": {
+    "description": "Preview menu action"
+  },
+
+  "adminDashboardViewClientMenu": "Voir votre menu côté client",
+  "@adminDashboardViewClientMenu": {
+    "description": "Client menu preview description"
+  },
+
+  "adminDashboardItemsWithoutImage": "{count, plural, =0{Aucun élément sans image} one{{count} élément sans image} other{{count} éléments sans image}}",
+  "@adminDashboardItemsWithoutImage": {
+    "description": "Alert for items without images",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "4"
+      }
+    }
+  },
+
+  "adminDashboardFix": "Corriger",
+  "@adminDashboardFix": {
+    "description": "Fix button in alerts"
+  },
+
+  "adminDashboardMyRestaurant": "Mon Restaurant",
+  "@adminDashboardMyRestaurant": {
+    "description": "Default restaurant name fallback"
+  },
+
+  "adminMenuTitle": "Menu",
+  "@adminMenuTitle": {
+    "description": "Menu page title"
+  },
+
+  "adminMenuManageCategories": "Gérer catégories",
+  "@adminMenuManageCategories": {
+    "description": "Manage categories action"
+  },
+
+  "adminMenuReorder": "Réorganiser",
+  "@adminMenuReorder": {
+    "description": "Reorder dishes action"
+  },
+
+  "adminMenuReorderDishes": "Réorganiser plats",
+  "@adminMenuReorderDishes": {
+    "description": "Reorder dishes popup menu item"
+  },
+
+  "adminMenuCategory": "Catégorie",
+  "@adminMenuCategory": {
+    "description": "Category dropdown label"
+  },
+
+  "adminMenuName": "Nom",
+  "@adminMenuName": {
+    "description": "Sort by name option"
+  },
+
+  "adminMenuPrice": "Prix",
+  "@adminMenuPrice": {
+    "description": "Sort by price option"
+  },
+
+  "adminMenuFeatured": "Mis en avant",
+  "@adminMenuFeatured": {
+    "description": "Featured filter"
+  },
+
+  "adminMenuWithBadges": "Avec badges",
+  "@adminMenuWithBadges": {
+    "description": "With badges filter"
+  },
+
+  "adminMenuNoImage": "Sans image",
+  "@adminMenuNoImage": {
+    "description": "No image filter"
+  },
+
+  "adminMenuAll": "Toutes",
+  "@adminMenuAll": {
+    "description": "All categories filter"
+  },
+
+  "adminMenuNewCategory": "Nouvelle catégorie",
+  "@adminMenuNewCategory": {
+    "description": "New category dialog title"
+  },
+
+  "adminMenuCategoryName": "Nom de la catégorie",
+  "@adminMenuCategoryName": {
+    "description": "Category name field label"
+  },
+
+  "adminMenuCategoryExample": "Ex : Desserts",
+  "@adminMenuCategoryExample": {
+    "description": "Category name field hint"
+  },
+
+  "adminMenuNoCategory": "Sans catégorie",
+  "@adminMenuNoCategory": {
+    "description": "No category label for uncategorized dishes"
+  },
+
+  "adminMenuNoDishes": "Aucun plat au menu",
+  "@adminMenuNoDishes": {
+    "description": "Empty state title"
+  },
+
+  "adminMenuAddFirstDish": "Ajoutez votre premier plat pour commencer",
+  "@adminMenuAddFirstDish": {
+    "description": "Empty state subtitle"
+  },
+
+  "adminMenuConfirmDelete": "Confirmer la suppression",
+  "@adminMenuConfirmDelete": {
+    "description": "Delete confirmation dialog title"
+  },
+
+  "adminMenuConfirmDeleteMessage": "Voulez-vous vraiment supprimer \"{name}\" ?",
+  "@adminMenuConfirmDeleteMessage": {
+    "description": "Delete confirmation message",
+    "placeholders": {
+      "name": {
+        "type": "String",
+        "example": "Pizza Margherita"
+      }
+    }
+  },
+
+  "adminMenuDeleteSuccess": "\"{name}\" supprimé avec succès",
+  "@adminMenuDeleteSuccess": {
+    "description": "Delete success message",
+    "placeholders": {
+      "name": {
+        "type": "String",
+        "example": "Pizza Margherita"
+      }
+    }
+  },
+
+  "adminMenuDeleteError": "Erreur lors de la suppression : {error}",
+  "@adminMenuDeleteError": {
+    "description": "Delete error message",
+    "placeholders": {
+      "error": {
+        "type": "String",
+        "example": "Network timeout"
+      }
+    }
+  },
+
+  "adminMenuCategoryUpdated": "Catégorie mise à jour.",
+  "@adminMenuCategoryUpdated": {
+    "description": "Category update success message"
   }
 }

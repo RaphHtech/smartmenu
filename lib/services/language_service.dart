@@ -6,8 +6,8 @@ class LanguageService {
 
   // Langues supportées
   static const List<Locale> supportedLocales = [
-    Locale('en'),
     Locale('he'),
+    Locale('en'),
     Locale('fr'),
   ];
 
@@ -21,7 +21,7 @@ class LanguageService {
     }
 
     // Si pas de langue sauvegardée, retourne null (système par défaut)
-    return const Locale('en'); // Fallback anglais
+    return const Locale('he'); // Fallback hebreu
   }
 
   // Sauvegarde la langue choisie
@@ -33,10 +33,10 @@ class LanguageService {
   // Récupère le nom natif de la langue
   static String getNativeName(String languageCode) {
     switch (languageCode) {
-      case 'en':
-        return 'English';
       case 'he':
         return 'עברית';
+      case 'en':
+        return 'English';
       case 'fr':
         return 'Français';
       default:

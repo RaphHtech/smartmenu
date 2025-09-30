@@ -324,5 +324,325 @@
   "understood": "הבנתי",
   "@understood": {
     "description": "Understood button"
+  },
+
+  "commonAdd": "הוסף",
+  "@commonAdd": {
+    "description": "Generic add action"
+  },
+
+  "commonEdit": "ערוך",
+  "@commonEdit": {
+    "description": "Generic edit action"
+  },
+
+  "commonDelete": "מחק",
+  "@commonDelete": {
+    "description": "Generic delete action"
+  },
+
+  "commonCancel": "ביטול",
+  "@commonCancel": {
+    "description": "Generic cancel action"
+  },
+
+  "commonSave": "שמור",
+  "@commonSave": {
+    "description": "Generic save action"
+  },
+
+  "commonOpen": "פתח",
+  "@commonOpen": {
+    "description": "Generic open action"
+  },
+
+  "commonClose": "סגור",
+  "@commonClose": {
+    "description": "Generic close action"
+  },
+
+  "commonSearch": "חיפוש...",
+  "@commonSearch": {
+    "description": "Search placeholder"
+  },
+
+  "commonLoading": "טוען...",
+  "@commonLoading": {
+    "description": "Loading state"
+  },
+
+  "commonError": "שגיאה: {error}",
+  "@commonError": {
+    "description": "Generic error message",
+    "placeholders": {
+      "error": {
+        "type": "String",
+        "example": "Network timeout"
+      }
+    }
+  },
+
+  "adminShellAppName": "SmartMenu",
+  "@adminShellAppName": {
+    "description": "Application name in sidebar"
+  },
+
+  "adminShellNavDashboard": "לוח בקרה",
+  "@adminShellNavDashboard": {
+    "description": "Dashboard navigation item"
+  },
+
+  "adminShellNavMenu": "תפריט",
+  "@adminShellNavMenu": {
+    "description": "Menu navigation item"
+  },
+
+  "adminShellNavOrders": "הזמנות",
+  "@adminShellNavOrders": {
+    "description": "Orders navigation item"
+  },
+
+  "adminShellNavMedia": "מדיה",
+  "@adminShellNavMedia": {
+    "description": "Media navigation item"
+  },
+
+  "adminShellNavBranding": "מיתוג",
+  "@adminShellNavBranding": {
+    "description": "Branding navigation item"
+  },
+
+  "adminShellNavRestaurantInfo": "פרטי מסעדה",
+  "@adminShellNavRestaurantInfo": {
+    "description": "Restaurant info navigation item"
+  },
+
+  "adminShellNavSettings": "הגדרות",
+  "@adminShellNavSettings": {
+    "description": "Settings navigation item"
+  },
+
+  "adminShellUserRole": "בעלים",
+  "@adminShellUserRole": {
+    "description": "User role label in footer"
+  },
+
+  "adminShellUserDefault": "משתמש",
+  "@adminShellUserDefault": {
+    "description": "Default user name fallback"
+  },
+
+  "adminShellLogout": "התנתק",
+  "@adminShellLogout": {
+    "description": "Logout menu item"
+  },
+
+  "adminDashboardTitle": "לוח בקרה",
+  "@adminDashboardTitle": {
+    "description": "Dashboard page title"
+  },
+
+  "adminDashboardMetricDishes": "מנות",
+  "@adminDashboardMetricDishes": {
+    "description": "Dishes metric label"
+  },
+
+  "adminDashboardMetricCategories": "קטגוריות",
+  "@adminDashboardMetricCategories": {
+    "description": "Categories metric label"
+  },
+
+  "adminDashboardMetricWithImage": "עם תמונה",
+  "@adminDashboardMetricWithImage": {
+    "description": "With image metric label"
+  },
+
+  "adminDashboardMetricNoImage": "ללא תמונה",
+  "@adminDashboardMetricNoImage": {
+    "description": "No image metric label"
+  },
+
+  "adminDashboardMetricSignature": "מנות חתימה",
+  "@adminDashboardMetricSignature": {
+    "description": "Signature dishes metric label"
+  },
+
+  "adminDashboardAddDish": "הוסף מנה",
+  "@adminDashboardAddDish": {
+    "description": "Add dish button"
+  },
+
+  "adminDashboardQuickActions": "פעולות מהירות",
+  "@adminDashboardQuickActions": {
+    "description": "Quick actions section title"
+  },
+
+  "adminDashboardManageMedia": "נהל מדיה",
+  "@adminDashboardManageMedia": {
+    "description": "Manage media action"
+  },
+
+  "adminDashboardEditInfo": "ערוך פרטים",
+  "@adminDashboardEditInfo": {
+    "description": "Edit restaurant info action"
+  },
+
+  "adminDashboardPreviewMenu": "תצוגה מקדימה של התפריט",
+  "@adminDashboardPreviewMenu": {
+    "description": "Preview menu action"
+  },
+
+  "adminDashboardViewClientMenu": "צפה בתפריט שלך כלקוח",
+  "@adminDashboardViewClientMenu": {
+    "description": "Client menu preview description"
+  },
+
+  "adminDashboardItemsWithoutImage": "{count, plural, =0{אין פריטים ללא תמונה} one{פריט אחד ללא תמונה} other{{count} פריטים ללא תמונה}}",
+  "@adminDashboardItemsWithoutImage": {
+    "description": "Alert for items without images",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "4"
+      }
+    }
+  },
+
+  "adminDashboardFix": "עדקן",
+  "@adminDashboardFix": {
+    "description": "Fix button in alerts"
+  },
+
+  "adminDashboardMyRestaurant": "המסעדה שלי",
+  "@adminDashboardMyRestaurant": {
+    "description": "Default restaurant name fallback"
+  },
+
+  "adminMenuTitle": "תפריט",
+  "@adminMenuTitle": {
+    "description": "Menu page title"
+  },
+
+  "adminMenuManageCategories": "נהל קטגוריות",
+  "@adminMenuManageCategories": {
+    "description": "Manage categories action"
+  },
+
+  "adminMenuReorder": "סדר מחדש",
+  "@adminMenuReorder": {
+    "description": "Reorder dishes action"
+  },
+
+  "adminMenuReorderDishes": "סדר מנות מחדש",
+  "@adminMenuReorderDishes": {
+    "description": "Reorder dishes popup menu item"
+  },
+
+  "adminMenuCategory": "קטגוריה",
+  "@adminMenuCategory": {
+    "description": "Category dropdown label"
+  },
+
+  "adminMenuName": "שם",
+  "@adminMenuName": {
+    "description": "Sort by name option"
+  },
+
+  "adminMenuPrice": "מחיר",
+  "@adminMenuPrice": {
+    "description": "Sort by price option"
+  },
+
+  "adminMenuFeatured": "מומלץ",
+  "@adminMenuFeatured": {
+    "description": "Featured filter"
+  },
+
+  "adminMenuWithBadges": "עם תגיות",
+  "@adminMenuWithBadges": {
+    "description": "With badges filter"
+  },
+
+  "adminMenuNoImage": "ללא תמונה",
+  "@adminMenuNoImage": {
+    "description": "No image filter"
+  },
+
+  "adminMenuAll": "הכל",
+  "@adminMenuAll": {
+    "description": "All categories filter"
+  },
+
+  "adminMenuNewCategory": "קטגוריה חדשה",
+  "@adminMenuNewCategory": {
+    "description": "New category dialog title"
+  },
+
+  "adminMenuCategoryName": "שם הקטגוריה",
+  "@adminMenuCategoryName": {
+    "description": "Category name field label"
+  },
+
+  "adminMenuCategoryExample": "לדוגמה: קינוחים",
+  "@adminMenuCategoryExample": {
+    "description": "Category name field hint"
+  },
+
+  "adminMenuNoCategory": "ללא קטגוריה",
+  "@adminMenuNoCategory": {
+    "description": "No category label for uncategorized dishes"
+  },
+
+  "adminMenuNoDishes": "אין מנות בתפריט",
+  "@adminMenuNoDishes": {
+    "description": "Empty state title"
+  },
+
+  "adminMenuAddFirstDish": "הוסף את המנה הראשונה שלך כדי להתחיל",
+  "@adminMenuAddFirstDish": {
+    "description": "Empty state subtitle"
+  },
+
+  "adminMenuConfirmDelete": "אישור מחיקה",
+  "@adminMenuConfirmDelete": {
+    "description": "Delete confirmation dialog title"
+  },
+
+  "adminMenuConfirmDeleteMessage": "האם אתה בטוח שברצונך למחוק את \"{name}\"?",
+  "@adminMenuConfirmDeleteMessage": {
+    "description": "Delete confirmation message",
+    "placeholders": {
+      "name": {
+        "type": "String",
+        "example": "פיצה מרגריטה"
+      }
+    }
+  },
+
+  "adminMenuDeleteSuccess": "\"{name}\" נמחק בהצלחה",
+  "@adminMenuDeleteSuccess": {
+    "description": "Delete success message",
+    "placeholders": {
+      "name": {
+        "type": "String",
+        "example": "פיצה מרגריטה"
+      }
+    }
+  },
+
+  "adminMenuDeleteError": "שגיאה במחיקה: {error}",
+  "@adminMenuDeleteError": {
+    "description": "Delete error message",
+    "placeholders": {
+      "error": {
+        "type": "String",
+        "example": "Network timeout"
+      }
+    }
+  },
+
+  "adminMenuCategoryUpdated": "הקטגוריה עודכנה.",
+  "@adminMenuCategoryUpdated": {
+    "description": "Category update success message"
   }
 }

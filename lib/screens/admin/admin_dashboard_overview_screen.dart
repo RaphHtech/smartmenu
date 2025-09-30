@@ -1,5 +1,8 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:smartmenu_app/l10n/app_localizations.dart';
 import 'package:smartmenu_app/screens/admin/admin_dashboard_screen.dart';
 import '../../widgets/ui/admin_shell.dart';
 import '../../widgets/ui/admin_themed.dart';
@@ -127,6 +130,8 @@ class AdminDashboardOverviewScreen extends StatelessWidget {
   }
 
   Widget _buildDesktopLayout(BuildContext context, Map<String, int> metrics) {
+    final l10n = AppLocalizations.of(context)!;
+
     // Ton code actuel desktop
     return SingleChildScrollView(
       padding: const EdgeInsets.all(AdminTokens.space24),
@@ -139,24 +144,24 @@ class AdminDashboardOverviewScreen extends StatelessWidget {
             runSpacing: AdminTokens.space16,
             children: [
               _MetricCard(
-                  label: 'Plats',
+                  label: l10n.adminDashboardMetricDishes,
                   value: '${metrics['total']}',
                   icon: Icons.restaurant),
               _MetricCard(
-                  label: 'Catégories',
+                  label: l10n.adminDashboardMetricCategories,
                   value: '${metrics['categories']}',
                   icon: Icons.category_outlined),
               _MetricCard(
-                  label: 'Avec image',
+                  label: l10n.adminDashboardMetricWithImage,
                   value: '${metrics['withImage']}',
                   icon: Icons.image_outlined),
               _MetricCard(
-                  label: 'Signature',
+                  label: l10n.adminDashboardMetricSignature,
                   value: '${metrics['signatures']}',
                   icon: Icons.star_rate_rounded),
               if (metrics['noImage']! > 0)
                 _MetricCard(
-                  label: 'Sans image',
+                  label: l10n.adminDashboardMetricNoImage,
                   value: '${metrics['noImage']}',
                   icon: Icons.image_not_supported_outlined,
                   tone: _MetricTone.warning,
@@ -183,19 +188,19 @@ class AdminDashboardOverviewScreen extends StatelessWidget {
                 children: [
                   _QuickAction(
                     icon: Icons.add,
-                    label: 'Ajouter un plat',
+                    label: l10n.adminDashboardAddDish,
                     onTap: () => context.pushAdminScreen(
                         MenuItemFormScreen(restaurantId: restaurantId)),
                   ),
                   _QuickAction(
                     icon: Icons.photo_library_outlined,
-                    label: 'Gérer les médias',
+                    label: l10n.adminDashboardManageMedia,
                     onTap: () => context.pushAdminScreen(
                         AdminMediaScreen(restaurantId: restaurantId)),
                   ),
                   _QuickAction(
                     icon: Icons.info_outline,
-                    label: 'Modifier les infos',
+                    label: l10n.adminDashboardEditInfo,
                     onTap: () => context.pushAdminScreen(
                       AdminRestaurantInfoScreen(
                           restaurantId: restaurantId, showBack: true),
@@ -203,7 +208,7 @@ class AdminDashboardOverviewScreen extends StatelessWidget {
                   ),
                   _QuickAction(
                     icon: Icons.visibility_outlined,
-                    label: 'Prévisualiser le menu',
+                    label: l10n.adminDashboardPreviewMenu,
                     onTap: () => _previewMenu(context),
                   ),
                 ],
@@ -225,8 +230,9 @@ class AdminDashboardOverviewScreen extends StatelessWidget {
           .snapshots(),
       builder: (context, snapshot) {
         final data = snapshot.data?.data() as Map<String, dynamic>? ?? {};
-        final restaurantName = data['name'] as String? ?? 'Mon Restaurant';
-
+        final l10n = AppLocalizations.of(context)!;
+        final restaurantName =
+            data['name'] as String? ?? l10n.adminDashboardMyRestaurant;
         return Container(
           width: double.infinity,
           padding: const EdgeInsets.all(AdminTokens.space24),
@@ -238,9 +244,9 @@ class AdminDashboardOverviewScreen extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text(
-                'Tableau de bord',
-                style: TextStyle(
+              Text(
+                AppLocalizations.of(context)!.adminDashboardTitle,
+                style: const TextStyle(
                   color: Colors.white,
                   fontSize: 24,
                   fontWeight: FontWeight.w600,
@@ -265,7 +271,7 @@ class AdminDashboardOverviewScreen extends StatelessWidget {
                         MenuItemFormScreen(restaurantId: restaurantId),
                       ),
                       icon: const Icon(Icons.add, size: 20),
-                      label: const Text('Ajouter un plat'),
+                      label: Text(l10n.adminDashboardAddDish),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.white,
                         foregroundColor: AdminTokens.primary600,
@@ -283,7 +289,7 @@ class AdminDashboardOverviewScreen extends StatelessWidget {
                       AdminMediaScreen(restaurantId: restaurantId),
                     ),
                     icon: const Icon(Icons.photo_library_outlined, size: 20),
-                    label: const Text('Médias'),
+                    label: Text(l10n.commonAdd),
                     style: OutlinedButton.styleFrom(
                       foregroundColor: Colors.white,
                       side: const BorderSide(color: Colors.white, width: 1),
@@ -303,12 +309,15 @@ class AdminDashboardOverviewScreen extends StatelessWidget {
   }
 
   Widget _buildActionChips(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final actions = [
-      {'icon': Icons.info_outline, 'label': 'Infos resto'},
-      {'icon': Icons.visibility_outlined, 'label': 'Prévisualiser'},
-      {'icon': Icons.settings_outlined, 'label': 'Paramètres'},
+      {'icon': Icons.info_outline, 'label': l10n.adminShellNavRestaurantInfo},
+      {
+        'icon': Icons.visibility_outlined,
+        'label': l10n.adminDashboardPreviewMenu
+      },
+      {'icon': Icons.settings_outlined, 'label': l10n.adminShellNavSettings},
     ];
-
     return SizedBox(
       height: 48, // Hauteur suffisante pour le contenu
       child: ListView.separated(
@@ -386,6 +395,8 @@ class AdminDashboardOverviewScreen extends StatelessWidget {
   }
 
   Widget _buildMicroCards(BuildContext context, Map<String, int> metrics) {
+    final l10n = AppLocalizations.of(context)!;
+
     return Column(
       children: [
         Row(
@@ -394,7 +405,7 @@ class AdminDashboardOverviewScreen extends StatelessWidget {
               child: _MicroCard(
                 icon: Icons.restaurant,
                 value: '${metrics['total']}',
-                label: 'Plats',
+                label: l10n.adminDashboardMetricDishes,
                 color: AdminTokens.primary600,
                 onTap: () {},
               ),
@@ -404,7 +415,7 @@ class AdminDashboardOverviewScreen extends StatelessWidget {
               child: _MicroCard(
                 icon: Icons.category_outlined,
                 value: '${metrics['categories']}',
-                label: 'Catégories',
+                label: l10n.adminDashboardMetricDishes,
                 color: AdminTokens.primary600,
                 onTap: () {},
               ),
@@ -418,7 +429,7 @@ class AdminDashboardOverviewScreen extends StatelessWidget {
               child: _MicroCard(
                 icon: Icons.image_outlined,
                 value: '${metrics['withImage']}',
-                label: 'Avec image',
+                label: l10n.adminDashboardMetricDishes,
                 color: Colors.green.shade600,
                 onTap: () {},
               ),
@@ -428,7 +439,7 @@ class AdminDashboardOverviewScreen extends StatelessWidget {
               child: _MicroCard(
                 icon: Icons.image_not_supported_outlined,
                 value: '${metrics['noImage']}',
-                label: 'Sans image',
+                label: l10n.adminDashboardMetricDishes,
                 color: metrics['noImage']! > 0
                     ? Colors.orange.shade600
                     : AdminTokens.neutral400,
@@ -443,6 +454,7 @@ class AdminDashboardOverviewScreen extends StatelessWidget {
 
   Widget _buildNoImageAlert(
       BuildContext context, int noImageCount, bool isTiny) {
+    final l10n = AppLocalizations.of(context)!;
     return Container(
       padding: const EdgeInsets.all(16),
       margin: const EdgeInsets.symmetric(horizontal: 4),
@@ -457,7 +469,7 @@ class AdminDashboardOverviewScreen extends StatelessWidget {
           const SizedBox(width: 12),
           Expanded(
             child: Text(
-              '$noImageCount éléments sans image',
+              l10n.adminDashboardItemsWithoutImage(noImageCount),
               style: TextStyle(
                 color: Colors.orange.shade900,
                 fontSize: 14,
@@ -475,7 +487,7 @@ class AdminDashboardOverviewScreen extends StatelessWidget {
               backgroundColor: Colors.orange.shade600,
               foregroundColor: Colors.white,
             ),
-            child: const Text('Corriger'),
+            child: Text(l10n.adminDashboardFix),
           ),
         ],
       ),
@@ -483,6 +495,7 @@ class AdminDashboardOverviewScreen extends StatelessWidget {
   }
 
   Widget _buildClientPreview(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(AdminTokens.space16),
@@ -497,8 +510,8 @@ class AdminDashboardOverviewScreen extends StatelessWidget {
           const Icon(Icons.visibility_outlined,
               color: AdminTokens.primary600, size: 20),
           const SizedBox(width: 12),
-          const Expanded(
-            child: Text('Voir votre menu côté client'),
+          Expanded(
+            child: Text(l10n.adminDashboardViewClientMenu),
           ),
           ElevatedButton(
             onPressed: () => _previewMenu(context),
@@ -510,7 +523,7 @@ class AdminDashboardOverviewScreen extends StatelessWidget {
                 borderRadius: BorderRadius.circular(AdminTokens.radius12),
               ),
             ),
-            child: const Text('Ouvrir'),
+            child: Text(l10n.commonOpen),
           ),
         ],
       ),
@@ -519,11 +532,12 @@ class AdminDashboardOverviewScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return AdminShell(
-      title: 'Dashboard',
+      title: l10n.adminDashboardTitle,
       restaurantId: restaurantId,
       activeRoute: '/dashboard',
-      breadcrumbs: const ['Dashboard'],
+      breadcrumbs: [l10n.adminDashboardTitle],
       child: StreamBuilder<QuerySnapshot>(
         stream: FirebaseFirestore.instance
             .collection('restaurants')
