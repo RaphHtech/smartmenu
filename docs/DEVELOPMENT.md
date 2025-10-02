@@ -602,7 +602,7 @@ adminSettings._ → (Phase 6C) Paramètres
 
 #### Ajout Nouvelles Clés Admin
 
-````bash
+```bash
 # 1. Ajouter dans les 3 ARB (EN/HE/FR)
 # lib/l10n/app_en.arb
 {
@@ -618,8 +618,12 @@ flutter gen-l10n
 # 3. Utiliser
 final l10n = AppLocalizations.of(context)!;
 Text(l10n.adminNewKey)
-Tests I18N Admin
-darttestWidgets('Admin sidebar displays in Hebrew', (tester) async {
+```
+
+#### Tests I18N Admin
+
+```dart
+testWidgets('Admin sidebar displays in Hebrew', (tester) async {
   await tester.pumpWidget(
     ChangeNotifierProvider(
       create: (_) => LanguageProvider()..setLocale(Locale('he')),
@@ -633,45 +637,67 @@ darttestWidgets('Admin sidebar displays in Hebrew', (tester) async {
 
   expect(find.text('לוח בקרה'), findsOneWidget); // "Dashboard" en hébreu
 });
-Règles Critiques
-Déclarer l10n dans chaque fonction :
-dartWidget _build(BuildContext context) {
+```
+
+### Règles Critiques
+
+#### Déclarer l10n dans chaque fonction :
+
+```dart
+Widget _build(BuildContext context) {
   final l10n = AppLocalizations.of(context)!;
   // ...
 }
-Jamais de const avec l10n :
-dart// ❌ ERREUR
+```
+
+#### Jamais de const avec l10n :
+
+```dart
+// ❌ ERREUR
 const Text(l10n.key)
 
 // ✅ CORRECT
 Text(l10n.key)
-ICU obligatoire pour pluriels :
-json"key": "{count, plural, =0{Aucun} one{Un} other{{count}}}"
-Placeholders typés :
-json"@key": {
+```
+
+#### ICU obligatoire pour pluriels :
+
+```json
+"key": "{count, plural, =0{Aucun} one{Un} other{{count}}}"
+```
+
+#### Placeholders typés :
+
+```json
+"@key": {
   "placeholders": {
     "name": {"type": "String"}
   }
 }
-Fichiers Clés
-ARB Files :
+```
+
+### Fichiers Clés
+
+#### ARB Files :
 
 lib/l10n/app_en.arb (template référence)
 lib/l10n/app_he.arb (hébreu RTL)
 lib/l10n/app_fr.arb (français)
 
-Config :
+#### Config :
 
 l10n.yaml (racine projet)
 pubspec.yaml (dépendances i18n)
 
-Services :
+#### Services :
 
 lib/services/language_service.dart (persistence)
 lib/state/language_provider.dart (Provider)
 
-Commandes Utiles
-bash# Régénérer après modification ARB
+#### Commandes Utiles
+
+```bash
+# Régénérer après modification ARB
 flutter gen-l10n
 
 # Tester compilation
@@ -685,25 +711,34 @@ R
 
 # Vérifier clés manquantes
 grep -r "l10n\." lib/screens/admin/ | grep -v "app_localizations"
-Problèmes Courants
+```
+
+#### Problèmes Courants
+
 Undefined name 'l10n'
 → Ajouter final l10n = AppLocalizations.of(context)!; au début de la fonction
 Invalid constant value
 → Enlever const devant widget utilisant l10n
-Clé non trouvée après gen-l10n
+
+#### Clé non trouvée après gen-l10n
+
 → Vérifier syntaxe JSON (virgules, guillemets)
 → Relancer flutter gen-l10n
-RTL cassé
+
+#### RTL cassé
+
 → Utiliser EdgeInsetsDirectional, Alignment.start/end
 → matchTextDirection: true sur icônes directionnelles
-Prochaine Session (Phase 6C)
+
+#### Prochaine Session (Phase 6C)
+
 Objectif : Compléter admin multilingue complet
 Plan suggéré :
-
 Orders screen (critique, 1h)
 Settings screen (important, 1h)
 Sélecteur langue admin (30 min)
 Media/Branding/Info si temps (bonus)
+
 ## Limitations Actuelles
 
 ### Scanner QR Mobile Web
@@ -726,7 +761,7 @@ git clone https://github.com/RaphHtech/smartmenu.git
 cd smartmenu
 flutter config --enable-web
 flutter pub get
-````
+```
 
 ### 2. Configuration Firebase
 
