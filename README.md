@@ -137,7 +137,7 @@ flutter run -d chrome
 
 ## État du projet
 
-**Version** : 4.0.0 - QR Code System Complete
+**Version** : 6.0.0 - Admin Multilingual Interface (Phase 6A-6B Complete)
 
 ### Phase 1 : Système QR Complet ✅
 
@@ -157,15 +157,20 @@ flutter run -d chrome
 - ✅ **Widgets traduits** : Menu, Header, Panier, Modale commande, Items, Badges
 - ✅ **95%+ interface client** traduite et fonctionnelle
 
+### Phase 6 : Interface Admin Multilingue (PARTIEL) ✅
+
+- ✅ **Sidebar navigation traduite** : Dashboard, Menu, Commandes, Médias, Branding, etc. (10 clés)
+- ✅ **Dashboard overview traduit** : Métriques, actions rapides, alertes avec pluriel ICU (18 clés)
+- ✅ **Menu screen traduit** : Filtres, recherche, catégories, CRUD actions (26 clés)
+- ✅ **Primitives communes** : add, edit, delete, search, cancel, save (10 clés)
+- ✅ **Total : 64 clés admin traduites EN/HE/FR**
+- ⏳ **Restant Phase 6C** : Orders, Settings, Media screens + sélecteur langue admin
+
 ### Prochaines phases
 
-- **Système commandes** temps réel avec notifications admin
-- **RBAC complet** (owner/manager/staff)
-- **Analytics avancées** (métriques conversion + insights)## Support et contact
-
-- **Développeur** : Raphaël Benitah
-- **Email** : rafaelbenitah@gmail.com
-- **Repository** : [GitHub](https://github.com/RaphHtech/smartmenu)
+- **Phase 6C** : Compléter traduction admin (Orders, Settings, Media + sélecteur langue)
+- **Analytics avancées** : Métriques conversion + insights
+- **RBAC complet** : owner/manager/staff avec permissions granulaires
 
 ## License
 

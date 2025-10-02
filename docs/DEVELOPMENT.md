@@ -549,27 +549,161 @@ static Future<void> setLocale(Locale locale) async {
 }
 ```
 
-### Tests I18N
+### Phase 6 : Traduction Interface Admin (Partiel)
 
-dart
+**Status Phase 6A-6B** : Complété (Décembre 2024)
 
-```
-testWidgets('Should display text in Hebrew', (tester) async {
+#### Écrans Traduits
+
+**✅ Complets :**
+
+- Sidebar navigation (10 clés)
+- Dashboard overview (18 clés avec ICU plurals)
+- Menu screen avec filtres (26 clés)
+- Primitives communes réutilisables (10 clés)
+
+**⏳ Restant Phase 6C :**
+
+- Formulaire édition plat (labels seulement, tabs déjà multilingues)
+- Orders screen (statuts, actions)
+- Settings screen (configuration)
+- Media screen (upload, gestion)
+- Branding screen (personnalisation)
+- Restaurant info screen (détails)
+- Sélecteur langue admin dans AdminShell
+
+#### Clés ARB Admin
+
+**Structure organisée par écran :**
+common._ → Primitives réutilisables (add, edit, delete, etc.)
+adminShell._ → Navigation sidebar + footer
+adminDashboard._ → Tableau de bord overview
+adminMenu._ → Écran liste plats
+adminOrders._ → (Phase 6C) Gestion commandes
+adminSettings._ → (Phase 6C) Paramètres
+
+#### Méthodologie Phase 6
+
+**Process itératif appliqué :**
+
+1. Inventaire strings par écran
+2. Création clés ARB (EN/HE/FR) avec descriptions
+3. Génération via `flutter gen-l10n`
+4. Remplacement hardcoded strings
+5. Test compilation + vérification langues
+6. Commit atomique par sous-phase
+
+**Convention nommage :**
+
+- `common.*` pour réutilisables cross-screen
+- `admin[Screen].*` pour écrans spécifiques
+- ICU plurals obligatoires : `{count, plural, =0{} one{} other{}}`
+- Placeholders typés : `{name}`, `{error}`
+
+#### Ajout Nouvelles Clés Admin
+
+````bash
+# 1. Ajouter dans les 3 ARB (EN/HE/FR)
+# lib/l10n/app_en.arb
+{
+  "adminNewKey": "English text",
+  "@adminNewKey": {
+    "description": "Context for translators"
+  }
+}
+
+# 2. Régénérer
+flutter gen-l10n
+
+# 3. Utiliser
+final l10n = AppLocalizations.of(context)!;
+Text(l10n.adminNewKey)
+Tests I18N Admin
+darttestWidgets('Admin sidebar displays in Hebrew', (tester) async {
   await tester.pumpWidget(
     ChangeNotifierProvider(
       create: (_) => LanguageProvider()..setLocale(Locale('he')),
       child: MaterialApp(
         localizationsDelegates: AppLocalizations.localizationsDelegates,
         supportedLocales: AppLocalizations.supportedLocales,
-        home: MyWidget(),
+        home: AdminShell(...),
       ),
     ),
   );
 
-  expect(find.text('תפריט'), findsOneWidget);  // "Menu" en hébreu
+  expect(find.text('לוח בקרה'), findsOneWidget); // "Dashboard" en hébreu
 });
-```
+Règles Critiques
+Déclarer l10n dans chaque fonction :
+dartWidget _build(BuildContext context) {
+  final l10n = AppLocalizations.of(context)!;
+  // ...
+}
+Jamais de const avec l10n :
+dart// ❌ ERREUR
+const Text(l10n.key)
 
+// ✅ CORRECT
+Text(l10n.key)
+ICU obligatoire pour pluriels :
+json"key": "{count, plural, =0{Aucun} one{Un} other{{count}}}"
+Placeholders typés :
+json"@key": {
+  "placeholders": {
+    "name": {"type": "String"}
+  }
+}
+Fichiers Clés
+ARB Files :
+
+lib/l10n/app_en.arb (template référence)
+lib/l10n/app_he.arb (hébreu RTL)
+lib/l10n/app_fr.arb (français)
+
+Config :
+
+l10n.yaml (racine projet)
+pubspec.yaml (dépendances i18n)
+
+Services :
+
+lib/services/language_service.dart (persistence)
+lib/state/language_provider.dart (Provider)
+
+Commandes Utiles
+bash# Régénérer après modification ARB
+flutter gen-l10n
+
+# Tester compilation
+flutter run -d chrome
+
+# Hot reload
+r
+
+# Restart complet
+R
+
+# Vérifier clés manquantes
+grep -r "l10n\." lib/screens/admin/ | grep -v "app_localizations"
+Problèmes Courants
+Undefined name 'l10n'
+→ Ajouter final l10n = AppLocalizations.of(context)!; au début de la fonction
+Invalid constant value
+→ Enlever const devant widget utilisant l10n
+Clé non trouvée après gen-l10n
+→ Vérifier syntaxe JSON (virgules, guillemets)
+→ Relancer flutter gen-l10n
+RTL cassé
+→ Utiliser EdgeInsetsDirectional, Alignment.start/end
+→ matchTextDirection: true sur icônes directionnelles
+Prochaine Session (Phase 6C)
+Objectif : Compléter admin multilingue complet
+Plan suggéré :
+
+Orders screen (critique, 1h)
+Settings screen (important, 1h)
+Sélecteur langue admin (30 min)
+Media/Branding/Info si temps (bonus)
 ## Limitations Actuelles
 
 ### Scanner QR Mobile Web
@@ -592,7 +726,7 @@ git clone https://github.com/RaphHtech/smartmenu.git
 cd smartmenu
 flutter config --enable-web
 flutter pub get
-```
+````
 
 ### 2. Configuration Firebase
 
