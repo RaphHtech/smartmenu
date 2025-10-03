@@ -137,7 +137,7 @@ flutter run -d chrome
 
 ## État du projet
 
-**Version** : 6.0.0 - Admin Multilingual Interface (Phase 6A-6B Complete)
+**Version** : 6.1.0 - Admin Interface Multilingual (Phase 6C Partial)
 
 ### Phase 1 : Système QR Complet ✅
 
@@ -150,27 +150,44 @@ flutter run -d chrome
 
 ### Phase 5 : Internationalisation RTL ✅ TERMINÉE
 
-- ✅ **Architecture i18n complète** : flutter_localizations + ARB files (60+ clés)
+- ✅ **Architecture i18n complète** : flutter_localizations + ARB files
 - ✅ **3 langues supportées** : Anglais, Hébreu (RTL), Français
 - ✅ **Sélecteur de langue** : Widget intégré avec persistence SharedPreferences
 - ✅ **RTL parfait** : Interface inversée automatique pour hébreu
-- ✅ **Widgets traduits** : Menu, Header, Panier, Modale commande, Items, Badges
 - ✅ **95%+ interface client** traduite et fonctionnelle
 
-### Phase 6 : Interface Admin Multilingue (PARTIEL) ✅
+### Phase 6 : Interface Admin Multilingue (80%) ✅
 
-- ✅ **Sidebar navigation traduite** : Dashboard, Menu, Commandes, Médias, Branding, etc. (10 clés)
-- ✅ **Dashboard overview traduit** : Métriques, actions rapides, alertes avec pluriel ICU (18 clés)
-- ✅ **Menu screen traduit** : Filtres, recherche, catégories, CRUD actions (26 clés)
-- ✅ **Primitives communes** : add, edit, delete, search, cancel, save (10 clés)
-- ✅ **Total : 64 clés admin traduites EN/HE/FR**
-- ⏳ **Restant Phase 6C** : Orders, Settings, Media screens + sélecteur langue admin
+**✅ Complété :**
+
+- **Sidebar navigation** : Dashboard, Menu, Commandes, Médias, Branding, Paramètres (10 clés)
+- **Dashboard overview** : Métriques, actions rapides, alertes avec pluriel ICU (18 clés)
+- **Menu screen** : Filtres, recherche, catégories, CRUD actions (26 clés)
+- **Orders screen** : Statuts, appels serveur, notifications (18 clés)
+- **Settings screen** : Configuration, QR generator, partage (53 clés)
+- **Sélecteur langue admin** : Intégré dans header (Phase 6C-4)
+- **Primitives communes** : add, edit, delete, search, cancel, save, share (11 clés)
+
+**Total Phase 6 : 136 clés admin traduites EN/HE/FR**
+
+**⏳ Restant (optionnel) :**
+
+- Media screen (~10 clés)
+- Branding screen (~10 clés)
+- Restaurant Info screen (~15 clés)
+
+### Statistiques i18n globales
+
+- **14 fichiers Dart traduits**
+- **~185 clés × 3 langues = 555 strings**
+- **Couverture** : Client 95%, Admin 80%
+- **Production-ready** pour restaurants internationaux
 
 ### Prochaines phases
 
-- **Phase 6C** : Compléter traduction admin (Orders, Settings, Media + sélecteur langue)
-- **Analytics avancées** : Métriques conversion + insights
-- **RBAC complet** : owner/manager/staff avec permissions granulaires
+- **Analytics multilingues** : Métriques et rapports traduits
+- **Emails notifications** : Templates EN/HE/FR
+- **Support langues supplémentaires** : ES, AR, DE, IT
 
 ## License
 

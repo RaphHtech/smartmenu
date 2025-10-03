@@ -534,91 +534,81 @@ static Future<void> setLocale(Locale locale) async {
 
 ### Phase 6 : Traduction Interface Admin (Partiel)
 
-**Status Phase 6A-6B** : Complété (Octobre 2025)
+### Phase 6C : Settings + Orders + Language Selector (Décembre 2024)
 
-#### Écrans Traduits
+**Status** : 80% complété
 
-**✅ Complets :**
+#### Écrans traduits
 
-- Sidebar navigation (10 clés)
-- Dashboard overview (18 clés avec ICU plurals)
-- Menu screen avec filtres (26 clés)
-- Primitives communes réutilisables (10 clés)
+**✅ Orders Screen :**
 
-**⏳ Restant Phase 6C :**
+- Statuts commandes avec workflow complet
+- Appels serveur avec banner responsive
+- Notifications temps réel
+- 18 clés + design system mis à jour (colorScheme)
 
-- Formulaire édition plat (labels seulement, tabs déjà multilingues)
-- Orders screen (statuts, actions)
-- Settings screen (configuration)
-- Media screen (upload, gestion)
-- Branding screen (personnalisation)
-- Restaurant info screen (détails)
-- Sélecteur langue admin dans AdminShell
+**✅ Settings Screen :**
 
-#### Clés ARB Admin
+- Configuration restaurant (nom, code)
+- QR Generator avec preview responsive
+- Share dialog multi-canal
+- 53 clés + internationalisation templates A5
 
-**Structure organisée par écran :**
-common._ → Primitives réutilisables (add, edit, delete, etc.)
-adminShell._ → Navigation sidebar + footer
-adminDashboard._ → Tableau de bord overview
-adminMenu._ → Écran liste plats
-adminOrders._ → (Phase 6C) Gestion commandes
-adminSettings._ → (Phase 6C) Paramètres
+**✅ Language Selector Admin :**
 
-#### Méthodologie Phase 6
+- Intégré dans AdminShell topbar
+- Position standard (coin supérieur droit)
+- Même composant que client (cohérence)
 
-**Process itératif appliqué :**
+#### Modifications design
 
-1. Inventaire strings par écran
-2. Création clés ARB (EN/HE/FR) avec descriptions
-3. Génération via `flutter gen-l10n`
-4. Remplacement hardcoded strings
-5. Test compilation + vérification langues
-6. Commit atomique par sous-phase
+**QRSize enum :**
 
-**Convention nommage :**
+- Labels anglicisés pour audience internationale
+- Small/Medium/Large/XLarge
 
-- `common.*` pour réutilisables cross-screen
-- `admin[Screen].*` pour écrans spécifiques
-- ICU plurals obligatoires : `{count, plural, =0{} one{} other{}}`
-- Placeholders typés : `{name}`, `{error}`
+**Templates et messages :**
 
-#### Ajout Nouvelles Clés Admin
+- A5 canvas template → Anglais
+- Share email/WhatsApp → Anglais
+- Meilleure portée internationale
 
-```bash
-# 1. Ajouter dans les 3 ARB (EN/HE/FR)
-# lib/l10n/app_en.arb
-{
-  "adminNewKey": "English text",
-  "@adminNewKey": {
-    "description": "Context for translators"
-  }
-}
+#### Améliorations UX
 
-# 2. Régénérer
-flutter gen-l10n
+**Responsive :**
 
-# 3. Utiliser
-final l10n = AppLocalizations.of(context)!;
-Text(l10n.adminNewKey)
-```
+- QR dialog adaptatif mobile/desktop
+- Share dialog compact (max-height: 400px)
+- Info rows verticales sur mobile (<400px)
 
-#### Tests I18N Admin
+**Design System :**
+
+- Migration vers `Theme.of(context).colorScheme.error`
+- Remplacement `Colors.red` hardcodé
+- `const Color(0xFF10B981)` pour success
+
+#### Testing i18n Admin
 
 ```dart
-testWidgets('Admin sidebar displays in Hebrew', (tester) async {
-  await tester.pumpWidget(
-    ChangeNotifierProvider(
-      create: (_) => LanguageProvider()..setLocale(Locale('he')),
-      child: MaterialApp(
-        localizationsDelegates: AppLocalizations.localizationsDelegates,
-        supportedLocales: AppLocalizations.supportedLocales,
-        home: AdminShell(...),
-      ),
-    ),
-  );
+// Tester changement langue admin
+testWidgets('Admin language selector updates all screens', (tester) async {
+  await tester.pumpWidget(AdminApp());
 
-  expect(find.text('לוח בקרה'), findsOneWidget); // "Dashboard" en hébreu
+  // Ouvrir sélecteur
+  await tester.tap(find.byType(LanguageSelectorWidget));
+  await tester.pumpAndSettle();
+
+  // Changer vers hébreu
+  await tester.tap(find.text('עברית'));
+  await tester.pumpAndSettle();
+
+  // Vérifier sidebar
+  expect(find.text('לוח בקרה'), findsOneWidget);
+
+  // Vérifier settings screen
+  await tester.tap(find.text('הגדרות'));
+  await tester.pumpAndSettle();
+  expect(find.text('שם המסעדה'), findsOneWidget);
 });
 ```
 
