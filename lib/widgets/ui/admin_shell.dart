@@ -13,6 +13,7 @@ import '../../screens/admin/admin_media_screen.dart';
 import '../../screens/admin/admin_settings_screen.dart';
 import '../../screens/admin/admin_restaurant_info_screen.dart';
 import '../../widgets/ui/admin_themed.dart';
+import '../../widgets/language_selector_widget.dart';
 
 /// Layout principal pour l'interface admin avec sidebar + topbar
 /// Interface SaaS professionnelle inspirée de Notion, Linear, Stripe
@@ -408,85 +409,246 @@ class _AdminShellState extends State<AdminShell> {
 
   Widget _buildTopbar() {
     return ValueListenableBuilder<bool>(
-        valueListenable: _breakpointController,
-        builder: (context, isDesktop, child) {
-          return Container(
-            height: AdminTokens.topbarHeight,
-            decoration: const BoxDecoration(
-              color: Colors.white,
-              border: Border(
-                bottom: BorderSide(
-                  color: AdminTokens.neutral200,
-                  width: 1,
+      valueListenable: _breakpointController,
+      builder: (context, isDesktop, child) {
+        return Container(
+          height: AdminTokens.topbarHeight,
+          decoration: const BoxDecoration(
+            color: Colors.white,
+            border: Border(
+              bottom: BorderSide(
+                color: AdminTokens.neutral200,
+                width: 1,
+              ),
+            ),
+          ),
+          child: Padding(
+            padding: EdgeInsets.symmetric(
+              horizontal: isDesktop ? AdminTokens.space24 : AdminTokens.space12,
+            ),
+            child: Row(
+              children: [
+                // Navigation
+                Builder(
+                  builder: (context) {
+                    final canPop = Navigator.of(context).canPop();
+                    final showBack = (_currentRoute != '/dashboard') && canPop;
+
+                    if (!isDesktop) {
+                      return IconButton(
+                        icon: Icon(
+                            showBack ? Icons.arrow_back_ios_new : Icons.menu),
+                        iconSize: 20,
+                        padding: EdgeInsets.zero,
+                        constraints: const BoxConstraints(
+                          minWidth: 40,
+                          minHeight: 40,
+                        ),
+                        onPressed: () => showBack
+                            ? Navigator.maybePop(context)
+                            : _scaffoldKey.currentState?.openDrawer(),
+                      );
+                    }
+
+                    if (showBack) {
+                      return IconButton(
+                        icon: const Icon(Icons.arrow_back_ios_new),
+                        iconSize: 20,
+                        padding: EdgeInsets.zero,
+                        onPressed: () => Navigator.maybePop(context),
+                      );
+                    }
+                    return const SizedBox.shrink();
+                  },
                 ),
-              ),
-            ),
-            child: Padding(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: AdminTokens.space24),
-              child: Row(
-                children: [
-                  // Menu burger pour mobile
-                  // Leading (back ou burger)
-                  Builder(
-                    builder: (context) {
-                      final canPop = Navigator.of(context).canPop();
 
-                      // ✅ Utiliser activeRoute en priorité pour déterminer showBack
-                      final currentRoute = _currentRoute;
-                      final showBack =
-                          (currentRoute == '/dashboard') ? false : canPop;
-                      if (!isDesktop) {
-                        return IconButton(
-                          icon: Icon(
-                              showBack ? Icons.arrow_back_ios_new : Icons.menu),
-                          onPressed: () => showBack
-                              ? Navigator.maybePop(context)
-                              : _scaffoldKey.currentState?.openDrawer(),
-                        );
-                      }
+                SizedBox(width: isDesktop ? 16 : 12),
 
-                      if (showBack) {
-                        return IconButton(
-                          icon: const Icon(Icons.arrow_back_ios_new),
-                          onPressed: () => Navigator.maybePop(context),
-                        );
-                      }
-                      return const SizedBox.shrink();
-                    },
+                // TITRE
+                Expanded(
+                  child: Text(
+                    widget.title,
+                    style: isDesktop
+                        ? AdminTypography.headlineLarge.copyWith(
+                            fontWeight: FontWeight.w600,
+                          )
+                        : AdminTypography.headlineMedium.copyWith(
+                            fontWeight: FontWeight.w600,
+                          ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                   ),
+                ),
 
-                  // Titre adaptatif selon largeur
-                  Flexible(
-                    child: Text(
-                      widget.title,
-                      style: MediaQuery.of(context).size.width < 400
-                          ? AdminTypography.bodyLarge
-                          : MediaQuery.of(context).size.width < 600
-                              ? AdminTypography.headlineMedium
-                              : AdminTypography.headlineLarge,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ),
+                SizedBox(width: isDesktop ? 16 : 8),
 
-                  const Spacer(),
-
-                  // Actions personnalisées
-                  if (widget.actions != null) ...widget.actions!,
-
-                  // Sur mobile, quand on a "retour", on offre aussi un accès au menu (drawer)
-                  if (isDesktop && Navigator.of(context).canPop())
-                    IconButton(
-                      icon: const Icon(Icons.menu),
-                      tooltip: 'Menu',
-                      onPressed: () => _scaffoldKey.currentState?.openDrawer(),
-                    ),
+                // ACTIONS CUSTOM (bouton +, burger ⋮, etc.) - TOUJOURS AFFICHÉES
+                if (widget.actions != null) ...[
+                  ...widget.actions!,
+                  SizedBox(width: isDesktop ? 12 : 8),
                 ],
-              ),
+
+                // DESKTOP: Langue + Avatar
+                if (isDesktop) ...[
+                  Container(
+                    width: 1,
+                    height: 24,
+                    color: AdminTokens.neutral200,
+                  ),
+                  const SizedBox(width: 16),
+                  const LanguageSelectorWidget(),
+                  const SizedBox(width: 16),
+                  CircleAvatar(
+                    radius: 16,
+                    backgroundColor: AdminTokens.primary50,
+                    child: Text(
+                      (_currentUser?.email?.substring(0, 1).toUpperCase()) ??
+                          'U',
+                      style: AdminTypography.labelMedium.copyWith(
+                        color: AdminTokens.primary600,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+                ],
+
+                // MOBILE: Mini menu système (juste langue)
+                if (!isDesktop)
+                  PopupMenuButton<String>(
+                    icon: const Icon(Icons.language, size: 20),
+                    padding: EdgeInsets.zero,
+                    constraints: const BoxConstraints(
+                      minWidth: 40,
+                      minHeight: 40,
+                    ),
+                    tooltip: AppLocalizations.of(context)!.commonLanguage,
+                    onSelected: (value) {
+                      if (value == 'language') {
+                        _showLanguageDialog(context);
+                      }
+                    },
+                    itemBuilder: (context) => [
+                      PopupMenuItem<String>(
+                        value: 'language',
+                        child: Row(
+                          children: [
+                            const Text('🌐', style: TextStyle(fontSize: 20)),
+                            const SizedBox(width: 12),
+                            Text(AppLocalizations.of(context)!.commonLanguage),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+              ],
             ),
-          );
-        });
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildMobileMenu(BuildContext context) {
+    return PopupMenuButton<String>(
+      icon: const Icon(Icons.more_vert, size: 20),
+      padding: EdgeInsets.zero,
+      constraints: const BoxConstraints(
+        minWidth: 40,
+        minHeight: 40,
+      ),
+      onSelected: (value) {
+        if (value == 'language') {
+          _showLanguageDialog(context);
+        }
+        // Actions custom sont gérées par leurs index
+        else if (value.startsWith('action_')) {
+          final index = int.parse(value.split('_')[1]);
+          if (widget.actions != null && index < widget.actions!.length) {
+            final action = widget.actions![index];
+            if (action is IconButton && action.onPressed != null) {
+              // Délai pour laisser le menu se fermer
+              Future.delayed(const Duration(milliseconds: 100), () {
+                action.onPressed!();
+              });
+            }
+          }
+        }
+      },
+      itemBuilder: (context) {
+        final items = <PopupMenuEntry<String>>[];
+
+        // Extraire les actions custom
+        if (widget.actions != null) {
+          for (int i = 0; i < widget.actions!.length; i++) {
+            final action = widget.actions![i];
+            if (action is IconButton) {
+              IconData? icon;
+              String label = 'Action';
+
+              // Extraire l'icône
+              if (action.icon is Icon) {
+                icon = (action.icon as Icon).icon;
+              }
+
+              // Utiliser le tooltip comme label
+              if (action.tooltip != null) {
+                label = action.tooltip!;
+              }
+
+              items.add(
+                PopupMenuItem<String>(
+                  value: 'action_$i',
+                  child: Row(
+                    children: [
+                      Icon(icon ?? Icons.add, size: 20),
+                      const SizedBox(width: 12),
+                      Text(label),
+                    ],
+                  ),
+                ),
+              );
+            }
+          }
+
+          if (items.isNotEmpty) {
+            items.add(const PopupMenuDivider());
+          }
+        }
+
+        // Langue
+        items.add(
+          PopupMenuItem<String>(
+            value: 'language',
+            child: Row(
+              children: [
+                const Text('🌐', style: TextStyle(fontSize: 20)),
+                const SizedBox(width: 12),
+                Text(AppLocalizations.of(context)!.commonLanguage),
+              ],
+            ),
+          ),
+        );
+
+        return items;
+      },
+    );
+  }
+
+  void _showLanguageDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(AppLocalizations.of(context)!.commonLanguage),
+        contentPadding: const EdgeInsets.symmetric(vertical: 20),
+        content: const LanguageSelectorWidget(),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text(AppLocalizations.of(context)!.commonClose),
+          ),
+        ],
+      ),
+    );
   }
 
   Widget _buildBreadcrumbs() {
