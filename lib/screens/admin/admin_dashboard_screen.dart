@@ -123,7 +123,6 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
 
   Widget _buildEditableCategoryBar(CategoryLiveState state) {
     final l10n = AppLocalizations.of(context)!;
-
     final categoriesOrder = state.order;
     final categoriesHidden = state.hidden;
     final allCategories = {...state.counts.keys, ...categoriesOrder};

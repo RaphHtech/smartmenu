@@ -644,5 +644,136 @@
   "adminMenuCategoryUpdated": "הקטגוריה עודכנה.",
   "@adminMenuCategoryUpdated": {
     "description": "Category update success message"
+  },
+
+  "adminOrdersTitle": "הזמנות",
+  "@adminOrdersTitle": {
+    "description": "Orders screen title"
+  },
+
+  "adminOrdersReceived": "התקבלה",
+  "@adminOrdersReceived": {
+    "description": "Status: order received"
+  },
+
+  "adminOrdersPreparing": "בהכנה",
+  "@adminOrdersPreparing": {
+    "description": "Status: order in preparation"
+  },
+
+  "adminOrdersReady": "מוכנה",
+  "@adminOrdersReady": {
+    "description": "Status: order ready"
+  },
+
+  "adminOrdersServed": "הוגשה",
+  "@adminOrdersServed": {
+    "description": "Status: order served"
+  },
+
+  "adminOrdersTable": "שולחן {number}",
+  "@adminOrdersTable": {
+    "description": "Table number label",
+    "placeholders": {
+      "number": {
+        "type": "String",
+        "example": "5"
+      }
+    }
+  },
+
+  "adminOrdersItems": "{count, plural, =1{פריט אחד} other{{count} פריטים}}",
+  "@adminOrdersItems": {
+    "description": "Number of items in order",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "3"
+      }
+    }
+  },
+
+  "adminOrdersMarkPreparing": "התחל הכנה",
+  "@adminOrdersMarkPreparing": {
+    "description": "Action: mark order as preparing"
+  },
+
+  "adminOrdersMarkReady": "סמן מוכנה",
+  "@adminOrdersMarkReady": {
+    "description": "Action: mark order as ready"
+  },
+
+  "adminOrdersMarkServed": "סמן הוגשה",
+  "@adminOrdersMarkServed": {
+    "description": "Action: mark order as served"
+  },
+
+  "adminOrdersNoOrders": "אין הזמנות",
+  "@adminOrdersNoOrders": {
+    "description": "Empty state for orders tab"
+  },
+
+  "adminOrdersTotal": "סה״כ",
+  "@adminOrdersTotal": {
+    "description": "Order total label"
+  },
+
+  "adminOrdersServerCall": "קריאה משולחן {table}",
+  "@adminOrdersServerCall": {
+    "description": "Server call notification",
+    "placeholders": {
+      "table": {
+        "type": "String",
+        "example": "5"
+      }
+    }
+  },
+
+  "adminOrdersAcknowledge": "אישור קבלה",
+  "@adminOrdersAcknowledge": {
+    "description": "Action: acknowledge server call"
+  },
+
+  "adminOrdersResolve": "סגור קריאה",
+  "@adminOrdersResolve": {
+    "description": "Action: resolve server call"
+  },
+
+  "adminOrdersJustNow": "ממש עכשיו",
+  "@adminOrdersJustNow": {
+    "description": "Time indicator: just now"
+  },
+
+  "adminOrdersMinutesAgo": "{count, plural, =1{לפני דקה} other{לפני {count} דקות}}",
+  "@adminOrdersMinutesAgo": {
+    "description": "Time indicator: minutes ago",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "5"
+      }
+    }
+  },
+
+  "adminOrdersStatusUpdated": "ההזמנה עודכנה: {status}",
+"@adminOrdersStatusUpdated": {
+  "description": "Success message after status update",
+  "placeholders": {
+    "status": {
+      "type": "String",
+      "example": "מוכנה"
+    }
+  }
+},
+
+"adminOrdersServerCallBody": "{table} זקוק לסיוע",
+  "@adminOrdersServerCallBody": {
+    "description": "Server call notification body",
+    "placeholders": {
+      "table": {
+        "type": "String",
+        "example": "שולחן 5"
+      }
+    }
   }
 }

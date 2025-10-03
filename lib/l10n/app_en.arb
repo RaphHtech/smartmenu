@@ -644,5 +644,136 @@
   "adminMenuCategoryUpdated": "Category updated.",
   "@adminMenuCategoryUpdated": {
     "description": "Category update success message"
+  },
+
+  "adminOrdersTitle": "Orders",
+  "@adminOrdersTitle": {
+    "description": "Orders screen title"
+  },
+
+  "adminOrdersReceived": "Received",
+  "@adminOrdersReceived": {
+    "description": "Status: order received"
+  },
+
+  "adminOrdersPreparing": "Preparing",
+  "@adminOrdersPreparing": {
+    "description": "Status: order in preparation"
+  },
+
+  "adminOrdersReady": "Ready",
+  "@adminOrdersReady": {
+    "description": "Status: order ready"
+  },
+
+  "adminOrdersServed": "Served",
+  "@adminOrdersServed": {
+    "description": "Status: order served"
+  },
+
+  "adminOrdersTable": "Table {number}",
+  "@adminOrdersTable": {
+    "description": "Table number label",
+    "placeholders": {
+      "number": {
+        "type": "String",
+        "example": "5"
+      }
+    }
+  },
+
+  "adminOrdersItems": "{count, plural, =1{1 item} other{{count} items}}",
+  "@adminOrdersItems": {
+    "description": "Number of items in order",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "3"
+      }
+    }
+  },
+
+  "adminOrdersMarkPreparing": "Start preparing",
+  "@adminOrdersMarkPreparing": {
+    "description": "Action: mark order as preparing"
+  },
+
+  "adminOrdersMarkReady": "Mark ready",
+  "@adminOrdersMarkReady": {
+    "description": "Action: mark order as ready"
+  },
+
+  "adminOrdersMarkServed": "Mark served",
+  "@adminOrdersMarkServed": {
+    "description": "Action: mark order as served"
+  },
+
+  "adminOrdersNoOrders": "No orders",
+  "@adminOrdersNoOrders": {
+    "description": "Empty state for orders tab"
+  },
+
+  "adminOrdersTotal": "Total",
+  "@adminOrdersTotal": {
+    "description": "Order total label"
+  },
+
+  "adminOrdersServerCall": "Server call from Table {table}",
+  "@adminOrdersServerCall": {
+    "description": "Server call notification",
+    "placeholders": {
+      "table": {
+        "type": "String",
+        "example": "5"
+      }
+    }
+  },
+
+  "adminOrdersAcknowledge": "Acknowledge",
+  "@adminOrdersAcknowledge": {
+    "description": "Action: acknowledge server call"
+  },
+
+  "adminOrdersResolve": "Resolve",
+  "@adminOrdersResolve": {
+    "description": "Action: resolve server call"
+  },
+
+  "adminOrdersJustNow": "Just now",
+  "@adminOrdersJustNow": {
+    "description": "Time indicator: just now"
+  },
+
+  "adminOrdersMinutesAgo": "{count, plural, =1{1 min ago} other{{count} min ago}}",
+  "@adminOrdersMinutesAgo": {
+    "description": "Time indicator: minutes ago",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "5"
+      }
+    }
+  },
+
+  "adminOrdersStatusUpdated": "Order updated: {status}",
+"@adminOrdersStatusUpdated": {
+  "description": "Success message after status update",
+  "placeholders": {
+    "status": {
+      "type": "String",
+      "example": "Ready"
+    }
+  }
+},
+
+"adminOrdersServerCallBody": "{table} needs assistance",
+  "@adminOrdersServerCallBody": {
+    "description": "Server call notification body",
+    "placeholders": {
+      "table": {
+        "type": "String",
+        "example": "Table 5"
+      }
+    }
   }
 }

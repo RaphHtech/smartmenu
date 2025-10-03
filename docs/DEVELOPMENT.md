@@ -415,8 +415,8 @@ lib/
 
 l10n.yaml (racine du projet) :
 
-```
-yamlarb-dir: lib/l10n
+```yaml
+arb-dir: lib/l10n
 template-arb-file: app_en.arb
 output-localization-file: app_localizations.dart
 synthetic-package: false
@@ -424,9 +424,7 @@ synthetic-package: false
 
 ### Génération Traductions
 
-bash
-
-```
+```bash
 # Après modification des fichiers ARB
 flutter gen-l10n
 
@@ -438,9 +436,7 @@ ls lib/l10n/app_localizations*.dart
 
 #### Import et helper :
 
-dart
-
-```
+```dart
 import '../../l10n/app_localizations.dart';
 
 class MyWidget extends StatelessWidget {
@@ -455,9 +451,7 @@ class MyWidget extends StatelessWidget {
 
 #### Avec placeholders :
 
-dart
-
-```
+```dart
 // ARB
 {
   "itemAddedToCart": "{itemName} ajouté au panier !",
@@ -476,9 +470,7 @@ Text(_l10n(context).itemAddedToCart("Pizza Margherita"));
 
 #### Configuration automatique via MaterialApp :
 
-dart
-
-```
+```dart
 MaterialApp(
   localizationsDelegates: AppLocalizations.localizationsDelegates,
   supportedLocales: AppLocalizations.supportedLocales,
@@ -488,9 +480,8 @@ MaterialApp(
 
 #### Directionality adaptative :
 
-dart
-
-```// Détection automatique
+```dart
+// Détection automatique
 final isRTL = Directionality.of(context) == TextDirection.rtl;
 
 // Icônes directionnelles
@@ -507,9 +498,7 @@ EdgeInsetsDirectional.only(start: 16, end: 8)
 
 #### Ajouter clé dans les 3 ARB :
 
-json
-
-```
+```json
 // app_en.arb
 {
   "newKey": "English text",
@@ -521,17 +510,13 @@ json
 
 #### Régénérer :
 
-bash
-
-```
+```bash
 flutter gen-l10n
 ```
 
 #### Utiliser :
 
-dart
-
-```
+```dart
 Text(_l10n(context).newKey)
 ```
 
@@ -539,9 +524,7 @@ Text(_l10n(context).newKey)
 
 #### Le système sauvegarde la préférence dans SharedPreferences :
 
-dart
-
-```
+```dart
 // LanguageService
 static Future<void> setLocale(Locale locale) async {
   final prefs = await SharedPreferences.getInstance();
@@ -551,7 +534,7 @@ static Future<void> setLocale(Locale locale) async {
 
 ### Phase 6 : Traduction Interface Admin (Partiel)
 
-**Status Phase 6A-6B** : Complété (Décembre 2024)
+**Status Phase 6A-6B** : Complété (Octobre 2025)
 
 #### Écrans Traduits
 
@@ -1262,21 +1245,6 @@ Widget _buildResponsive() {
 }
 ```
 
-## Design System Client
-
-### ClientTokens Usage
-
-**Espacements standardisés :**
-
-````dart
-// ✅ Utiliser
-EdgeInsets.all(ClientTokens.space16)
-const SizedBox(width: ClientTokens.space12)
-
-// ❌ Éviter
-EdgeInsets.all(16)
-const SizedBox(width: 12)
-
 ## Performance
 
 ### Optimisations Build
@@ -1292,7 +1260,7 @@ flutter build web --source-maps
 
 # Analyse bundle size
 flutter build web --analyze-size
-````
+```
 
 ### Patterns Performance
 

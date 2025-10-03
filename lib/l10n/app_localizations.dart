@@ -813,6 +813,120 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Category updated.'**
   String get adminMenuCategoryUpdated;
+
+  /// Orders screen title
+  ///
+  /// In en, this message translates to:
+  /// **'Orders'**
+  String get adminOrdersTitle;
+
+  /// Status: order received
+  ///
+  /// In en, this message translates to:
+  /// **'Received'**
+  String get adminOrdersReceived;
+
+  /// Status: order in preparation
+  ///
+  /// In en, this message translates to:
+  /// **'Preparing'**
+  String get adminOrdersPreparing;
+
+  /// Status: order ready
+  ///
+  /// In en, this message translates to:
+  /// **'Ready'**
+  String get adminOrdersReady;
+
+  /// Status: order served
+  ///
+  /// In en, this message translates to:
+  /// **'Served'**
+  String get adminOrdersServed;
+
+  /// Table number label
+  ///
+  /// In en, this message translates to:
+  /// **'Table {number}'**
+  String adminOrdersTable(String number);
+
+  /// Number of items in order
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 item} other{{count} items}}'**
+  String adminOrdersItems(int count);
+
+  /// Action: mark order as preparing
+  ///
+  /// In en, this message translates to:
+  /// **'Start preparing'**
+  String get adminOrdersMarkPreparing;
+
+  /// Action: mark order as ready
+  ///
+  /// In en, this message translates to:
+  /// **'Mark ready'**
+  String get adminOrdersMarkReady;
+
+  /// Action: mark order as served
+  ///
+  /// In en, this message translates to:
+  /// **'Mark served'**
+  String get adminOrdersMarkServed;
+
+  /// Empty state for orders tab
+  ///
+  /// In en, this message translates to:
+  /// **'No orders'**
+  String get adminOrdersNoOrders;
+
+  /// Order total label
+  ///
+  /// In en, this message translates to:
+  /// **'Total'**
+  String get adminOrdersTotal;
+
+  /// Server call notification
+  ///
+  /// In en, this message translates to:
+  /// **'Server call from Table {table}'**
+  String adminOrdersServerCall(String table);
+
+  /// Action: acknowledge server call
+  ///
+  /// In en, this message translates to:
+  /// **'Acknowledge'**
+  String get adminOrdersAcknowledge;
+
+  /// Action: resolve server call
+  ///
+  /// In en, this message translates to:
+  /// **'Resolve'**
+  String get adminOrdersResolve;
+
+  /// Time indicator: just now
+  ///
+  /// In en, this message translates to:
+  /// **'Just now'**
+  String get adminOrdersJustNow;
+
+  /// Time indicator: minutes ago
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 min ago} other{{count} min ago}}'**
+  String adminOrdersMinutesAgo(int count);
+
+  /// Success message after status update
+  ///
+  /// In en, this message translates to:
+  /// **'Order updated: {status}'**
+  String adminOrdersStatusUpdated(String status);
+
+  /// Server call notification body
+  ///
+  /// In en, this message translates to:
+  /// **'{table} needs assistance'**
+  String adminOrdersServerCallBody(String table);
 }
 
 class _AppLocalizationsDelegate

@@ -10,6 +10,7 @@ import '../../core/design/admin_typography.dart';
 import 'dart:html' as html;
 import 'package:flutter/foundation.dart' show kIsWeb;
 import '../../services/server_call_service.dart';
+import '../../l10n/app_localizations.dart';
 
 class AdminOrdersScreen extends StatefulWidget {
   final String restaurantId;
@@ -79,8 +80,9 @@ class _AdminOrdersScreenState extends State<AdminOrdersScreen>
         final currency = (data['currency'] ?? '').toString();
 
         _playDing();
-        _notifyDesktop('Nouvelle commande',
-            'Table $table · $items item(s) · $total $currency');
+        final l10n = AppLocalizations.of(context)!;
+        _notifyDesktop(l10n.adminOrdersTitle,
+            '${l10n.adminOrdersTable(table)} · ${l10n.adminOrdersItems(items)} · $total $currency');
       }
     });
   }
@@ -92,16 +94,17 @@ class _AdminOrdersScreenState extends State<AdminOrdersScreen>
     super.dispose();
   }
 
-  String _getStatusLabel(models.OrderStatus status) {
+  String _getStatusLabel(BuildContext context, models.OrderStatus status) {
+    final l10n = AppLocalizations.of(context)!;
     switch (status) {
       case models.OrderStatus.received:
-        return 'Reçues';
+        return l10n.adminOrdersReceived;
       case models.OrderStatus.preparing:
-        return 'Préparation';
+        return l10n.adminOrdersPreparing;
       case models.OrderStatus.ready:
-        return 'Prêtes';
+        return l10n.adminOrdersReady;
       case models.OrderStatus.served:
-        return 'Servies';
+        return l10n.adminOrdersServed;
     }
   }
 
@@ -119,6 +122,8 @@ class _AdminOrdersScreenState extends State<AdminOrdersScreen>
   }
 
   Widget _buildServerCallsBanner() {
+    final l10n = AppLocalizations.of(context)!;
+
     return StreamBuilder<List<ServerCall>>(
       stream: ServerCallService.getServerCalls(widget.restaurantId),
       builder: (context, snapshot) {
@@ -152,7 +157,7 @@ class _AdminOrdersScreenState extends State<AdminOrdersScreen>
                       color: Colors.orange.shade700, size: 20),
                   const SizedBox(width: 8),
                   Text(
-                    'Appels serveur (${openCalls.length})',
+                    '${l10n.adminOrdersServerCall(openCalls.length.toString())} (${openCalls.length})',
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
                       color: Colors.orange.shade700,
@@ -172,10 +177,11 @@ class _AdminOrdersScreenState extends State<AdminOrdersScreen>
 // Dans admin_orders_screen.dart, remplacer la méthode _buildServerCallCard par :
 
   Widget _buildServerCallCard(ServerCall call) {
+    final l10n = AppLocalizations.of(context)!;
     final elapsed = DateTime.now().difference(call.createdAt);
     final timeAgo = elapsed.inMinutes > 0
-        ? 'il y a ${elapsed.inMinutes}min'
-        : 'à l\'instant';
+        ? l10n.adminOrdersMinutesAgo(elapsed.inMinutes)
+        : l10n.adminOrdersJustNow;
 
     return Container(
       margin: const EdgeInsets.only(bottom: 8),
@@ -204,7 +210,7 @@ class _AdminOrdersScreenState extends State<AdminOrdersScreen>
               const SizedBox(width: 12),
               Expanded(
                 child: Text(
-                  '${call.table} • $timeAgo',
+                  '${l10n.adminOrdersTable(call.table.replaceAll('table', ''))} • $timeAgo',
                   style: const TextStyle(
                     fontWeight: FontWeight.w500,
                     fontSize: 14,
@@ -229,7 +235,7 @@ class _AdminOrdersScreenState extends State<AdminOrdersScreen>
                         padding: const EdgeInsets.only(bottom: 8),
                         child: OutlinedButton(
                           onPressed: () => _acknowledgeServerCall(call.id),
-                          child: const Text('Pris en compte'),
+                          child: Text(l10n.adminOrdersAcknowledge),
                         ),
                       ),
                     ElevatedButton(
@@ -237,8 +243,8 @@ class _AdminOrdersScreenState extends State<AdminOrdersScreen>
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.green,
                       ),
-                      child: const Text('Résolu',
-                          style: TextStyle(color: Colors.white)),
+                      child: Text(l10n.adminOrdersResolve,
+                          style: const TextStyle(color: Colors.white)),
                     ),
                   ],
                 );
@@ -250,8 +256,8 @@ class _AdminOrdersScreenState extends State<AdminOrdersScreen>
                     if (call.status == 'open')
                       TextButton(
                         onPressed: () => _acknowledgeServerCall(call.id),
-                        child: const Text('Pris en compte',
-                            style: TextStyle(fontSize: 12)),
+                        child: Text(l10n.adminOrdersAcknowledge,
+                            style: const TextStyle(fontSize: 12)),
                       ),
                     const SizedBox(width: 8),
                     ElevatedButton(
@@ -261,8 +267,9 @@ class _AdminOrdersScreenState extends State<AdminOrdersScreen>
                         padding: const EdgeInsets.symmetric(
                             horizontal: 12, vertical: 6),
                       ),
-                      child: const Text('Résolu',
-                          style: TextStyle(fontSize: 12, color: Colors.white)),
+                      child: Text(l10n.adminOrdersResolve,
+                          style: const TextStyle(
+                              fontSize: 12, color: Colors.white)),
                     ),
                   ],
                 );
@@ -275,21 +282,29 @@ class _AdminOrdersScreenState extends State<AdminOrdersScreen>
   } // 4. AJOUTER les méthodes d'action
 
   Future<void> _acknowledgeServerCall(String callId) async {
+    final l10n = AppLocalizations.of(context)!;
+
     try {
       await ServerCallService.acknowledgeCall(widget.restaurantId, callId);
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Erreur: $e'), backgroundColor: Colors.red),
+        SnackBar(
+            content: Text(l10n.commonError(e.toString())),
+            backgroundColor: Theme.of(context).colorScheme.error),
       );
     }
   }
 
   Future<void> _resolveServerCall(String callId) async {
+    final l10n = AppLocalizations.of(context)!;
+
     try {
       await ServerCallService.closeCall(widget.restaurantId, callId);
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Erreur: $e'), backgroundColor: Colors.red),
+        SnackBar(
+            content: Text(l10n.commonError(e.toString())),
+            backgroundColor: Theme.of(context).colorScheme.error),
       );
     }
   }
@@ -320,11 +335,12 @@ class _AdminOrdersScreenState extends State<AdminOrdersScreen>
   }
 
   void _notifyServerCall(String table) {
+    final l10n = AppLocalizations.of(context)!;
     if (html.Notification.supported &&
         html.Notification.permission == 'granted') {
       html.Notification(
-        'Appel serveur - SmartMenu',
-        body: '$table demande de l\'assistance',
+        l10n.adminOrdersServerCall(table.replaceAll('table', '')),
+        body: l10n.adminOrdersServerCallBody(table),
         icon: '/favicon.png',
       );
     }
@@ -334,11 +350,12 @@ class _AdminOrdersScreenState extends State<AdminOrdersScreen>
   Widget build(BuildContext context) {
     final isCompact = MediaQuery.of(context).size.width < 420;
 
+    final l10n = AppLocalizations.of(context)!;
     return AdminShell(
-      title: 'Commandes',
+      title: l10n.adminOrdersTitle,
       restaurantId: widget.restaurantId,
       activeRoute: '/orders',
-      breadcrumbs: const ['Dashboard', 'Commandes'],
+      breadcrumbs: [l10n.adminDashboardTitle, l10n.adminOrdersTitle],
       child: Column(
         children: [
           _buildServerCallsBanner(),
@@ -363,14 +380,12 @@ class _AdminOrdersScreenState extends State<AdminOrdersScreen>
                 indicatorSize: TabBarIndicatorSize.label,
                 labelPadding: const EdgeInsets.symmetric(horizontal: 12),
                 tabs: [
-                  _statusTab(isCompact ? 'Reçues' : 'Reçues',
-                      models.OrderStatus.received),
-                  _statusTab(isCompact ? 'Prépa.' : 'Préparation',
-                      models.OrderStatus.preparing),
-                  _statusTab(isCompact ? 'Prêtes' : 'Prêtes',
-                      models.OrderStatus.ready),
-                  _statusTab(isCompact ? 'Servies' : 'Servies',
-                      models.OrderStatus.served),
+                  _statusTab(
+                      l10n.adminOrdersReceived, models.OrderStatus.received),
+                  _statusTab(
+                      l10n.adminOrdersPreparing, models.OrderStatus.preparing),
+                  _statusTab(l10n.adminOrdersReady, models.OrderStatus.ready),
+                  _statusTab(l10n.adminOrdersServed, models.OrderStatus.served),
                 ],
               ),
             ),
@@ -393,13 +408,15 @@ class _AdminOrdersScreenState extends State<AdminOrdersScreen>
   }
 
   Widget _buildOrdersList(models.OrderStatus status) {
+    final l10n = AppLocalizations.of(context)!;
+
     return StreamBuilder<List<models.Order>>(
       stream: OrderService.getOrdersByStatusStream(widget.restaurantId, status),
       builder: (context, snapshot) {
         if (snapshot.hasError) {
           return Center(
             child: Text(
-              'Erreur: ${snapshot.error}',
+              l10n.commonError(snapshot.error.toString()),
               style: AdminTypography.bodyMedium.copyWith(
                 color: AdminTokens.error500,
               ),
@@ -431,7 +448,7 @@ class _AdminOrdersScreenState extends State<AdminOrdersScreen>
                 ),
                 const SizedBox(height: AdminTokens.space16),
                 Text(
-                  'Aucune commande ${_getStatusLabel(status).toLowerCase()}',
+                  l10n.adminOrdersNoOrders,
                   style: AdminTypography.bodyLarge.copyWith(
                     color: AdminTokens.neutral500,
                   ),
@@ -470,10 +487,11 @@ class _AdminOrdersScreenState extends State<AdminOrdersScreen>
 
       if (html.Notification.permission == 'granted') {
         final latestOrder = orders.first;
+        final l10n = AppLocalizations.of(context)!;
         html.Notification(
-          'Nouvelle commande SmartMenu',
+          l10n.adminOrdersTitle,
           body:
-              '${latestOrder.table} • ${latestOrder.items.length} items • ${latestOrder.total.toStringAsFixed(0)} ₪',
+              '${l10n.adminOrdersTable(latestOrder.table.replaceAll('table', ''))} • ${l10n.adminOrdersItems(latestOrder.items.length)} • ${latestOrder.total.toStringAsFixed(0)} ₪',
           icon: '/favicon.png',
         );
       }
@@ -481,6 +499,8 @@ class _AdminOrdersScreenState extends State<AdminOrdersScreen>
   }
 
   Widget _buildOrderCard(models.Order order) {
+    final l10n = AppLocalizations.of(context)!;
+
     return Card(
       margin: const EdgeInsets.only(bottom: AdminTokens.space16),
       elevation: 0,
@@ -497,7 +517,7 @@ class _AdminOrdersScreenState extends State<AdminOrdersScreen>
             Row(
               children: [
                 Text(
-                  'Commande #${order.oid.substring(0, 8)}',
+                  '#${order.oid.substring(0, 8)}',
                   style: AdminTypography.headlineSmall.copyWith(
                     fontWeight: FontWeight.w600,
                   ),
@@ -513,7 +533,7 @@ class _AdminOrdersScreenState extends State<AdminOrdersScreen>
                     borderRadius: BorderRadius.circular(AdminTokens.radius4),
                   ),
                   child: Text(
-                    _getStatusLabel(order.status),
+                    _getStatusLabel(context, order.status),
                     style: AdminTypography.labelSmall.copyWith(
                       color: _getStatusColor(order.status),
                       fontWeight: FontWeight.w600,
@@ -535,7 +555,7 @@ class _AdminOrdersScreenState extends State<AdminOrdersScreen>
                 ),
                 const SizedBox(width: AdminTokens.space4),
                 Text(
-                  order.table,
+                  l10n.adminOrdersTable(order.table.replaceAll('table', '')),
                   style: AdminTypography.bodySmall.copyWith(
                     color: AdminTokens.neutral600,
                   ),
@@ -618,6 +638,8 @@ class _AdminOrdersScreenState extends State<AdminOrdersScreen>
   }
 
   Widget _buildOrderActions(models.Order order) {
+    final l10n = AppLocalizations.of(context)!;
+
     final List<models.OrderStatus> nextStatuses = [];
 
     switch (order.status) {
@@ -652,7 +674,7 @@ class _AdminOrdersScreenState extends State<AdminOrdersScreen>
                   vertical: AdminTokens.space8,
                 ),
               ),
-              child: Text(_getStatusLabel(status)),
+              child: Text(_getStatusLabel(context, status)),
             ),
           );
         }).toList(),
@@ -665,7 +687,7 @@ class _AdminOrdersScreenState extends State<AdminOrdersScreen>
             onPressed: () => _deleteOrder(order),
             icon: const Icon(Icons.delete_outline),
             color: AdminTokens.error500,
-            tooltip: 'Supprimer',
+            tooltip: l10n.commonDelete,
           ),
       ],
     );
@@ -673,18 +695,18 @@ class _AdminOrdersScreenState extends State<AdminOrdersScreen>
 
   Future<void> _updateOrderStatus(
       models.Order order, models.OrderStatus newStatus) async {
+    final l10n = AppLocalizations.of(context)!;
+
     try {
       await OrderService.updateOrderStatus(
           widget.restaurantId, order.oid, newStatus);
 
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content:
-                Text('Commande mise à jour: ${_getStatusLabel(newStatus)}'),
-            backgroundColor: AdminTokens.success500,
-          ),
-        );
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text(l10n
+              .adminOrdersStatusUpdated(_getStatusLabel(context, newStatus))),
+          backgroundColor: const Color(0xFF10B981), // AdminTokens.success500
+        ));
       }
     } catch (e) {
       if (mounted) {
@@ -699,21 +721,23 @@ class _AdminOrdersScreenState extends State<AdminOrdersScreen>
   }
 
   Future<void> _deleteOrder(models.Order order) async {
+    final l10n = AppLocalizations.of(context)!;
+
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Supprimer la commande'),
-        content: Text(
-            'Voulez-vous vraiment supprimer la commande #${order.oid.substring(0, 8)} ?'),
+        title: Text(l10n.adminMenuConfirmDelete),
+        content: Text(l10n
+            .adminMenuConfirmDeleteMessage('#${order.oid.substring(0, 8)}')),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(false),
-            child: const Text('Annuler'),
+            child: Text(l10n.commonCancel),
           ),
           TextButton(
             onPressed: () => Navigator.of(context).pop(true),
             style: TextButton.styleFrom(foregroundColor: AdminTokens.error500),
-            child: const Text('Supprimer'),
+            child: Text(l10n.commonDelete),
           ),
         ],
       ),
@@ -725,8 +749,9 @@ class _AdminOrdersScreenState extends State<AdminOrdersScreen>
 
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Commande supprimée'),
+            SnackBar(
+              content: Text(
+                  l10n.adminMenuDeleteSuccess('#${order.oid.substring(0, 8)}')),
               backgroundColor: AdminTokens.success500,
             ),
           );

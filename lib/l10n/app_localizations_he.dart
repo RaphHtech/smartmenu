@@ -389,4 +389,85 @@ class AppLocalizationsHe extends AppLocalizations {
 
   @override
   String get adminMenuCategoryUpdated => 'הקטגוריה עודכנה.';
+
+  @override
+  String get adminOrdersTitle => 'הזמנות';
+
+  @override
+  String get adminOrdersReceived => 'התקבלה';
+
+  @override
+  String get adminOrdersPreparing => 'בהכנה';
+
+  @override
+  String get adminOrdersReady => 'מוכנה';
+
+  @override
+  String get adminOrdersServed => 'הוגשה';
+
+  @override
+  String adminOrdersTable(String number) {
+    return 'שולחן $number';
+  }
+
+  @override
+  String adminOrdersItems(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count פריטים',
+      one: 'פריט אחד',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get adminOrdersMarkPreparing => 'התחל הכנה';
+
+  @override
+  String get adminOrdersMarkReady => 'סמן מוכנה';
+
+  @override
+  String get adminOrdersMarkServed => 'סמן הוגשה';
+
+  @override
+  String get adminOrdersNoOrders => 'אין הזמנות';
+
+  @override
+  String get adminOrdersTotal => 'סה״כ';
+
+  @override
+  String adminOrdersServerCall(String table) {
+    return 'קריאה משולחן $table';
+  }
+
+  @override
+  String get adminOrdersAcknowledge => 'אישור קבלה';
+
+  @override
+  String get adminOrdersResolve => 'סגור קריאה';
+
+  @override
+  String get adminOrdersJustNow => 'ממש עכשיו';
+
+  @override
+  String adminOrdersMinutesAgo(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'לפני $count דקות',
+      one: 'לפני דקה',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String adminOrdersStatusUpdated(String status) {
+    return 'ההזמנה עודכנה: $status';
+  }
+
+  @override
+  String adminOrdersServerCallBody(String table) {
+    return '$table זקוק לסיוע';
+  }
 }

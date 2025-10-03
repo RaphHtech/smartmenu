@@ -390,4 +390,85 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get adminMenuCategoryUpdated => 'Catégorie mise à jour.';
+
+  @override
+  String get adminOrdersTitle => 'Commandes';
+
+  @override
+  String get adminOrdersReceived => 'Reçue';
+
+  @override
+  String get adminOrdersPreparing => 'Préparation';
+
+  @override
+  String get adminOrdersReady => 'Prête';
+
+  @override
+  String get adminOrdersServed => 'Servie';
+
+  @override
+  String adminOrdersTable(String number) {
+    return 'Table $number';
+  }
+
+  @override
+  String adminOrdersItems(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count articles',
+      one: '1 article',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get adminOrdersMarkPreparing => 'Commencer préparation';
+
+  @override
+  String get adminOrdersMarkReady => 'Marquer prête';
+
+  @override
+  String get adminOrdersMarkServed => 'Marquer servie';
+
+  @override
+  String get adminOrdersNoOrders => 'Aucune commande';
+
+  @override
+  String get adminOrdersTotal => 'Total';
+
+  @override
+  String adminOrdersServerCall(String table) {
+    return 'Appel de la table $table';
+  }
+
+  @override
+  String get adminOrdersAcknowledge => 'Accuser réception';
+
+  @override
+  String get adminOrdersResolve => 'Résoudre';
+
+  @override
+  String get adminOrdersJustNow => 'À l\'instant';
+
+  @override
+  String adminOrdersMinutesAgo(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Il y a $count min',
+      one: 'Il y a 1 min',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String adminOrdersStatusUpdated(String status) {
+    return 'Commande mise à jour : $status';
+  }
+
+  @override
+  String adminOrdersServerCallBody(String table) {
+    return '$table demande de l\'assistance';
+  }
 }
