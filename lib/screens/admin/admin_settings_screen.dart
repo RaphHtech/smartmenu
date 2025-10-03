@@ -11,9 +11,10 @@ import 'package:flutter/services.dart';
 import '../../services/qr_service.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'dart:html' as html;
-import 'dart:typed_data';
+// import 'dart:typed_data';
 import 'dart:ui' as ui;
 import 'package:flutter/rendering.dart';
+import '../../l10n/app_localizations.dart';
 
 class AdminSettingsScreen extends StatefulWidget {
   final String restaurantId;
@@ -50,6 +51,8 @@ class _AdminSettingsScreenState extends State<AdminSettingsScreen> {
   }
 
   Future<void> _loadRestaurantName() async {
+    final l10n = AppLocalizations.of(context)!;
+
     try {
       final doc = await FirebaseFirestore.instance
           .collection('restaurants')
@@ -67,12 +70,14 @@ class _AdminSettingsScreenState extends State<AdminSettingsScreen> {
       }
     } catch (e) {
       setState(() {
-        _error = 'Impossible de charger le nom du restaurant';
+        _error = l10n.adminSettingsLoadError;
       });
     }
   }
 
   Future<void> _saveRestaurantName() async {
+    final l10n = AppLocalizations.of(context)!;
+
     if (!_formKey.currentState!.validate()) return;
 
     setState(() {
@@ -98,15 +103,15 @@ class _AdminSettingsScreenState extends State<AdminSettingsScreen> {
         });
 
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Nom du restaurant mis à jour avec succès'),
-            backgroundColor: AdminTokens.success500,
+          SnackBar(
+            content: Text(l10n.adminSettingsNameUpdated),
+            backgroundColor: Theme.of(context).colorScheme.primaryContainer,
           ),
         );
       }
     } catch (e) {
       setState(() {
-        _error = 'Erreur lors de la sauvegarde : $e';
+        _error = l10n.adminSettingsSaveError(e.toString());
       });
     } finally {
       if (mounted) {
@@ -127,19 +132,21 @@ class _AdminSettingsScreenState extends State<AdminSettingsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return AdminShell(
-      title: 'Paramètres',
+      title: l10n.adminSettingsTitle,
       restaurantId: widget.restaurantId,
       activeRoute: '/settings',
-      breadcrumbs: const ['Dashboard', 'Paramètres'],
+      breadcrumbs: [l10n.adminDashboardTitle, l10n.adminSettingsTitle],
       child: SingleChildScrollView(
         padding: const EdgeInsets.all(AdminTokens.space24),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Section Restaurant
-            const Text(
-              'Restaurant',
+            Text(
+              l10n.adminSettingsRestaurant,
               style: AdminTypography.headlineLarge,
             ),
 
@@ -170,9 +177,9 @@ class _AdminSettingsScreenState extends State<AdminSettingsScreen> {
                             color: AdminTokens.primary600,
                           ),
                           const SizedBox(width: AdminTokens.space12),
-                          const Expanded(
+                          Expanded(
                             child: Text(
-                              'Nom du restaurant',
+                              l10n.adminSettingsRestaurantName,
                               style: AdminTypography.headlineMedium,
                               overflow: TextOverflow.ellipsis,
                             ),
@@ -186,7 +193,7 @@ class _AdminSettingsScreenState extends State<AdminSettingsScreen> {
                                 });
                               },
                               icon: const Icon(Icons.edit, size: 18),
-                              tooltip: 'Modifier',
+                              tooltip: l10n.commonEdit,
                             ),
                         ],
                       ),
@@ -203,7 +210,7 @@ class _AdminSettingsScreenState extends State<AdminSettingsScreen> {
                             border: Border.all(color: AdminTokens.neutral200),
                           ),
                           child: Text(
-                            _currentName ?? 'Chargement...',
+                            _currentName ?? l10n.adminSettingsLoading,
                             style: AdminTypography.bodyLarge,
                           ),
                         ),
@@ -215,20 +222,21 @@ class _AdminSettingsScreenState extends State<AdminSettingsScreen> {
                             children: [
                               TextFormField(
                                 controller: _nameController,
-                                decoration: const InputDecoration(
-                                  labelText: 'Nom du restaurant',
-                                  hintText: 'Ex: Pizza Mario',
-                                  prefixIcon: Icon(Icons.restaurant),
+                                decoration: InputDecoration(
+                                  labelText: l10n.adminSettingsRestaurantName,
+                                  hintText: l10n.adminSettingsNamePlaceholder,
+                                  prefixIcon: const Icon(Icons.restaurant),
                                 ),
                                 validator: (value) {
+                                  final l10n = AppLocalizations.of(context)!;
                                   if (value == null || value.trim().isEmpty) {
-                                    return 'Le nom du restaurant est obligatoire';
+                                    return l10n.adminSettingsNameRequired;
                                   }
                                   if (value.trim().length < 2) {
-                                    return 'Le nom doit contenir au moins 2 caractères';
+                                    return l10n.adminSettingsNameTooShort;
                                   }
                                   if (value.trim().length > 50) {
-                                    return 'Le nom ne peut pas dépasser 50 caractères';
+                                    return l10n.adminSettingsNameTooLong;
                                   }
                                   return null;
                                 },
@@ -263,7 +271,7 @@ class _AdminSettingsScreenState extends State<AdminSettingsScreen> {
                                     child: OutlinedButton(
                                       onPressed:
                                           _isLoading ? null : _cancelEdit,
-                                      child: const Text('Annuler'),
+                                      child: Text(l10n.commonCancel),
                                     ),
                                   ),
                                   const SizedBox(width: AdminTokens.space16),
@@ -283,7 +291,7 @@ class _AdminSettingsScreenState extends State<AdminSettingsScreen> {
                                                         Color>(Colors.white),
                                               ),
                                             )
-                                          : const Text('Enregistrer'),
+                                          : Text(l10n.commonSave),
                                     ),
                                   ),
                                 ],
@@ -315,8 +323,8 @@ class _AdminSettingsScreenState extends State<AdminSettingsScreen> {
                 ),
                 child: ListTile(
                   leading: const Icon(Icons.info_outline),
-                  title: const Text('Informations détaillées'),
-                  subtitle: const Text('Description, bandeau promo, devise'),
+                  title: Text(l10n.adminSettingsDetailedInfo),
+                  subtitle: Text(l10n.adminSettingsDetailedInfoSubtitle),
                   trailing: const Icon(Icons.chevron_right),
                   onTap: () {
                     context.pushAdminScreen(
@@ -350,8 +358,8 @@ class _AdminSettingsScreenState extends State<AdminSettingsScreen> {
                   child: Card(
                     child: ListTile(
                       leading: const Icon(Icons.category),
-                      title: const Text('Gérer les catégories'),
-                      subtitle: const Text('Réorganiser, masquer et renommer'),
+                      title: Text(l10n.adminSettingsManageCategories),
+                      subtitle: Text(l10n.adminSettingsCategoriesSubtitle),
                       trailing: const Icon(Icons.arrow_forward_ios),
                       onTap: () async {
                         final state = await CategoryManager.getLiveState(
@@ -371,8 +379,8 @@ class _AdminSettingsScreenState extends State<AdminSettingsScreen> {
             const SizedBox(height: AdminTokens.space32),
 
             // Section Intégration
-            const Text(
-              'Intégration',
+            Text(
+              l10n.adminSettingsIntegration,
               style: AdminTypography.headlineLarge,
             ),
             const SizedBox(height: AdminTokens.space16),
@@ -394,15 +402,15 @@ class _AdminSettingsScreenState extends State<AdminSettingsScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Row(
+                      Row(
                         children: [
-                          Icon(
+                          const Icon(
                             Icons.qr_code,
                             color: AdminTokens.primary600,
                           ),
-                          SizedBox(width: AdminTokens.space12),
+                          const SizedBox(width: AdminTokens.space12),
                           Text(
-                            'Code restaurant',
+                            l10n.adminSettingsRestaurantCode,
                             style: AdminTypography.headlineMedium,
                           ),
                         ],
@@ -430,12 +438,13 @@ class _AdminSettingsScreenState extends State<AdminSettingsScreen> {
                           return Column(
                             children: [
                               // Code restaurant - responsive
-                              _buildResponsiveInfoRow('Code restaurant', code),
+                              _buildResponsiveInfoRow(
+                                  l10n.adminSettingsRestaurantCode, code),
                               const SizedBox(height: AdminTokens.space12),
 
                               // URL publique - responsive
                               _buildResponsiveInfoRow(
-                                'URL publique',
+                                l10n.adminSettingsPublicUrl,
                                 '${Uri.base.origin}/r/${data['slug'] ?? data['code'] ?? widget.restaurantId}',
                                 isUrl: true,
                               ),
@@ -454,7 +463,8 @@ class _AdminSettingsScreenState extends State<AdminSettingsScreen> {
                                           child: OutlinedButton.icon(
                                             icon: const Icon(Icons.qr_code,
                                                 size: 18),
-                                            label: const Text('Générer QR'),
+                                            label: Text(
+                                                l10n.adminSettingsGenerateQr),
                                             onPressed: () =>
                                                 _generateQRCode(code),
                                             style: OutlinedButton.styleFrom(
@@ -471,7 +481,7 @@ class _AdminSettingsScreenState extends State<AdminSettingsScreen> {
                                           child: ElevatedButton.icon(
                                             icon: const Icon(Icons.share,
                                                 size: 18),
-                                            label: const Text('Partager'),
+                                            label: Text(l10n.commonShare),
                                             onPressed: () =>
                                                 _shareRestaurant(code),
                                             style: ElevatedButton.styleFrom(
@@ -490,7 +500,8 @@ class _AdminSettingsScreenState extends State<AdminSettingsScreen> {
                                           child: OutlinedButton.icon(
                                             icon: const Icon(Icons.qr_code,
                                                 size: 18),
-                                            label: const Text('Générer QR'),
+                                            label: Text(
+                                                l10n.adminSettingsGenerateQr),
                                             onPressed: () =>
                                                 _generateQRCode(code),
                                           ),
@@ -501,7 +512,7 @@ class _AdminSettingsScreenState extends State<AdminSettingsScreen> {
                                           child: ElevatedButton.icon(
                                             icon: const Icon(Icons.share,
                                                 size: 18),
-                                            label: const Text('Partager'),
+                                            label: Text(l10n.commonShare),
                                             onPressed: () =>
                                                 _shareRestaurant(code),
                                           ),
@@ -528,6 +539,8 @@ class _AdminSettingsScreenState extends State<AdminSettingsScreen> {
 
   Widget _buildResponsiveInfoRow(String label, String value,
       {bool isUrl = false}) {
+    final l10n = AppLocalizations.of(context)!;
+
     return LayoutBuilder(
       builder: (context, constraints) {
         final isMobile = constraints.maxWidth < 400;
@@ -576,7 +589,8 @@ class _AdminSettingsScreenState extends State<AdminSettingsScreen> {
                           Clipboard.setData(ClipboardData(text: value));
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
-                              content: Text('Copié : ${isUrl ? 'URL' : value}'),
+                              content: Text(l10n
+                                  .adminSettingsCopied(isUrl ? 'URL' : value)),
                               duration: const Duration(seconds: 2),
                             ),
                           );
@@ -624,7 +638,7 @@ class _AdminSettingsScreenState extends State<AdminSettingsScreen> {
                 onPressed: () {
                   Clipboard.setData(ClipboardData(text: value));
                   ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('Copié : $value')),
+                    SnackBar(content: Text(l10n.adminSettingsCopied(value))),
                   );
                 },
               ),
@@ -661,6 +675,8 @@ class _AdminSettingsScreenState extends State<AdminSettingsScreen> {
   }
 
   Future<void> _addCodeToExistingRestaurant() async {
+    final l10n = AppLocalizations.of(context)!;
+
     final doc = await FirebaseFirestore.instance
         .collection('restaurants')
         .doc(widget.restaurantId)
@@ -681,7 +697,7 @@ class _AdminSettingsScreenState extends State<AdminSettingsScreen> {
     await doc.reference.update({'code': code});
 
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Code généré : $code')),
+      SnackBar(content: Text(l10n.adminSettingsCodeGenerated(code))),
     );
   }
 }
@@ -745,6 +761,8 @@ class _QRGeneratorDialogState extends State<_QRGeneratorDialog> {
   }
 
   Future<void> _saveConfig() async {
+    final l10n = AppLocalizations.of(context)!;
+
     setState(() => _isSaving = true);
 
     try {
@@ -759,9 +777,9 @@ class _QRGeneratorDialogState extends State<_QRGeneratorDialog> {
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Configuration sauvegardée'),
-            backgroundColor: AdminTokens.success500,
+          SnackBar(
+            content: Text(l10n.adminSettingsConfigSaved),
+            backgroundColor: Theme.of(context).colorScheme.primaryContainer,
           ),
         );
       }
@@ -769,8 +787,8 @@ class _QRGeneratorDialogState extends State<_QRGeneratorDialog> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Erreur: $e'),
-            backgroundColor: AdminTokens.error500,
+            content: Text(l10n.commonError(e.toString())),
+            backgroundColor: Theme.of(context).colorScheme.error,
           ),
         );
       }
@@ -780,6 +798,8 @@ class _QRGeneratorDialogState extends State<_QRGeneratorDialog> {
   }
 
   void _downloadQR() async {
+    final l10n = AppLocalizations.of(context)!;
+
     try {
       // Créer un widget QR temporaire pour capture
       final qrWidget = Container(
@@ -818,7 +838,7 @@ class _QRGeneratorDialogState extends State<_QRGeneratorDialog> {
               textAlign: TextAlign.center,
             ),
             const Text(
-              'Scannez pour accéder au menu',
+              'Scan to access the menu',
               style: TextStyle(
                 fontSize: 14,
                 color: Colors.black54,
@@ -878,9 +898,9 @@ class _QRGeneratorDialogState extends State<_QRGeneratorDialog> {
 
           if (mounted) {
             ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text('QR Code téléchargé avec succès !'),
-                backgroundColor: AdminTokens.success500,
+              SnackBar(
+                content: Text(l10n.adminSettingsQrDownloaded),
+                backgroundColor: Theme.of(context).colorScheme.primaryContainer,
               ),
             );
           }
@@ -893,8 +913,8 @@ class _QRGeneratorDialogState extends State<_QRGeneratorDialog> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Erreur: $e'),
-            backgroundColor: AdminTokens.error500,
+            content: Text(l10n.commonError(e.toString())),
+            backgroundColor: Theme.of(context).colorScheme.error,
           ),
         );
       }
@@ -902,6 +922,8 @@ class _QRGeneratorDialogState extends State<_QRGeneratorDialog> {
   }
 
   void _generateA5Template() {
+    final l10n = AppLocalizations.of(context)!;
+
     try {
       // Canvas A5 : 595x842 pixels (format A5 à 72 DPI)
       final canvas = html.CanvasElement(width: 595, height: 842);
@@ -958,12 +980,6 @@ class _QRGeneratorDialogState extends State<_QRGeneratorDialog> {
       // Instructions bilingues (centré, sous le QR)
       final instructionsY = qrY + qrSize + 60;
 
-      // Français
-      ctx.font = 'bold 20px Arial';
-      ctx.fillText('Scannez pour accéder au menu', 297, instructionsY);
-      ctx.font = '16px Arial';
-      ctx.fillText('ou rendez-vous sur smartmenu.app', 297, instructionsY + 30);
-
       // Ligne de séparation
       ctx.strokeStyle = '#ccc';
       ctx.lineWidth = 1;
@@ -972,36 +988,34 @@ class _QRGeneratorDialogState extends State<_QRGeneratorDialog> {
       ctx.lineTo(445, instructionsY + 50);
       ctx.stroke();
 
-      // Anglais
-      ctx.font = 'bold 20px Arial';
-      ctx.fillStyle = '#666';
-      ctx.fillText('Scan to access the menu', 297, instructionsY + 80);
-      ctx.font = '16px Arial';
-      ctx.fillText('or visit smartmenu.app', 297, instructionsY + 110);
+      // Title
+      ctx.fillText(widget.restaurantName, 297, 60);
 
-      // Code restaurant (encadré)
+      ctx.font = 'bold 20px Arial';
+      ctx.fillText('Scan to access the menu', 297, instructionsY);
+      ctx.font = '16px Arial';
+      ctx.fillText('or visit smartmenu.app', 297, instructionsY + 30);
+
+      // Restaurant code
       ctx.fillStyle = 'black';
       ctx.font = 'bold 18px Arial';
-      ctx.fillText('Code restaurant: ${widget.slug}', 297, instructionsY + 150);
+      ctx.fillText('Restaurant code: ${widget.slug}', 297, instructionsY + 80);
 
-      // URL complète (petit)
+      // URL
       ctx.font = '12px Monaco';
       ctx.fillStyle = '#888';
       final url = QRService.generateRestaurantUrl(widget.slug);
-      ctx.fillText(url, 297, instructionsY + 180);
+      ctx.fillText(url, 297, instructionsY + 110);
 
-      // Instructions d'impression (bas de page)
+      // Print instructions
       ctx.font = '11px Arial';
       ctx.fillStyle = '#aaa';
-      ctx.fillText(
-          'Découpez et placez sur vos tables • Cut and place on your tables',
-          297,
-          780);
+      ctx.fillText('Cut and place on your tables', 297, 780);
 
-      // Footer SmartMenu
+      // Footer
       ctx.font = 'bold 10px Arial';
       ctx.fillStyle = '#999';
-      ctx.fillText('Propulsé par SmartMenu', 297, 820);
+      ctx.fillText('Powered by SmartMenu', 297, 820);
 
       // Téléchargement
       final dataUrl = canvas.toDataUrl('image/png');
@@ -1014,9 +1028,9 @@ class _QRGeneratorDialogState extends State<_QRGeneratorDialog> {
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Template A5 téléchargé !'),
-            backgroundColor: AdminTokens.success500,
+          SnackBar(
+            content: Text(l10n.adminSettingsTemplateDownloaded),
+            backgroundColor: Theme.of(context).colorScheme.primaryContainer,
           ),
         );
       }
@@ -1024,8 +1038,8 @@ class _QRGeneratorDialogState extends State<_QRGeneratorDialog> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Erreur template: $e'),
-            backgroundColor: AdminTokens.error500,
+            content: Text(l10n.commonError(e.toString())),
+            backgroundColor: Theme.of(context).colorScheme.error,
           ),
         );
       }
@@ -1033,28 +1047,31 @@ class _QRGeneratorDialogState extends State<_QRGeneratorDialog> {
   }
 
   void _copyUrl() {
+    final l10n = AppLocalizations.of(context)!;
+
     Clipboard.setData(ClipboardData(text: _qrUrl));
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('URL copiée dans le presse-papier'),
-        backgroundColor: AdminTokens.success500,
+      SnackBar(
+        content: Text(l10n.adminSettingsUrlCopied),
+        backgroundColor: Theme.of(context).colorScheme.primaryContainer,
       ),
     );
   }
-// Remplacer le build() method de _QRGeneratorDialogState par :
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     if (_isLoading) {
-      return const Dialog(
+      return Dialog(
         child: Padding(
-          padding: EdgeInsets.all(24),
+          padding: const EdgeInsets.all(24),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              CircularProgressIndicator(),
-              SizedBox(height: 16),
-              Text('Chargement...'),
+              const CircularProgressIndicator(),
+              const SizedBox(height: 16),
+              Text(l10n.adminSettingsLoading),
             ],
           ),
         ),
@@ -1100,7 +1117,7 @@ class _QRGeneratorDialogState extends State<_QRGeneratorDialog> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'Générateur QR Code',
+                          l10n.adminSettingsQrGenerator,
                           style: TextStyle(
                             fontSize: isMobile ? 16 : 18,
                             fontWeight: FontWeight.w600,
@@ -1194,7 +1211,7 @@ class _QRGeneratorDialogState extends State<_QRGeneratorDialog> {
                           SizedBox(height: isMobile ? 6 : AdminTokens.space8),
 
                           Text(
-                            'Scannez pour accéder au menu',
+                            l10n.adminSettingsScanToAccess,
                             style: TextStyle(
                               fontSize: isMobile ? 12 : 14,
                               color: AdminTokens.neutral500,
@@ -1212,7 +1229,7 @@ class _QRGeneratorDialogState extends State<_QRGeneratorDialog> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'Configuration',
+                          l10n.adminSettingsConfiguration,
                           style: TextStyle(
                             fontSize: isMobile ? 16 : 18,
                             fontWeight: FontWeight.w600,
@@ -1229,11 +1246,11 @@ class _QRGeneratorDialogState extends State<_QRGeneratorDialog> {
                               borderRadius:
                                   BorderRadius.circular(AdminTokens.radius12),
                             ),
-                            labelText: 'Message personnalisé (optionnel)',
-                            hintText: 'Ex: Bienvenue chez nous !',
+                            labelText: l10n.adminSettingsCustomMessage,
+                            hintText: l10n.adminSettingsCustomMessageHint,
                             prefixIcon: Icon(Icons.message_outlined,
                                 size: isMobile ? 20 : 24),
-                            helperText: 'Affiché au-dessus du QR code',
+                            helperText: l10n.adminSettingsCustomMessageHelper,
                             contentPadding: EdgeInsets.symmetric(
                               horizontal: 12,
                               vertical: isMobile ? 12 : 16,
@@ -1248,7 +1265,7 @@ class _QRGeneratorDialogState extends State<_QRGeneratorDialog> {
 
                         // Taille du QR - plus compact sur mobile
                         Text(
-                          'Taille de téléchargement',
+                          l10n.adminSettingsDownloadSize,
                           style: TextStyle(
                             fontSize: isMobile ? 14 : 16,
                             fontWeight: FontWeight.w600,
@@ -1348,7 +1365,7 @@ class _QRGeneratorDialogState extends State<_QRGeneratorDialog> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                'URL publique',
+                                l10n.adminSettingsPublicUrl,
                                 style: AdminTypography.bodySmall.copyWith(
                                   color: AdminTokens.neutral500,
                                 ),
@@ -1375,7 +1392,7 @@ class _QRGeneratorDialogState extends State<_QRGeneratorDialog> {
                         OutlinedButton.icon(
                           icon: const Icon(Icons.download,
                               size: AdminTokens.iconSm),
-                          label: const Text('Télécharger'),
+                          label: Text(l10n.adminSettingsDownloadQr),
                           onPressed: _downloadQR,
                         ),
 
@@ -1384,7 +1401,7 @@ class _QRGeneratorDialogState extends State<_QRGeneratorDialog> {
                         OutlinedButton.icon(
                           icon:
                               const Icon(Icons.print, size: AdminTokens.iconSm),
-                          label: const Text('Template A5'),
+                          label: Text(l10n.adminSettingsTemplateA5),
                           onPressed: _generateA5Template,
                         ),
 
@@ -1400,7 +1417,7 @@ class _QRGeneratorDialogState extends State<_QRGeneratorDialog> {
                                 )
                               : const Icon(Icons.save,
                                   size: AdminTokens.iconSm),
-                          label: const Text('Sauvegarder'),
+                          label: Text(l10n.commonSave),
                           onPressed: _isSaving ? null : _saveConfig,
                         ),
                       ],
@@ -1425,18 +1442,20 @@ class _ShareDialog extends StatelessWidget {
   });
 
   void _copyUrl(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     Clipboard.setData(ClipboardData(text: url));
     Navigator.of(context).pop();
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: const Row(
+        content: Row(
           children: [
-            Icon(Icons.check_circle, color: Colors.white, size: 20),
-            SizedBox(width: 12),
-            Text('URL copiée dans le presse-papier'),
+            const Icon(Icons.check_circle, color: Colors.white, size: 20),
+            const SizedBox(width: 12),
+            Text(l10n.adminSettingsUrlCopiedSuccess),
           ],
         ),
-        backgroundColor: AdminTokens.success500,
+        backgroundColor: Theme.of(context).colorScheme.primaryContainer,
         behavior: SnackBarBehavior.floating,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
       ),
@@ -1446,17 +1465,17 @@ class _ShareDialog extends StatelessWidget {
   void _shareViaEmail(BuildContext context) {
     final subject = Uri.encodeComponent('Menu $restaurantName - SmartMenu');
     final body = Uri.encodeComponent('''
-Découvrez notre menu digital !
+Discover our digital menu!
 
-Restaurant : $restaurantName
-Code d'accès : $code
+Restaurant: $restaurantName
+Access code: $code
 
-Accès direct : $url
+Direct access: $url
 
-Scannez le QR code sur votre table ou saisissez le code "$code" sur smartmenu.app
+Scan the QR code on your table or enter code "$code" on smartmenu.app
 
 ---
-Propulsé par SmartMenu
+Powered by SmartMenu
 ''');
 
     final emailUrl = 'mailto:?subject=$subject&body=$body';
@@ -1485,10 +1504,10 @@ Propulsé par SmartMenu
 
   void _shareViaWhatsApp(BuildContext context) {
     final message =
-        Uri.encodeComponent('Découvrez le menu de *$restaurantName* ! 🍽️\n\n'
-            'Accès direct: $url\n'
-            'Ou code: *$code*\n\n'
-            '_Propulsé par SmartMenu_');
+        Uri.encodeComponent('Discover the menu of *$restaurantName*! 🍽️\n\n'
+            'Direct access: $url\n'
+            'Or code: *$code*\n\n'
+            '_Powered by SmartMenu_');
 
     final whatsappUrl = 'https://wa.me/?text=$message';
 
@@ -1514,6 +1533,8 @@ Propulsé par SmartMenu
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return Dialog(
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(AdminTokens.radius12),
@@ -1547,9 +1568,9 @@ Propulsé par SmartMenu
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text(
-                        'Partager votre menu',
-                        style: TextStyle(
+                      Text(
+                        l10n.adminSettingsShareMenu,
+                        style: const TextStyle(
                           fontSize: 16, // ✅ Plus petit
                           fontWeight: FontWeight.w600,
                         ),
@@ -1601,9 +1622,9 @@ Propulsé par SmartMenu
             const SizedBox(height: 16),
 
             // Méthodes de partage en ligne horizontale
-            const Text(
-              'Choisir une méthode',
-              style: TextStyle(
+            Text(
+              l10n.adminSettingsChooseMethod,
+              style: const TextStyle(
                 fontSize: 14,
                 fontWeight: FontWeight.w600,
               ),
@@ -1617,25 +1638,25 @@ Propulsé par SmartMenu
               children: [
                 _CompactShareOption(
                   icon: Icons.email_outlined,
-                  label: 'Email',
+                  label: l10n.adminSettingsEmail,
                   color: Colors.blue.shade600,
                   onTap: () => _shareViaEmail(context),
                 ),
                 _CompactShareOption(
                   icon: Icons.message_outlined,
-                  label: 'SMS',
+                  label: l10n.adminSettingsSms,
                   color: Colors.green.shade600,
                   onTap: () => _shareViaSMS(context),
                 ),
                 _CompactShareOption(
                   icon: Icons.chat_bubble_outline,
-                  label: 'WhatsApp',
+                  label: l10n.adminSettingsWhatsApp,
                   color: const Color(0xFF25D366),
                   onTap: () => _shareViaWhatsApp(context),
                 ),
                 _CompactShareOption(
                   icon: Icons.facebook_outlined,
-                  label: 'Facebook',
+                  label: l10n.adminSettingsFacebook,
                   color: const Color(0xFF1877F2),
                   onTap: () => _shareViaFacebook(context),
                 ),
@@ -1651,9 +1672,9 @@ Propulsé par SmartMenu
               child: OutlinedButton.icon(
                 onPressed: () => _copyUrl(context),
                 icon: const Icon(Icons.copy, size: 16),
-                label: const Text(
-                  'Copier le lien',
-                  style: TextStyle(fontSize: 14),
+                label: Text(
+                  l10n.adminSettingsCopyLink,
+                  style: const TextStyle(fontSize: 14),
                 ),
               ),
             ),

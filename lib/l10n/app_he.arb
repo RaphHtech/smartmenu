@@ -775,5 +775,250 @@
         "example": "שולחן 5"
       }
     }
+  },
+
+  "adminSettingsTitle": "הגדרות",
+  "@adminSettingsTitle": {
+    "description": "Settings screen title"
+  },
+
+  "adminSettingsRestaurant": "מסעדה",
+  "@adminSettingsRestaurant": {
+    "description": "Restaurant section header"
+  },
+
+  "adminSettingsRestaurantName": "שם המסעדה",
+  "@adminSettingsRestaurantName": {
+    "description": "Restaurant name label"
+  },
+
+  "adminSettingsLoading": "טוען...",
+  "@adminSettingsLoading": {
+    "description": "Loading state"
+  },
+
+  "adminSettingsNamePlaceholder": "לדוגמה: פיצה מריו",
+  "@adminSettingsNamePlaceholder": {
+    "description": "Name field placeholder"
+  },
+
+  "adminSettingsNameRequired": "שם המסעדה הוא שדה חובה",
+  "@adminSettingsNameRequired": {
+    "description": "Validation: name required"
+  },
+
+  "adminSettingsNameTooShort": "השם חייב להכיל לפחות 2 תווים",
+  "@adminSettingsNameTooShort": {
+    "description": "Validation: name too short"
+  },
+
+  "adminSettingsNameTooLong": "השם לא יכול לעבור 50 תווים",
+  "@adminSettingsNameTooLong": {
+    "description": "Validation: name too long"
+  },
+
+  "adminSettingsNameUpdated": "שם המסעדה עודכן בהצלחה",
+  "@adminSettingsNameUpdated": {
+    "description": "Success message after name update"
+  },
+
+  "adminSettingsSaveError": "שגיאה בשמירה: {error}",
+  "@adminSettingsSaveError": {
+    "description": "Generic save error",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+
+  "adminSettingsLoadError": "לא ניתן לטעון את שם המסעדה",
+  "@adminSettingsLoadError": {
+    "description": "Error loading restaurant name"
+  },
+
+  "adminSettingsDetailedInfo": "מידע מפורט",
+  "@adminSettingsDetailedInfo": {
+    "description": "Detailed info section title"
+  },
+
+  "adminSettingsDetailedInfoSubtitle": "תיאור, באנר קידום, מטבע",
+  "@adminSettingsDetailedInfoSubtitle": {
+    "description": "Detailed info subtitle"
+  },
+
+  "adminSettingsManageCategories": "נהל קטגוריות",
+  "@adminSettingsManageCategories": {
+    "description": "Manage categories button"
+  },
+
+  "adminSettingsCategoriesSubtitle": "סדר מחדש, הסתר ושנה שם",
+  "@adminSettingsCategoriesSubtitle": {
+    "description": "Categories subtitle"
+  },
+
+  "adminSettingsIntegration": "אינטגרציה",
+  "@adminSettingsIntegration": {
+    "description": "Integration section header"
+  },
+
+  "adminSettingsRestaurantCode": "קוד מסעדה",
+  "@adminSettingsRestaurantCode": {
+    "description": "Restaurant code label"
+  },
+
+  "adminSettingsPublicUrl": "כתובת URL ציבורית",
+  "@adminSettingsPublicUrl": {
+    "description": "Public URL label"
+  },
+
+  "adminSettingsGenerateQr": "צור QR",
+  "@adminSettingsGenerateQr": {
+    "description": "Generate QR button"
+  },
+
+  "adminSettingsCopied": "הועתק: {value}",
+  "@adminSettingsCopied": {
+    "description": "Copied notification",
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+
+  "adminSettingsCodeGenerated": "קוד נוצר: {code}",
+  "@adminSettingsCodeGenerated": {
+    "description": "Code generation success",
+    "placeholders": {
+      "code": {
+        "type": "String"
+      }
+    }
+  },
+
+  "adminSettingsQrGenerator": "מחולל קוד QR",
+  "@adminSettingsQrGenerator": {
+    "description": "QR generator dialog title"
+  },
+
+  "adminSettingsConfiguration": "הגדרות",
+  "@adminSettingsConfiguration": {
+    "description": "Configuration section"
+  },
+
+  "adminSettingsCustomMessage": "הודעה מותאמת אישית (אופציונלי)",
+  "@adminSettingsCustomMessage": {
+    "description": "Custom message field label"
+  },
+
+  "adminSettingsCustomMessageHint": "לדוגמה: ברוכים הבאים!",
+  "@adminSettingsCustomMessageHint": {
+    "description": "Custom message hint"
+  },
+
+  "adminSettingsCustomMessageHelper": "מוצג מעל קוד ה-QR",
+  "@adminSettingsCustomMessageHelper": {
+    "description": "Custom message helper text"
+  },
+
+  "adminSettingsDownloadSize": "גודל הורדה",
+  "@adminSettingsDownloadSize": {
+    "description": "Download size label"
+  },
+
+  "adminSettingsSizeSmall": "קטן",
+  "@adminSettingsSizeSmall": {
+    "description": "Small size option"
+  },
+
+  "adminSettingsSizeMedium": "בינוני",
+  "@adminSettingsSizeMedium": {
+    "description": "Medium size option"
+  },
+
+  "adminSettingsSizeLarge": "גדול",
+  "@adminSettingsSizeLarge": {
+    "description": "Large size option"
+  },
+
+  "adminSettingsConfigSaved": "ההגדרות נשמרו",
+  "@adminSettingsConfigSaved": {
+    "description": "Config save success"
+  },
+
+  "adminSettingsScanToAccess": "סרוק כדי לגשת לתפריט",
+  "@adminSettingsScanToAccess": {
+    "description": "QR instruction text"
+  },
+
+  "adminSettingsDownloadQr": "הורד",
+  "@adminSettingsDownloadQr": {
+    "description": "Download QR button"
+  },
+
+  "adminSettingsTemplateA5": "תבנית A5",
+  "@adminSettingsTemplateA5": {
+    "description": "A5 template button"
+  },
+
+  "adminSettingsQrDownloaded": "קוד QR הורד בהצלחה!",
+  "@adminSettingsQrDownloaded": {
+    "description": "QR download success"
+  },
+
+  "adminSettingsTemplateDownloaded": "תבנית A5 הורדה!",
+  "@adminSettingsTemplateDownloaded": {
+    "description": "Template download success"
+  },
+
+  "adminSettingsUrlCopied": "הכתובת הועתקה ללוח",
+  "@adminSettingsUrlCopied": {
+    "description": "URL copy success"
+  },
+
+  "adminSettingsShareMenu": "שתף את התפריט שלך",
+  "@adminSettingsShareMenu": {
+    "description": "Share dialog title"
+  },
+
+  "adminSettingsChooseMethod": "בחר שיטה",
+  "@adminSettingsChooseMethod": {
+    "description": "Share method label"
+  },
+
+  "adminSettingsCopyLink": "העתק קישור",
+  "@adminSettingsCopyLink": {
+    "description": "Copy link button"
+  },
+
+  "adminSettingsEmail": "אימייל",
+  "@adminSettingsEmail": {
+    "description": "Email share option"
+  },
+
+  "adminSettingsSms": "SMS",
+  "@adminSettingsSms": {
+    "description": "SMS share option"
+  },
+
+  "adminSettingsWhatsApp": "WhatsApp",
+  "@adminSettingsWhatsApp": {
+    "description": "WhatsApp share option"
+  },
+
+  "adminSettingsFacebook": "Facebook",
+  "@adminSettingsFacebook": {
+    "description": "Facebook share option"
+  },
+
+  "adminSettingsUrlCopiedSuccess": "הכתובת הועתקה ללוח",
+  "@adminSettingsUrlCopiedSuccess": {
+    "description": "URL copy success with icon"
+  },
+
+  "commonShare": "שתף",
+  "@commonShare": {
+    "description": "Share button"
   }
 }

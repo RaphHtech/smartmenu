@@ -152,12 +152,12 @@ class QRConfig {
   }
 }
 
-/// Tailles de QR disponibles
+/// Available QR sizes
 enum QRSize {
-  small(200, 'small', 'Petit (200px)'),
-  medium(300, 'medium', 'Moyen (300px)'),
-  large(400, 'large', 'Grand (400px)'),
-  xlarge(600, 'xlarge', 'Très grand (600px)');
+  small(200, 'small', 'Small (200px)'),
+  medium(300, 'medium', 'Medium (300px)'),
+  large(400, 'large', 'Large (400px)'),
+  xlarge(600, 'xlarge', 'Extra Large (600px)');
 
   const QRSize(this.pixels, this.key, this.label);
   final int pixels;

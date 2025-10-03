@@ -927,6 +927,282 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{table} needs assistance'**
   String adminOrdersServerCallBody(String table);
+
+  /// Settings screen title
+  ///
+  /// In en, this message translates to:
+  /// **'Settings'**
+  String get adminSettingsTitle;
+
+  /// Restaurant section header
+  ///
+  /// In en, this message translates to:
+  /// **'Restaurant'**
+  String get adminSettingsRestaurant;
+
+  /// Restaurant name label
+  ///
+  /// In en, this message translates to:
+  /// **'Restaurant name'**
+  String get adminSettingsRestaurantName;
+
+  /// Loading state
+  ///
+  /// In en, this message translates to:
+  /// **'Loading...'**
+  String get adminSettingsLoading;
+
+  /// Name field placeholder
+  ///
+  /// In en, this message translates to:
+  /// **'E.g.: Pizza Mario'**
+  String get adminSettingsNamePlaceholder;
+
+  /// Validation: name required
+  ///
+  /// In en, this message translates to:
+  /// **'Restaurant name is required'**
+  String get adminSettingsNameRequired;
+
+  /// Validation: name too short
+  ///
+  /// In en, this message translates to:
+  /// **'Name must be at least 2 characters'**
+  String get adminSettingsNameTooShort;
+
+  /// Validation: name too long
+  ///
+  /// In en, this message translates to:
+  /// **'Name cannot exceed 50 characters'**
+  String get adminSettingsNameTooLong;
+
+  /// Success message after name update
+  ///
+  /// In en, this message translates to:
+  /// **'Restaurant name updated successfully'**
+  String get adminSettingsNameUpdated;
+
+  /// Generic save error
+  ///
+  /// In en, this message translates to:
+  /// **'Save error: {error}'**
+  String adminSettingsSaveError(String error);
+
+  /// Error loading restaurant name
+  ///
+  /// In en, this message translates to:
+  /// **'Unable to load restaurant name'**
+  String get adminSettingsLoadError;
+
+  /// Detailed info section title
+  ///
+  /// In en, this message translates to:
+  /// **'Detailed information'**
+  String get adminSettingsDetailedInfo;
+
+  /// Detailed info subtitle
+  ///
+  /// In en, this message translates to:
+  /// **'Description, promo banner, currency'**
+  String get adminSettingsDetailedInfoSubtitle;
+
+  /// Manage categories button
+  ///
+  /// In en, this message translates to:
+  /// **'Manage categories'**
+  String get adminSettingsManageCategories;
+
+  /// Categories subtitle
+  ///
+  /// In en, this message translates to:
+  /// **'Reorder, hide and rename'**
+  String get adminSettingsCategoriesSubtitle;
+
+  /// Integration section header
+  ///
+  /// In en, this message translates to:
+  /// **'Integration'**
+  String get adminSettingsIntegration;
+
+  /// Restaurant code label
+  ///
+  /// In en, this message translates to:
+  /// **'Restaurant code'**
+  String get adminSettingsRestaurantCode;
+
+  /// Public URL label
+  ///
+  /// In en, this message translates to:
+  /// **'Public URL'**
+  String get adminSettingsPublicUrl;
+
+  /// Generate QR button
+  ///
+  /// In en, this message translates to:
+  /// **'Generate QR'**
+  String get adminSettingsGenerateQr;
+
+  /// Copied notification
+  ///
+  /// In en, this message translates to:
+  /// **'Copied: {value}'**
+  String adminSettingsCopied(String value);
+
+  /// Code generation success
+  ///
+  /// In en, this message translates to:
+  /// **'Code generated: {code}'**
+  String adminSettingsCodeGenerated(String code);
+
+  /// QR generator dialog title
+  ///
+  /// In en, this message translates to:
+  /// **'QR Code Generator'**
+  String get adminSettingsQrGenerator;
+
+  /// Configuration section
+  ///
+  /// In en, this message translates to:
+  /// **'Configuration'**
+  String get adminSettingsConfiguration;
+
+  /// Custom message field label
+  ///
+  /// In en, this message translates to:
+  /// **'Custom message (optional)'**
+  String get adminSettingsCustomMessage;
+
+  /// Custom message hint
+  ///
+  /// In en, this message translates to:
+  /// **'E.g.: Welcome!'**
+  String get adminSettingsCustomMessageHint;
+
+  /// Custom message helper text
+  ///
+  /// In en, this message translates to:
+  /// **'Displayed above QR code'**
+  String get adminSettingsCustomMessageHelper;
+
+  /// Download size label
+  ///
+  /// In en, this message translates to:
+  /// **'Download size'**
+  String get adminSettingsDownloadSize;
+
+  /// Small size option
+  ///
+  /// In en, this message translates to:
+  /// **'Small'**
+  String get adminSettingsSizeSmall;
+
+  /// Medium size option
+  ///
+  /// In en, this message translates to:
+  /// **'Medium'**
+  String get adminSettingsSizeMedium;
+
+  /// Large size option
+  ///
+  /// In en, this message translates to:
+  /// **'Large'**
+  String get adminSettingsSizeLarge;
+
+  /// Config save success
+  ///
+  /// In en, this message translates to:
+  /// **'Configuration saved'**
+  String get adminSettingsConfigSaved;
+
+  /// QR instruction text
+  ///
+  /// In en, this message translates to:
+  /// **'Scan to access the menu'**
+  String get adminSettingsScanToAccess;
+
+  /// Download QR button
+  ///
+  /// In en, this message translates to:
+  /// **'Download'**
+  String get adminSettingsDownloadQr;
+
+  /// A5 template button
+  ///
+  /// In en, this message translates to:
+  /// **'A5 Template'**
+  String get adminSettingsTemplateA5;
+
+  /// QR download success
+  ///
+  /// In en, this message translates to:
+  /// **'QR Code downloaded successfully!'**
+  String get adminSettingsQrDownloaded;
+
+  /// Template download success
+  ///
+  /// In en, this message translates to:
+  /// **'A5 template downloaded!'**
+  String get adminSettingsTemplateDownloaded;
+
+  /// URL copy success
+  ///
+  /// In en, this message translates to:
+  /// **'URL copied to clipboard'**
+  String get adminSettingsUrlCopied;
+
+  /// Share dialog title
+  ///
+  /// In en, this message translates to:
+  /// **'Share your menu'**
+  String get adminSettingsShareMenu;
+
+  /// Share method label
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a method'**
+  String get adminSettingsChooseMethod;
+
+  /// Copy link button
+  ///
+  /// In en, this message translates to:
+  /// **'Copy link'**
+  String get adminSettingsCopyLink;
+
+  /// Email share option
+  ///
+  /// In en, this message translates to:
+  /// **'Email'**
+  String get adminSettingsEmail;
+
+  /// SMS share option
+  ///
+  /// In en, this message translates to:
+  /// **'SMS'**
+  String get adminSettingsSms;
+
+  /// WhatsApp share option
+  ///
+  /// In en, this message translates to:
+  /// **'WhatsApp'**
+  String get adminSettingsWhatsApp;
+
+  /// Facebook share option
+  ///
+  /// In en, this message translates to:
+  /// **'Facebook'**
+  String get adminSettingsFacebook;
+
+  /// URL copy success with icon
+  ///
+  /// In en, this message translates to:
+  /// **'URL copied to clipboard'**
+  String get adminSettingsUrlCopiedSuccess;
+
+  /// Share button
+  ///
+  /// In en, this message translates to:
+  /// **'Share'**
+  String get commonShare;
 }
 
 class _AppLocalizationsDelegate

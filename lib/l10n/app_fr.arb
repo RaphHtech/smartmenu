@@ -775,5 +775,250 @@
         "example": "Table 5"
       }
     }
+  },
+
+  "adminSettingsTitle": "Paramètres",
+  "@adminSettingsTitle": {
+    "description": "Settings screen title"
+  },
+
+  "adminSettingsRestaurant": "Restaurant",
+  "@adminSettingsRestaurant": {
+    "description": "Restaurant section header"
+  },
+
+  "adminSettingsRestaurantName": "Nom du restaurant",
+  "@adminSettingsRestaurantName": {
+    "description": "Restaurant name label"
+  },
+
+  "adminSettingsLoading": "Chargement...",
+  "@adminSettingsLoading": {
+    "description": "Loading state"
+  },
+
+  "adminSettingsNamePlaceholder": "Ex : Pizza Mario",
+  "@adminSettingsNamePlaceholder": {
+    "description": "Name field placeholder"
+  },
+
+  "adminSettingsNameRequired": "Le nom du restaurant est obligatoire",
+  "@adminSettingsNameRequired": {
+    "description": "Validation: name required"
+  },
+
+  "adminSettingsNameTooShort": "Le nom doit contenir au moins 2 caractères",
+  "@adminSettingsNameTooShort": {
+    "description": "Validation: name too short"
+  },
+
+  "adminSettingsNameTooLong": "Le nom ne peut pas dépasser 50 caractères",
+  "@adminSettingsNameTooLong": {
+    "description": "Validation: name too long"
+  },
+
+  "adminSettingsNameUpdated": "Nom du restaurant mis à jour avec succès",
+  "@adminSettingsNameUpdated": {
+    "description": "Success message after name update"
+  },
+
+  "adminSettingsSaveError": "Erreur lors de la sauvegarde : {error}",
+  "@adminSettingsSaveError": {
+    "description": "Generic save error",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+
+  "adminSettingsLoadError": "Impossible de charger le nom du restaurant",
+  "@adminSettingsLoadError": {
+    "description": "Error loading restaurant name"
+  },
+
+  "adminSettingsDetailedInfo": "Informations détaillées",
+  "@adminSettingsDetailedInfo": {
+    "description": "Detailed info section title"
+  },
+
+  "adminSettingsDetailedInfoSubtitle": "Description, bandeau promo, devise",
+  "@adminSettingsDetailedInfoSubtitle": {
+    "description": "Detailed info subtitle"
+  },
+
+  "adminSettingsManageCategories": "Gérer les catégories",
+  "@adminSettingsManageCategories": {
+    "description": "Manage categories button"
+  },
+
+  "adminSettingsCategoriesSubtitle": "Réorganiser, masquer et renommer",
+  "@adminSettingsCategoriesSubtitle": {
+    "description": "Categories subtitle"
+  },
+
+  "adminSettingsIntegration": "Intégration",
+  "@adminSettingsIntegration": {
+    "description": "Integration section header"
+  },
+
+  "adminSettingsRestaurantCode": "Code restaurant",
+  "@adminSettingsRestaurantCode": {
+    "description": "Restaurant code label"
+  },
+
+  "adminSettingsPublicUrl": "URL publique",
+  "@adminSettingsPublicUrl": {
+    "description": "Public URL label"
+  },
+
+  "adminSettingsGenerateQr": "Générer QR",
+  "@adminSettingsGenerateQr": {
+    "description": "Generate QR button"
+  },
+
+  "adminSettingsCopied": "Copié : {value}",
+  "@adminSettingsCopied": {
+    "description": "Copied notification",
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+
+  "adminSettingsCodeGenerated": "Code généré : {code}",
+  "@adminSettingsCodeGenerated": {
+    "description": "Code generation success",
+    "placeholders": {
+      "code": {
+        "type": "String"
+      }
+    }
+  },
+
+  "adminSettingsQrGenerator": "Générateur QR Code",
+  "@adminSettingsQrGenerator": {
+    "description": "QR generator dialog title"
+  },
+
+  "adminSettingsConfiguration": "Configuration",
+  "@adminSettingsConfiguration": {
+    "description": "Configuration section"
+  },
+
+  "adminSettingsCustomMessage": "Message personnalisé (optionnel)",
+  "@adminSettingsCustomMessage": {
+    "description": "Custom message field label"
+  },
+
+  "adminSettingsCustomMessageHint": "Ex : Bienvenue chez nous !",
+  "@adminSettingsCustomMessageHint": {
+    "description": "Custom message hint"
+  },
+
+  "adminSettingsCustomMessageHelper": "Affiché au-dessus du QR code",
+  "@adminSettingsCustomMessageHelper": {
+    "description": "Custom message helper text"
+  },
+
+  "adminSettingsDownloadSize": "Taille de téléchargement",
+  "@adminSettingsDownloadSize": {
+    "description": "Download size label"
+  },
+
+  "adminSettingsSizeSmall": "Petit",
+  "@adminSettingsSizeSmall": {
+    "description": "Small size option"
+  },
+
+  "adminSettingsSizeMedium": "Moyen",
+  "@adminSettingsSizeMedium": {
+    "description": "Medium size option"
+  },
+
+  "adminSettingsSizeLarge": "Grand",
+  "@adminSettingsSizeLarge": {
+    "description": "Large size option"
+  },
+
+  "adminSettingsConfigSaved": "Configuration sauvegardée",
+  "@adminSettingsConfigSaved": {
+    "description": "Config save success"
+  },
+
+  "adminSettingsScanToAccess": "Scannez pour accéder au menu",
+  "@adminSettingsScanToAccess": {
+    "description": "QR instruction text"
+  },
+
+  "adminSettingsDownloadQr": "Télécharger",
+  "@adminSettingsDownloadQr": {
+    "description": "Download QR button"
+  },
+
+  "adminSettingsTemplateA5": "Template A5",
+  "@adminSettingsTemplateA5": {
+    "description": "A5 template button"
+  },
+
+  "adminSettingsQrDownloaded": "QR Code téléchargé avec succès !",
+  "@adminSettingsQrDownloaded": {
+    "description": "QR download success"
+  },
+
+  "adminSettingsTemplateDownloaded": "Template A5 téléchargé !",
+  "@adminSettingsTemplateDownloaded": {
+    "description": "Template download success"
+  },
+
+  "adminSettingsUrlCopied": "URL copiée dans le presse-papier",
+  "@adminSettingsUrlCopied": {
+    "description": "URL copy success"
+  },
+
+  "adminSettingsShareMenu": "Partager votre menu",
+  "@adminSettingsShareMenu": {
+    "description": "Share dialog title"
+  },
+
+  "adminSettingsChooseMethod": "Choisir une méthode",
+  "@adminSettingsChooseMethod": {
+    "description": "Share method label"
+  },
+
+  "adminSettingsCopyLink": "Copier le lien",
+  "@adminSettingsCopyLink": {
+    "description": "Copy link button"
+  },
+
+  "adminSettingsEmail": "Email",
+  "@adminSettingsEmail": {
+    "description": "Email share option"
+  },
+
+  "adminSettingsSms": "SMS",
+  "@adminSettingsSms": {
+    "description": "SMS share option"
+  },
+
+  "adminSettingsWhatsApp": "WhatsApp",
+  "@adminSettingsWhatsApp": {
+    "description": "WhatsApp share option"
+  },
+
+  "adminSettingsFacebook": "Facebook",
+  "@adminSettingsFacebook": {
+    "description": "Facebook share option"
+  },
+
+  "adminSettingsUrlCopiedSuccess": "URL copiée dans le presse-papier",
+  "@adminSettingsUrlCopiedSuccess": {
+    "description": "URL copy success with icon"
+  },
+
+  "commonShare": "Partager",
+  "@commonShare": {
+    "description": "Share button"
   }
 }

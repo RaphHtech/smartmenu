@@ -471,4 +471,156 @@ class AppLocalizationsFr extends AppLocalizations {
   String adminOrdersServerCallBody(String table) {
     return '$table demande de l\'assistance';
   }
+
+  @override
+  String get adminSettingsTitle => 'Paramètres';
+
+  @override
+  String get adminSettingsRestaurant => 'Restaurant';
+
+  @override
+  String get adminSettingsRestaurantName => 'Nom du restaurant';
+
+  @override
+  String get adminSettingsLoading => 'Chargement...';
+
+  @override
+  String get adminSettingsNamePlaceholder => 'Ex : Pizza Mario';
+
+  @override
+  String get adminSettingsNameRequired =>
+      'Le nom du restaurant est obligatoire';
+
+  @override
+  String get adminSettingsNameTooShort =>
+      'Le nom doit contenir au moins 2 caractères';
+
+  @override
+  String get adminSettingsNameTooLong =>
+      'Le nom ne peut pas dépasser 50 caractères';
+
+  @override
+  String get adminSettingsNameUpdated =>
+      'Nom du restaurant mis à jour avec succès';
+
+  @override
+  String adminSettingsSaveError(String error) {
+    return 'Erreur lors de la sauvegarde : $error';
+  }
+
+  @override
+  String get adminSettingsLoadError =>
+      'Impossible de charger le nom du restaurant';
+
+  @override
+  String get adminSettingsDetailedInfo => 'Informations détaillées';
+
+  @override
+  String get adminSettingsDetailedInfoSubtitle =>
+      'Description, bandeau promo, devise';
+
+  @override
+  String get adminSettingsManageCategories => 'Gérer les catégories';
+
+  @override
+  String get adminSettingsCategoriesSubtitle =>
+      'Réorganiser, masquer et renommer';
+
+  @override
+  String get adminSettingsIntegration => 'Intégration';
+
+  @override
+  String get adminSettingsRestaurantCode => 'Code restaurant';
+
+  @override
+  String get adminSettingsPublicUrl => 'URL publique';
+
+  @override
+  String get adminSettingsGenerateQr => 'Générer QR';
+
+  @override
+  String adminSettingsCopied(String value) {
+    return 'Copié : $value';
+  }
+
+  @override
+  String adminSettingsCodeGenerated(String code) {
+    return 'Code généré : $code';
+  }
+
+  @override
+  String get adminSettingsQrGenerator => 'Générateur QR Code';
+
+  @override
+  String get adminSettingsConfiguration => 'Configuration';
+
+  @override
+  String get adminSettingsCustomMessage => 'Message personnalisé (optionnel)';
+
+  @override
+  String get adminSettingsCustomMessageHint => 'Ex : Bienvenue chez nous !';
+
+  @override
+  String get adminSettingsCustomMessageHelper => 'Affiché au-dessus du QR code';
+
+  @override
+  String get adminSettingsDownloadSize => 'Taille de téléchargement';
+
+  @override
+  String get adminSettingsSizeSmall => 'Petit';
+
+  @override
+  String get adminSettingsSizeMedium => 'Moyen';
+
+  @override
+  String get adminSettingsSizeLarge => 'Grand';
+
+  @override
+  String get adminSettingsConfigSaved => 'Configuration sauvegardée';
+
+  @override
+  String get adminSettingsScanToAccess => 'Scannez pour accéder au menu';
+
+  @override
+  String get adminSettingsDownloadQr => 'Télécharger';
+
+  @override
+  String get adminSettingsTemplateA5 => 'Template A5';
+
+  @override
+  String get adminSettingsQrDownloaded => 'QR Code téléchargé avec succès !';
+
+  @override
+  String get adminSettingsTemplateDownloaded => 'Template A5 téléchargé !';
+
+  @override
+  String get adminSettingsUrlCopied => 'URL copiée dans le presse-papier';
+
+  @override
+  String get adminSettingsShareMenu => 'Partager votre menu';
+
+  @override
+  String get adminSettingsChooseMethod => 'Choisir une méthode';
+
+  @override
+  String get adminSettingsCopyLink => 'Copier le lien';
+
+  @override
+  String get adminSettingsEmail => 'Email';
+
+  @override
+  String get adminSettingsSms => 'SMS';
+
+  @override
+  String get adminSettingsWhatsApp => 'WhatsApp';
+
+  @override
+  String get adminSettingsFacebook => 'Facebook';
+
+  @override
+  String get adminSettingsUrlCopiedSuccess =>
+      'URL copiée dans le presse-papier';
+
+  @override
+  String get commonShare => 'Partager';
 }

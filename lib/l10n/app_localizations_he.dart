@@ -470,4 +470,148 @@ class AppLocalizationsHe extends AppLocalizations {
   String adminOrdersServerCallBody(String table) {
     return '$table זקוק לסיוע';
   }
+
+  @override
+  String get adminSettingsTitle => 'הגדרות';
+
+  @override
+  String get adminSettingsRestaurant => 'מסעדה';
+
+  @override
+  String get adminSettingsRestaurantName => 'שם המסעדה';
+
+  @override
+  String get adminSettingsLoading => 'טוען...';
+
+  @override
+  String get adminSettingsNamePlaceholder => 'לדוגמה: פיצה מריו';
+
+  @override
+  String get adminSettingsNameRequired => 'שם המסעדה הוא שדה חובה';
+
+  @override
+  String get adminSettingsNameTooShort => 'השם חייב להכיל לפחות 2 תווים';
+
+  @override
+  String get adminSettingsNameTooLong => 'השם לא יכול לעבור 50 תווים';
+
+  @override
+  String get adminSettingsNameUpdated => 'שם המסעדה עודכן בהצלחה';
+
+  @override
+  String adminSettingsSaveError(String error) {
+    return 'שגיאה בשמירה: $error';
+  }
+
+  @override
+  String get adminSettingsLoadError => 'לא ניתן לטעון את שם המסעדה';
+
+  @override
+  String get adminSettingsDetailedInfo => 'מידע מפורט';
+
+  @override
+  String get adminSettingsDetailedInfoSubtitle => 'תיאור, באנר קידום, מטבע';
+
+  @override
+  String get adminSettingsManageCategories => 'נהל קטגוריות';
+
+  @override
+  String get adminSettingsCategoriesSubtitle => 'סדר מחדש, הסתר ושנה שם';
+
+  @override
+  String get adminSettingsIntegration => 'אינטגרציה';
+
+  @override
+  String get adminSettingsRestaurantCode => 'קוד מסעדה';
+
+  @override
+  String get adminSettingsPublicUrl => 'כתובת URL ציבורית';
+
+  @override
+  String get adminSettingsGenerateQr => 'צור QR';
+
+  @override
+  String adminSettingsCopied(String value) {
+    return 'הועתק: $value';
+  }
+
+  @override
+  String adminSettingsCodeGenerated(String code) {
+    return 'קוד נוצר: $code';
+  }
+
+  @override
+  String get adminSettingsQrGenerator => 'מחולל קוד QR';
+
+  @override
+  String get adminSettingsConfiguration => 'הגדרות';
+
+  @override
+  String get adminSettingsCustomMessage => 'הודעה מותאמת אישית (אופציונלי)';
+
+  @override
+  String get adminSettingsCustomMessageHint => 'לדוגמה: ברוכים הבאים!';
+
+  @override
+  String get adminSettingsCustomMessageHelper => 'מוצג מעל קוד ה-QR';
+
+  @override
+  String get adminSettingsDownloadSize => 'גודל הורדה';
+
+  @override
+  String get adminSettingsSizeSmall => 'קטן';
+
+  @override
+  String get adminSettingsSizeMedium => 'בינוני';
+
+  @override
+  String get adminSettingsSizeLarge => 'גדול';
+
+  @override
+  String get adminSettingsConfigSaved => 'ההגדרות נשמרו';
+
+  @override
+  String get adminSettingsScanToAccess => 'סרוק כדי לגשת לתפריט';
+
+  @override
+  String get adminSettingsDownloadQr => 'הורד';
+
+  @override
+  String get adminSettingsTemplateA5 => 'תבנית A5';
+
+  @override
+  String get adminSettingsQrDownloaded => 'קוד QR הורד בהצלחה!';
+
+  @override
+  String get adminSettingsTemplateDownloaded => 'תבנית A5 הורדה!';
+
+  @override
+  String get adminSettingsUrlCopied => 'הכתובת הועתקה ללוח';
+
+  @override
+  String get adminSettingsShareMenu => 'שתף את התפריט שלך';
+
+  @override
+  String get adminSettingsChooseMethod => 'בחר שיטה';
+
+  @override
+  String get adminSettingsCopyLink => 'העתק קישור';
+
+  @override
+  String get adminSettingsEmail => 'אימייל';
+
+  @override
+  String get adminSettingsSms => 'SMS';
+
+  @override
+  String get adminSettingsWhatsApp => 'WhatsApp';
+
+  @override
+  String get adminSettingsFacebook => 'Facebook';
+
+  @override
+  String get adminSettingsUrlCopiedSuccess => 'הכתובת הועתקה ללוח';
+
+  @override
+  String get commonShare => 'שתף';
 }
