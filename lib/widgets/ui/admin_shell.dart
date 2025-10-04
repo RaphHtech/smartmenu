@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:provider/provider.dart';
 import 'package:smartmenu_app/core/breakpoint_controller.dart';
 import 'package:smartmenu_app/l10n/app_localizations.dart';
 import 'package:smartmenu_app/screens/admin/admin_branding_screen.dart';
 import 'package:smartmenu_app/screens/admin/admin_orders_screen.dart';
+import 'package:smartmenu_app/state/language_provider.dart';
 import '../../screens/admin/admin_dashboard_overview_screen.dart';
 import '../../core/design/admin_tokens.dart';
 import '../../core/design/admin_typography.dart';
@@ -512,9 +514,9 @@ class _AdminShellState extends State<AdminShell> {
                   ),
                 ],
 
-                // MOBILE: Mini menu système (juste langue)
+                // MOBILE: Dropdown langue direct
                 if (!isDesktop)
-                  PopupMenuButton<String>(
+                  PopupMenuButton<Locale>(
                     icon: const Icon(Icons.language, size: 20),
                     padding: EdgeInsets.zero,
                     constraints: const BoxConstraints(
@@ -522,132 +524,65 @@ class _AdminShellState extends State<AdminShell> {
                       minHeight: 40,
                     ),
                     tooltip: AppLocalizations.of(context)!.commonLanguage,
-                    onSelected: (value) {
-                      if (value == 'language') {
-                        _showLanguageDialog(context);
-                      }
+                    onSelected: (locale) {
+                      context.read<LanguageProvider>().setLocale(locale);
                     },
-                    itemBuilder: (context) => [
-                      PopupMenuItem<String>(
-                        value: 'language',
-                        child: Row(
-                          children: [
-                            const Text('🌐', style: TextStyle(fontSize: 20)),
-                            const SizedBox(width: 12),
-                            Text(AppLocalizations.of(context)!.commonLanguage),
-                          ],
+                    itemBuilder: (context) {
+                      final currentLocale = Localizations.localeOf(context);
+                      return [
+                        PopupMenuItem<Locale>(
+                          value: const Locale('en'),
+                          child: Row(
+                            children: [
+                              const Text('🇬🇧',
+                                  style: TextStyle(fontSize: 20)),
+                              const SizedBox(width: 12),
+                              const Text('English'),
+                              const Spacer(),
+                              if (currentLocale.languageCode == 'en')
+                                const Icon(Icons.check,
+                                    size: 18, color: AdminTokens.primary600),
+                            ],
+                          ),
                         ),
-                      ),
-                    ],
+                        PopupMenuItem<Locale>(
+                          value: const Locale('he'),
+                          child: Row(
+                            children: [
+                              const Text('🇮🇱',
+                                  style: TextStyle(fontSize: 20)),
+                              const SizedBox(width: 12),
+                              const Text('עברית'),
+                              const Spacer(),
+                              if (currentLocale.languageCode == 'he')
+                                const Icon(Icons.check,
+                                    size: 18, color: AdminTokens.primary600),
+                            ],
+                          ),
+                        ),
+                        PopupMenuItem<Locale>(
+                          value: const Locale('fr'),
+                          child: Row(
+                            children: [
+                              const Text('🇫🇷',
+                                  style: TextStyle(fontSize: 20)),
+                              const SizedBox(width: 12),
+                              const Text('Français'),
+                              const Spacer(),
+                              if (currentLocale.languageCode == 'fr')
+                                const Icon(Icons.check,
+                                    size: 18, color: AdminTokens.primary600),
+                            ],
+                          ),
+                        ),
+                      ];
+                    },
                   ),
               ],
             ),
           ),
         );
       },
-    );
-  }
-
-  Widget _buildMobileMenu(BuildContext context) {
-    return PopupMenuButton<String>(
-      icon: const Icon(Icons.more_vert, size: 20),
-      padding: EdgeInsets.zero,
-      constraints: const BoxConstraints(
-        minWidth: 40,
-        minHeight: 40,
-      ),
-      onSelected: (value) {
-        if (value == 'language') {
-          _showLanguageDialog(context);
-        }
-        // Actions custom sont gérées par leurs index
-        else if (value.startsWith('action_')) {
-          final index = int.parse(value.split('_')[1]);
-          if (widget.actions != null && index < widget.actions!.length) {
-            final action = widget.actions![index];
-            if (action is IconButton && action.onPressed != null) {
-              // Délai pour laisser le menu se fermer
-              Future.delayed(const Duration(milliseconds: 100), () {
-                action.onPressed!();
-              });
-            }
-          }
-        }
-      },
-      itemBuilder: (context) {
-        final items = <PopupMenuEntry<String>>[];
-
-        // Extraire les actions custom
-        if (widget.actions != null) {
-          for (int i = 0; i < widget.actions!.length; i++) {
-            final action = widget.actions![i];
-            if (action is IconButton) {
-              IconData? icon;
-              String label = 'Action';
-
-              // Extraire l'icône
-              if (action.icon is Icon) {
-                icon = (action.icon as Icon).icon;
-              }
-
-              // Utiliser le tooltip comme label
-              if (action.tooltip != null) {
-                label = action.tooltip!;
-              }
-
-              items.add(
-                PopupMenuItem<String>(
-                  value: 'action_$i',
-                  child: Row(
-                    children: [
-                      Icon(icon ?? Icons.add, size: 20),
-                      const SizedBox(width: 12),
-                      Text(label),
-                    ],
-                  ),
-                ),
-              );
-            }
-          }
-
-          if (items.isNotEmpty) {
-            items.add(const PopupMenuDivider());
-          }
-        }
-
-        // Langue
-        items.add(
-          PopupMenuItem<String>(
-            value: 'language',
-            child: Row(
-              children: [
-                const Text('🌐', style: TextStyle(fontSize: 20)),
-                const SizedBox(width: 12),
-                Text(AppLocalizations.of(context)!.commonLanguage),
-              ],
-            ),
-          ),
-        );
-
-        return items;
-      },
-    );
-  }
-
-  void _showLanguageDialog(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: Text(AppLocalizations.of(context)!.commonLanguage),
-        contentPadding: const EdgeInsets.symmetric(vertical: 20),
-        content: const LanguageSelectorWidget(),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: Text(AppLocalizations.of(context)!.commonClose),
-          ),
-        ],
-      ),
     );
   }
 
