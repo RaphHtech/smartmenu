@@ -617,4 +617,175 @@ class AppLocalizationsHe extends AppLocalizations {
 
   @override
   String get commonLanguage => 'שפה';
+
+  @override
+  String get adminRestaurantInfoTitle => 'מידע על המסעדה';
+
+  @override
+  String get adminRestaurantInfoTaglineSection => 'טקסט משנה (תיאור קצר)';
+
+  @override
+  String get adminRestaurantInfoTaglinePlaceholder =>
+      'לדוגמה: פיצה איטלקית אמיתית בתל אביב';
+
+  @override
+  String get adminRestaurantInfoTaglineMaxLength => '120 תווים מקסימום';
+
+  @override
+  String get adminRestaurantInfoPromoToggleTitle => 'הצג באנר פרסומי';
+
+  @override
+  String get adminRestaurantInfoPromoToggleSubtitle =>
+      'בטל סימון כדי להסתיר את הבאנר באתר';
+
+  @override
+  String get adminRestaurantInfoPromoSection => 'באנר פרסומי (אופציונלי)';
+
+  @override
+  String get adminRestaurantInfoPromoPlaceholder =>
+      'לדוגמה: ✨ פיצה שנייה -50% • משלוח חינם מ-80₪ ✨';
+
+  @override
+  String get adminRestaurantInfoPromoMaxLength => '140 תווים מקסימום';
+
+  @override
+  String adminRestaurantInfoLoadError(String error) {
+    return 'שגיאה בטעינת מידע: $error';
+  }
+
+  @override
+  String get adminRestaurantInfoSaveSuccess => 'המידע נשמר ✅';
+
+  @override
+  String adminRestaurantInfoSaveError(String error) {
+    return 'שגיאה בשמירה: $error';
+  }
+
+  @override
+  String get adminMediaTitle => 'מדיה';
+
+  @override
+  String get adminMediaAddButton => 'הוסף';
+
+  @override
+  String get adminMediaDropZoneClick => 'לחץ לבחירת קובץ';
+
+  @override
+  String get adminMediaDropZoneFormats => 'PNG, JPG, WebP - מקסימום 5MB';
+
+  @override
+  String get adminMediaErrorFormat =>
+      'פורמט לא נתמך. השתמש ב-PNG, JPG או WebP.';
+
+  @override
+  String get adminMediaErrorSize => 'קובץ גדול מדי (מקסימום 5MB).';
+
+  @override
+  String adminMediaErrorLoad(String error) {
+    return 'שגיאה בטעינת מדיה: $error';
+  }
+
+  @override
+  String adminMediaErrorUpload(String error) {
+    return 'שגיאת העלאה: $error';
+  }
+
+  @override
+  String get adminMediaSuccessUpload => 'התמונה הועלתה בהצלחה!';
+
+  @override
+  String get adminMediaSuccessDelete => 'המדיה נמחק בהצלחה';
+
+  @override
+  String get adminMediaSuccessAssign => 'התמונה הוקצתה בהצלחה';
+
+  @override
+  String get adminMediaUploadProgress => 'העלאה בתהליך...';
+
+  @override
+  String get adminMediaDeleteTitle => 'מחק מדיה';
+
+  @override
+  String adminMediaDeleteConfirm(String name) {
+    return 'האם אתה בטוח שברצונך למחוק את \"$name\"?';
+  }
+
+  @override
+  String get adminMediaDeleteButton => 'מחק';
+
+  @override
+  String get adminMediaAssignTitle => 'הקצה למנה';
+
+  @override
+  String get adminMediaAssignSearch => 'חפש מנה...';
+
+  @override
+  String get adminMediaAssignNoDishes => 'אין מנות זמינות';
+
+  @override
+  String get adminMediaEmptyTitle => 'אין מדיה';
+
+  @override
+  String get adminMediaEmptySubtitle =>
+      'הוסף את התמונות הראשונות שלך כדי להתחיל';
+
+  @override
+  String get adminMediaAssignButton => 'הקצה';
+
+  @override
+  String get adminBrandingTitle => 'מיתוג';
+
+  @override
+  String get adminBrandingIdentity => 'זהות המותג';
+
+  @override
+  String get adminBrandingLogoSection => 'לוגו המסעדה';
+
+  @override
+  String get adminBrandingLogoFormat =>
+      'פורמט מומלץ: PNG מרובע, רקע שקוף, מינימום 256×256px';
+
+  @override
+  String get adminBrandingLogoFormats => 'PNG מומלץ (רקע שקוף), JPG מקובל';
+
+  @override
+  String get adminBrandingUploadClick => 'לחץ להעלאת לוגו';
+
+  @override
+  String get adminBrandingErrorSize => 'הקובץ חייב להיות קטן מ-2MB';
+
+  @override
+  String get adminBrandingErrorFormat => 'אנא בחר תמונה (PNG/JPG)';
+
+  @override
+  String adminBrandingErrorSelection(String error) {
+    return 'שגיאה בבחירה: $error';
+  }
+
+  @override
+  String adminBrandingErrorLoad(String error) {
+    return 'שגיאת טעינה: $error';
+  }
+
+  @override
+  String get adminBrandingSuccessUpload => 'הלוגו הועלה בהצלחה';
+
+  @override
+  String get adminBrandingSuccessDelete => 'הלוגו נמחק בהצלחה';
+
+  @override
+  String get adminBrandingPreviewTitle => 'תצוגה מקדימה';
+
+  @override
+  String get adminBrandingPreviewDescription =>
+      'ראה כיצד הלוגו שלך יופיע בממשק הלקוח';
+
+  @override
+  String get adminBrandingPreviewHero => 'כותרת ראשית';
+
+  @override
+  String get adminBrandingPreviewSticky => 'כותרת דביקה (מכווצת)';
+
+  @override
+  String get adminBrandingRestaurantDefault => 'מסעדה';
 }

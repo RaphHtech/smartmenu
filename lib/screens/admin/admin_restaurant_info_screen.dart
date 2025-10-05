@@ -1,11 +1,12 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:smartmenu_app/core/design/admin_typography.dart';
+import 'package:smartmenu_app/l10n/app_localizations.dart';
 import '../../widgets/ui/admin_shell.dart';
 import '../../core/design/admin_tokens.dart';
 
 class AdminRestaurantInfoScreen extends StatefulWidget {
-  final String restaurantId; // rid
+  final String restaurantId;
   final bool showBack;
 
   const AdminRestaurantInfoScreen({
@@ -53,16 +54,18 @@ class _AdminRestaurantInfoScreenState extends State<AdminRestaurantInfoScreen> {
       final data = doc.data() ?? {};
       _taglineController.text = (data['tagline'] ?? '').toString();
       _promoController.text = (data['promo_text'] ?? '').toString();
-      _promoEnabled = (data['promo_enabled'] as bool?) ?? true; // <-- NEW
+      _promoEnabled = (data['promo_enabled'] as bool?) ?? true;
 
       setState(() {
         _loading = false;
         _error = null;
       });
     } catch (e) {
+      if (!mounted) return;
+      final l10n = AppLocalizations.of(context)!;
       setState(() {
         _loading = false;
-        _error = 'Impossible de charger les infos : $e';
+        _error = l10n.adminRestaurantInfoLoadError(e.toString());
       });
     }
   }
@@ -82,19 +85,21 @@ class _AdminRestaurantInfoScreenState extends State<AdminRestaurantInfoScreen> {
           .collection('info')
           .doc('details')
           .set({
-        // on fusionne uniquement ces 2 champs
         'tagline': _taglineController.text.trim(),
         'promo_text': _promoController.text.trim(),
         'promo_enabled': _promoEnabled,
       }, SetOptions(merge: true));
 
       if (!mounted) return;
+      final l10n = AppLocalizations.of(context)!;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Infos enregistrées ✅')),
+        SnackBar(content: Text(l10n.adminRestaurantInfoSaveSuccess)),
       );
-      Navigator.pop(context); // retour dashboard
+      Navigator.pop(context);
     } catch (e) {
-      setState(() => _error = 'Erreur enregistrement : $e');
+      if (!mounted) return;
+      final l10n = AppLocalizations.of(context)!;
+      setState(() => _error = l10n.adminRestaurantInfoSaveError(e.toString()));
     } finally {
       if (mounted) setState(() => _saving = false);
     }
@@ -102,13 +107,15 @@ class _AdminRestaurantInfoScreenState extends State<AdminRestaurantInfoScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return AdminShell(
-      title: 'Infos du restaurant',
+      title: l10n.adminRestaurantInfoTitle,
       restaurantId: widget.restaurantId,
       activeRoute: '/info',
-      breadcrumbs: const ['Dashboard', 'Infos du restaurant'],
+      breadcrumbs: [l10n.adminDashboardTitle, l10n.adminRestaurantInfoTitle],
       child: _loading
-          ? const Center(child: CircularProgressIndicator())
+          ? Center(child: CircularProgressIndicator())
           : SingleChildScrollView(
               padding: const EdgeInsets.all(24),
               child: Form(
@@ -118,9 +125,9 @@ class _AdminRestaurantInfoScreenState extends State<AdminRestaurantInfoScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      const Text(
-                        'Texte sous le titre (tagline)',
-                        style: TextStyle(
+                      Text(
+                        l10n.adminRestaurantInfoTaglineSection,
+                        style: const TextStyle(
                           fontWeight: FontWeight.w700,
                           fontSize: 16,
                         ),
@@ -129,7 +136,7 @@ class _AdminRestaurantInfoScreenState extends State<AdminRestaurantInfoScreen> {
                       TextFormField(
                         controller: _taglineController,
                         decoration: InputDecoration(
-                          hintText: 'Ex. La vraie pizza italienne à Tel Aviv',
+                          hintText: l10n.adminRestaurantInfoTaglinePlaceholder,
                           prefixIcon: const Icon(Icons.short_text),
                           border: OutlineInputBorder(
                             borderRadius:
@@ -138,7 +145,7 @@ class _AdminRestaurantInfoScreenState extends State<AdminRestaurantInfoScreen> {
                         ),
                         maxLength: 120,
                         validator: (v) => (v ?? '').length > 120
-                            ? '120 caractères max'
+                            ? l10n.adminRestaurantInfoTaglineMaxLength
                             : null,
                       ),
                       const SizedBox(height: 8),
@@ -151,24 +158,23 @@ class _AdminRestaurantInfoScreenState extends State<AdminRestaurantInfoScreen> {
                           border: Border.all(color: AdminTokens.border),
                         ),
                         child: SwitchListTile(
-                          title: const Text('Afficher le bandeau promo'),
-                          subtitle: const Text(
-                              'Décoche pour masquer la bannière sur le site'),
+                          title: Text(l10n.adminRestaurantInfoPromoToggleTitle),
+                          subtitle:
+                              Text(l10n.adminRestaurantInfoPromoToggleSubtitle),
                           value: _promoEnabled,
                           onChanged: (v) => setState(() => _promoEnabled = v),
                         ),
                       ),
                       const SizedBox(height: 20),
-                      const Text(
-                        'Bandeau promotionnel (optionnel)',
+                      Text(
+                        l10n.adminRestaurantInfoPromoSection,
                         style: AdminTypography.headlineMedium,
                       ),
                       const SizedBox(height: 8),
                       TextFormField(
                         controller: _promoController,
                         decoration: InputDecoration(
-                          hintText:
-                              'Ex. ✨ 2ème pizza -50% • Livraison offerte dès 80₪ ✨',
+                          hintText: l10n.adminRestaurantInfoPromoPlaceholder,
                           prefixIcon: const Icon(Icons.campaign),
                           border: OutlineInputBorder(
                             borderRadius:
@@ -178,7 +184,7 @@ class _AdminRestaurantInfoScreenState extends State<AdminRestaurantInfoScreen> {
                         maxLength: 140,
                         maxLines: 2,
                         validator: (v) => (v ?? '').length > 140
-                            ? '140 caractères max'
+                            ? l10n.adminRestaurantInfoPromoMaxLength
                             : null,
                       ),
                       if (_error != null) ...[
@@ -207,7 +213,7 @@ class _AdminRestaurantInfoScreenState extends State<AdminRestaurantInfoScreen> {
                                         Colors.white),
                                   ),
                                 )
-                              : const Text('Enregistrer'),
+                              : Text(l10n.commonSave),
                         ),
                       ),
                     ],

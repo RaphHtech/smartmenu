@@ -1209,6 +1209,306 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Language'**
   String get commonLanguage;
+
+  /// Restaurant info screen title
+  ///
+  /// In en, this message translates to:
+  /// **'Restaurant Info'**
+  String get adminRestaurantInfoTitle;
+
+  /// Tagline section title
+  ///
+  /// In en, this message translates to:
+  /// **'Subtitle text (tagline)'**
+  String get adminRestaurantInfoTaglineSection;
+
+  /// Tagline input placeholder
+  ///
+  /// In en, this message translates to:
+  /// **'E.g. Authentic Italian pizza in Tel Aviv'**
+  String get adminRestaurantInfoTaglinePlaceholder;
+
+  /// Tagline validation error
+  ///
+  /// In en, this message translates to:
+  /// **'120 characters max'**
+  String get adminRestaurantInfoTaglineMaxLength;
+
+  /// Promo toggle switch title
+  ///
+  /// In en, this message translates to:
+  /// **'Show promo banner'**
+  String get adminRestaurantInfoPromoToggleTitle;
+
+  /// Promo toggle switch subtitle
+  ///
+  /// In en, this message translates to:
+  /// **'Uncheck to hide the banner on the site'**
+  String get adminRestaurantInfoPromoToggleSubtitle;
+
+  /// Promo section title
+  ///
+  /// In en, this message translates to:
+  /// **'Promotional banner (optional)'**
+  String get adminRestaurantInfoPromoSection;
+
+  /// Promo text input placeholder
+  ///
+  /// In en, this message translates to:
+  /// **'E.g. ✨ 2nd pizza -50% • Free delivery from 80₪ ✨'**
+  String get adminRestaurantInfoPromoPlaceholder;
+
+  /// Promo validation error
+  ///
+  /// In en, this message translates to:
+  /// **'140 characters max'**
+  String get adminRestaurantInfoPromoMaxLength;
+
+  /// Error loading restaurant info
+  ///
+  /// In en, this message translates to:
+  /// **'Unable to load info: {error}'**
+  String adminRestaurantInfoLoadError(String error);
+
+  /// Success message after saving
+  ///
+  /// In en, this message translates to:
+  /// **'Info saved ✅'**
+  String get adminRestaurantInfoSaveSuccess;
+
+  /// Error saving restaurant info
+  ///
+  /// In en, this message translates to:
+  /// **'Save error: {error}'**
+  String adminRestaurantInfoSaveError(String error);
+
+  /// Media screen title
+  ///
+  /// In en, this message translates to:
+  /// **'Media'**
+  String get adminMediaTitle;
+
+  /// Add media button
+  ///
+  /// In en, this message translates to:
+  /// **'Add'**
+  String get adminMediaAddButton;
+
+  /// Drop zone click instruction
+  ///
+  /// In en, this message translates to:
+  /// **'click to select'**
+  String get adminMediaDropZoneClick;
+
+  /// Accepted file formats
+  ///
+  /// In en, this message translates to:
+  /// **'PNG, JPG, WebP - Max 5MB'**
+  String get adminMediaDropZoneFormats;
+
+  /// Invalid file format error
+  ///
+  /// In en, this message translates to:
+  /// **'Unsupported format. Use PNG, JPG or WebP.'**
+  String get adminMediaErrorFormat;
+
+  /// File size error
+  ///
+  /// In en, this message translates to:
+  /// **'File too large (max 5MB).'**
+  String get adminMediaErrorSize;
+
+  /// Media loading error
+  ///
+  /// In en, this message translates to:
+  /// **'Error loading media: {error}'**
+  String adminMediaErrorLoad(String error);
+
+  /// Upload error message
+  ///
+  /// In en, this message translates to:
+  /// **'Upload error: {error}'**
+  String adminMediaErrorUpload(String error);
+
+  /// Upload success message
+  ///
+  /// In en, this message translates to:
+  /// **'Image uploaded successfully!'**
+  String get adminMediaSuccessUpload;
+
+  /// Delete success message
+  ///
+  /// In en, this message translates to:
+  /// **'Media deleted successfully'**
+  String get adminMediaSuccessDelete;
+
+  /// Assign success message
+  ///
+  /// In en, this message translates to:
+  /// **'Image assigned successfully'**
+  String get adminMediaSuccessAssign;
+
+  /// Upload progress message
+  ///
+  /// In en, this message translates to:
+  /// **'Upload in progress...'**
+  String get adminMediaUploadProgress;
+
+  /// Delete dialog title
+  ///
+  /// In en, this message translates to:
+  /// **'Delete media'**
+  String get adminMediaDeleteTitle;
+
+  /// Delete confirmation message
+  ///
+  /// In en, this message translates to:
+  /// **'Do you really want to delete \"{name}\"?'**
+  String adminMediaDeleteConfirm(String name);
+
+  /// Delete button
+  ///
+  /// In en, this message translates to:
+  /// **'Delete'**
+  String get adminMediaDeleteButton;
+
+  /// Assign dialog title
+  ///
+  /// In en, this message translates to:
+  /// **'Assign to a dish'**
+  String get adminMediaAssignTitle;
+
+  /// Assign search placeholder
+  ///
+  /// In en, this message translates to:
+  /// **'Search for a dish…'**
+  String get adminMediaAssignSearch;
+
+  /// No dishes available message
+  ///
+  /// In en, this message translates to:
+  /// **'No dishes available'**
+  String get adminMediaAssignNoDishes;
+
+  /// Empty state title
+  ///
+  /// In en, this message translates to:
+  /// **'No media'**
+  String get adminMediaEmptyTitle;
+
+  /// Empty state subtitle
+  ///
+  /// In en, this message translates to:
+  /// **'Add your first images to get started'**
+  String get adminMediaEmptySubtitle;
+
+  /// Assign button on card
+  ///
+  /// In en, this message translates to:
+  /// **'Assign'**
+  String get adminMediaAssignButton;
+
+  /// Branding screen title
+  ///
+  /// In en, this message translates to:
+  /// **'Branding'**
+  String get adminBrandingTitle;
+
+  /// Brand identity section title
+  ///
+  /// In en, this message translates to:
+  /// **'Brand identity'**
+  String get adminBrandingIdentity;
+
+  /// Logo section title
+  ///
+  /// In en, this message translates to:
+  /// **'Restaurant logo'**
+  String get adminBrandingLogoSection;
+
+  /// Logo format instructions
+  ///
+  /// In en, this message translates to:
+  /// **'Recommended format: Square PNG, transparent background, minimum 256×256px'**
+  String get adminBrandingLogoFormat;
+
+  /// Accepted logo formats
+  ///
+  /// In en, this message translates to:
+  /// **'Recommended PNG (transparent background), JPG accepted'**
+  String get adminBrandingLogoFormats;
+
+  /// Upload zone click instruction
+  ///
+  /// In en, this message translates to:
+  /// **'Click to upload a logo'**
+  String get adminBrandingUploadClick;
+
+  /// File size error
+  ///
+  /// In en, this message translates to:
+  /// **'File must be less than 2MB'**
+  String get adminBrandingErrorSize;
+
+  /// File format error
+  ///
+  /// In en, this message translates to:
+  /// **'Please select an image (PNG/JPG)'**
+  String get adminBrandingErrorFormat;
+
+  /// File selection error
+  ///
+  /// In en, this message translates to:
+  /// **'Error during selection: {error}'**
+  String adminBrandingErrorSelection(String error);
+
+  /// Data loading error
+  ///
+  /// In en, this message translates to:
+  /// **'Loading error: {error}'**
+  String adminBrandingErrorLoad(String error);
+
+  /// Upload success message
+  ///
+  /// In en, this message translates to:
+  /// **'Logo uploaded successfully'**
+  String get adminBrandingSuccessUpload;
+
+  /// Delete success message
+  ///
+  /// In en, this message translates to:
+  /// **'Logo deleted successfully'**
+  String get adminBrandingSuccessDelete;
+
+  /// Preview section title
+  ///
+  /// In en, this message translates to:
+  /// **'Preview render'**
+  String get adminBrandingPreviewTitle;
+
+  /// Preview description
+  ///
+  /// In en, this message translates to:
+  /// **'Visualize how your logo will appear in the client interface'**
+  String get adminBrandingPreviewDescription;
+
+  /// Hero header preview label
+  ///
+  /// In en, this message translates to:
+  /// **'Main header'**
+  String get adminBrandingPreviewHero;
+
+  /// Sticky header preview label
+  ///
+  /// In en, this message translates to:
+  /// **'Sticky header (collapsed)'**
+  String get adminBrandingPreviewSticky;
+
+  /// Default restaurant name fallback
+  ///
+  /// In en, this message translates to:
+  /// **'Restaurant'**
+  String get adminBrandingRestaurantDefault;
 }
 
 class _AppLocalizationsDelegate

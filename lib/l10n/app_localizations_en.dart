@@ -618,4 +618,175 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get commonLanguage => 'Language';
+
+  @override
+  String get adminRestaurantInfoTitle => 'Restaurant Info';
+
+  @override
+  String get adminRestaurantInfoTaglineSection => 'Subtitle text (tagline)';
+
+  @override
+  String get adminRestaurantInfoTaglinePlaceholder =>
+      'E.g. Authentic Italian pizza in Tel Aviv';
+
+  @override
+  String get adminRestaurantInfoTaglineMaxLength => '120 characters max';
+
+  @override
+  String get adminRestaurantInfoPromoToggleTitle => 'Show promo banner';
+
+  @override
+  String get adminRestaurantInfoPromoToggleSubtitle =>
+      'Uncheck to hide the banner on the site';
+
+  @override
+  String get adminRestaurantInfoPromoSection => 'Promotional banner (optional)';
+
+  @override
+  String get adminRestaurantInfoPromoPlaceholder =>
+      'E.g. ✨ 2nd pizza -50% • Free delivery from 80₪ ✨';
+
+  @override
+  String get adminRestaurantInfoPromoMaxLength => '140 characters max';
+
+  @override
+  String adminRestaurantInfoLoadError(String error) {
+    return 'Unable to load info: $error';
+  }
+
+  @override
+  String get adminRestaurantInfoSaveSuccess => 'Info saved ✅';
+
+  @override
+  String adminRestaurantInfoSaveError(String error) {
+    return 'Save error: $error';
+  }
+
+  @override
+  String get adminMediaTitle => 'Media';
+
+  @override
+  String get adminMediaAddButton => 'Add';
+
+  @override
+  String get adminMediaDropZoneClick => 'click to select';
+
+  @override
+  String get adminMediaDropZoneFormats => 'PNG, JPG, WebP - Max 5MB';
+
+  @override
+  String get adminMediaErrorFormat =>
+      'Unsupported format. Use PNG, JPG or WebP.';
+
+  @override
+  String get adminMediaErrorSize => 'File too large (max 5MB).';
+
+  @override
+  String adminMediaErrorLoad(String error) {
+    return 'Error loading media: $error';
+  }
+
+  @override
+  String adminMediaErrorUpload(String error) {
+    return 'Upload error: $error';
+  }
+
+  @override
+  String get adminMediaSuccessUpload => 'Image uploaded successfully!';
+
+  @override
+  String get adminMediaSuccessDelete => 'Media deleted successfully';
+
+  @override
+  String get adminMediaSuccessAssign => 'Image assigned successfully';
+
+  @override
+  String get adminMediaUploadProgress => 'Upload in progress...';
+
+  @override
+  String get adminMediaDeleteTitle => 'Delete media';
+
+  @override
+  String adminMediaDeleteConfirm(String name) {
+    return 'Do you really want to delete \"$name\"?';
+  }
+
+  @override
+  String get adminMediaDeleteButton => 'Delete';
+
+  @override
+  String get adminMediaAssignTitle => 'Assign to a dish';
+
+  @override
+  String get adminMediaAssignSearch => 'Search for a dish…';
+
+  @override
+  String get adminMediaAssignNoDishes => 'No dishes available';
+
+  @override
+  String get adminMediaEmptyTitle => 'No media';
+
+  @override
+  String get adminMediaEmptySubtitle => 'Add your first images to get started';
+
+  @override
+  String get adminMediaAssignButton => 'Assign';
+
+  @override
+  String get adminBrandingTitle => 'Branding';
+
+  @override
+  String get adminBrandingIdentity => 'Brand identity';
+
+  @override
+  String get adminBrandingLogoSection => 'Restaurant logo';
+
+  @override
+  String get adminBrandingLogoFormat =>
+      'Recommended format: Square PNG, transparent background, minimum 256×256px';
+
+  @override
+  String get adminBrandingLogoFormats =>
+      'Recommended PNG (transparent background), JPG accepted';
+
+  @override
+  String get adminBrandingUploadClick => 'Click to upload a logo';
+
+  @override
+  String get adminBrandingErrorSize => 'File must be less than 2MB';
+
+  @override
+  String get adminBrandingErrorFormat => 'Please select an image (PNG/JPG)';
+
+  @override
+  String adminBrandingErrorSelection(String error) {
+    return 'Error during selection: $error';
+  }
+
+  @override
+  String adminBrandingErrorLoad(String error) {
+    return 'Loading error: $error';
+  }
+
+  @override
+  String get adminBrandingSuccessUpload => 'Logo uploaded successfully';
+
+  @override
+  String get adminBrandingSuccessDelete => 'Logo deleted successfully';
+
+  @override
+  String get adminBrandingPreviewTitle => 'Preview render';
+
+  @override
+  String get adminBrandingPreviewDescription =>
+      'Visualize how your logo will appear in the client interface';
+
+  @override
+  String get adminBrandingPreviewHero => 'Main header';
+
+  @override
+  String get adminBrandingPreviewSticky => 'Sticky header (collapsed)';
+
+  @override
+  String get adminBrandingRestaurantDefault => 'Restaurant';
 }

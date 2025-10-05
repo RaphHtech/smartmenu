@@ -626,4 +626,179 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get commonLanguage => 'Langue';
+
+  @override
+  String get adminRestaurantInfoTitle => 'Infos du restaurant';
+
+  @override
+  String get adminRestaurantInfoTaglineSection =>
+      'Texte sous le titre (tagline)';
+
+  @override
+  String get adminRestaurantInfoTaglinePlaceholder =>
+      'Ex. La vraie pizza italienne à Tel Aviv';
+
+  @override
+  String get adminRestaurantInfoTaglineMaxLength => '120 caractères max';
+
+  @override
+  String get adminRestaurantInfoPromoToggleTitle => 'Afficher le bandeau promo';
+
+  @override
+  String get adminRestaurantInfoPromoToggleSubtitle =>
+      'Décoche pour masquer la bannière sur le site';
+
+  @override
+  String get adminRestaurantInfoPromoSection =>
+      'Bandeau promotionnel (optionnel)';
+
+  @override
+  String get adminRestaurantInfoPromoPlaceholder =>
+      'Ex. ✨ 2ème pizza -50% • Livraison offerte dès 80₪ ✨';
+
+  @override
+  String get adminRestaurantInfoPromoMaxLength => '140 caractères max';
+
+  @override
+  String adminRestaurantInfoLoadError(String error) {
+    return 'Impossible de charger les infos : $error';
+  }
+
+  @override
+  String get adminRestaurantInfoSaveSuccess => 'Infos enregistrées ✅';
+
+  @override
+  String adminRestaurantInfoSaveError(String error) {
+    return 'Erreur enregistrement : $error';
+  }
+
+  @override
+  String get adminMediaTitle => 'Médias';
+
+  @override
+  String get adminMediaAddButton => 'Ajouter';
+
+  @override
+  String get adminMediaDropZoneClick => 'cliquez pour sélectionner';
+
+  @override
+  String get adminMediaDropZoneFormats => 'PNG, JPG, WebP - Max 5MB';
+
+  @override
+  String get adminMediaErrorFormat =>
+      'Format non supporté. Utilisez PNG, JPG ou WebP.';
+
+  @override
+  String get adminMediaErrorSize => 'Fichier trop volumineux (max 5MB).';
+
+  @override
+  String adminMediaErrorLoad(String error) {
+    return 'Erreur chargement médias : $error';
+  }
+
+  @override
+  String adminMediaErrorUpload(String error) {
+    return 'Erreur upload : $error';
+  }
+
+  @override
+  String get adminMediaSuccessUpload => 'Image uploadée avec succès !';
+
+  @override
+  String get adminMediaSuccessDelete => 'Média supprimé avec succès';
+
+  @override
+  String get adminMediaSuccessAssign => 'Image assignée avec succès';
+
+  @override
+  String get adminMediaUploadProgress => 'Upload en cours...';
+
+  @override
+  String get adminMediaDeleteTitle => 'Supprimer le média';
+
+  @override
+  String adminMediaDeleteConfirm(String name) {
+    return 'Voulez-vous vraiment supprimer \"$name\" ?';
+  }
+
+  @override
+  String get adminMediaDeleteButton => 'Supprimer';
+
+  @override
+  String get adminMediaAssignTitle => 'Assigner à un plat';
+
+  @override
+  String get adminMediaAssignSearch => 'Rechercher un plat…';
+
+  @override
+  String get adminMediaAssignNoDishes => 'Aucun plat disponible';
+
+  @override
+  String get adminMediaEmptyTitle => 'Aucun média';
+
+  @override
+  String get adminMediaEmptySubtitle =>
+      'Ajoutez vos premières images pour commencer';
+
+  @override
+  String get adminMediaAssignButton => 'Assigner';
+
+  @override
+  String get adminBrandingTitle => 'Branding';
+
+  @override
+  String get adminBrandingIdentity => 'Identité de marque';
+
+  @override
+  String get adminBrandingLogoSection => 'Logo du restaurant';
+
+  @override
+  String get adminBrandingLogoFormat =>
+      'Format recommandé : PNG carré, fond transparent, minimum 256×256px';
+
+  @override
+  String get adminBrandingLogoFormats =>
+      'PNG recommandé (fond transparent), JPG accepté';
+
+  @override
+  String get adminBrandingUploadClick => 'Cliquez pour téléverser un logo';
+
+  @override
+  String get adminBrandingErrorSize => 'Le fichier doit faire moins de 2MB';
+
+  @override
+  String get adminBrandingErrorFormat =>
+      'Veuillez sélectionner une image (PNG/JPG)';
+
+  @override
+  String adminBrandingErrorSelection(String error) {
+    return 'Erreur lors de la sélection : $error';
+  }
+
+  @override
+  String adminBrandingErrorLoad(String error) {
+    return 'Erreur de chargement : $error';
+  }
+
+  @override
+  String get adminBrandingSuccessUpload => 'Logo téléversé avec succès';
+
+  @override
+  String get adminBrandingSuccessDelete => 'Logo supprimé avec succès';
+
+  @override
+  String get adminBrandingPreviewTitle => 'Aperçu rendu';
+
+  @override
+  String get adminBrandingPreviewDescription =>
+      'Visualisez comment votre logo apparaîtra dans l\'interface client';
+
+  @override
+  String get adminBrandingPreviewHero => 'Header principal';
+
+  @override
+  String get adminBrandingPreviewSticky => 'Header rétracté (sticky)';
+
+  @override
+  String get adminBrandingRestaurantDefault => 'Restaurant';
 }

@@ -1030,5 +1030,290 @@
   "commonClose": "סגור",
   "@commonClose": {
     "description": "Close button"
+  },
+
+  "adminRestaurantInfoTitle": "מידע על המסעדה",
+"@adminRestaurantInfoTitle": {
+  "description": "Restaurant info screen title"
+},
+
+"adminRestaurantInfoTaglineSection": "טקסט משנה (תיאור קצר)",
+"@adminRestaurantInfoTaglineSection": {
+  "description": "Tagline section title"
+},
+
+"adminRestaurantInfoTaglinePlaceholder": "לדוגמה: פיצה איטלקית אמיתית בתל אביב",
+"@adminRestaurantInfoTaglinePlaceholder": {
+  "description": "Tagline input placeholder"
+},
+
+"adminRestaurantInfoTaglineMaxLength": "120 תווים מקסימום",
+"@adminRestaurantInfoTaglineMaxLength": {
+  "description": "Tagline validation error"
+},
+
+"adminRestaurantInfoPromoToggleTitle": "הצג באנר פרסומי",
+"@adminRestaurantInfoPromoToggleTitle": {
+  "description": "Promo toggle switch title"
+},
+
+"adminRestaurantInfoPromoToggleSubtitle": "בטל סימון כדי להסתיר את הבאנר באתר",
+"@adminRestaurantInfoPromoToggleSubtitle": {
+  "description": "Promo toggle switch subtitle"
+},
+
+"adminRestaurantInfoPromoSection": "באנר פרסומי (אופציונלי)",
+"@adminRestaurantInfoPromoSection": {
+  "description": "Promo section title"
+},
+
+"adminRestaurantInfoPromoPlaceholder": "לדוגמה: ✨ פיצה שנייה -50% • משלוח חינם מ-80₪ ✨",
+"@adminRestaurantInfoPromoPlaceholder": {
+  "description": "Promo text input placeholder"
+},
+
+"adminRestaurantInfoPromoMaxLength": "140 תווים מקסימום",
+"@adminRestaurantInfoPromoMaxLength": {
+  "description": "Promo validation error"
+},
+
+"adminRestaurantInfoLoadError": "שגיאה בטעינת מידע: {error}",
+"@adminRestaurantInfoLoadError": {
+  "description": "Error loading restaurant info",
+  "placeholders": {
+    "error": {
+      "type": "String"
+    }
   }
+},
+
+"adminRestaurantInfoSaveSuccess": "המידע נשמר ✅",
+"@adminRestaurantInfoSaveSuccess": {
+  "description": "Success message after saving"
+},
+
+"adminRestaurantInfoSaveError": "שגיאה בשמירה: {error}",
+"@adminRestaurantInfoSaveError": {
+  "description": "Error saving restaurant info",
+  "placeholders": {
+    "error": {
+      "type": "String"
+    }
+  }
+},
+
+"adminMediaTitle": "מדיה",
+"@adminMediaTitle": {
+  "description": "Media screen title"
+},
+
+"adminMediaAddButton": "הוסף",
+"@adminMediaAddButton": {
+  "description": "Add media button"
+},
+
+"adminMediaDropZoneClick": "לחץ לבחירת קובץ",
+"@adminMediaDropZoneClick": {
+  "description": "Drop zone click instruction"
+},
+
+"adminMediaDropZoneFormats": "PNG, JPG, WebP - מקסימום 5MB",
+"@adminMediaDropZoneFormats": {
+  "description": "Accepted file formats"
+},
+
+"adminMediaErrorFormat": "פורמט לא נתמך. השתמש ב-PNG, JPG או WebP.",
+"@adminMediaErrorFormat": {
+  "description": "Invalid file format error"
+},
+
+"adminMediaErrorSize": "קובץ גדול מדי (מקסימום 5MB).",
+"@adminMediaErrorSize": {
+  "description": "File size error"
+},
+
+"adminMediaErrorLoad": "שגיאה בטעינת מדיה: {error}",
+"@adminMediaErrorLoad": {
+  "description": "Media loading error",
+  "placeholders": {
+    "error": {
+      "type": "String"
+    }
+  }
+},
+
+"adminMediaErrorUpload": "שגיאת העלאה: {error}",
+"@adminMediaErrorUpload": {
+  "description": "Upload error message",
+  "placeholders": {
+    "error": {
+      "type": "String"
+    }
+  }
+},
+
+"adminMediaSuccessUpload": "התמונה הועלתה בהצלחה!",
+"@adminMediaSuccessUpload": {
+  "description": "Upload success message"
+},
+
+"adminMediaSuccessDelete": "המדיה נמחק בהצלחה",
+"@adminMediaSuccessDelete": {
+  "description": "Delete success message"
+},
+
+"adminMediaSuccessAssign": "התמונה הוקצתה בהצלחה",
+"@adminMediaSuccessAssign": {
+  "description": "Assign success message"
+},
+
+"adminMediaUploadProgress": "העלאה בתהליך...",
+"@adminMediaUploadProgress": {
+  "description": "Upload progress message"
+},
+
+"adminMediaDeleteTitle": "מחק מדיה",
+"@adminMediaDeleteTitle": {
+  "description": "Delete dialog title"
+},
+
+"adminMediaDeleteConfirm": "האם אתה בטוח שברצונך למחוק את \"{name}\"?",
+"@adminMediaDeleteConfirm": {
+  "description": "Delete confirmation message",
+  "placeholders": {
+    "name": {
+      "type": "String"
+    }
+  }
+},
+
+"adminMediaDeleteButton": "מחק",
+"@adminMediaDeleteButton": {
+  "description": "Delete button"
+},
+
+"adminMediaAssignTitle": "הקצה למנה",
+"@adminMediaAssignTitle": {
+  "description": "Assign dialog title"
+},
+
+"adminMediaAssignSearch": "חפש מנה...",
+"@adminMediaAssignSearch": {
+  "description": "Assign search placeholder"
+},
+
+"adminMediaAssignNoDishes": "אין מנות זמינות",
+"@adminMediaAssignNoDishes": {
+  "description": "No dishes available message"
+},
+
+"adminMediaEmptyTitle": "אין מדיה",
+"@adminMediaEmptyTitle": {
+  "description": "Empty state title"
+},
+
+"adminMediaEmptySubtitle": "הוסף את התמונות הראשונות שלך כדי להתחיל",
+"@adminMediaEmptySubtitle": {
+  "description": "Empty state subtitle"
+},
+
+"adminMediaAssignButton": "הקצה",
+"@adminMediaAssignButton": {
+  "description": "Assign button on card"
+},
+
+"adminBrandingTitle": "מיתוג",
+"@adminBrandingTitle": {
+  "description": "Branding screen title"
+},
+
+"adminBrandingIdentity": "זהות המותג",
+"@adminBrandingIdentity": {
+  "description": "Brand identity section title"
+},
+
+"adminBrandingLogoSection": "לוגו המסעדה",
+"@adminBrandingLogoSection": {
+  "description": "Logo section title"
+},
+
+"adminBrandingLogoFormat": "פורמט מומלץ: PNG מרובע, רקע שקוף, מינימום 256×256px",
+"@adminBrandingLogoFormat": {
+  "description": "Logo format instructions"
+},
+
+"adminBrandingLogoFormats": "PNG מומלץ (רקע שקוף), JPG מקובל",
+"@adminBrandingLogoFormats": {
+  "description": "Accepted logo formats"
+},
+
+"adminBrandingUploadClick": "לחץ להעלאת לוגו",
+"@adminBrandingUploadClick": {
+  "description": "Upload zone click instruction"
+},
+
+"adminBrandingErrorSize": "הקובץ חייב להיות קטן מ-2MB",
+"@adminBrandingErrorSize": {
+  "description": "File size error"
+},
+
+"adminBrandingErrorFormat": "אנא בחר תמונה (PNG/JPG)",
+"@adminBrandingErrorFormat": {
+  "description": "File format error"
+},
+
+"adminBrandingErrorSelection": "שגיאה בבחירה: {error}",
+"@adminBrandingErrorSelection": {
+  "description": "File selection error",
+  "placeholders": {
+    "error": {
+      "type": "String"
+    }
+  }
+},
+
+"adminBrandingErrorLoad": "שגיאת טעינה: {error}",
+"@adminBrandingErrorLoad": {
+  "description": "Data loading error",
+  "placeholders": {
+    "error": {
+      "type": "String"
+    }
+  }
+},
+
+"adminBrandingSuccessUpload": "הלוגו הועלה בהצלחה",
+"@adminBrandingSuccessUpload": {
+  "description": "Upload success message"
+},
+
+"adminBrandingSuccessDelete": "הלוגו נמחק בהצלחה",
+"@adminBrandingSuccessDelete": {
+  "description": "Delete success message"
+},
+
+"adminBrandingPreviewTitle": "תצוגה מקדימה",
+"@adminBrandingPreviewTitle": {
+  "description": "Preview section title"
+},
+
+"adminBrandingPreviewDescription": "ראה כיצד הלוגו שלך יופיע בממשק הלקוח",
+"@adminBrandingPreviewDescription": {
+  "description": "Preview description"
+},
+
+"adminBrandingPreviewHero": "כותרת ראשית",
+"@adminBrandingPreviewHero": {
+  "description": "Hero header preview label"
+},
+
+"adminBrandingPreviewSticky": "כותרת דביקה (מכווצת)",
+"@adminBrandingPreviewSticky": {
+  "description": "Sticky header preview label"
+},
+
+"adminBrandingRestaurantDefault": "מסעדה",
+"@adminBrandingRestaurantDefault": {
+  "description": "Default restaurant name fallback"
+}
 }

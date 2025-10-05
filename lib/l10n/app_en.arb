@@ -1030,5 +1030,290 @@
   "commonClose": "Close",
   "@commonClose": {
     "description": "Close button"
+  },
+
+  "adminRestaurantInfoTitle": "Restaurant Info",
+  "@adminRestaurantInfoTitle": {
+    "description": "Restaurant info screen title"
+  },
+
+  "adminRestaurantInfoTaglineSection": "Subtitle text (tagline)",
+  "@adminRestaurantInfoTaglineSection": {
+    "description": "Tagline section title"
+  },
+
+  "adminRestaurantInfoTaglinePlaceholder": "E.g. Authentic Italian pizza in Tel Aviv",
+  "@adminRestaurantInfoTaglinePlaceholder": {
+    "description": "Tagline input placeholder"
+  },
+
+  "adminRestaurantInfoTaglineMaxLength": "120 characters max",
+  "@adminRestaurantInfoTaglineMaxLength": {
+    "description": "Tagline validation error"
+  },
+
+  "adminRestaurantInfoPromoToggleTitle": "Show promo banner",
+  "@adminRestaurantInfoPromoToggleTitle": {
+    "description": "Promo toggle switch title"
+  },
+
+  "adminRestaurantInfoPromoToggleSubtitle": "Uncheck to hide the banner on the site",
+  "@adminRestaurantInfoPromoToggleSubtitle": {
+    "description": "Promo toggle switch subtitle"
+  },
+
+  "adminRestaurantInfoPromoSection": "Promotional banner (optional)",
+  "@adminRestaurantInfoPromoSection": {
+    "description": "Promo section title"
+  },
+
+  "adminRestaurantInfoPromoPlaceholder": "E.g. ✨ 2nd pizza -50% • Free delivery from 80₪ ✨",
+  "@adminRestaurantInfoPromoPlaceholder": {
+    "description": "Promo text input placeholder"
+  },
+
+  "adminRestaurantInfoPromoMaxLength": "140 characters max",
+  "@adminRestaurantInfoPromoMaxLength": {
+    "description": "Promo validation error"
+  },
+
+  "adminRestaurantInfoLoadError": "Unable to load info: {error}",
+  "@adminRestaurantInfoLoadError": {
+    "description": "Error loading restaurant info",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+
+  "adminRestaurantInfoSaveSuccess": "Info saved ✅",
+  "@adminRestaurantInfoSaveSuccess": {
+    "description": "Success message after saving"
+  },
+
+  "adminRestaurantInfoSaveError": "Save error: {error}",
+  "@adminRestaurantInfoSaveError": {
+    "description": "Error saving restaurant info",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+
+  "adminMediaTitle": "Media",
+"@adminMediaTitle": {
+  "description": "Media screen title"
+},
+
+"adminMediaAddButton": "Add",
+"@adminMediaAddButton": {
+  "description": "Add media button"
+},
+
+"adminMediaDropZoneClick": "click to select",
+"@adminMediaDropZoneClick": {
+  "description": "Drop zone click instruction"
+},
+
+"adminMediaDropZoneFormats": "PNG, JPG, WebP - Max 5MB",
+"@adminMediaDropZoneFormats": {
+  "description": "Accepted file formats"
+},
+
+"adminMediaErrorFormat": "Unsupported format. Use PNG, JPG or WebP.",
+"@adminMediaErrorFormat": {
+  "description": "Invalid file format error"
+},
+
+"adminMediaErrorSize": "File too large (max 5MB).",
+"@adminMediaErrorSize": {
+  "description": "File size error"
+},
+
+"adminMediaErrorLoad": "Error loading media: {error}",
+"@adminMediaErrorLoad": {
+  "description": "Media loading error",
+  "placeholders": {
+    "error": {
+      "type": "String"
+    }
   }
+},
+
+"adminMediaErrorUpload": "Upload error: {error}",
+"@adminMediaErrorUpload": {
+  "description": "Upload error message",
+  "placeholders": {
+    "error": {
+      "type": "String"
+    }
+  }
+},
+
+"adminMediaSuccessUpload": "Image uploaded successfully!",
+"@adminMediaSuccessUpload": {
+  "description": "Upload success message"
+},
+
+"adminMediaSuccessDelete": "Media deleted successfully",
+"@adminMediaSuccessDelete": {
+  "description": "Delete success message"
+},
+
+"adminMediaSuccessAssign": "Image assigned successfully",
+"@adminMediaSuccessAssign": {
+  "description": "Assign success message"
+},
+
+"adminMediaUploadProgress": "Upload in progress...",
+"@adminMediaUploadProgress": {
+  "description": "Upload progress message"
+},
+
+"adminMediaDeleteTitle": "Delete media",
+"@adminMediaDeleteTitle": {
+  "description": "Delete dialog title"
+},
+
+"adminMediaDeleteConfirm": "Do you really want to delete \"{name}\"?",
+"@adminMediaDeleteConfirm": {
+  "description": "Delete confirmation message",
+  "placeholders": {
+    "name": {
+      "type": "String"
+    }
+  }
+},
+
+"adminMediaDeleteButton": "Delete",
+"@adminMediaDeleteButton": {
+  "description": "Delete button"
+},
+
+"adminMediaAssignTitle": "Assign to a dish",
+"@adminMediaAssignTitle": {
+  "description": "Assign dialog title"
+},
+
+"adminMediaAssignSearch": "Search for a dish…",
+"@adminMediaAssignSearch": {
+  "description": "Assign search placeholder"
+},
+
+"adminMediaAssignNoDishes": "No dishes available",
+"@adminMediaAssignNoDishes": {
+  "description": "No dishes available message"
+},
+
+"adminMediaEmptyTitle": "No media",
+"@adminMediaEmptyTitle": {
+  "description": "Empty state title"
+},
+
+"adminMediaEmptySubtitle": "Add your first images to get started",
+"@adminMediaEmptySubtitle": {
+  "description": "Empty state subtitle"
+},
+
+"adminMediaAssignButton": "Assign",
+"@adminMediaAssignButton": {
+  "description": "Assign button on card"
+},
+
+"adminBrandingTitle": "Branding",
+"@adminBrandingTitle": {
+  "description": "Branding screen title"
+},
+
+"adminBrandingIdentity": "Brand identity",
+"@adminBrandingIdentity": {
+  "description": "Brand identity section title"
+},
+
+"adminBrandingLogoSection": "Restaurant logo",
+"@adminBrandingLogoSection": {
+  "description": "Logo section title"
+},
+
+"adminBrandingLogoFormat": "Recommended format: Square PNG, transparent background, minimum 256×256px",
+"@adminBrandingLogoFormat": {
+  "description": "Logo format instructions"
+},
+
+"adminBrandingLogoFormats": "Recommended PNG (transparent background), JPG accepted",
+"@adminBrandingLogoFormats": {
+  "description": "Accepted logo formats"
+},
+
+"adminBrandingUploadClick": "Click to upload a logo",
+"@adminBrandingUploadClick": {
+  "description": "Upload zone click instruction"
+},
+
+"adminBrandingErrorSize": "File must be less than 2MB",
+"@adminBrandingErrorSize": {
+  "description": "File size error"
+},
+
+"adminBrandingErrorFormat": "Please select an image (PNG/JPG)",
+"@adminBrandingErrorFormat": {
+  "description": "File format error"
+},
+
+"adminBrandingErrorSelection": "Error during selection: {error}",
+"@adminBrandingErrorSelection": {
+  "description": "File selection error",
+  "placeholders": {
+    "error": {
+      "type": "String"
+    }
+  }
+},
+
+"adminBrandingErrorLoad": "Loading error: {error}",
+"@adminBrandingErrorLoad": {
+  "description": "Data loading error",
+  "placeholders": {
+    "error": {
+      "type": "String"
+    }
+  }
+},
+
+"adminBrandingSuccessUpload": "Logo uploaded successfully",
+"@adminBrandingSuccessUpload": {
+  "description": "Upload success message"
+},
+
+"adminBrandingSuccessDelete": "Logo deleted successfully",
+"@adminBrandingSuccessDelete": {
+  "description": "Delete success message"
+},
+
+"adminBrandingPreviewTitle": "Preview render",
+"@adminBrandingPreviewTitle": {
+  "description": "Preview section title"
+},
+
+"adminBrandingPreviewDescription": "Visualize how your logo will appear in the client interface",
+"@adminBrandingPreviewDescription": {
+  "description": "Preview description"
+},
+
+"adminBrandingPreviewHero": "Main header",
+"@adminBrandingPreviewHero": {
+  "description": "Hero header preview label"
+},
+
+"adminBrandingPreviewSticky": "Sticky header (collapsed)",
+"@adminBrandingPreviewSticky": {
+  "description": "Sticky header preview label"
+},
+
+"adminBrandingRestaurantDefault": "Restaurant",
+"@adminBrandingRestaurantDefault": {
+  "description": "Default restaurant name fallback"
+}
 }

@@ -4,6 +4,7 @@ import 'dart:typed_data';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:smartmenu_app/l10n/app_localizations.dart';
 import '../../widgets/ui/admin_shell.dart';
 import '../../core/design/admin_tokens.dart';
 import '../../core/design/admin_typography.dart';
@@ -62,22 +63,25 @@ class _AdminMediaScreenState extends State<AdminMediaScreen> {
         _isLoading = false;
       });
     } catch (e) {
+      if (!mounted) return;
+      final l10n = AppLocalizations.of(context)!;
       setState(() {
         _isLoading = false;
-        _uploadError = 'Erreur chargement médias: $e';
+        _uploadError = l10n.adminMediaErrorLoad(e.toString());
       });
     }
   }
 
   Future<void> _handleFileDrop(html.File file) async {
+    final l10n = AppLocalizations.of(context)!;
+
     if (!_isValidImageFile(file)) {
-      setState(() =>
-          _uploadError = 'Format non supporté. Utilisez PNG, JPG ou WebP.');
+      setState(() => _uploadError = l10n.adminMediaErrorFormat);
       return;
     }
 
     if (file.size > 5 * 1024 * 1024) {
-      setState(() => _uploadError = 'Fichier trop volumineux (max 5MB).');
+      setState(() => _uploadError = l10n.adminMediaErrorSize);
       return;
     }
 
@@ -112,17 +116,19 @@ class _AdminMediaScreenState extends State<AdminMediaScreen> {
       });
 
       await uploadTask;
+      await _loadMediaItems();
+      setState(() => _uploadProgress = null);
 
-      await _loadMediaItems(); // Reload list first
-      setState(() => _uploadProgress = null); // Then hide progress
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Image uploadée avec succès!')),
+        SnackBar(content: Text(l10n.adminMediaSuccessUpload)),
       );
     } catch (e) {
+      if (!mounted) return;
+      final l10n = AppLocalizations.of(context)!;
       setState(() {
         _uploadProgress = null;
-        _uploadError = 'Erreur upload: $e';
+        _uploadError = l10n.adminMediaErrorUpload(e.toString());
       });
     }
   }
@@ -133,20 +139,21 @@ class _AdminMediaScreenState extends State<AdminMediaScreen> {
   }
 
   Future<void> _deleteMedia(MediaItem item) async {
+    final l10n = AppLocalizations.of(context)!;
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Supprimer le média'),
-        content: Text('Voulez-vous vraiment supprimer "${item.name}" ?'),
+        title: Text(l10n.adminMediaDeleteTitle),
+        content: Text(l10n.adminMediaDeleteConfirm(item.name)),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('Annuler'),
+            child: Text(l10n.commonCancel),
           ),
           TextButton(
             onPressed: () => Navigator.pop(context, true),
             style: TextButton.styleFrom(foregroundColor: Colors.red),
-            child: const Text('Supprimer'),
+            child: Text(l10n.adminMediaDeleteButton),
           ),
         ],
       ),
@@ -162,12 +169,13 @@ class _AdminMediaScreenState extends State<AdminMediaScreen> {
         _loadMediaItems();
         if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Média supprimé avec succès')),
+          SnackBar(content: Text(l10n.adminMediaSuccessDelete)),
         );
       } catch (e) {
         if (!mounted) return;
+        final l10n = AppLocalizations.of(context)!;
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Erreur suppression: $e')),
+          SnackBar(content: Text(l10n.commonError(e.toString()))),
         );
       }
     }
@@ -191,7 +199,6 @@ class _AdminMediaScreenState extends State<AdminMediaScreen> {
   }
 
   Future<void> _assignToItem(MediaItem item) async {
-    // Récupérer la liste des plats
     final snapshot = await FirebaseFirestore.instance
         .collection('restaurants')
         .doc(widget.restaurantId)
@@ -209,13 +216,13 @@ class _AdminMediaScreenState extends State<AdminMediaScreen> {
         .toList();
 
     if (items.isEmpty) {
+      final l10n = AppLocalizations.of(context)!;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Aucun plat disponible')),
+        SnackBar(content: Text(l10n.adminMediaAssignNoDishes)),
       );
       return;
     }
 
-    // Afficher modal de sélection
     final selectedItem = await showDialog<Map<String, dynamic>>(
       context: context,
       builder: (context) => _buildItemSelectionDialog(items),
@@ -228,6 +235,7 @@ class _AdminMediaScreenState extends State<AdminMediaScreen> {
   }
 
   Widget _buildItemSelectionDialog(List<Map<String, dynamic>> items) {
+    final l10n = AppLocalizations.of(context)!;
     final controller = TextEditingController();
     List<Map<String, dynamic>> filtered = List.of(items);
 
@@ -244,7 +252,7 @@ class _AdminMediaScreenState extends State<AdminMediaScreen> {
 
     return StatefulBuilder(
       builder: (context, setState) => AlertDialog(
-        title: const Text('Assigner à un plat'),
+        title: Text(l10n.adminMediaAssignTitle),
         content: SizedBox(
           width: 360,
           height: 460,
@@ -252,9 +260,9 @@ class _AdminMediaScreenState extends State<AdminMediaScreen> {
             children: [
               TextField(
                 controller: controller,
-                decoration: const InputDecoration(
-                  hintText: 'Rechercher un plat…',
-                  prefixIcon: Icon(Icons.search),
+                decoration: InputDecoration(
+                  hintText: l10n.adminMediaAssignSearch,
+                  prefixIcon: const Icon(Icons.search),
                 ),
                 onChanged: (value) => setState(() => applyFilter(value)),
               ),
@@ -279,7 +287,7 @@ class _AdminMediaScreenState extends State<AdminMediaScreen> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Annuler'),
+            child: Text(l10n.commonCancel),
           ),
         ],
       ),
@@ -295,50 +303,47 @@ class _AdminMediaScreenState extends State<AdminMediaScreen> {
           .collection('menus')
           .doc(itemId)
           .update({
-        'image': storagePath, // ✅ Path Storage (source de vérité)
-        'imageUrl': url, // ✅ URL pour affichage rapide
+        'image': storagePath,
+        'imageUrl': url,
         'updated_at': FieldValue.serverTimestamp(),
       });
 
       if (!mounted) return;
-
+      final l10n = AppLocalizations.of(context)!;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Image assignée avec succès')),
+        SnackBar(content: Text(l10n.adminMediaSuccessAssign)),
       );
     } catch (e) {
       if (!mounted) return;
-
+      final l10n = AppLocalizations.of(context)!;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Erreur: $e')),
+        SnackBar(content: Text(l10n.commonError(e.toString()))),
       );
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return AdminShell(
-      title: 'Médias',
+      title: l10n.adminMediaTitle,
       restaurantId: widget.restaurantId,
       activeRoute: '/media',
-      breadcrumbs: const ['Dashboard', 'Médias'],
+      breadcrumbs: [l10n.adminDashboardTitle, l10n.adminMediaTitle],
       actions: [
         ElevatedButton.icon(
           onPressed: _pickFiles,
           icon: const Icon(Icons.add_photo_alternate),
-          label: const Text('Ajouter'),
+          label: Text(l10n.adminMediaAddButton),
         ),
       ],
       child: Column(
         children: [
-          // Zone drag-drop
           _buildDropZone(),
-
           if (_uploadError != null) _buildErrorAlert(),
           if (_uploadProgress != null) _buildProgressBar(),
-
           const SizedBox(height: AdminTokens.space16),
-
-          // Liste des médias
           Expanded(
             child: _isLoading
                 ? const Center(child: CircularProgressIndicator())
@@ -352,6 +357,8 @@ class _AdminMediaScreenState extends State<AdminMediaScreen> {
   }
 
   Widget _buildDropZone() {
+    final l10n = AppLocalizations.of(context)!;
+
     return Container(
       margin: const EdgeInsets.all(AdminTokens.space8),
       child: Container(
@@ -379,14 +386,14 @@ class _AdminMediaScreenState extends State<AdminMediaScreen> {
                 ),
                 const SizedBox(height: AdminTokens.space12),
                 Text(
-                  'cliquez pour sélectionner',
+                  l10n.adminMediaDropZoneClick,
                   style: AdminTypography.bodyLarge.copyWith(
                     color: AdminTokens.neutral600,
                   ),
                 ),
                 const SizedBox(height: AdminTokens.space8),
                 Text(
-                  'PNG, JPG, WebP - Max 5MB',
+                  l10n.adminMediaDropZoneFormats,
                   style: AdminTypography.bodySmall.copyWith(
                     color: AdminTokens.neutral500,
                   ),
@@ -429,6 +436,8 @@ class _AdminMediaScreenState extends State<AdminMediaScreen> {
   }
 
   Widget _buildProgressBar() {
+    final l10n = AppLocalizations.of(context)!;
+
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: AdminTokens.space16),
       child: Column(
@@ -437,7 +446,7 @@ class _AdminMediaScreenState extends State<AdminMediaScreen> {
             children: [
               const Icon(Icons.upload, color: AdminTokens.primary600),
               const SizedBox(width: AdminTokens.space8),
-              const Text('Upload en cours...'),
+              Text(l10n.adminMediaUploadProgress),
               const Spacer(),
               Text('${(_uploadProgress! * 100).toInt()}%'),
             ],
@@ -454,6 +463,8 @@ class _AdminMediaScreenState extends State<AdminMediaScreen> {
   }
 
   Widget _buildEmptyState() {
+    final l10n = AppLocalizations.of(context)!;
+
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -464,13 +475,13 @@ class _AdminMediaScreenState extends State<AdminMediaScreen> {
             color: Colors.grey[400],
           ),
           const SizedBox(height: AdminTokens.space16),
-          const Text(
-            'Aucun média',
+          Text(
+            l10n.adminMediaEmptyTitle,
             style: AdminTypography.headlineMedium,
           ),
           const SizedBox(height: AdminTokens.space8),
           Text(
-            'Ajoutez vos premières images pour commencer',
+            l10n.adminMediaEmptySubtitle,
             style: AdminTypography.bodyMedium.copyWith(
               color: AdminTokens.neutral500,
             ),
@@ -483,18 +494,15 @@ class _AdminMediaScreenState extends State<AdminMediaScreen> {
   Widget _buildMediaGrid() {
     return LayoutBuilder(
       builder: (context, constraints) {
-        // 📱 Détection responsive basée sur la largeur
         final isDesktop = constraints.maxWidth > 800;
-        final crossAxisCount = isDesktop ? 4 : 2; // 4 sur desktop, 2 sur mobile
-        final childAspectRatio =
-            isDesktop ? 0.85 : 0.9; // Ratio légèrement différent
+        final crossAxisCount = isDesktop ? 4 : 2;
+        final childAspectRatio = isDesktop ? 0.85 : 0.9;
 
         return GridView.builder(
-          padding: EdgeInsets.all(
-              isDesktop ? 16.0 : 12.0), // Moins de padding sur mobile
+          padding: EdgeInsets.all(isDesktop ? 16.0 : 12.0),
           gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
             crossAxisCount: crossAxisCount,
-            crossAxisSpacing: isDesktop ? 16 : 12, // Espacement adaptatif
+            crossAxisSpacing: isDesktop ? 16 : 12,
             mainAxisSpacing: isDesktop ? 16 : 12,
             childAspectRatio: childAspectRatio,
           ),
@@ -506,6 +514,8 @@ class _AdminMediaScreenState extends State<AdminMediaScreen> {
   }
 
   Widget _buildMediaCard(MediaItem item) {
+    final l10n = AppLocalizations.of(context)!;
+
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
@@ -515,7 +525,6 @@ class _AdminMediaScreenState extends State<AdminMediaScreen> {
       ),
       child: Column(
         children: [
-          // Image avec ratio 4:3 fixe + overlays
           AspectRatio(
             aspectRatio: 4 / 3,
             child: Container(
@@ -531,7 +540,6 @@ class _AdminMediaScreenState extends State<AdminMediaScreen> {
                 ),
                 child: Stack(
                   children: [
-                    // Image principale
                     Positioned.fill(
                       child: Image.network(
                         item.url,
@@ -548,8 +556,6 @@ class _AdminMediaScreenState extends State<AdminMediaScreen> {
                         },
                       ),
                     ),
-
-                    // Gradient pour lisibilité des overlays
                     Positioned.fill(
                       child: Container(
                         decoration: BoxDecoration(
@@ -564,8 +570,6 @@ class _AdminMediaScreenState extends State<AdminMediaScreen> {
                         ),
                       ),
                     ),
-
-                    // Taille en overlay (bas-gauche)
                     Positioned(
                       bottom: 8,
                       left: 8,
@@ -597,8 +601,6 @@ class _AdminMediaScreenState extends State<AdminMediaScreen> {
                         ),
                       ),
                     ),
-
-                    // Bouton supprimer (haut-droite)
                     Positioned(
                       top: 8,
                       right: 8,
@@ -635,16 +637,13 @@ class _AdminMediaScreenState extends State<AdminMediaScreen> {
               ),
             ),
           ),
-
-          // 🎯 BARRE D'ACTION RESPONSIVE
           Expanded(
             child: Container(
               width: double.infinity,
-              padding: const EdgeInsets.all(8), // Padding réduit
+              padding: const EdgeInsets.all(8),
               child: Center(
                 child: LayoutBuilder(
                   builder: (context, constraints) {
-                    // 📱 Détection de la largeur disponible
                     final isSmall = constraints.maxWidth < 140;
 
                     return Container(
@@ -672,7 +671,7 @@ class _AdminMediaScreenState extends State<AdminMediaScreen> {
                           borderRadius: BorderRadius.circular(8),
                           onTap: () => _assignToItem(item),
                           child: Container(
-                            height: 36, // Hauteur réduite
+                            height: 36,
                             padding: EdgeInsets.symmetric(
                               horizontal: isSmall ? 8 : 12,
                             ),
@@ -682,16 +681,16 @@ class _AdminMediaScreenState extends State<AdminMediaScreen> {
                               children: [
                                 const Icon(
                                   Icons.restaurant_menu,
-                                  size: 16, // Icône plus petite
+                                  size: 16,
                                   color: Colors.white,
                                 ),
                                 if (!isSmall) ...[
                                   const SizedBox(width: 6),
-                                  const Flexible(
+                                  Flexible(
                                     child: Text(
-                                      'Assigner',
-                                      style: TextStyle(
-                                        fontSize: 12, // Texte plus petit
+                                      l10n.adminMediaAssignButton,
+                                      style: const TextStyle(
+                                        fontSize: 12,
                                         fontWeight: FontWeight.w600,
                                         color: Colors.white,
                                         letterSpacing: 0.2,

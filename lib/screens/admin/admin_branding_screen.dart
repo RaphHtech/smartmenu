@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:smartmenu_app/core/constants/colors.dart';
+import 'package:smartmenu_app/l10n/app_localizations.dart';
 import '../../widgets/ui/admin_shell.dart';
 import '../../core/design/admin_tokens.dart';
 import '../../core/design/admin_typography.dart';
@@ -46,6 +47,8 @@ class _AdminBrandingScreenState extends State<AdminBrandingScreen> {
   }
 
   Future<void> _uploadLogo() async {
+    final l10n = AppLocalizations.of(context)!;
+
     try {
       final input = html.FileUploadInputElement()
         ..accept = 'image/*'
@@ -54,16 +57,13 @@ class _AdminBrandingScreenState extends State<AdminBrandingScreen> {
       input.onChange.listen((e) async {
         final file = input.files?.first;
         if (file != null) {
-          // Validation taille
           if (file.size > 2 * 1024 * 1024) {
-            setState(() => _error = 'Le fichier doit faire moins de 2MB');
+            setState(() => _error = l10n.adminBrandingErrorSize);
             return;
           }
 
-          // Validation format
           if (!file.type.startsWith('image/')) {
-            setState(
-                () => _error = 'Veuillez sélectionner une image (PNG/JPG)');
+            setState(() => _error = l10n.adminBrandingErrorFormat);
             return;
           }
 
@@ -76,7 +76,9 @@ class _AdminBrandingScreenState extends State<AdminBrandingScreen> {
         }
       });
     } catch (e) {
-      setState(() => _error = 'Erreur lors de la sélection: $e');
+      if (!mounted) return;
+      final l10n = AppLocalizations.of(context)!;
+      setState(() => _error = l10n.adminBrandingErrorSelection(e.toString()));
     }
   }
 
@@ -87,14 +89,13 @@ class _AdminBrandingScreenState extends State<AdminBrandingScreen> {
     });
 
     try {
-      // Supprimer l'ancien logo s'il existe
       if (_logoUrl != null) {
         try {
           await FirebaseStorage.instance
               .refFromURL(_logoUrl!.split('?')[0])
               .delete();
         } catch (e) {
-          // Ignore si l'ancien fichier n'existe pas
+          // Ignore if old file doesn't exist
         }
       }
 
@@ -120,7 +121,6 @@ class _AdminBrandingScreenState extends State<AdminBrandingScreen> {
       final snapshot = await uploadTask;
       final downloadUrl = await snapshot.ref.getDownloadURL();
 
-      // Sauvegarder en Firestore
       await FirebaseFirestore.instance
           .collection('restaurants')
           .doc(widget.restaurantId)
@@ -138,15 +138,18 @@ class _AdminBrandingScreenState extends State<AdminBrandingScreen> {
       });
 
       if (mounted) {
+        final l10n = AppLocalizations.of(context)!;
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Logo téléversé avec succès'),
+          SnackBar(
+            content: Text(l10n.adminBrandingSuccessUpload),
             backgroundColor: AdminTokens.success500,
           ),
         );
       }
     } catch (e) {
-      setState(() => _error = 'Erreur d\'upload: $e');
+      if (!mounted) return;
+      final l10n = AppLocalizations.of(context)!;
+      setState(() => _error = l10n.commonError(e.toString()));
     } finally {
       setState(() => _isLoading = false);
     }
@@ -190,13 +193,15 @@ class _AdminBrandingScreenState extends State<AdminBrandingScreen> {
           } else {
             _logoUrl = baseUrl;
           }
-          _restaurantName =
-              data['name'] as String? ?? 'Restaurant'; // ← AJOUTER
+          _restaurantName = data['name'] as String? ??
+              AppLocalizations.of(context)!.adminBrandingRestaurantDefault;
           _brandColorController.text = data['brandColor'] as String? ?? '';
         });
       }
     } catch (e) {
-      setState(() => _error = 'Erreur de chargement: $e');
+      if (!mounted) return;
+      final l10n = AppLocalizations.of(context)!;
+      setState(() => _error = l10n.adminBrandingErrorLoad(e.toString()));
     } finally {
       setState(() => _isLoading = false);
     }
@@ -204,11 +209,13 @@ class _AdminBrandingScreenState extends State<AdminBrandingScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return AdminShell(
-      title: 'Branding',
+      title: l10n.adminBrandingTitle,
       restaurantId: widget.restaurantId,
       activeRoute: '/branding',
-      breadcrumbs: const ['Dashboard', 'Branding'],
+      breadcrumbs: [l10n.adminDashboardTitle, l10n.adminBrandingTitle],
       child: _isLoading
           ? const Center(
               child: CircularProgressIndicator(color: AdminTokens.primary600),
@@ -218,8 +225,8 @@ class _AdminBrandingScreenState extends State<AdminBrandingScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
-                    'Identité de marque',
+                  Text(
+                    l10n.adminBrandingIdentity,
                     style: AdminTypography.headlineLarge,
                   ),
                   const SizedBox(height: AdminTokens.space16),
@@ -249,34 +256,32 @@ class _AdminBrandingScreenState extends State<AdminBrandingScreen> {
   }
 
   Widget _buildLogoSection() {
+    final l10n = AppLocalizations.of(context)!;
+
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(AdminTokens.space24),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Row(
+            Row(
               children: [
-                Icon(Icons.palette, color: AdminTokens.primary600),
-                SizedBox(width: AdminTokens.space12),
+                const Icon(Icons.palette, color: AdminTokens.primary600),
+                const SizedBox(width: AdminTokens.space12),
                 Text(
-                  'Logo du restaurant',
+                  l10n.adminBrandingLogoSection,
                   style: AdminTypography.headlineMedium,
                 ),
               ],
             ),
             const SizedBox(height: AdminTokens.space16),
-
             Text(
-              'Format recommandé : PNG carré, fond transparent, minimum 256×256px',
+              l10n.adminBrandingLogoFormat,
               style: AdminTypography.bodySmall.copyWith(
                 color: AdminTokens.neutral600,
               ),
             ),
-
             const SizedBox(height: AdminTokens.space24),
-
-            // Zone d'upload
             Container(
               width: double.infinity,
               height: 200,
@@ -348,25 +353,27 @@ class _AdminBrandingScreenState extends State<AdminBrandingScreen> {
   }
 
   Widget _buildUploadZone() {
+    final l10n = AppLocalizations.of(context)!;
+
     return InkWell(
       onTap: _uploadLogo,
       borderRadius: BorderRadius.circular(AdminTokens.radius12),
-      child: const Column(
+      child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(
+          const Icon(
             Icons.cloud_upload_outlined,
             size: 48,
             color: AdminTokens.primary600,
           ),
-          SizedBox(height: AdminTokens.space16),
+          const SizedBox(height: AdminTokens.space16),
           Text(
-            'Cliquez pour téléverser un logo',
+            l10n.adminBrandingUploadClick,
             style: AdminTypography.bodyLarge,
           ),
-          SizedBox(height: AdminTokens.space8),
+          const SizedBox(height: AdminTokens.space8),
           Text(
-            'PNG recommandé (fond transparent), JPG accepté',
+            l10n.adminBrandingLogoFormats,
             style: AdminTypography.bodySmall,
           ),
         ],
@@ -375,33 +382,28 @@ class _AdminBrandingScreenState extends State<AdminBrandingScreen> {
   }
 
   Widget _buildPreviewSection() {
+    final l10n = AppLocalizations.of(context)!;
+
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(AdminTokens.space24),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              'Aperçu rendu',
+            Text(
+              l10n.adminBrandingPreviewTitle,
               style: AdminTypography.headlineMedium,
             ),
             const SizedBox(height: AdminTokens.space16),
-
             Text(
-              'Visualisez comment votre logo apparaîtra dans l\'interface client',
+              l10n.adminBrandingPreviewDescription,
               style: AdminTypography.bodySmall.copyWith(
                 color: AdminTokens.neutral600,
               ),
             ),
-
             const SizedBox(height: AdminTokens.space24),
-
-            // Aperçu Hero (grand header)
             _buildHeroPreview(),
-
             const SizedBox(height: AdminTokens.space20),
-
-            // Aperçu Sticky (header rétracté)
             _buildStickyPreview(),
           ],
         ),
@@ -410,11 +412,13 @@ class _AdminBrandingScreenState extends State<AdminBrandingScreen> {
   }
 
   Widget _buildHeroPreview() {
+    final l10n = AppLocalizations.of(context)!;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Header principal',
+          l10n.adminBrandingPreviewHero,
           style: AdminTypography.bodyMedium.copyWith(
             fontWeight: FontWeight.w600,
           ),
@@ -430,9 +434,7 @@ class _AdminBrandingScreenState extends State<AdminBrandingScreen> {
           ),
           child: Row(
             children: [
-              const Expanded(child: SizedBox()), // Spacer gauche
-
-              // Logo + Nom (centré)
+              const Expanded(child: SizedBox()),
               Expanded(
                 flex: 2,
                 child: Row(
@@ -440,10 +442,10 @@ class _AdminBrandingScreenState extends State<AdminBrandingScreen> {
                   children: [
                     _buildLogoPreviewWidget(36),
                     const SizedBox(width: 8),
-                    const Flexible(
+                    Flexible(
                       child: Text(
-                        'New Test',
-                        style: TextStyle(
+                        _restaurantName,
+                        style: const TextStyle(
                           fontSize: 26,
                           fontWeight: FontWeight.w700,
                           color: Colors.white,
@@ -462,8 +464,7 @@ class _AdminBrandingScreenState extends State<AdminBrandingScreen> {
                   ],
                 ),
               ),
-
-              const Expanded(child: SizedBox()), // Spacer droite
+              const Expanded(child: SizedBox()),
             ],
           ),
         ),
@@ -472,11 +473,13 @@ class _AdminBrandingScreenState extends State<AdminBrandingScreen> {
   }
 
   Widget _buildStickyPreview() {
+    final l10n = AppLocalizations.of(context)!;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Header rétracté (sticky)',
+          l10n.adminBrandingPreviewSticky,
           style: AdminTypography.bodyMedium.copyWith(
             fontWeight: FontWeight.w600,
           ),
@@ -492,9 +495,7 @@ class _AdminBrandingScreenState extends State<AdminBrandingScreen> {
           ),
           child: Row(
             children: [
-              const Expanded(child: SizedBox()), // Spacer gauche
-
-              // Logo + Nom compact (centré)
+              const Expanded(child: SizedBox()),
               Expanded(
                 flex: 2,
                 child: Row(
@@ -504,9 +505,7 @@ class _AdminBrandingScreenState extends State<AdminBrandingScreen> {
                     const SizedBox(width: 6),
                     Flexible(
                       child: Text(
-                        _restaurantName.isEmpty
-                            ? 'Restaurant'
-                            : _restaurantName,
+                        _restaurantName,
                         style: const TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.w700,
@@ -526,8 +525,7 @@ class _AdminBrandingScreenState extends State<AdminBrandingScreen> {
                   ],
                 ),
               ),
-
-              const Expanded(child: SizedBox()), // Spacer droite
+              const Expanded(child: SizedBox()),
             ],
           ),
         ),
@@ -577,7 +575,7 @@ class _AdminBrandingScreenState extends State<AdminBrandingScreen> {
       width: size,
       height: size,
       decoration: BoxDecoration(
-        color: _generateStableColor(_restaurantName), // ← Couleur stable
+        color: _generateStableColor(_restaurantName),
         shape: BoxShape.circle,
         border: Border.all(
           color: Colors.white.withValues(alpha: 0.2),
@@ -601,7 +599,6 @@ class _AdminBrandingScreenState extends State<AdminBrandingScreen> {
     setState(() => _isLoading = true);
 
     try {
-      // Supprimer le fichier Storage ET les métadonnées Firestore
       await FirebaseFirestore.instance
           .collection('restaurants')
           .doc(widget.restaurantId)
@@ -613,21 +610,21 @@ class _AdminBrandingScreenState extends State<AdminBrandingScreen> {
         'updated_at': FieldValue.serverTimestamp(),
       });
 
-      // TODO: Ajouter suppression Firebase Storage
-      // await FirebaseStorage.instance.refFromURL(_logoUrl!).delete();
-
       setState(() => _logoUrl = null);
 
       if (mounted) {
+        final l10n = AppLocalizations.of(context)!;
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Logo supprimé avec succès'),
+          SnackBar(
+            content: Text(l10n.adminBrandingSuccessDelete),
             backgroundColor: AdminTokens.success500,
           ),
         );
       }
     } catch (e) {
-      setState(() => _error = 'Erreur lors de la suppression: $e');
+      if (!mounted) return;
+      final l10n = AppLocalizations.of(context)!;
+      setState(() => _error = l10n.commonError(e.toString()));
     } finally {
       setState(() => _isLoading = false);
     }
