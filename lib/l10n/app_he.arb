@@ -1020,5 +1020,15 @@
   "commonShare": "שתף",
   "@commonShare": {
     "description": "Share button"
+  },
+
+  "commonLanguage": "שפה",
+  "@commonLanguage": {
+    "description": "Language selector label"
+  },
+
+  "commonClose": "סגור",
+  "@commonClose": {
+    "description": "Close button"
   }
 }

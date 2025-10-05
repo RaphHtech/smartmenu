@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:smartmenu_app/l10n/app_localizations.dart';
 import 'package:smartmenu_app/screens/admin/admin_dashboard_screen.dart';
+import 'package:smartmenu_app/screens/admin/admin_settings_screen.dart';
 import '../../widgets/ui/admin_shell.dart';
 import '../../widgets/ui/admin_themed.dart';
 import '../../core/design/admin_tokens.dart';
@@ -389,7 +390,9 @@ class AdminDashboardOverviewScreen extends StatelessWidget {
         _previewMenu(context);
         break;
       case 2: // Paramètres
-        // TODO: navigation paramètres
+        context.pushAdminScreen(
+          AdminSettingsScreen(restaurantId: restaurantId),
+        );
         break;
     }
   }

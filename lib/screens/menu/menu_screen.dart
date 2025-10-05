@@ -75,7 +75,7 @@ class SimpleMenuScreenState extends State<MenuScreen> {
       case 'Desserts':
         return '🍰';
       case 'Boissons':
-        return '🹹';
+        return '🍹¹';
       default:
         return '⭐';
     }
@@ -498,51 +498,6 @@ class SimpleMenuScreenState extends State<MenuScreen> {
                 slivers: [
                   PremiumAppHeaderWidget(
                     tagline: _tagline,
-                    onServerCall: _isLoading
-                        ? null
-                        : () {
-                            final tableId = TableService.getTableId();
-                            if (tableId == null) {
-                              _showCustomNotification(l10n.tableNotIdentified);
-                              return;
-                            }
-
-                            setState(() => _isLoading = true);
-
-                            ServerCallService.callServer(
-                              rid: widget.restaurantId,
-                              table: 'table$tableId',
-                            ).then((_) {
-                              if (mounted) {
-                                TopToast.show(
-                                  context,
-                                  message: l10n.waiterCalled,
-                                  subtitle: l10n.staffComing,
-                                  variant: ToastVariant.info,
-                                );
-                              }
-                            }).catchError((e) {
-                              if (mounted) {
-                                final error = e.toString();
-                                if (error.contains('COOLDOWN_ACTIVE:')) {
-                                  final seconds = error.split(':')[1];
-                                  TopToast.show(
-                                    context,
-                                    message: l10n.cooldownWait(seconds),
-                                    variant: ToastVariant.warning,
-                                  );
-                                } else {
-                                  TopToast.show(
-                                    context,
-                                    message: l10n.error(e.toString()),
-                                    variant: ToastVariant.error,
-                                  );
-                                }
-                              }
-                            }).whenComplete(() {
-                              if (mounted) setState(() => _isLoading = false);
-                            });
-                          },
                     restaurantName: _restaurantName,
                     showAdminReturn: _isAdminPreview,
                     onAdminReturn: _isAdminPreview
@@ -756,6 +711,67 @@ class SimpleMenuScreenState extends State<MenuScreen> {
               ),
             ),
           ),
+          if (!_isAdminPreview)
+            Positioned(
+              right: 16,
+              bottom: 160 + MediaQuery.of(context).padding.bottom,
+              child: FloatingActionButton.extended(
+                onPressed: _isLoading
+                    ? null
+                    : () {
+                        final tableId = TableService.getTableId();
+                        if (tableId == null) {
+                          TopToast.show(
+                            context,
+                            message: _l10n(context).tableNotIdentified,
+                            variant: ToastVariant.warning,
+                          );
+                          return;
+                        }
+
+                        setState(() => _isLoading = true);
+
+                        ServerCallService.callServer(
+                          rid: widget.restaurantId,
+                          table: 'table$tableId',
+                        ).then((_) {
+                          if (mounted) {
+                            TopToast.show(
+                              context,
+                              message: _l10n(context).waiterCalled,
+                              subtitle: _l10n(context).staffComing,
+                              variant: ToastVariant.info,
+                            );
+                          }
+                        }).catchError((e) {
+                          if (mounted) {
+                            final error = e.toString();
+                            if (error.contains('COOLDOWN_ACTIVE:')) {
+                              final seconds = error.split(':')[1];
+                              TopToast.show(
+                                context,
+                                message: _l10n(context).cooldownWait(seconds),
+                                variant: ToastVariant.warning,
+                              );
+                            } else {
+                              TopToast.show(
+                                context,
+                                message: _l10n(context).error(e.toString()),
+                                variant: ToastVariant.error,
+                              );
+                            }
+                          }
+                        }).whenComplete(() {
+                          if (mounted) setState(() => _isLoading = false);
+                        });
+                      },
+                icon: const Icon(Icons.room_service, size: 20),
+                label: Text(_l10n(context).waiter),
+                backgroundColor: const Color(0xFF6366F1),
+                foregroundColor: Colors.white,
+                elevation: 4,
+              ),
+            ),
           if (_showOrderModal)
             OrderReviewModal(
               itemQuantities: itemQuantities,

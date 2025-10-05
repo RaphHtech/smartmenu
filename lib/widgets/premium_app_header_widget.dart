@@ -1,10 +1,12 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
-import '../widgets/language_selector_widget.dart';
+import 'package:provider/provider.dart';
+import 'package:smartmenu_app/services/language_service.dart';
+import 'package:smartmenu_app/state/language_provider.dart';
+// import '../widgets/language_selector_widget.dart';
 import '../l10n/app_localizations.dart';
 
 class PremiumAppHeaderWidget extends StatelessWidget {
-  final VoidCallback? onServerCall;
   final String restaurantName;
   final String? logoUrl;
   final String? tagline;
@@ -13,7 +15,6 @@ class PremiumAppHeaderWidget extends StatelessWidget {
 
   const PremiumAppHeaderWidget({
     super.key,
-    this.onServerCall,
     required this.restaurantName,
     this.tagline,
     this.showAdminReturn = false,
@@ -44,7 +45,7 @@ class PremiumAppHeaderWidget extends StatelessWidget {
     final showTagline = !isMobile && (tagline?.isNotEmpty == true);
 
     // LARGEURS FIXES pour centrage parfait
-    const double sideWidth = 120.0; // Augmenté pour accueillir langue + serveur
+    const double sideWidth = 56.0;
 
     return SliverAppBar(
       pinned: true,
@@ -59,37 +60,18 @@ class PremiumAppHeaderWidget extends StatelessWidget {
         padding: const EdgeInsets.only(left: 16),
         child: showAdminReturn
             ? _buildAdminButton()
-            : const LanguageSelectorWidget(), // Sélecteur à gauche en mode client
+            : _buildLanguageButton(context),
       ),
       centerTitle: true,
       title: _buildRestaurantBranding(showTagline: showTagline),
-      actions: [
-        Container(
-          width: sideWidth,
-          alignment: Alignment.centerRight,
-          padding: const EdgeInsets.only(right: 16),
-          child: _buildServerButton(context,
-              compact: screenWidth < 360), // Serveur toujours à droite
-        ),
-      ],
-      flexibleSpace: ClipRect(
-        child: isMobile
-            ? Container(
-                decoration: BoxDecoration(
-                  color: const Color(0xFF000000).withOpacity(0.75),
-                  border: const Border(
-                    bottom: BorderSide(
-                      color: Color(0x20FFFFFF),
-                      width: 0.5,
-                    ),
-                  ),
-                ),
-              )
-            : BackdropFilter(
-                filter: ImageFilter.blur(sigmaX: 8, sigmaY: 8),
-                child: Container(
+      actions: const [], // Vide car le bouton serveur sera un FAB
+      flexibleSpace: IgnorePointer(
+        ignoring: true,
+        child: ClipRect(
+          child: isMobile
+              ? Container(
                   decoration: BoxDecoration(
-                    color: const Color(0xFF000000).withOpacity(0.7),
+                    color: const Color(0xFF000000).withOpacity(0.75),
                     border: const Border(
                       bottom: BorderSide(
                         color: Color(0x20FFFFFF),
@@ -97,48 +79,79 @@ class PremiumAppHeaderWidget extends StatelessWidget {
                       ),
                     ),
                   ),
+                )
+              : BackdropFilter(
+                  filter: ImageFilter.blur(sigmaX: 8, sigmaY: 8),
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF000000).withOpacity(0.7),
+                      border: const Border(
+                        bottom: BorderSide(
+                          color: Color(0x20FFFFFF),
+                          width: 0.5,
+                        ),
+                      ),
+                    ),
+                  ),
                 ),
-              ),
+        ),
       ),
     );
   }
 
-  Widget _buildServerButton(BuildContext context, {bool compact = false}) {
-    return Container(
-      height: 36,
-      width: compact ? 48 : 64,
-      decoration: BoxDecoration(
-        color: const Color(0xFF6366F1),
-        borderRadius: BorderRadius.circular(18),
-        boxShadow: [
-          BoxShadow(
-            color: const Color(0xFF6366F1).withOpacity(0.3),
-            blurRadius: 4,
-            offset: const Offset(0, 2),
-          ),
-        ],
+  Widget _buildLanguageButton(BuildContext context) {
+    final languageProvider = Provider.of<LanguageProvider>(context);
+    final currentLocale = languageProvider.locale;
+
+    return PopupMenuButton<Locale>(
+      icon: const Icon(Icons.language, color: Colors.white, size: 24),
+      tooltip: AppLocalizations.of(context)!.commonLanguage,
+      offset: const Offset(0, 50),
+      color: const Color(0xFF1F1F1F),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+        side: BorderSide(color: Colors.white.withOpacity(0.1)),
       ),
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          onTap: onServerCall,
-          borderRadius: BorderRadius.circular(18),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const Icon(Icons.support_agent, size: 16, color: Colors.white),
-              if (!compact) ...[
-                const SizedBox(width: 4),
-                Text(AppLocalizations.of(context)!.waiter,
-                    style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 11,
-                        fontWeight: FontWeight.w600)),
+      itemBuilder: (BuildContext context) {
+        return LanguageService.supportedLocales.map((Locale locale) {
+          final isSelected = locale == currentLocale;
+          return PopupMenuItem<Locale>(
+            value: locale,
+            child: Row(
+              children: [
+                Text(
+                  LanguageService.getFlag(locale.languageCode),
+                  style: const TextStyle(fontSize: 20),
+                ),
+                const SizedBox(width: 12),
+                Text(
+                  LanguageService.getNativeName(locale.languageCode),
+                  style: TextStyle(
+                    fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
+                    color: isSelected
+                        ? const Color(0xFF6366F1)
+                        : Colors.white.withOpacity(0.9),
+                  ),
+                ),
+                if (isSelected) ...[
+                  const Spacer(),
+                  Container(
+                    width: 6,
+                    height: 6,
+                    decoration: const BoxDecoration(
+                      color: Color(0xFF6366F1),
+                      shape: BoxShape.circle,
+                    ),
+                  ),
+                ],
               ],
-            ],
-          ),
-        ),
-      ),
+            ),
+          );
+        }).toList();
+      },
+      onSelected: (Locale locale) {
+        languageProvider.setLocale(locale);
+      },
     );
   }
 

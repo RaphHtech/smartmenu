@@ -205,8 +205,10 @@ class OrderReviewModal extends StatelessWidget {
                   onPressed: onClose,
                   icon: Icon(
                     Directionality.of(context) == TextDirection.rtl
-                        ? Icons.arrow_forward_rounded
-                        : Icons.arrow_back_rounded,
+                        ? Icons
+                            .arrow_back_rounded // RTL : flèche gauche (retour = sortir vers la gauche)
+                        : Icons
+                            .arrow_forward_rounded, // LTR : flèche droite (retour = sortir vers la droite)
                     size: 18,
                   ),
                   label: Text(

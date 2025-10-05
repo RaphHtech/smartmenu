@@ -166,8 +166,10 @@ class _CartFloatingWidgetState extends State<CartFloatingWidget>
                         const SizedBox(width: ClientTokens.space8),
                         Icon(
                           isRTL
-                              ? Icons.arrow_back_rounded
-                              : Icons.arrow_forward_rounded,
+                              ? Icons
+                                  .arrow_forward_rounded // RTL : flèche droite (vers l'extérieur)
+                              : Icons
+                                  .arrow_back_rounded, // LTR : flèche gauche (vers l'extérieur)
                           color: colorScheme.onPrimary,
                           size: 20,
                         ),

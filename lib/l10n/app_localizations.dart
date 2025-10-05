@@ -502,7 +502,7 @@ abstract class AppLocalizations {
   /// **'Open'**
   String get commonOpen;
 
-  /// Generic close action
+  /// Close button
   ///
   /// In en, this message translates to:
   /// **'Close'**
@@ -1203,6 +1203,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Share'**
   String get commonShare;
+
+  /// Language selector label
+  ///
+  /// In en, this message translates to:
+  /// **'Language'**
+  String get commonLanguage;
 }
 
 class _AppLocalizationsDelegate

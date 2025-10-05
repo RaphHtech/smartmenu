@@ -1020,5 +1020,15 @@
   "commonShare": "Share",
   "@commonShare": {
     "description": "Share button"
+  },
+
+  "commonLanguage": "Language",
+  "@commonLanguage": {
+    "description": "Language selector label"
+  },
+
+  "commonClose": "Close",
+  "@commonClose": {
+    "description": "Close button"
   }
 }

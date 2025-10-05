@@ -623,4 +623,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get commonShare => 'Partager';
+
+  @override
+  String get commonLanguage => 'Langue';
 }

@@ -15,22 +15,39 @@ class CategoryPill extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ChoiceChip(
-      selected: isActive,
-      onSelected: (_) => onTap(),
-      label: Text(label, maxLines: 1, overflow: TextOverflow.fade),
-      shape: const StadiumBorder(),
-      selectedColor: Theme.of(context).colorScheme.primaryContainer,
-      backgroundColor: Theme.of(context).colorScheme.surface.withOpacity(0.72),
-      labelStyle: Theme.of(context).textTheme.labelLarge?.copyWith(
-            fontWeight: isActive ? FontWeight.w700 : FontWeight.w600,
-            color: isActive
-                ? Theme.of(context).colorScheme.onPrimaryContainer
-                : Theme.of(context).colorScheme.onSurface.withOpacity(0.9),
-          ),
-      materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-      padding: const EdgeInsets.symmetric(
-          horizontal: ClientTokens.space12, vertical: ClientTokens.space8),
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(
+          horizontal: 16,
+          vertical: 10,
+        ),
+        decoration: BoxDecoration(
+          color: isActive
+              ? Theme.of(context).colorScheme.primaryContainer
+              : Theme.of(context).colorScheme.surface.withOpacity(0.72),
+          borderRadius: BorderRadius.circular(100),
+          border: isActive
+              ? Border(
+                  left: BorderSide(
+                    color: Theme.of(context).colorScheme.primary,
+                    width: 3,
+                  ),
+                )
+              : null,
+        ),
+        child: Text(
+          label,
+          maxLines: 1,
+          overflow: TextOverflow.fade,
+          style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                fontWeight: isActive ? FontWeight.w700 : FontWeight.w600,
+                color: isActive
+                    ? Theme.of(context).colorScheme.onPrimaryContainer
+                    : Theme.of(context).colorScheme.onSurface.withOpacity(0.9),
+              ),
+        ),
+      ),
     );
   }
 }
