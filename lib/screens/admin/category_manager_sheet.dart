@@ -1,9 +1,9 @@
-// category_manager_sheet.dart
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../../models/category.dart';
 import '../../services/category_repository.dart';
+import '../../l10n/app_localizations.dart';
 
 enum SaveState { saved, saving, error, unsaved }
 
@@ -118,6 +118,8 @@ class _CategoryManagerSheetState extends State<CategoryManagerSheet> {
   }
 
   Future<void> _saveChanges() async {
+    final l10n = AppLocalizations.of(context)!;
+
     setState(() => _saveState = SaveState.saving);
 
     try {
@@ -132,10 +134,10 @@ class _CategoryManagerSheetState extends State<CategoryManagerSheet> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Erreur de sauvegarde: $e'),
+            content: Text(l10n.adminCategoryManagerSaveError(e.toString())),
             backgroundColor: Colors.red[600],
             action: SnackBarAction(
-              label: 'Réessayer',
+              label: l10n.adminCategoryManagerRetry,
               textColor: Colors.white,
               onPressed: _saveChanges,
             ),
@@ -252,7 +254,9 @@ class _CategoryManagerSheetState extends State<CategoryManagerSheet> {
     });
   }
 
-  String _uniqueNewName([String base = 'Nouvelle catégorie']) {
+  String _uniqueNewName([String? base]) {
+    final l10n = AppLocalizations.of(context)!;
+    base ??= l10n.adminCategoryManagerDefaultName;
     var name = base;
     var n = 2;
     while (_categoriesOrder.contains(name)) {
@@ -278,18 +282,23 @@ class _CategoryManagerSheetState extends State<CategoryManagerSheet> {
   Future<void> _deleteCategory(String category) async {
     final ok = await showDialog<bool>(
       context: context,
-      builder: (_) => AlertDialog(
-        title: const Text('Supprimer la catégorie ?'),
-        content: Text('“$category” sera retirée de la liste.'),
-        actions: [
-          TextButton(
-              onPressed: () => Navigator.pop(context, false),
-              child: const Text('Annuler')),
-          FilledButton(
-              onPressed: () => Navigator.pop(context, true),
-              child: const Text('Supprimer'))
-        ],
-      ),
+      builder: (dialogContext) {
+        final l10n = AppLocalizations.of(context)!;
+        return AlertDialog(
+          title: Text(l10n.adminCategoryManagerDeleteTitle),
+          content: Text(l10n.adminCategoryManagerDeleteMessage(category)),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(dialogContext, false),
+              child: Text(l10n.commonCancel),
+            ),
+            FilledButton(
+              onPressed: () => Navigator.pop(dialogContext, true),
+              child: Text(l10n.adminCategoryManagerDeleteAction),
+            )
+          ],
+        );
+      },
     );
     if (ok != true) return;
     // optimistic
@@ -361,27 +370,33 @@ class _CategoryManagerSheetState extends State<CategoryManagerSheet> {
                       ),
                     ),
                     const SizedBox(width: 16),
-                    const Expanded(
+                    Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(
-                            'Gérer les catégories',
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.w600,
-                              color: Color(0xFF111827),
+                          Builder(
+                            builder: (context) => Text(
+                              AppLocalizations.of(context)!
+                                  .adminCategoryManagerTitle,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: const TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.w600,
+                                color: Color(0xFF111827),
+                              ),
                             ),
                           ),
-                          Text(
-                            'Réorganisez et configurez',
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: TextStyle(
-                              fontSize: 14,
-                              color: Color(0xFF6B7280),
+                          Builder(
+                            builder: (context) => Text(
+                              AppLocalizations.of(context)!
+                                  .adminCategoryManagerSubtitle,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: const TextStyle(
+                                fontSize: 14,
+                                color: Color(0xFF6B7280),
+                              ),
                             ),
                           ),
                         ],
@@ -402,7 +417,10 @@ class _CategoryManagerSheetState extends State<CategoryManagerSheet> {
                     FilledButton.icon(
                       onPressed: _addCategory,
                       icon: const Icon(Icons.add, size: 16),
-                      label: const Text('Nouvelle'),
+                      label: Builder(
+                        builder: (context) => Text(AppLocalizations.of(context)!
+                            .adminCategoryManagerNew),
+                      ),
                       style: FilledButton.styleFrom(
                         backgroundColor: const Color(0xFF4F46E5),
                         foregroundColor: Colors.white,
@@ -432,24 +450,30 @@ class _CategoryManagerSheetState extends State<CategoryManagerSheet> {
                   ),
                 ),
                 const SizedBox(width: 16),
-                const Expanded(
+                Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        'Gérer les catégories',
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.w600,
-                          color: Color(0xFF111827),
+                      Builder(
+                        builder: (context) => Text(
+                          AppLocalizations.of(context)!
+                              .adminCategoryManagerTitle,
+                          style: const TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.w600,
+                            color: Color(0xFF111827),
+                          ),
                         ),
                       ),
-                      SizedBox(height: 2),
-                      Text(
-                        'Réorganisez et configurez vos catégories',
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: Color(0xFF6B7280),
+                      const SizedBox(height: 2),
+                      Builder(
+                        builder: (context) => Text(
+                          AppLocalizations.of(context)!
+                              .adminCategoryManagerSubtitleFull,
+                          style: const TextStyle(
+                            fontSize: 14,
+                            color: Color(0xFF6B7280),
+                          ),
                         ),
                       ),
                     ],
@@ -460,7 +484,10 @@ class _CategoryManagerSheetState extends State<CategoryManagerSheet> {
                 FilledButton.icon(
                   onPressed: _addCategory,
                   icon: const Icon(Icons.add, size: 16),
-                  label: const Text('Nouvelle'),
+                  label: Builder(
+                    builder: (context) => Text(
+                        AppLocalizations.of(context)!.adminCategoryManagerNew),
+                  ),
                   style: FilledButton.styleFrom(
                     backgroundColor: const Color(0xFF4F46E5),
                     foregroundColor: Colors.white,
@@ -518,16 +545,20 @@ class _CategoryManagerSheetState extends State<CategoryManagerSheet> {
       ),
       child: Row(
         children: [
-          const Expanded(
+          Expanded(
             child: Row(
               children: [
-                Icon(Icons.touch_app, size: 16, color: Color(0xFF6B7280)),
-                SizedBox(width: 8),
+                const Icon(Icons.touch_app, size: 16, color: Color(0xFF6B7280)),
+                const SizedBox(width: 8),
                 Flexible(
-                  child: Text(
-                    'Glissez-déposez pour réorganiser',
-                    overflow: TextOverflow.ellipsis,
-                    style: TextStyle(fontSize: 14, color: Color(0xFF6B7280)),
+                  child: Builder(
+                    builder: (context) => Text(
+                      AppLocalizations.of(context)!
+                          .adminCategoryManagerDragHint,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(
+                          fontSize: 14, color: Color(0xFF6B7280)),
+                    ),
                   ),
                 ),
               ],
@@ -546,12 +577,15 @@ class _CategoryManagerSheetState extends State<CategoryManagerSheet> {
                   ),
                 ),
                 const SizedBox(width: 8),
-                Text(
-                  '${_categoriesOrder.length} catégorie${_categoriesOrder.length > 1 ? 's' : ''}',
-                  style: const TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w500,
-                    color: Color(0xFF374151),
+                Builder(
+                  builder: (context) => Text(
+                    AppLocalizations.of(context)!
+                        .adminCategoryManagerCount(_categoriesOrder.length),
+                    style: const TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w500,
+                      color: Color(0xFF374151),
+                    ),
                   ),
                 ),
               ],
@@ -575,24 +609,26 @@ class SaveIndicator extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     switch (state) {
       case SaveState.unsaved:
-        return const Row(
+        return Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(Icons.circle, size: 8, color: Color(0xFFF59E0B)),
-            SizedBox(width: 6),
+            const Icon(Icons.circle, size: 8, color: Color(0xFFF59E0B)),
+            const SizedBox(width: 6),
             Text(
-              'Modifications non enregistrées',
-              style: TextStyle(fontSize: 12, color: Color(0xFFF59E0B)),
+              l10n.adminCategoryManagerUnsaved,
+              style: const TextStyle(fontSize: 12, color: Color(0xFFF59E0B)),
             ),
           ],
         );
       case SaveState.saving:
-        return const Row(
+        return Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            SizedBox(
+            const SizedBox(
               width: 12,
               height: 12,
               child: CircularProgressIndicator(
@@ -600,16 +636,16 @@ class SaveIndicator extends StatelessWidget {
                 valueColor: AlwaysStoppedAnimation(Color(0xFF3B82F6)),
               ),
             ),
-            SizedBox(width: 6),
+            const SizedBox(width: 6),
             Text(
-              'Sauvegarde…',
-              style: TextStyle(fontSize: 12, color: Color(0xFF3B82F6)),
+              l10n.adminCategoryManagerSaving,
+              style: const TextStyle(fontSize: 12, color: Color(0xFF3B82F6)),
             ),
           ],
         );
       case SaveState.saved:
         final timeAgo = lastSaved != null
-            ? 'il y a ${DateTime.now().difference(lastSaved!).inSeconds}s'
+            ? '${DateTime.now().difference(lastSaved!).inSeconds}s'
             : '';
         return Row(
           mainAxisSize: MainAxisSize.min,
@@ -617,20 +653,22 @@ class SaveIndicator extends StatelessWidget {
             const Icon(Icons.check, size: 12, color: Color(0xFF10B981)),
             const SizedBox(width: 6),
             Text(
-              'Enregistré${timeAgo.isNotEmpty ? ' • $timeAgo' : ''}',
+              timeAgo.isNotEmpty
+                  ? l10n.adminCategoryManagerSavedAgo(timeAgo)
+                  : l10n.adminCategoryManagerSaved,
               style: const TextStyle(fontSize: 12, color: Color(0xFF10B981)),
             ),
           ],
         );
       case SaveState.error:
-        return const Row(
+        return Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(Icons.error_outline, size: 12, color: Color(0xFFEF4444)),
-            SizedBox(width: 6),
+            const Icon(Icons.error_outline, size: 12, color: Color(0xFFEF4444)),
+            const SizedBox(width: 6),
             Text(
-              'Échec. Réessayer',
-              style: TextStyle(fontSize: 12, color: Color(0xFFEF4444)),
+              l10n.adminCategoryManagerError,
+              style: const TextStyle(fontSize: 12, color: Color(0xFFEF4444)),
             ),
           ],
         );
@@ -818,12 +856,15 @@ class _CategoryTileState extends State<CategoryTile>
                       color: const Color(0xFFFEF3C7),
                       borderRadius: BorderRadius.circular(4),
                     ),
-                    child: const Text(
-                      'Masquée',
-                      style: TextStyle(
-                        fontSize: 11,
-                        fontWeight: FontWeight.w500,
-                        color: Color(0xFFD97706),
+                    child: Builder(
+                      builder: (context) => Text(
+                        AppLocalizations.of(context)!
+                            .adminCategoryManagerHiddenBadge,
+                        style: const TextStyle(
+                          fontSize: 11,
+                          fontWeight: FontWeight.w500,
+                          color: Color(0xFFD97706),
+                        ),
                       ),
                     ),
                   ),
@@ -853,50 +894,61 @@ class _CategoryTileState extends State<CategoryTile>
 
   Widget _buildActions() {
     return Container(
-      padding: const EdgeInsets.only(right: 8),
+      padding: const EdgeInsetsDirectional.only(end: 8),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
           // Visibility toggle
-          Semantics(
-            label: widget.isHidden
-                ? 'Afficher ${widget.category}'
-                : 'Masquer ${widget.category}',
-            child: IconButton(
-              onPressed: widget.onToggleVisibility,
-              icon: Icon(
-                widget.isHidden ? Icons.visibility : Icons.visibility_off,
-                size: 18,
+          Builder(builder: (context) {
+            final l10n = AppLocalizations.of(context)!;
+            return Semantics(
+              label: widget.isHidden
+                  ? l10n.adminCategoryManagerShowSemantic(widget.category)
+                  : l10n.adminCategoryManagerHideSemantic(widget.category),
+              child: IconButton(
+                onPressed: widget.onToggleVisibility,
+                icon: Icon(
+                  widget.isHidden ? Icons.visibility : Icons.visibility_off,
+                  size: 18,
+                ),
+                color: widget.isHidden
+                    ? const Color(0xFF10B981)
+                    : const Color(0xFF6B7280),
+                tooltip: widget.isHidden
+                    ? l10n.adminCategoryManagerShowAction
+                    : l10n.adminCategoryManagerHideAction,
               ),
-              color: widget.isHidden
-                  ? const Color(0xFF10B981)
-                  : const Color(0xFF6B7280),
-              tooltip: widget.isHidden ? 'Afficher' : 'Masquer',
-            ),
-          ),
+            );
+          }),
 
           // Edit
-          Semantics(
-            label: 'Renommer ${widget.category}',
-            child: IconButton(
-              onPressed: widget.onStartRename,
-              icon: const Icon(Icons.edit, size: 18),
-              color: const Color(0xFF6B7280),
-              tooltip: 'Renommer',
-            ),
-          ),
-
-          // Delete (only if count is 0)
-          if (widget.count == 0)
-            Semantics(
-              label: 'Supprimer ${widget.category}',
+          Builder(builder: (context) {
+            final l10n = AppLocalizations.of(context)!;
+            return Semantics(
+              label: l10n.adminCategoryManagerRenameSemantic(widget.category),
               child: IconButton(
-                onPressed: widget.onDelete,
-                icon: const Icon(Icons.delete, size: 18),
-                color: const Color(0xFFEF4444),
-                tooltip: 'Supprimer',
+                onPressed: widget.onStartRename,
+                icon: const Icon(Icons.edit, size: 18),
+                color: const Color(0xFF6B7280),
+                tooltip: l10n.adminCategoryManagerRenameAction,
               ),
-            ),
+            );
+          }),
+
+          // Delete
+          if (widget.count == 0)
+            Builder(builder: (context) {
+              final l10n = AppLocalizations.of(context)!;
+              return Semantics(
+                label: l10n.adminCategoryManagerDeleteSemantic(widget.category),
+                child: IconButton(
+                  onPressed: widget.onDelete,
+                  icon: const Icon(Icons.delete, size: 18),
+                  color: const Color(0xFFEF4444),
+                  tooltip: l10n.adminCategoryManagerDeleteAction,
+                ),
+              );
+            }),
         ],
       ),
     );
@@ -945,33 +997,22 @@ class _RenameConfirmationDialogState extends State<_RenameConfirmationDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: const Text('Renommer la catégorie'),
+      title: Builder(
+        builder: (context) =>
+            Text(AppLocalizations.of(context)!.adminCategoryManagerRenameTitle),
+      ),
       content: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          RichText(
-            text: TextSpan(
+          Builder(
+            builder: (context) => Text(
+              AppLocalizations.of(context)!.adminCategoryManagerRenameMessage(
+                widget.oldName,
+                widget.newName,
+                widget.itemCount,
+              ),
               style: const TextStyle(color: Color(0xFF374151)),
-              children: [
-                const TextSpan(text: 'Renommer "'),
-                TextSpan(
-                  text: widget.oldName,
-                  style: const TextStyle(fontWeight: FontWeight.w600),
-                ),
-                const TextSpan(text: '" en "'),
-                TextSpan(
-                  text: widget.newName,
-                  style: const TextStyle(fontWeight: FontWeight.w600),
-                ),
-                const TextSpan(text: '" — '),
-                TextSpan(
-                  text:
-                      '${widget.itemCount} plat${widget.itemCount > 1 ? 's' : ''}',
-                  style: const TextStyle(fontWeight: FontWeight.w600),
-                ),
-                const TextSpan(text: ' seront mis à jour.'),
-              ],
             ),
           ),
           if (_isProcessing) ...[
@@ -982,11 +1023,16 @@ class _RenameConfirmationDialogState extends State<_RenameConfirmationDialog> {
               valueColor: const AlwaysStoppedAnimation(Color(0xFF4F46E5)),
             ),
             const SizedBox(height: 8),
-            Text(
-              'Mise à jour en cours... ${(_progress * 100).toInt()}%',
-              style: const TextStyle(
-                fontSize: 14,
-                color: Color(0xFF6B7280),
+            Builder(
+              builder: (context) => Text(
+                AppLocalizations.of(context)!
+                    .adminCategoryManagerRenameProgress(
+                  (_progress * 100).toInt(),
+                ),
+                style: const TextStyle(
+                  fontSize: 14,
+                  color: Color(0xFF6B7280),
+                ),
               ),
             ),
           ],
@@ -994,13 +1040,18 @@ class _RenameConfirmationDialogState extends State<_RenameConfirmationDialog> {
       ),
       actions: [
         if (!_isProcessing) ...[
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(false),
-            child: const Text('Annuler'),
+          Builder(
+            builder: (context) => TextButton(
+              onPressed: () => Navigator.of(context).pop(false),
+              child: Text(AppLocalizations.of(context)!.commonCancel),
+            ),
           ),
-          FilledButton(
-            onPressed: _handleConfirm,
-            child: const Text('Confirmer'),
+          Builder(
+            builder: (context) => FilledButton(
+              onPressed: _handleConfirm,
+              child: Text(
+                  AppLocalizations.of(context)!.adminCategoryManagerConfirm),
+            ),
           ),
         ],
       ],

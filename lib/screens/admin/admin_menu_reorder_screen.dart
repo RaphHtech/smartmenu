@@ -5,6 +5,7 @@ import 'package:url_launcher/url_launcher.dart';
 import '../../widgets/ui/admin_shell.dart';
 import '../../core/design/admin_tokens.dart';
 import '../../core/design/admin_typography.dart';
+import '../../l10n/app_localizations.dart';
 
 class AdminMenuReorderScreen extends StatefulWidget {
   final String restaurantId;
@@ -284,6 +285,8 @@ class _AdminMenuReorderScreenState extends State<AdminMenuReorderScreen> {
   }
 
   Future<void> _saveChanges() async {
+    final l10n = AppLocalizations.of(context)!;
+
     if (_saveState == SaveState.saving || _dirtyItemIds.isEmpty) return;
 
     setState(() => _saveState = SaveState.saving);
@@ -336,7 +339,7 @@ class _AdminMenuReorderScreenState extends State<AdminMenuReorderScreen> {
     } catch (e) {
       if (mounted) {
         setState(() => _saveState = SaveState.error);
-        _showErrorSnackBar('Erreur sauvegarde: $e');
+        _showErrorSnackBar(l10n.adminReorderLoadError(e.toString()));
       }
     }
   }
@@ -460,11 +463,16 @@ class _AdminMenuReorderScreenState extends State<AdminMenuReorderScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return AdminShell(
-      title: 'Réorganiser le Menu',
+      title: l10n.adminReorderTitle,
       restaurantId: widget.restaurantId,
       activeRoute: '/menu/reorder',
-      breadcrumbs: const ['Dashboard', 'Menu', 'Réorganiser'],
+      breadcrumbs: [
+        l10n.adminDashboardTitle,
+        l10n.adminShellNavMenu,
+        l10n.adminReorderBreadcrumbReorganize,
+      ],
       actions: [
         // Indicateur de sauvegarde
         _buildSaveIndicator(),
@@ -480,7 +488,7 @@ class _AdminMenuReorderScreenState extends State<AdminMenuReorderScreen> {
         IconButton(
           icon: const Icon(Icons.preview),
           onPressed: _previewMenu,
-          tooltip: 'Prévisualiser',
+          tooltip: l10n.adminReorderPreview,
         ),
       ],
       child: _buildContent(),
@@ -488,6 +496,7 @@ class _AdminMenuReorderScreenState extends State<AdminMenuReorderScreen> {
   }
 
   Widget _buildSaveIndicator() {
+    final l10n = AppLocalizations.of(context)!;
     IconData icon;
     Color color;
     String text;
@@ -496,7 +505,7 @@ class _AdminMenuReorderScreenState extends State<AdminMenuReorderScreen> {
       case SaveState.saving:
         icon = Icons.sync;
         color = AdminTokens.primary500;
-        text = 'Enregistrement...';
+        text = l10n.adminReorderSaving;
         break;
       case SaveState.saved:
         icon = Icons.check_circle_outline;
@@ -505,23 +514,25 @@ class _AdminMenuReorderScreenState extends State<AdminMenuReorderScreen> {
         if (time != null) {
           final diff = DateTime.now().difference(time);
           if (diff.inSeconds < 60) {
-            text = 'Enregistré • il y a ${diff.inSeconds}s';
+            text = l10n.adminReorderSavedAgo(
+                l10n.adminReorderTimeSeconds(diff.inSeconds));
           } else {
-            text = 'Enregistré • il y a ${diff.inMinutes}min';
+            text = l10n.adminReorderSavedAgo(
+                l10n.adminReorderTimeMinutes(diff.inMinutes));
           }
         } else {
-          text = 'Enregistré';
+          text = l10n.adminReorderSaved;
         }
         break;
       case SaveState.error:
         icon = Icons.error_outline;
         color = AdminTokens.error500;
-        text = 'Erreur';
+        text = l10n.adminReorderError;
         break;
       case SaveState.unsaved:
         icon = Icons.radio_button_unchecked;
         color = AdminTokens.warning500;
-        text = 'Non enregistré';
+        text = l10n.adminReorderUnsaved;
         break;
     }
 
@@ -539,8 +550,9 @@ class _AdminMenuReorderScreenState extends State<AdminMenuReorderScreen> {
   }
 
   Widget _buildBulkActions() {
+    final l10n = AppLocalizations.of(context)!;
     return PopupMenuButton<String>(
-      tooltip: 'Actions groupées',
+      tooltip: l10n.adminReorderBulkActions,
       icon: const Icon(Icons.more_vert, color: AdminTokens.primary600),
       onSelected: (action) {
         switch (action) {
@@ -568,7 +580,7 @@ class _AdminMenuReorderScreenState extends State<AdminMenuReorderScreen> {
             children: [
               const Icon(Icons.drive_file_move_outline, size: 18),
               const SizedBox(width: 8),
-              Text('Déplacer (${_selectedItems.length})'),
+              Text(l10n.adminReorderMoveItems(_selectedItems.length)),
             ],
           ),
         ),
@@ -578,7 +590,7 @@ class _AdminMenuReorderScreenState extends State<AdminMenuReorderScreen> {
             children: [
               const Icon(Icons.visibility_off_outlined, size: 18),
               const SizedBox(width: 8),
-              Text('Masquer (${_selectedItems.length})'),
+              Text(l10n.adminReorderHideItems(_selectedItems.length)),
             ],
           ),
         ),
@@ -588,18 +600,18 @@ class _AdminMenuReorderScreenState extends State<AdminMenuReorderScreen> {
             children: [
               const Icon(Icons.visibility_outlined, size: 18),
               const SizedBox(width: 8),
-              Text('Afficher (${_selectedItems.length})'),
+              Text(l10n.adminReorderShowItems(_selectedItems.length)),
             ],
           ),
         ),
         const PopupMenuDivider(),
-        const PopupMenuItem(
+        PopupMenuItem(
           value: 'cancel',
           child: Row(
             children: [
-              Icon(Icons.clear, size: 18),
-              SizedBox(width: 8),
-              Text('Annuler sélection'),
+              const Icon(Icons.clear, size: 18),
+              const SizedBox(width: 8),
+              Text(l10n.adminReorderCancelSelection),
             ],
           ),
         ),
@@ -655,7 +667,7 @@ class _AdminMenuReorderScreenState extends State<AdminMenuReorderScreen> {
             children: _categories.map((category) {
               final isSelected = _selectedCategory == category;
               return Padding(
-                padding: const EdgeInsets.only(right: 8),
+                padding: const EdgeInsetsDirectional.only(end: 8),
                 child: FilterChip(
                   label: Text(category),
                   selected: isSelected,
@@ -681,11 +693,13 @@ class _AdminMenuReorderScreenState extends State<AdminMenuReorderScreen> {
   }
 
   Widget _buildCategoryList() {
+    final l10n = AppLocalizations.of(context)!;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Catégories',
+          l10n.adminReorderCategories,
           style: AdminTypography.headlineSmall.copyWith(
             fontWeight: FontWeight.w600,
           ),
@@ -765,6 +779,7 @@ class _AdminMenuReorderScreenState extends State<AdminMenuReorderScreen> {
   }
 
   Widget _buildItemsList() {
+    final l10n = AppLocalizations.of(context)!;
     final items = _itemsByCategory[_selectedCategory] ?? [];
 
     if (items.isEmpty) {
@@ -779,7 +794,7 @@ class _AdminMenuReorderScreenState extends State<AdminMenuReorderScreen> {
             ),
             const SizedBox(height: 16),
             Text(
-              'Aucun plat dans cette catégorie',
+              l10n.adminReorderNoDishes,
               style: AdminTypography.bodyLarge.copyWith(
                 color: AdminTokens.neutral500,
               ),
@@ -796,7 +811,7 @@ class _AdminMenuReorderScreenState extends State<AdminMenuReorderScreen> {
         Row(
           children: [
             Text(
-              '${items.length} plat${items.length > 1 ? 's' : ''} • $_selectedCategory',
+              l10n.adminReorderDishCount(items.length, _selectedCategory),
               style: AdminTypography.headlineSmall.copyWith(
                 fontWeight: FontWeight.w600,
               ),
@@ -815,7 +830,9 @@ class _AdminMenuReorderScreenState extends State<AdminMenuReorderScreen> {
                 _isMultiSelectMode ? Icons.close : Icons.checklist,
                 size: 18,
               ),
-              label: Text(_isMultiSelectMode ? 'Annuler' : 'Sélectionner'),
+              label: Text(_isMultiSelectMode
+                  ? l10n.commonCancel
+                  : l10n.adminReorderSelect),
             ),
           ],
         ),
@@ -839,6 +856,7 @@ class _AdminMenuReorderScreenState extends State<AdminMenuReorderScreen> {
   }
 
   Widget _buildItemCard(MenuItemData item, int index) {
+    final l10n = AppLocalizations.of(context)!;
     final isSelected = _selectedItems.contains(item.id);
 
     return Card(
@@ -925,14 +943,14 @@ class _AdminMenuReorderScreenState extends State<AdminMenuReorderScreen> {
             ),
             if (item.signature)
               Container(
-                margin: const EdgeInsets.only(left: 8),
+                margin: const EdgeInsetsDirectional.only(start: 8),
                 padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                 decoration: BoxDecoration(
                   color: Colors.red.shade50,
                   borderRadius: BorderRadius.circular(10),
                 ),
                 child: Text(
-                  'Signature',
+                  l10n.adminReorderSignatureBadge,
                   style: AdminTypography.labelSmall.copyWith(
                     color: Colors.red.shade600,
                     fontWeight: FontWeight.w600,
@@ -974,10 +992,11 @@ class _AdminMenuReorderScreenState extends State<AdminMenuReorderScreen> {
   }
 
   void _showMoveDialog() {
+    final l10n = AppLocalizations.of(context)!;
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text('Déplacer ${_selectedItems.length} plat(s)'),
+        title: Text(l10n.adminReorderMoveDialogTitle(_selectedItems.length)),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: _categories.map((category) {
@@ -998,7 +1017,7 @@ class _AdminMenuReorderScreenState extends State<AdminMenuReorderScreen> {
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
-            child: const Text('Annuler'),
+            child: Text(l10n.commonCancel),
           ),
         ],
       ),
@@ -1006,6 +1025,8 @@ class _AdminMenuReorderScreenState extends State<AdminMenuReorderScreen> {
   }
 
   Future<void> _previewMenu() async {
+    final l10n = AppLocalizations.of(context)!;
+
     // Même logique que dans admin_dashboard_screen.dart
     final origin = Uri.base;
     final previewUri = Uri(
@@ -1019,7 +1040,7 @@ class _AdminMenuReorderScreenState extends State<AdminMenuReorderScreen> {
     try {
       await launchUrl(previewUri, webOnlyWindowName: '_blank');
     } catch (e) {
-      _showErrorSnackBar("Impossible d'ouvrir la prévisualisation: $e");
+      _showErrorSnackBar(l10n.adminReorderPreviewError(e.toString()));
     }
   }
 }

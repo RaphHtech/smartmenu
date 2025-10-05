@@ -789,4 +789,357 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get adminBrandingRestaurantDefault => 'Restaurant';
+
+  @override
+  String get badgesGuideSubtitle =>
+      'These badges help highlight special dishes';
+
+  @override
+  String get adminReorderTitle => 'Reorganize Menu';
+
+  @override
+  String get adminReorderBreadcrumbReorganize => 'Reorganize';
+
+  @override
+  String get adminReorderSaving => 'Saving...';
+
+  @override
+  String get adminReorderSaved => 'Saved';
+
+  @override
+  String adminReorderSavedAgo(String time) {
+    return 'Saved • $time ago';
+  }
+
+  @override
+  String get adminReorderError => 'Error';
+
+  @override
+  String get adminReorderUnsaved => 'Unsaved';
+
+  @override
+  String get adminReorderPreview => 'Preview';
+
+  @override
+  String get adminReorderBulkActions => 'Bulk actions';
+
+  @override
+  String adminReorderMoveItems(int count) {
+    return 'Move ($count)';
+  }
+
+  @override
+  String adminReorderHideItems(int count) {
+    return 'Hide ($count)';
+  }
+
+  @override
+  String adminReorderShowItems(int count) {
+    return 'Show ($count)';
+  }
+
+  @override
+  String get adminReorderCancelSelection => 'Cancel selection';
+
+  @override
+  String get adminReorderCategories => 'Categories';
+
+  @override
+  String adminReorderDishCount(int count, String category) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count dishes',
+      one: '1 dish',
+      zero: '0 dishes',
+    );
+    return '$_temp0 • $category';
+  }
+
+  @override
+  String get adminReorderSelect => 'Select';
+
+  @override
+  String get adminReorderNoDishes => 'No dishes in this category';
+
+  @override
+  String get adminReorderSignatureBadge => 'Signature';
+
+  @override
+  String adminReorderMoveDialogTitle(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count dishes',
+      one: '1 dish',
+    );
+    return 'Move $_temp0';
+  }
+
+  @override
+  String adminReorderLoadError(String error) {
+    return 'Loading error: $error';
+  }
+
+  @override
+  String adminReorderPreviewError(String error) {
+    return 'Cannot open preview: $error';
+  }
+
+  @override
+  String adminReorderTimeSeconds(int seconds) {
+    return '${seconds}s';
+  }
+
+  @override
+  String adminReorderTimeMinutes(int minutes) {
+    return '${minutes}min';
+  }
+
+  @override
+  String get adminDishFormTitleEdit => 'Edit Dish';
+
+  @override
+  String get adminDishFormTitleAdd => 'Add Dish';
+
+  @override
+  String get adminDishFormName => 'Dish name *';
+
+  @override
+  String get adminDishFormDescription => 'Description';
+
+  @override
+  String get adminDishFormPrice => 'Price *';
+
+  @override
+  String get adminDishFormCategory => 'Category';
+
+  @override
+  String get adminDishFormNameRequired => 'Name in Hebrew is required';
+
+  @override
+  String get adminDishFormPriceRequired => 'Price required';
+
+  @override
+  String get adminDishFormPriceInvalid => 'Invalid price';
+
+  @override
+  String get adminDishFormCopyFromFrench => 'Copy from French';
+
+  @override
+  String get adminDishFormCopyFromHebrew => 'Copy from Hebrew';
+
+  @override
+  String get adminDishFormCopyFromEnglish => 'Copy from English';
+
+  @override
+  String adminDishFormCopiedFrom(String language) {
+    return 'Content copied from $language';
+  }
+
+  @override
+  String get adminDishFormOptions => 'Options';
+
+  @override
+  String get adminDishFormFeatured => 'Feature';
+
+  @override
+  String get adminDishFormFeaturedSubtitle => 'Pin to top of category';
+
+  @override
+  String get adminDishFormBadges => 'Badges';
+
+  @override
+  String get adminDishFormBadgePopular => 'popular';
+
+  @override
+  String get adminDishFormBadgeNew => 'new';
+
+  @override
+  String get adminDishFormBadgeSpecialty => 'specialty';
+
+  @override
+  String get adminDishFormBadgeChef => 'chef';
+
+  @override
+  String get adminDishFormBadgeSeasonal => 'seasonal';
+
+  @override
+  String get adminDishFormVisible => 'Visible on menu';
+
+  @override
+  String get adminDishFormVisibleSubtitle => 'Customers can see this dish';
+
+  @override
+  String get adminDishFormAddPhoto => 'Add photo';
+
+  @override
+  String get adminDishFormClickToSelect => 'Click to select';
+
+  @override
+  String get adminDishFormAddButton => 'Add';
+
+  @override
+  String get adminDishFormChangeButton => 'Change';
+
+  @override
+  String get adminDishFormRemoveButton => 'Remove';
+
+  @override
+  String get adminDishFormRemovePhoto => 'Remove photo';
+
+  @override
+  String get adminDishFormCannotSelectPhoto => 'Cannot select photo';
+
+  @override
+  String adminDishFormSaveSuccess(String action) {
+    return 'Dish $action successfully';
+  }
+
+  @override
+  String get adminDishFormActionModified => 'modified';
+
+  @override
+  String get adminDishFormActionAdded => 'added';
+
+  @override
+  String adminDishFormSaveError(String error) {
+    return 'Error: $error';
+  }
+
+  @override
+  String get adminDishFormButtonSave => 'Save';
+
+  @override
+  String get adminDishFormButtonAdd => 'Add';
+
+  @override
+  String get adminDishFormLanguageHebrew => '🇮🇱 עברית';
+
+  @override
+  String get adminDishFormLanguageEnglish => '🇬🇧 English';
+
+  @override
+  String get adminDishFormLanguageFrench => '🇫🇷 Français';
+
+  @override
+  String get adminCategoryManagerTitle => 'Manage Categories';
+
+  @override
+  String get adminCategoryManagerSubtitle => 'Reorganize and configure';
+
+  @override
+  String get adminCategoryManagerSubtitleFull =>
+      'Reorganize and configure your categories';
+
+  @override
+  String get adminCategoryManagerNew => 'New';
+
+  @override
+  String get adminCategoryManagerUnsaved => 'Unsaved changes';
+
+  @override
+  String get adminCategoryManagerSaving => 'Saving...';
+
+  @override
+  String get adminCategoryManagerSaved => 'Saved';
+
+  @override
+  String adminCategoryManagerSavedAgo(String time) {
+    return 'Saved • $time ago';
+  }
+
+  @override
+  String get adminCategoryManagerError => 'Failed. Retry';
+
+  @override
+  String get adminCategoryManagerHiddenBadge => 'Hidden';
+
+  @override
+  String get adminCategoryManagerShowAction => 'Show';
+
+  @override
+  String get adminCategoryManagerHideAction => 'Hide';
+
+  @override
+  String adminCategoryManagerShowSemantic(String category) {
+    return 'Show $category';
+  }
+
+  @override
+  String adminCategoryManagerHideSemantic(String category) {
+    return 'Hide $category';
+  }
+
+  @override
+  String get adminCategoryManagerRenameAction => 'Rename';
+
+  @override
+  String adminCategoryManagerRenameSemantic(String category) {
+    return 'Rename $category';
+  }
+
+  @override
+  String get adminCategoryManagerDeleteAction => 'Delete';
+
+  @override
+  String adminCategoryManagerDeleteSemantic(String category) {
+    return 'Delete $category';
+  }
+
+  @override
+  String get adminCategoryManagerDragHint => 'Drag and drop to reorganize';
+
+  @override
+  String adminCategoryManagerCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count categories',
+      one: '1 category',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get adminCategoryManagerDeleteTitle => 'Delete category?';
+
+  @override
+  String adminCategoryManagerDeleteMessage(String category) {
+    return '\"$category\" will be removed from the list.';
+  }
+
+  @override
+  String get adminCategoryManagerRenameTitle => 'Rename category';
+
+  @override
+  String adminCategoryManagerRenameMessage(
+      String oldName, String newName, int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count dishes',
+      one: '1 dish',
+    );
+    return 'Rename \"$oldName\" to \"$newName\" — $_temp0 will be updated.';
+  }
+
+  @override
+  String adminCategoryManagerRenameProgress(int percent) {
+    return 'Updating... $percent%';
+  }
+
+  @override
+  String get adminCategoryManagerConfirm => 'Confirm';
+
+  @override
+  String adminCategoryManagerSaveError(String error) {
+    return 'Save error: $error';
+  }
+
+  @override
+  String get adminCategoryManagerRetry => 'Retry';
+
+  @override
+  String get adminCategoryManagerDefaultName => 'New category';
 }

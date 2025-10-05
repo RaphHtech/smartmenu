@@ -1315,5 +1315,594 @@
 "adminBrandingRestaurantDefault": "מסעדה",
 "@adminBrandingRestaurantDefault": {
   "description": "Default restaurant name fallback"
-}
+},
+
+"badgesGuideSubtitle": "תגיות אלו מסייעות להדגיש מנות מיוחדות",
+"@badgesGuideSubtitle": {
+  "description": "Badges guide subtitle"
+},
+
+"adminReorderTitle": "סידור התפריט מחדש ",
+  "@adminReorderTitle": {
+    "description": "Reorder screen title"
+  },
+
+  "adminReorderBreadcrumbReorganize": "סידור מחדש",
+  "@adminReorderBreadcrumbReorganize": {
+    "description": "Breadcrumb for reorganize"
+  },
+
+  "adminReorderSaving": "שומר...",
+  "@adminReorderSaving": {
+    "description": "Saving state indicator"
+  },
+
+  "adminReorderSaved": "נשמר",
+  "@adminReorderSaved": {
+    "description": "Saved state"
+  },
+
+  "adminReorderSavedAgo": "נשמר • לפני {time}",
+  "@adminReorderSavedAgo": {
+    "description": "Saved with timestamp",
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+
+  "adminReorderError": "שגיאה",
+  "@adminReorderError": {
+    "description": "Error state"
+  },
+
+  "adminReorderUnsaved": "לא נשמר",
+  "@adminReorderUnsaved": {
+    "description": "Unsaved state"
+  },
+
+  "adminReorderPreview": "תצוגה מקדימה",
+  "@adminReorderPreview": {
+    "description": "Preview button tooltip"
+  },
+
+  "adminReorderBulkActions": "פעולות קבוצתיות",
+  "@adminReorderBulkActions": {
+    "description": "Bulk actions tooltip"
+  },
+
+  "adminReorderMoveItems": "העבר ({count})",
+  "@adminReorderMoveItems": {
+    "description": "Move items action",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+
+  "adminReorderHideItems": "הסתר ({count})",
+  "@adminReorderHideItems": {
+    "description": "Hide items action",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+
+  "adminReorderShowItems": "הצג ({count})",
+  "@adminReorderShowItems": {
+    "description": "Show items action",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+
+  "adminReorderCancelSelection": "בטל בחירה",
+  "@adminReorderCancelSelection": {
+    "description": "Cancel selection action"
+  },
+
+  "adminReorderCategories": "קטגוריות",
+  "@adminReorderCategories": {
+    "description": "Categories sidebar title"
+  },
+
+  "adminReorderDishCount": "{count, plural, =0{0 מנות} one{מנה אחת} other{{count} מנות}} • {category}",
+  "@adminReorderDishCount": {
+    "description": "Dish count with category",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "category": {
+        "type": "String"
+      }
+    }
+  },
+
+  "adminReorderSelect": "בחר",
+  "@adminReorderSelect": {
+    "description": "Select button"
+  },
+
+  "adminReorderNoDishes": "אין מנות בקטגוריה זו",
+  "@adminReorderNoDishes": {
+    "description": "Empty state message"
+  },
+
+  "adminReorderSignatureBadge": "מיוחד",
+  "@adminReorderSignatureBadge": {
+    "description": "Signature dish badge"
+  },
+
+  "adminReorderMoveDialogTitle": "העבר {count, plural, one{מנה אחת} other{{count} מנות}}",
+  "@adminReorderMoveDialogTitle": {
+    "description": "Move dialog title",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+
+  "adminReorderLoadError": "שגיאת טעינה: {error}",
+  "@adminReorderLoadError": {
+    "description": "Loading error message",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+
+  "adminReorderPreviewError": "לא ניתן לפתוח תצוגה מקדימה: {error}",
+  "@adminReorderPreviewError": {
+    "description": "Preview error message",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+
+  "adminReorderTimeSeconds": "{seconds}ש",
+  "@adminReorderTimeSeconds": {
+    "description": "Seconds time format",
+    "placeholders": {
+      "seconds": {
+        "type": "int"
+      }
+    }
+  },
+
+  "adminReorderTimeMinutes": "{minutes}ד",
+  "@adminReorderTimeMinutes": {
+    "description": "Minutes time format",
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+
+  "adminDishFormTitleEdit": "עריכת מנה",
+  "@adminDishFormTitleEdit": {
+    "description": "Edit dish screen title"
+  },
+
+  "adminDishFormTitleAdd": "הוספת מנה",
+  "@adminDishFormTitleAdd": {
+    "description": "Add dish screen title"
+  },
+
+  "adminDishFormName": "שם המנה *",
+  "@adminDishFormName": {
+    "description": "Name field label"
+  },
+
+  "adminDishFormDescription": "תיאור",
+  "@adminDishFormDescription": {
+    "description": "Description field label"
+  },
+
+  "adminDishFormPrice": "מחיר *",
+  "@adminDishFormPrice": {
+    "description": "Price field label"
+  },
+
+  "adminDishFormCategory": "קטגוריה",
+  "@adminDishFormCategory": {
+    "description": "Category field label"
+  },
+
+  "adminDishFormNameRequired": "שם בעברית הוא שדה חובה",
+  "@adminDishFormNameRequired": {
+    "description": "Name validation error"
+  },
+
+  "adminDishFormPriceRequired": "מחיר הוא שדה חובה",
+  "@adminDishFormPriceRequired": {
+    "description": "Price required validation"
+  },
+
+  "adminDishFormPriceInvalid": "מחיר לא תקין",
+  "@adminDishFormPriceInvalid": {
+    "description": "Price invalid validation"
+  },
+
+  "adminDishFormCopyFromFrench": "העתק מצרפתית",
+  "@adminDishFormCopyFromFrench": {
+    "description": "Copy from French button"
+  },
+
+  "adminDishFormCopyFromHebrew": "העתק מעברית",
+  "@adminDishFormCopyFromHebrew": {
+    "description": "Copy from Hebrew button"
+  },
+
+  "adminDishFormCopyFromEnglish": "העתק מאנגלית",
+  "@adminDishFormCopyFromEnglish": {
+    "description": "Copy from English button"
+  },
+
+  "adminDishFormCopiedFrom": "תוכן הועתק מ{language}",
+  "@adminDishFormCopiedFrom": {
+    "description": "Copy success message",
+    "placeholders": {
+      "language": {
+        "type": "String"
+      }
+    }
+  },
+
+  "adminDishFormOptions": "אפשרויות",
+  "@adminDishFormOptions": {
+    "description": "Options section title"
+  },
+
+  "adminDishFormFeatured": "הצג בראש",
+  "@adminDishFormFeatured": {
+    "description": "Featured toggle"
+  },
+
+  "adminDishFormFeaturedSubtitle": "נעץ בראש הקטגוריה",
+  "@adminDishFormFeaturedSubtitle": {
+    "description": "Featured subtitle"
+  },
+
+  "adminDishFormBadges": "תגיות",
+  "@adminDishFormBadges": {
+    "description": "Badges section"
+  },
+
+  "adminDishFormBadgePopular": "פופולרי",
+  "@adminDishFormBadgePopular": {
+    "description": "Popular badge"
+  },
+
+  "adminDishFormBadgeNew": "חדש",
+  "@adminDishFormBadgeNew": {
+    "description": "New badge"
+  },
+
+  "adminDishFormBadgeSpecialty": "מומחיות",
+  "@adminDishFormBadgeSpecialty": {
+    "description": "Specialty badge"
+  },
+
+  "adminDishFormBadgeChef": "שף",
+  "@adminDishFormBadgeChef": {
+    "description": "Chef badge"
+  },
+
+  "adminDishFormBadgeSeasonal": "עונתי",
+  "@adminDishFormBadgeSeasonal": {
+    "description": "Seasonal badge"
+  },
+
+  "adminDishFormVisible": "גלוי בתפריט",
+  "@adminDishFormVisible": {
+    "description": "Visible toggle"
+  },
+
+  "adminDishFormVisibleSubtitle": "לקוחות יכולים לראות מנה זו",
+  "@adminDishFormVisibleSubtitle": {
+    "description": "Visible subtitle"
+  },
+
+  "adminDishFormAddPhoto": "הוסף תמונה",
+  "@adminDishFormAddPhoto": {
+    "description": "Add photo placeholder title"
+  },
+
+  "adminDishFormClickToSelect": "לחץ לבחירה",
+  "@adminDishFormClickToSelect": {
+    "description": "Add photo placeholder subtitle"
+  },
+
+  "adminDishFormAddButton": "הוסף",
+  "@adminDishFormAddButton": {
+    "description": "Add image button"
+  },
+
+  "adminDishFormChangeButton": "שנה",
+  "@adminDishFormChangeButton": {
+    "description": "Change image button"
+  },
+
+  "adminDishFormRemoveButton": "הסר",
+  "@adminDishFormRemoveButton": {
+    "description": "Remove image button"
+  },
+
+  "adminDishFormRemovePhoto": "הסר תמונה",
+  "@adminDishFormRemovePhoto": {
+    "description": "Remove photo tooltip"
+  },
+
+  "adminDishFormCannotSelectPhoto": "לא ניתן לבחור תמונה",
+  "@adminDishFormCannotSelectPhoto": {
+    "description": "Image picker error"
+  },
+
+  "adminDishFormSaveSuccess": "המנה {action} בהצלחה",
+  "@adminDishFormSaveSuccess": {
+    "description": "Save success message",
+    "placeholders": {
+      "action": {
+        "type": "String"
+      }
+    }
+  },
+
+  "adminDishFormActionModified": "עודכנה",
+  "@adminDishFormActionModified": {
+    "description": "Modified action"
+  },
+
+  "adminDishFormActionAdded": "נוספה",
+  "@adminDishFormActionAdded": {
+    "description": "Added action"
+  },
+
+  "adminDishFormSaveError": "שגיאה: {error}",
+  "@adminDishFormSaveError": {
+    "description": "Save error message",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+
+  "adminDishFormButtonSave": "שמור",
+  "@adminDishFormButtonSave": {
+    "description": "Save button (for edit)"
+  },
+
+  "adminDishFormButtonAdd": "הוסף",
+  "@adminDishFormButtonAdd": {
+    "description": "Add button (for create)"
+  },
+
+  "adminDishFormLanguageHebrew": "🇮🇱 עברית",
+  "@adminDishFormLanguageHebrew": {
+    "description": "Hebrew language tab"
+  },
+
+  "adminDishFormLanguageEnglish": "🇬🇧 English",
+  "@adminDishFormLanguageEnglish": {
+    "description": "English language tab"
+  },
+
+  "adminDishFormLanguageFrench": "🇫🇷 Français",
+  "@adminDishFormLanguageFrench": {
+    "description": "French language tab"
+  },
+
+  "adminCategoryManagerTitle": "ניהול קטגוריות",
+  "@adminCategoryManagerTitle": {
+    "description": "Category manager dialog title"
+  },
+
+  "adminCategoryManagerSubtitle": "סדר מחדש והגדר",
+  "@adminCategoryManagerSubtitle": {
+    "description": "Category manager subtitle short"
+  },
+
+  "adminCategoryManagerSubtitleFull": "סדר מחדש והגדר את הקטגוריות שלך",
+  "@adminCategoryManagerSubtitleFull": {
+    "description": "Category manager subtitle full"
+  },
+
+  "adminCategoryManagerNew": "חדש",
+  "@adminCategoryManagerNew": {
+    "description": "New category button"
+  },
+
+  "adminCategoryManagerUnsaved": "שינויים לא נשמרו",
+  "@adminCategoryManagerUnsaved": {
+    "description": "Unsaved state"
+  },
+
+  "adminCategoryManagerSaving": "שומר...",
+  "@adminCategoryManagerSaving": {
+    "description": "Saving state"
+  },
+
+  "adminCategoryManagerSaved": "נשמר",
+  "@adminCategoryManagerSaved": {
+    "description": "Saved state"
+  },
+
+  "adminCategoryManagerSavedAgo": "נשמר • לפני {time}",
+  "@adminCategoryManagerSavedAgo": {
+    "description": "Saved with time",
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+
+  "adminCategoryManagerError": "נכשל. נסה שוב",
+  "@adminCategoryManagerError": {
+    "description": "Error state"
+  },
+
+  "adminCategoryManagerHiddenBadge": "מוסתר",
+  "@adminCategoryManagerHiddenBadge": {
+    "description": "Hidden category badge"
+  },
+
+  "adminCategoryManagerShowAction": "הצג",
+  "@adminCategoryManagerShowAction": {
+    "description": "Show action"
+  },
+
+  "adminCategoryManagerHideAction": "הסתר",
+  "@adminCategoryManagerHideAction": {
+    "description": "Hide action"
+  },
+
+  "adminCategoryManagerShowSemantic": "הצג {category}",
+  "@adminCategoryManagerShowSemantic": {
+    "description": "Show semantic label",
+    "placeholders": {
+      "category": {
+        "type": "String"
+      }
+    }
+  },
+
+  "adminCategoryManagerHideSemantic": "הסתר {category}",
+  "@adminCategoryManagerHideSemantic": {
+    "description": "Hide semantic label",
+    "placeholders": {
+      "category": {
+        "type": "String"
+      }
+    }
+  },
+
+  "adminCategoryManagerRenameAction": "שנה שם",
+  "@adminCategoryManagerRenameAction": {
+    "description": "Rename action"
+  },
+
+  "adminCategoryManagerRenameSemantic": "שנה שם {category}",
+  "@adminCategoryManagerRenameSemantic": {
+    "description": "Rename semantic label",
+    "placeholders": {
+      "category": {
+        "type": "String"
+      }
+    }
+  },
+
+  "adminCategoryManagerDeleteAction": "מחק",
+  "@adminCategoryManagerDeleteAction": {
+    "description": "Delete action"
+  },
+
+  "adminCategoryManagerDeleteSemantic": "מחק {category}",
+  "@adminCategoryManagerDeleteSemantic": {
+    "description": "Delete semantic label",
+    "placeholders": {
+      "category": {
+        "type": "String"
+      }
+    }
+  },
+
+  "adminCategoryManagerDragHint": "גרור ושחרר כדי לסדר מחדש",
+  "@adminCategoryManagerDragHint": {
+    "description": "Footer drag hint"
+  },
+
+  "adminCategoryManagerCount": "{count, plural, one{קטגוריה אחת} other{{count} קטגוריות}}",
+  "@adminCategoryManagerCount": {
+    "description": "Category count",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+
+  "adminCategoryManagerDeleteTitle": "למחוק קטגוריה?",
+  "@adminCategoryManagerDeleteTitle": {
+    "description": "Delete dialog title"
+  },
+
+  "adminCategoryManagerDeleteMessage": "\"{category}\" תוסר מהרשימה.",
+  "@adminCategoryManagerDeleteMessage": {
+    "description": "Delete dialog message",
+    "placeholders": {
+      "category": {
+        "type": "String"
+      }
+    }
+  },
+
+  "adminCategoryManagerRenameTitle": "שינוי שם קטגוריה",
+  "@adminCategoryManagerRenameTitle": {
+    "description": "Rename dialog title"
+  },
+
+  "adminCategoryManagerRenameMessage": "שנה שם מ\"{oldName}\" ל\"{newName}\" — {count, plural, one{מנה אחת} other{{count} מנות}} יעודכנו.",
+  "@adminCategoryManagerRenameMessage": {
+    "description": "Rename dialog message",
+    "placeholders": {
+      "oldName": {
+        "type": "String"
+      },
+      "newName": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+
+  "adminCategoryManagerRenameProgress": "מעדכן... {percent}%",
+  "@adminCategoryManagerRenameProgress": {
+    "description": "Rename progress",
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+
+  "adminCategoryManagerConfirm": "אשר",
+  "@adminCategoryManagerConfirm": {
+    "description": "Confirm button"
+  },
+
+  "adminCategoryManagerSaveError": "שגיאת שמירה: {error}",
+  "@adminCategoryManagerSaveError": {
+    "description": "Save error message",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+
+  "adminCategoryManagerRetry": "נסה שוב",
+  "@adminCategoryManagerRetry": {
+    "description": "Retry button"
+  },
+
+  "adminCategoryManagerDefaultName": "קטגוריה חדשה",
+  "@adminCategoryManagerDefaultName": {
+    "description": "Default new category name"
+  }
 }

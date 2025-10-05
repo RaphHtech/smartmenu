@@ -662,7 +662,7 @@ class _AdminOrdersScreenState extends State<AdminOrdersScreen>
         // Actions de changement de statut
         ...nextStatuses.map((status) {
           return Padding(
-            padding: const EdgeInsets.only(right: AdminTokens.space8),
+            padding: const EdgeInsetsDirectional.only(end: AdminTokens.space8),
             child: ElevatedButton(
               onPressed: () => _updateOrderStatus(order, status),
               style: ElevatedButton.styleFrom(

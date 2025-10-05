@@ -801,4 +801,359 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get adminBrandingRestaurantDefault => 'Restaurant';
+
+  @override
+  String get badgesGuideSubtitle =>
+      'Ces badges permettent de mettre en avant des plats spéciaux';
+
+  @override
+  String get adminReorderTitle => 'Réorganiser le menu';
+
+  @override
+  String get adminReorderBreadcrumbReorganize => 'Réorganiser';
+
+  @override
+  String get adminReorderSaving => 'Enregistrement...';
+
+  @override
+  String get adminReorderSaved => 'Enregistré';
+
+  @override
+  String adminReorderSavedAgo(String time) {
+    return 'Enregistré • il y a $time';
+  }
+
+  @override
+  String get adminReorderError => 'Erreur';
+
+  @override
+  String get adminReorderUnsaved => 'Non enregistré';
+
+  @override
+  String get adminReorderPreview => 'Prévisualiser';
+
+  @override
+  String get adminReorderBulkActions => 'Actions groupées';
+
+  @override
+  String adminReorderMoveItems(int count) {
+    return 'Déplacer ($count)';
+  }
+
+  @override
+  String adminReorderHideItems(int count) {
+    return 'Masquer ($count)';
+  }
+
+  @override
+  String adminReorderShowItems(int count) {
+    return 'Afficher ($count)';
+  }
+
+  @override
+  String get adminReorderCancelSelection => 'Annuler sélection';
+
+  @override
+  String get adminReorderCategories => 'Catégories';
+
+  @override
+  String adminReorderDishCount(int count, String category) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count plats',
+      one: '1 plat',
+      zero: '0 plat',
+    );
+    return '$_temp0 • $category';
+  }
+
+  @override
+  String get adminReorderSelect => 'Sélectionner';
+
+  @override
+  String get adminReorderNoDishes => 'Aucun plat dans cette catégorie';
+
+  @override
+  String get adminReorderSignatureBadge => 'Signature';
+
+  @override
+  String adminReorderMoveDialogTitle(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count plats',
+      one: '1 plat',
+    );
+    return 'Déplacer $_temp0';
+  }
+
+  @override
+  String adminReorderLoadError(String error) {
+    return 'Erreur de chargement : $error';
+  }
+
+  @override
+  String adminReorderPreviewError(String error) {
+    return 'Impossible d\'ouvrir l\'aperçu : $error';
+  }
+
+  @override
+  String adminReorderTimeSeconds(int seconds) {
+    return '${seconds}s';
+  }
+
+  @override
+  String adminReorderTimeMinutes(int minutes) {
+    return '${minutes}min';
+  }
+
+  @override
+  String get adminDishFormTitleEdit => 'Modifier le plat';
+
+  @override
+  String get adminDishFormTitleAdd => 'Ajouter un plat';
+
+  @override
+  String get adminDishFormName => 'Nom du plat *';
+
+  @override
+  String get adminDishFormDescription => 'Description';
+
+  @override
+  String get adminDishFormPrice => 'Prix *';
+
+  @override
+  String get adminDishFormCategory => 'Catégorie';
+
+  @override
+  String get adminDishFormNameRequired => 'Le nom en hébreu est obligatoire';
+
+  @override
+  String get adminDishFormPriceRequired => 'Prix obligatoire';
+
+  @override
+  String get adminDishFormPriceInvalid => 'Prix invalide';
+
+  @override
+  String get adminDishFormCopyFromFrench => 'Copier depuis français';
+
+  @override
+  String get adminDishFormCopyFromHebrew => 'Copier depuis hébreu';
+
+  @override
+  String get adminDishFormCopyFromEnglish => 'Copier depuis anglais';
+
+  @override
+  String adminDishFormCopiedFrom(String language) {
+    return 'Contenu copié depuis $language';
+  }
+
+  @override
+  String get adminDishFormOptions => 'Options';
+
+  @override
+  String get adminDishFormFeatured => 'Mettre en avant';
+
+  @override
+  String get adminDishFormFeaturedSubtitle =>
+      'Épingler en haut de la catégorie';
+
+  @override
+  String get adminDishFormBadges => 'Badges';
+
+  @override
+  String get adminDishFormBadgePopular => 'populaire';
+
+  @override
+  String get adminDishFormBadgeNew => 'nouveau';
+
+  @override
+  String get adminDishFormBadgeSpecialty => 'spécialité';
+
+  @override
+  String get adminDishFormBadgeChef => 'chef';
+
+  @override
+  String get adminDishFormBadgeSeasonal => 'saisonnier';
+
+  @override
+  String get adminDishFormVisible => 'Visible sur le menu';
+
+  @override
+  String get adminDishFormVisibleSubtitle => 'Les clients peuvent voir ce plat';
+
+  @override
+  String get adminDishFormAddPhoto => 'Ajouter une photo';
+
+  @override
+  String get adminDishFormClickToSelect => 'Cliquez pour sélectionner';
+
+  @override
+  String get adminDishFormAddButton => 'Ajouter';
+
+  @override
+  String get adminDishFormChangeButton => 'Changer';
+
+  @override
+  String get adminDishFormRemoveButton => 'Retirer';
+
+  @override
+  String get adminDishFormRemovePhoto => 'Retirer la photo';
+
+  @override
+  String get adminDishFormCannotSelectPhoto =>
+      'Impossible de sélectionner la photo';
+
+  @override
+  String adminDishFormSaveSuccess(String action) {
+    return 'Plat $action avec succès';
+  }
+
+  @override
+  String get adminDishFormActionModified => 'modifié';
+
+  @override
+  String get adminDishFormActionAdded => 'ajouté';
+
+  @override
+  String adminDishFormSaveError(String error) {
+    return 'Erreur : $error';
+  }
+
+  @override
+  String get adminDishFormButtonSave => 'Enregistrer';
+
+  @override
+  String get adminDishFormButtonAdd => 'Ajouter';
+
+  @override
+  String get adminDishFormLanguageHebrew => '🇮🇱 עברית';
+
+  @override
+  String get adminDishFormLanguageEnglish => '🇬🇧 English';
+
+  @override
+  String get adminDishFormLanguageFrench => '🇫🇷 Français';
+
+  @override
+  String get adminCategoryManagerTitle => 'Gérer les catégories';
+
+  @override
+  String get adminCategoryManagerSubtitle => 'Réorganisez et configurez';
+
+  @override
+  String get adminCategoryManagerSubtitleFull =>
+      'Réorganisez et configurez vos catégories';
+
+  @override
+  String get adminCategoryManagerNew => 'Nouvelle';
+
+  @override
+  String get adminCategoryManagerUnsaved => 'Modifications non enregistrées';
+
+  @override
+  String get adminCategoryManagerSaving => 'Sauvegarde...';
+
+  @override
+  String get adminCategoryManagerSaved => 'Enregistré';
+
+  @override
+  String adminCategoryManagerSavedAgo(String time) {
+    return 'Enregistré • il y a $time';
+  }
+
+  @override
+  String get adminCategoryManagerError => 'Échec. Réessayer';
+
+  @override
+  String get adminCategoryManagerHiddenBadge => 'Masquée';
+
+  @override
+  String get adminCategoryManagerShowAction => 'Afficher';
+
+  @override
+  String get adminCategoryManagerHideAction => 'Masquer';
+
+  @override
+  String adminCategoryManagerShowSemantic(String category) {
+    return 'Afficher $category';
+  }
+
+  @override
+  String adminCategoryManagerHideSemantic(String category) {
+    return 'Masquer $category';
+  }
+
+  @override
+  String get adminCategoryManagerRenameAction => 'Renommer';
+
+  @override
+  String adminCategoryManagerRenameSemantic(String category) {
+    return 'Renommer $category';
+  }
+
+  @override
+  String get adminCategoryManagerDeleteAction => 'Supprimer';
+
+  @override
+  String adminCategoryManagerDeleteSemantic(String category) {
+    return 'Supprimer $category';
+  }
+
+  @override
+  String get adminCategoryManagerDragHint => 'Glissez-déposez pour réorganiser';
+
+  @override
+  String adminCategoryManagerCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count catégories',
+      one: '1 catégorie',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get adminCategoryManagerDeleteTitle => 'Supprimer la catégorie ?';
+
+  @override
+  String adminCategoryManagerDeleteMessage(String category) {
+    return '« $category » sera retirée de la liste.';
+  }
+
+  @override
+  String get adminCategoryManagerRenameTitle => 'Renommer la catégorie';
+
+  @override
+  String adminCategoryManagerRenameMessage(
+      String oldName, String newName, int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count plats',
+      one: '1 plat',
+    );
+    return 'Renommer « $oldName » en « $newName » — $_temp0 seront mis à jour.';
+  }
+
+  @override
+  String adminCategoryManagerRenameProgress(int percent) {
+    return 'Mise à jour en cours... $percent%';
+  }
+
+  @override
+  String get adminCategoryManagerConfirm => 'Confirmer';
+
+  @override
+  String adminCategoryManagerSaveError(String error) {
+    return 'Erreur de sauvegarde : $error';
+  }
+
+  @override
+  String get adminCategoryManagerRetry => 'Réessayer';
+
+  @override
+  String get adminCategoryManagerDefaultName => 'Nouvelle catégorie';
 }

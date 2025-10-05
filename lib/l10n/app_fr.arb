@@ -1315,5 +1315,594 @@
 "adminBrandingRestaurantDefault": "Restaurant",
 "@adminBrandingRestaurantDefault": {
   "description": "Default restaurant name fallback"
-}
+},
+
+"badgesGuideSubtitle": "Ces badges permettent de mettre en avant des plats spéciaux",
+"@badgesGuideSubtitle": {
+  "description": "Badges guide subtitle"
+},
+
+"adminReorderTitle": "Réorganiser le menu",
+  "@adminReorderTitle": {
+    "description": "Reorder screen title"
+  },
+
+  "adminReorderBreadcrumbReorganize": "Réorganiser",
+  "@adminReorderBreadcrumbReorganize": {
+    "description": "Breadcrumb for reorganize"
+  },
+
+  "adminReorderSaving": "Enregistrement...",
+  "@adminReorderSaving": {
+    "description": "Saving state indicator"
+  },
+
+  "adminReorderSaved": "Enregistré",
+  "@adminReorderSaved": {
+    "description": "Saved state"
+  },
+
+  "adminReorderSavedAgo": "Enregistré • il y a {time}",
+  "@adminReorderSavedAgo": {
+    "description": "Saved with timestamp",
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+
+  "adminReorderError": "Erreur",
+  "@adminReorderError": {
+    "description": "Error state"
+  },
+
+  "adminReorderUnsaved": "Non enregistré",
+  "@adminReorderUnsaved": {
+    "description": "Unsaved state"
+  },
+
+  "adminReorderPreview": "Prévisualiser",
+  "@adminReorderPreview": {
+    "description": "Preview button tooltip"
+  },
+
+  "adminReorderBulkActions": "Actions groupées",
+  "@adminReorderBulkActions": {
+    "description": "Bulk actions tooltip"
+  },
+
+  "adminReorderMoveItems": "Déplacer ({count})",
+  "@adminReorderMoveItems": {
+    "description": "Move items action",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+
+  "adminReorderHideItems": "Masquer ({count})",
+  "@adminReorderHideItems": {
+    "description": "Hide items action",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+
+  "adminReorderShowItems": "Afficher ({count})",
+  "@adminReorderShowItems": {
+    "description": "Show items action",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+
+  "adminReorderCancelSelection": "Annuler sélection",
+  "@adminReorderCancelSelection": {
+    "description": "Cancel selection action"
+  },
+
+  "adminReorderCategories": "Catégories",
+  "@adminReorderCategories": {
+    "description": "Categories sidebar title"
+  },
+
+  "adminReorderDishCount": "{count, plural, =0{0 plat} =1{1 plat} other{{count} plats}} • {category}",
+  "@adminReorderDishCount": {
+    "description": "Dish count with category",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "category": {
+        "type": "String"
+      }
+    }
+  },
+
+  "adminReorderSelect": "Sélectionner",
+  "@adminReorderSelect": {
+    "description": "Select button"
+  },
+
+  "adminReorderNoDishes": "Aucun plat dans cette catégorie",
+  "@adminReorderNoDishes": {
+    "description": "Empty state message"
+  },
+
+  "adminReorderSignatureBadge": "Signature",
+  "@adminReorderSignatureBadge": {
+    "description": "Signature dish badge"
+  },
+
+  "adminReorderMoveDialogTitle": "Déplacer {count, plural, =1{1 plat} other{{count} plats}}",
+  "@adminReorderMoveDialogTitle": {
+    "description": "Move dialog title",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+
+  "adminReorderLoadError": "Erreur de chargement : {error}",
+  "@adminReorderLoadError": {
+    "description": "Loading error message",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+
+  "adminReorderPreviewError": "Impossible d'ouvrir l'aperçu : {error}",
+  "@adminReorderPreviewError": {
+    "description": "Preview error message",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+
+  "adminReorderTimeSeconds": "{seconds}s",
+  "@adminReorderTimeSeconds": {
+    "description": "Seconds time format",
+    "placeholders": {
+      "seconds": {
+        "type": "int"
+      }
+    }
+  },
+
+  "adminReorderTimeMinutes": "{minutes}min",
+  "@adminReorderTimeMinutes": {
+    "description": "Minutes time format",
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+
+  "adminDishFormTitleEdit": "Modifier le plat",
+  "@adminDishFormTitleEdit": {
+    "description": "Edit dish screen title"
+  },
+
+  "adminDishFormTitleAdd": "Ajouter un plat",
+  "@adminDishFormTitleAdd": {
+    "description": "Add dish screen title"
+  },
+
+  "adminDishFormName": "Nom du plat *",
+  "@adminDishFormName": {
+    "description": "Name field label"
+  },
+
+  "adminDishFormDescription": "Description",
+  "@adminDishFormDescription": {
+    "description": "Description field label"
+  },
+
+  "adminDishFormPrice": "Prix *",
+  "@adminDishFormPrice": {
+    "description": "Price field label"
+  },
+
+  "adminDishFormCategory": "Catégorie",
+  "@adminDishFormCategory": {
+    "description": "Category field label"
+  },
+
+  "adminDishFormNameRequired": "Le nom en hébreu est obligatoire",
+  "@adminDishFormNameRequired": {
+    "description": "Name validation error"
+  },
+
+  "adminDishFormPriceRequired": "Prix obligatoire",
+  "@adminDishFormPriceRequired": {
+    "description": "Price required validation"
+  },
+
+  "adminDishFormPriceInvalid": "Prix invalide",
+  "@adminDishFormPriceInvalid": {
+    "description": "Price invalid validation"
+  },
+
+  "adminDishFormCopyFromFrench": "Copier depuis français",
+  "@adminDishFormCopyFromFrench": {
+    "description": "Copy from French button"
+  },
+
+  "adminDishFormCopyFromHebrew": "Copier depuis hébreu",
+  "@adminDishFormCopyFromHebrew": {
+    "description": "Copy from Hebrew button"
+  },
+
+  "adminDishFormCopyFromEnglish": "Copier depuis anglais",
+  "@adminDishFormCopyFromEnglish": {
+    "description": "Copy from English button"
+  },
+
+  "adminDishFormCopiedFrom": "Contenu copié depuis {language}",
+  "@adminDishFormCopiedFrom": {
+    "description": "Copy success message",
+    "placeholders": {
+      "language": {
+        "type": "String"
+      }
+    }
+  },
+
+  "adminDishFormOptions": "Options",
+  "@adminDishFormOptions": {
+    "description": "Options section title"
+  },
+
+  "adminDishFormFeatured": "Mettre en avant",
+  "@adminDishFormFeatured": {
+    "description": "Featured toggle"
+  },
+
+  "adminDishFormFeaturedSubtitle": "Épingler en haut de la catégorie",
+  "@adminDishFormFeaturedSubtitle": {
+    "description": "Featured subtitle"
+  },
+
+  "adminDishFormBadges": "Badges",
+  "@adminDishFormBadges": {
+    "description": "Badges section"
+  },
+
+  "adminDishFormBadgePopular": "populaire",
+  "@adminDishFormBadgePopular": {
+    "description": "Popular badge"
+  },
+
+  "adminDishFormBadgeNew": "nouveau",
+  "@adminDishFormBadgeNew": {
+    "description": "New badge"
+  },
+
+  "adminDishFormBadgeSpecialty": "spécialité",
+  "@adminDishFormBadgeSpecialty": {
+    "description": "Specialty badge"
+  },
+
+  "adminDishFormBadgeChef": "chef",
+  "@adminDishFormBadgeChef": {
+    "description": "Chef badge"
+  },
+
+  "adminDishFormBadgeSeasonal": "saisonnier",
+  "@adminDishFormBadgeSeasonal": {
+    "description": "Seasonal badge"
+  },
+
+  "adminDishFormVisible": "Visible sur le menu",
+  "@adminDishFormVisible": {
+    "description": "Visible toggle"
+  },
+
+  "adminDishFormVisibleSubtitle": "Les clients peuvent voir ce plat",
+  "@adminDishFormVisibleSubtitle": {
+    "description": "Visible subtitle"
+  },
+
+  "adminDishFormAddPhoto": "Ajouter une photo",
+  "@adminDishFormAddPhoto": {
+    "description": "Add photo placeholder title"
+  },
+
+  "adminDishFormClickToSelect": "Cliquez pour sélectionner",
+  "@adminDishFormClickToSelect": {
+    "description": "Add photo placeholder subtitle"
+  },
+
+  "adminDishFormAddButton": "Ajouter",
+  "@adminDishFormAddButton": {
+    "description": "Add image button"
+  },
+
+  "adminDishFormChangeButton": "Changer",
+  "@adminDishFormChangeButton": {
+    "description": "Change image button"
+  },
+
+  "adminDishFormRemoveButton": "Retirer",
+  "@adminDishFormRemoveButton": {
+    "description": "Remove image button"
+  },
+
+  "adminDishFormRemovePhoto": "Retirer la photo",
+  "@adminDishFormRemovePhoto": {
+    "description": "Remove photo tooltip"
+  },
+
+  "adminDishFormCannotSelectPhoto": "Impossible de sélectionner la photo",
+  "@adminDishFormCannotSelectPhoto": {
+    "description": "Image picker error"
+  },
+
+  "adminDishFormSaveSuccess": "Plat {action} avec succès",
+  "@adminDishFormSaveSuccess": {
+    "description": "Save success message",
+    "placeholders": {
+      "action": {
+        "type": "String"
+      }
+    }
+  },
+
+  "adminDishFormActionModified": "modifié",
+  "@adminDishFormActionModified": {
+    "description": "Modified action"
+  },
+
+  "adminDishFormActionAdded": "ajouté",
+  "@adminDishFormActionAdded": {
+    "description": "Added action"
+  },
+
+  "adminDishFormSaveError": "Erreur : {error}",
+  "@adminDishFormSaveError": {
+    "description": "Save error message",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+
+  "adminDishFormButtonSave": "Enregistrer",
+  "@adminDishFormButtonSave": {
+    "description": "Save button (for edit)"
+  },
+
+  "adminDishFormButtonAdd": "Ajouter",
+  "@adminDishFormButtonAdd": {
+    "description": "Add button (for create)"
+  },
+
+  "adminDishFormLanguageHebrew": "🇮🇱 עברית",
+  "@adminDishFormLanguageHebrew": {
+    "description": "Hebrew language tab"
+  },
+
+  "adminDishFormLanguageEnglish": "🇬🇧 English",
+  "@adminDishFormLanguageEnglish": {
+    "description": "English language tab"
+  },
+
+  "adminDishFormLanguageFrench": "🇫🇷 Français",
+  "@adminDishFormLanguageFrench": {
+    "description": "French language tab"
+  },
+
+  "adminCategoryManagerTitle": "Gérer les catégories",
+  "@adminCategoryManagerTitle": {
+    "description": "Category manager dialog title"
+  },
+
+  "adminCategoryManagerSubtitle": "Réorganisez et configurez",
+  "@adminCategoryManagerSubtitle": {
+    "description": "Category manager subtitle short"
+  },
+
+  "adminCategoryManagerSubtitleFull": "Réorganisez et configurez vos catégories",
+  "@adminCategoryManagerSubtitleFull": {
+    "description": "Category manager subtitle full"
+  },
+
+  "adminCategoryManagerNew": "Nouvelle",
+  "@adminCategoryManagerNew": {
+    "description": "New category button"
+  },
+
+  "adminCategoryManagerUnsaved": "Modifications non enregistrées",
+  "@adminCategoryManagerUnsaved": {
+    "description": "Unsaved state"
+  },
+
+  "adminCategoryManagerSaving": "Sauvegarde...",
+  "@adminCategoryManagerSaving": {
+    "description": "Saving state"
+  },
+
+  "adminCategoryManagerSaved": "Enregistré",
+  "@adminCategoryManagerSaved": {
+    "description": "Saved state"
+  },
+
+  "adminCategoryManagerSavedAgo": "Enregistré • il y a {time}",
+  "@adminCategoryManagerSavedAgo": {
+    "description": "Saved with time",
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+
+  "adminCategoryManagerError": "Échec. Réessayer",
+  "@adminCategoryManagerError": {
+    "description": "Error state"
+  },
+
+  "adminCategoryManagerHiddenBadge": "Masquée",
+  "@adminCategoryManagerHiddenBadge": {
+    "description": "Hidden category badge"
+  },
+
+  "adminCategoryManagerShowAction": "Afficher",
+  "@adminCategoryManagerShowAction": {
+    "description": "Show action"
+  },
+
+  "adminCategoryManagerHideAction": "Masquer",
+  "@adminCategoryManagerHideAction": {
+    "description": "Hide action"
+  },
+
+  "adminCategoryManagerShowSemantic": "Afficher {category}",
+  "@adminCategoryManagerShowSemantic": {
+    "description": "Show semantic label",
+    "placeholders": {
+      "category": {
+        "type": "String"
+      }
+    }
+  },
+
+  "adminCategoryManagerHideSemantic": "Masquer {category}",
+  "@adminCategoryManagerHideSemantic": {
+    "description": "Hide semantic label",
+    "placeholders": {
+      "category": {
+        "type": "String"
+      }
+    }
+  },
+
+  "adminCategoryManagerRenameAction": "Renommer",
+  "@adminCategoryManagerRenameAction": {
+    "description": "Rename action"
+  },
+
+  "adminCategoryManagerRenameSemantic": "Renommer {category}",
+  "@adminCategoryManagerRenameSemantic": {
+    "description": "Rename semantic label",
+    "placeholders": {
+      "category": {
+        "type": "String"
+      }
+    }
+  },
+
+  "adminCategoryManagerDeleteAction": "Supprimer",
+  "@adminCategoryManagerDeleteAction": {
+    "description": "Delete action"
+  },
+
+  "adminCategoryManagerDeleteSemantic": "Supprimer {category}",
+  "@adminCategoryManagerDeleteSemantic": {
+    "description": "Delete semantic label",
+    "placeholders": {
+      "category": {
+        "type": "String"
+      }
+    }
+  },
+
+  "adminCategoryManagerDragHint": "Glissez-déposez pour réorganiser",
+  "@adminCategoryManagerDragHint": {
+    "description": "Footer drag hint"
+  },
+
+  "adminCategoryManagerCount": "{count, plural, =1{1 catégorie} other{{count} catégories}}",
+  "@adminCategoryManagerCount": {
+    "description": "Category count",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+
+  "adminCategoryManagerDeleteTitle": "Supprimer la catégorie ?",
+  "@adminCategoryManagerDeleteTitle": {
+    "description": "Delete dialog title"
+  },
+
+  "adminCategoryManagerDeleteMessage": "« {category} » sera retirée de la liste.",
+  "@adminCategoryManagerDeleteMessage": {
+    "description": "Delete dialog message",
+    "placeholders": {
+      "category": {
+        "type": "String"
+      }
+    }
+  },
+
+  "adminCategoryManagerRenameTitle": "Renommer la catégorie",
+  "@adminCategoryManagerRenameTitle": {
+    "description": "Rename dialog title"
+  },
+
+  "adminCategoryManagerRenameMessage": "Renommer « {oldName} » en « {newName} » — {count, plural, =1{1 plat} other{{count} plats}} seront mis à jour.",
+  "@adminCategoryManagerRenameMessage": {
+    "description": "Rename dialog message",
+    "placeholders": {
+      "oldName": {
+        "type": "String"
+      },
+      "newName": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+
+  "adminCategoryManagerRenameProgress": "Mise à jour en cours... {percent}%",
+  "@adminCategoryManagerRenameProgress": {
+    "description": "Rename progress",
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+
+  "adminCategoryManagerConfirm": "Confirmer",
+  "@adminCategoryManagerConfirm": {
+    "description": "Confirm button"
+  },
+
+  "adminCategoryManagerSaveError": "Erreur de sauvegarde : {error}",
+  "@adminCategoryManagerSaveError": {
+    "description": "Save error message",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+
+  "adminCategoryManagerRetry": "Réessayer",
+  "@adminCategoryManagerRetry": {
+    "description": "Retry button"
+  },
+
+  "adminCategoryManagerDefaultName": "Nouvelle catégorie",
+  "@adminCategoryManagerDefaultName": {
+    "description": "Default new category name"
+  }
 }

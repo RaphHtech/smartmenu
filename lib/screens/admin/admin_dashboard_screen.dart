@@ -149,7 +149,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
 
             // Bouton ajouter
             Container(
-              margin: const EdgeInsets.only(left: 8),
+              margin: const EdgeInsetsDirectional.only(start: 8),
               child: ActionChip(
                 label: Row(
                   mainAxisSize: MainAxisSize.min,
@@ -182,7 +182,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
     final isSelected = _selectedCategory == null;
 
     return Padding(
-      padding: const EdgeInsets.only(right: 8),
+      padding: const EdgeInsetsDirectional.only(end: 8),
       child: FilterChip(
         label: Text('${l10n.adminMenuAll} ($totalCount)'),
         selected: isSelected,
@@ -213,7 +213,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
     final isMobile = MediaQuery.of(context).size.width < 375;
 
     return Padding(
-      padding: const EdgeInsets.only(right: AdminTokens.space8),
+      padding: const EdgeInsetsDirectional.only(end: AdminTokens.space8),
       child: Opacity(
         opacity: isHidden ? 0.4 : 1.0,
         child: FilterChip(
@@ -620,12 +620,12 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                         final desc = (data['description'] ?? '').toString();
                         final imgUrl = _pickImageUrl(data);
                         return Card(
-                          margin: EdgeInsets.only(
+                          margin: EdgeInsetsDirectional.only(
                             bottom: AdminTokens.space8,
-                            left: MediaQuery.of(context).size.width < 600
+                            start: MediaQuery.of(context).size.width < 600
                                 ? 0
                                 : AdminTokens.space4,
-                            right: MediaQuery.of(context).size.width < 600
+                            end: MediaQuery.of(context).size.width < 600
                                 ? 0
                                 : AdminTokens.space4,
                           ),

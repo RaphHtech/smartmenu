@@ -1509,6 +1509,565 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Restaurant'**
   String get adminBrandingRestaurantDefault;
+
+  /// Badges guide subtitle
+  ///
+  /// In en, this message translates to:
+  /// **'These badges help highlight special dishes'**
+  String get badgesGuideSubtitle;
+
+  /// Reorder screen title
+  ///
+  /// In en, this message translates to:
+  /// **'Reorganize Menu'**
+  String get adminReorderTitle;
+
+  /// Breadcrumb for reorganize
+  ///
+  /// In en, this message translates to:
+  /// **'Reorganize'**
+  String get adminReorderBreadcrumbReorganize;
+
+  /// Saving state indicator
+  ///
+  /// In en, this message translates to:
+  /// **'Saving...'**
+  String get adminReorderSaving;
+
+  /// Saved state
+  ///
+  /// In en, this message translates to:
+  /// **'Saved'**
+  String get adminReorderSaved;
+
+  /// Saved with timestamp
+  ///
+  /// In en, this message translates to:
+  /// **'Saved • {time} ago'**
+  String adminReorderSavedAgo(String time);
+
+  /// Error state
+  ///
+  /// In en, this message translates to:
+  /// **'Error'**
+  String get adminReorderError;
+
+  /// Unsaved state
+  ///
+  /// In en, this message translates to:
+  /// **'Unsaved'**
+  String get adminReorderUnsaved;
+
+  /// Preview button tooltip
+  ///
+  /// In en, this message translates to:
+  /// **'Preview'**
+  String get adminReorderPreview;
+
+  /// Bulk actions tooltip
+  ///
+  /// In en, this message translates to:
+  /// **'Bulk actions'**
+  String get adminReorderBulkActions;
+
+  /// Move items action
+  ///
+  /// In en, this message translates to:
+  /// **'Move ({count})'**
+  String adminReorderMoveItems(int count);
+
+  /// Hide items action
+  ///
+  /// In en, this message translates to:
+  /// **'Hide ({count})'**
+  String adminReorderHideItems(int count);
+
+  /// Show items action
+  ///
+  /// In en, this message translates to:
+  /// **'Show ({count})'**
+  String adminReorderShowItems(int count);
+
+  /// Cancel selection action
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel selection'**
+  String get adminReorderCancelSelection;
+
+  /// Categories sidebar title
+  ///
+  /// In en, this message translates to:
+  /// **'Categories'**
+  String get adminReorderCategories;
+
+  /// Dish count with category
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =0{0 dishes} =1{1 dish} other{{count} dishes}} • {category}'**
+  String adminReorderDishCount(int count, String category);
+
+  /// Select button
+  ///
+  /// In en, this message translates to:
+  /// **'Select'**
+  String get adminReorderSelect;
+
+  /// Empty state message
+  ///
+  /// In en, this message translates to:
+  /// **'No dishes in this category'**
+  String get adminReorderNoDishes;
+
+  /// Signature dish badge
+  ///
+  /// In en, this message translates to:
+  /// **'Signature'**
+  String get adminReorderSignatureBadge;
+
+  /// Move dialog title
+  ///
+  /// In en, this message translates to:
+  /// **'Move {count, plural, =1{1 dish} other{{count} dishes}}'**
+  String adminReorderMoveDialogTitle(int count);
+
+  /// Loading error message
+  ///
+  /// In en, this message translates to:
+  /// **'Loading error: {error}'**
+  String adminReorderLoadError(String error);
+
+  /// Preview error message
+  ///
+  /// In en, this message translates to:
+  /// **'Cannot open preview: {error}'**
+  String adminReorderPreviewError(String error);
+
+  /// Seconds time format
+  ///
+  /// In en, this message translates to:
+  /// **'{seconds}s'**
+  String adminReorderTimeSeconds(int seconds);
+
+  /// Minutes time format
+  ///
+  /// In en, this message translates to:
+  /// **'{minutes}min'**
+  String adminReorderTimeMinutes(int minutes);
+
+  /// Edit dish screen title
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Dish'**
+  String get adminDishFormTitleEdit;
+
+  /// Add dish screen title
+  ///
+  /// In en, this message translates to:
+  /// **'Add Dish'**
+  String get adminDishFormTitleAdd;
+
+  /// Name field label
+  ///
+  /// In en, this message translates to:
+  /// **'Dish name *'**
+  String get adminDishFormName;
+
+  /// Description field label
+  ///
+  /// In en, this message translates to:
+  /// **'Description'**
+  String get adminDishFormDescription;
+
+  /// Price field label
+  ///
+  /// In en, this message translates to:
+  /// **'Price *'**
+  String get adminDishFormPrice;
+
+  /// Category field label
+  ///
+  /// In en, this message translates to:
+  /// **'Category'**
+  String get adminDishFormCategory;
+
+  /// Name validation error
+  ///
+  /// In en, this message translates to:
+  /// **'Name in Hebrew is required'**
+  String get adminDishFormNameRequired;
+
+  /// Price required validation
+  ///
+  /// In en, this message translates to:
+  /// **'Price required'**
+  String get adminDishFormPriceRequired;
+
+  /// Price invalid validation
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid price'**
+  String get adminDishFormPriceInvalid;
+
+  /// Copy from French button
+  ///
+  /// In en, this message translates to:
+  /// **'Copy from French'**
+  String get adminDishFormCopyFromFrench;
+
+  /// Copy from Hebrew button
+  ///
+  /// In en, this message translates to:
+  /// **'Copy from Hebrew'**
+  String get adminDishFormCopyFromHebrew;
+
+  /// Copy from English button
+  ///
+  /// In en, this message translates to:
+  /// **'Copy from English'**
+  String get adminDishFormCopyFromEnglish;
+
+  /// Copy success message
+  ///
+  /// In en, this message translates to:
+  /// **'Content copied from {language}'**
+  String adminDishFormCopiedFrom(String language);
+
+  /// Options section title
+  ///
+  /// In en, this message translates to:
+  /// **'Options'**
+  String get adminDishFormOptions;
+
+  /// Featured toggle
+  ///
+  /// In en, this message translates to:
+  /// **'Feature'**
+  String get adminDishFormFeatured;
+
+  /// Featured subtitle
+  ///
+  /// In en, this message translates to:
+  /// **'Pin to top of category'**
+  String get adminDishFormFeaturedSubtitle;
+
+  /// Badges section
+  ///
+  /// In en, this message translates to:
+  /// **'Badges'**
+  String get adminDishFormBadges;
+
+  /// Popular badge
+  ///
+  /// In en, this message translates to:
+  /// **'popular'**
+  String get adminDishFormBadgePopular;
+
+  /// New badge
+  ///
+  /// In en, this message translates to:
+  /// **'new'**
+  String get adminDishFormBadgeNew;
+
+  /// Specialty badge
+  ///
+  /// In en, this message translates to:
+  /// **'specialty'**
+  String get adminDishFormBadgeSpecialty;
+
+  /// Chef badge
+  ///
+  /// In en, this message translates to:
+  /// **'chef'**
+  String get adminDishFormBadgeChef;
+
+  /// Seasonal badge
+  ///
+  /// In en, this message translates to:
+  /// **'seasonal'**
+  String get adminDishFormBadgeSeasonal;
+
+  /// Visible toggle
+  ///
+  /// In en, this message translates to:
+  /// **'Visible on menu'**
+  String get adminDishFormVisible;
+
+  /// Visible subtitle
+  ///
+  /// In en, this message translates to:
+  /// **'Customers can see this dish'**
+  String get adminDishFormVisibleSubtitle;
+
+  /// Add photo placeholder title
+  ///
+  /// In en, this message translates to:
+  /// **'Add photo'**
+  String get adminDishFormAddPhoto;
+
+  /// Add photo placeholder subtitle
+  ///
+  /// In en, this message translates to:
+  /// **'Click to select'**
+  String get adminDishFormClickToSelect;
+
+  /// Add image button
+  ///
+  /// In en, this message translates to:
+  /// **'Add'**
+  String get adminDishFormAddButton;
+
+  /// Change image button
+  ///
+  /// In en, this message translates to:
+  /// **'Change'**
+  String get adminDishFormChangeButton;
+
+  /// Remove image button
+  ///
+  /// In en, this message translates to:
+  /// **'Remove'**
+  String get adminDishFormRemoveButton;
+
+  /// Remove photo tooltip
+  ///
+  /// In en, this message translates to:
+  /// **'Remove photo'**
+  String get adminDishFormRemovePhoto;
+
+  /// Image picker error
+  ///
+  /// In en, this message translates to:
+  /// **'Cannot select photo'**
+  String get adminDishFormCannotSelectPhoto;
+
+  /// Save success message
+  ///
+  /// In en, this message translates to:
+  /// **'Dish {action} successfully'**
+  String adminDishFormSaveSuccess(String action);
+
+  /// Modified action
+  ///
+  /// In en, this message translates to:
+  /// **'modified'**
+  String get adminDishFormActionModified;
+
+  /// Added action
+  ///
+  /// In en, this message translates to:
+  /// **'added'**
+  String get adminDishFormActionAdded;
+
+  /// Save error message
+  ///
+  /// In en, this message translates to:
+  /// **'Error: {error}'**
+  String adminDishFormSaveError(String error);
+
+  /// Save button (for edit)
+  ///
+  /// In en, this message translates to:
+  /// **'Save'**
+  String get adminDishFormButtonSave;
+
+  /// Add button (for create)
+  ///
+  /// In en, this message translates to:
+  /// **'Add'**
+  String get adminDishFormButtonAdd;
+
+  /// Hebrew language tab
+  ///
+  /// In en, this message translates to:
+  /// **'🇮🇱 עברית'**
+  String get adminDishFormLanguageHebrew;
+
+  /// English language tab
+  ///
+  /// In en, this message translates to:
+  /// **'🇬🇧 English'**
+  String get adminDishFormLanguageEnglish;
+
+  /// French language tab
+  ///
+  /// In en, this message translates to:
+  /// **'🇫🇷 Français'**
+  String get adminDishFormLanguageFrench;
+
+  /// Category manager dialog title
+  ///
+  /// In en, this message translates to:
+  /// **'Manage Categories'**
+  String get adminCategoryManagerTitle;
+
+  /// Category manager subtitle short
+  ///
+  /// In en, this message translates to:
+  /// **'Reorganize and configure'**
+  String get adminCategoryManagerSubtitle;
+
+  /// Category manager subtitle full
+  ///
+  /// In en, this message translates to:
+  /// **'Reorganize and configure your categories'**
+  String get adminCategoryManagerSubtitleFull;
+
+  /// New category button
+  ///
+  /// In en, this message translates to:
+  /// **'New'**
+  String get adminCategoryManagerNew;
+
+  /// Unsaved state
+  ///
+  /// In en, this message translates to:
+  /// **'Unsaved changes'**
+  String get adminCategoryManagerUnsaved;
+
+  /// Saving state
+  ///
+  /// In en, this message translates to:
+  /// **'Saving...'**
+  String get adminCategoryManagerSaving;
+
+  /// Saved state
+  ///
+  /// In en, this message translates to:
+  /// **'Saved'**
+  String get adminCategoryManagerSaved;
+
+  /// Saved with time
+  ///
+  /// In en, this message translates to:
+  /// **'Saved • {time} ago'**
+  String adminCategoryManagerSavedAgo(String time);
+
+  /// Error state
+  ///
+  /// In en, this message translates to:
+  /// **'Failed. Retry'**
+  String get adminCategoryManagerError;
+
+  /// Hidden category badge
+  ///
+  /// In en, this message translates to:
+  /// **'Hidden'**
+  String get adminCategoryManagerHiddenBadge;
+
+  /// Show action
+  ///
+  /// In en, this message translates to:
+  /// **'Show'**
+  String get adminCategoryManagerShowAction;
+
+  /// Hide action
+  ///
+  /// In en, this message translates to:
+  /// **'Hide'**
+  String get adminCategoryManagerHideAction;
+
+  /// Show semantic label
+  ///
+  /// In en, this message translates to:
+  /// **'Show {category}'**
+  String adminCategoryManagerShowSemantic(String category);
+
+  /// Hide semantic label
+  ///
+  /// In en, this message translates to:
+  /// **'Hide {category}'**
+  String adminCategoryManagerHideSemantic(String category);
+
+  /// Rename action
+  ///
+  /// In en, this message translates to:
+  /// **'Rename'**
+  String get adminCategoryManagerRenameAction;
+
+  /// Rename semantic label
+  ///
+  /// In en, this message translates to:
+  /// **'Rename {category}'**
+  String adminCategoryManagerRenameSemantic(String category);
+
+  /// Delete action
+  ///
+  /// In en, this message translates to:
+  /// **'Delete'**
+  String get adminCategoryManagerDeleteAction;
+
+  /// Delete semantic label
+  ///
+  /// In en, this message translates to:
+  /// **'Delete {category}'**
+  String adminCategoryManagerDeleteSemantic(String category);
+
+  /// Footer drag hint
+  ///
+  /// In en, this message translates to:
+  /// **'Drag and drop to reorganize'**
+  String get adminCategoryManagerDragHint;
+
+  /// Category count
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 category} other{{count} categories}}'**
+  String adminCategoryManagerCount(int count);
+
+  /// Delete dialog title
+  ///
+  /// In en, this message translates to:
+  /// **'Delete category?'**
+  String get adminCategoryManagerDeleteTitle;
+
+  /// Delete dialog message
+  ///
+  /// In en, this message translates to:
+  /// **'\"{category}\" will be removed from the list.'**
+  String adminCategoryManagerDeleteMessage(String category);
+
+  /// Rename dialog title
+  ///
+  /// In en, this message translates to:
+  /// **'Rename category'**
+  String get adminCategoryManagerRenameTitle;
+
+  /// Rename dialog message
+  ///
+  /// In en, this message translates to:
+  /// **'Rename \"{oldName}\" to \"{newName}\" — {count, plural, =1{1 dish} other{{count} dishes}} will be updated.'**
+  String adminCategoryManagerRenameMessage(
+      String oldName, String newName, int count);
+
+  /// Rename progress
+  ///
+  /// In en, this message translates to:
+  /// **'Updating... {percent}%'**
+  String adminCategoryManagerRenameProgress(int percent);
+
+  /// Confirm button
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm'**
+  String get adminCategoryManagerConfirm;
+
+  /// Save error message
+  ///
+  /// In en, this message translates to:
+  /// **'Save error: {error}'**
+  String adminCategoryManagerSaveError(String error);
+
+  /// Retry button
+  ///
+  /// In en, this message translates to:
+  /// **'Retry'**
+  String get adminCategoryManagerRetry;
+
+  /// Default new category name
+  ///
+  /// In en, this message translates to:
+  /// **'New category'**
+  String get adminCategoryManagerDefaultName;
 }
 
 class _AppLocalizationsDelegate

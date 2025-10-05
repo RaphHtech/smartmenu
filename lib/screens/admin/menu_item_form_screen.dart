@@ -6,6 +6,7 @@ import 'package:image_picker/image_picker.dart';
 // import '../../core/constants/colors.dart';
 // import '../../models/menu_item.dart';
 import '../../core/design/admin_tokens.dart';
+import '../../l10n/app_localizations.dart';
 
 class MenuItemFormScreen extends StatefulWidget {
   final String restaurantId;
@@ -253,6 +254,8 @@ class _MenuItemFormScreenState extends State<MenuItemFormScreen> {
   }
 
   Future<void> _pickImage() async {
+    final l10n = AppLocalizations.of(context)!;
+
     try {
       final x = await ImagePicker().pickImage(
           source: ImageSource.gallery, maxWidth: 1600, imageQuality: 85);
@@ -264,12 +267,14 @@ class _MenuItemFormScreenState extends State<MenuItemFormScreen> {
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Impossible de sélectionner la photo')),
+        SnackBar(content: Text(l10n.adminDishFormCannotSelectPhoto)),
       );
     }
   }
 
   Future<String?> _uploadImage() async {
+    final l10n = AppLocalizations.of(context)!;
+
     if (_pickedBytes == null) return _imageUrl; // pas de nouvelle image
 
     try {
@@ -306,7 +311,9 @@ class _MenuItemFormScreenState extends State<MenuItemFormScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-              content: Text('Erreur upload: $e'), backgroundColor: Colors.red),
+            content: Text(l10n.adminDishFormSaveError(e.toString())),
+            backgroundColor: Colors.red,
+          ),
         );
       }
       return null;
@@ -314,6 +321,8 @@ class _MenuItemFormScreenState extends State<MenuItemFormScreen> {
   }
 
   Future<void> _saveMenuItem() async {
+    final l10n = AppLocalizations.of(context)!;
+
     if (!_formKey.currentState!.validate()) return;
 
     setState(() {
@@ -422,9 +431,9 @@ class _MenuItemFormScreenState extends State<MenuItemFormScreen> {
         Navigator.of(context).pop();
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(widget.itemId != null
-                ? 'Plat modifié avec succès'
-                : 'Plat ajouté avec succès'),
+            content: Text(l10n.adminDishFormSaveSuccess(widget.itemId != null
+                ? l10n.adminDishFormActionModified
+                : l10n.adminDishFormActionAdded)),
           ),
         );
       }
@@ -479,7 +488,12 @@ class _MenuItemFormScreenState extends State<MenuItemFormScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(isEditing ? 'Modifier le plat' : 'Ajouter un plat'),
+        title: Builder(builder: (context) {
+          final l10n = AppLocalizations.of(context)!;
+          return Text(isEditing
+              ? l10n.adminDishFormTitleEdit
+              : l10n.adminDishFormTitleAdd);
+        }),
       ),
       body: Form(
         key: _formKey,
@@ -526,6 +540,7 @@ class _MenuItemFormScreenState extends State<MenuItemFormScreen> {
   }
 
   List<Widget> _buildFormFields() {
+    final l10n = AppLocalizations.of(context)!;
     return [
       // NOUVEAU : Tabs langues avec indicateurs de statut
       Container(
@@ -556,7 +571,7 @@ class _MenuItemFormScreenState extends State<MenuItemFormScreen> {
                   TextFormField(
                     controller: _nameControllers[_currentLang]!,
                     decoration: InputDecoration(
-                      labelText: 'Nom du plat *',
+                      labelText: l10n.adminDishFormName,
                       prefixIcon: const Icon(Icons.restaurant_menu),
                       border: OutlineInputBorder(
                         borderRadius:
@@ -566,7 +581,7 @@ class _MenuItemFormScreenState extends State<MenuItemFormScreen> {
                     validator: (value) {
                       if (_currentLang == 'he' &&
                           (value == null || value.trim().isEmpty)) {
-                        return 'Le nom en hébreu est obligatoire';
+                        return l10n.adminDishFormNameRequired;
                       }
                       return null;
                     },
@@ -577,7 +592,7 @@ class _MenuItemFormScreenState extends State<MenuItemFormScreen> {
                   TextFormField(
                     controller: _descriptionControllers[_currentLang]!,
                     decoration: InputDecoration(
-                      labelText: 'Description',
+                      labelText: l10n.adminDishFormDescription,
                       prefixIcon: const Icon(Icons.description),
                       border: OutlineInputBorder(
                         borderRadius:
@@ -600,30 +615,27 @@ class _MenuItemFormScreenState extends State<MenuItemFormScreen> {
                         TextButton.icon(
                           onPressed: () => _copyFromLanguage('fr'),
                           icon: const Icon(Icons.copy, size: 16),
-                          label: const Text('Copier depuis français'),
+                          label: Text(l10n.adminDishFormCopyFromFrench),
                           style: TextButton.styleFrom(
-                            foregroundColor: AdminTokens.primary600,
-                          ),
+                              foregroundColor: AdminTokens.primary600),
                         ),
                       if (_currentLang != 'he' &&
                           _nameControllers['he']!.text.trim().isNotEmpty)
                         TextButton.icon(
                           onPressed: () => _copyFromLanguage('he'),
                           icon: const Icon(Icons.copy, size: 16),
-                          label: const Text('Copier depuis hébreu'),
+                          label: Text(l10n.adminDishFormCopyFromHebrew),
                           style: TextButton.styleFrom(
-                            foregroundColor: AdminTokens.primary600,
-                          ),
+                              foregroundColor: AdminTokens.primary600),
                         ),
                       if (_currentLang != 'en' &&
                           _nameControllers['en']!.text.trim().isNotEmpty)
                         TextButton.icon(
                           onPressed: () => _copyFromLanguage('en'),
                           icon: const Icon(Icons.copy, size: 16),
-                          label: const Text('Copier depuis anglais'),
+                          label: Text(l10n.adminDishFormCopyFromEnglish),
                           style: TextButton.styleFrom(
-                            foregroundColor: AdminTokens.primary600,
-                          ),
+                              foregroundColor: AdminTokens.primary600),
                         ),
                     ],
                   ),
@@ -643,7 +655,7 @@ class _MenuItemFormScreenState extends State<MenuItemFormScreen> {
             child: TextFormField(
               controller: _priceController,
               decoration: InputDecoration(
-                labelText: 'Prix *',
+                labelText: l10n.adminDishFormPrice,
                 prefixText: '${_getCurrencySymbol()} ',
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(AdminTokens.radius12),
@@ -655,12 +667,13 @@ class _MenuItemFormScreenState extends State<MenuItemFormScreen> {
                 FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d{0,2}')),
               ],
               validator: (value) {
+                final l10n = AppLocalizations.of(context)!;
                 if (value == null || value.isEmpty) {
-                  return 'Prix obligatoire';
+                  return l10n.adminDishFormPriceRequired;
                 }
                 final price = double.tryParse(value);
                 if (price == null || price <= 0) {
-                  return 'Prix invalide';
+                  return l10n.adminDishFormPriceInvalid;
                 }
                 return null;
               },
@@ -675,7 +688,7 @@ class _MenuItemFormScreenState extends State<MenuItemFormScreen> {
                         ? _selectedCategory
                         : null,
                     decoration: InputDecoration(
-                      labelText: 'Catégorie',
+                      labelText: l10n.adminDishFormCategory,
                       prefixIcon: const Icon(Icons.category),
                       border: OutlineInputBorder(
                         borderRadius:
@@ -723,63 +736,84 @@ class _MenuItemFormScreenState extends State<MenuItemFormScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'Options',
+                l10n.adminDishFormOptions,
                 style: Theme.of(context).textTheme.titleMedium?.copyWith(
                       fontWeight: FontWeight.bold,
                     ),
               ),
               const SizedBox(height: 12),
               SwitchListTile(
-                title: const Text('Mettre en avant'),
-                subtitle: const Text('Épingler en haut de la catégorie'),
+                title: Text(l10n.adminDishFormFeatured),
+                subtitle: Text(l10n.adminDishFormFeaturedSubtitle),
                 value: _featured,
                 onChanged: (value) => setState(() => _featured = value),
               ),
               const SizedBox(height: 16),
-              Text('Badges', style: Theme.of(context).textTheme.titleMedium),
+              Text(l10n.adminDishFormBadges,
+                  style: Theme.of(context).textTheme.titleMedium),
               const SizedBox(height: 8),
-              Wrap(
-                spacing: 8,
-                children:
-                    ['populaire', 'nouveau', 'spécialité', 'chef', 'saisonnier']
-                        .map((badge) => FilterChip(
-                              label: Text(badge),
-                              selected: _badges.contains(badge),
-                              onSelected: (selected) {
-                                setState(() {
-                                  if (selected) {
-                                    _badges.add(badge);
-                                  } else {
-                                    _badges.remove(badge);
-                                  }
-                                });
-                              },
-                              backgroundColor: Colors.white,
-                              selectedColor: AdminTokens.primary50,
-                              checkmarkColor: AdminTokens.primary600,
-                              labelStyle: TextStyle(
-                                fontSize: 14,
-                                fontWeight: FontWeight.w500,
-                                color: _badges.contains(badge)
-                                    ? AdminTokens.primary600
-                                    : AdminTokens.neutral700,
-                              ),
-                              shape: RoundedRectangleBorder(
-                                borderRadius:
-                                    BorderRadius.circular(AdminTokens.radius12),
-                                side: BorderSide(
-                                  color: _badges.contains(badge)
-                                      ? AdminTokens.primary600
-                                      : AdminTokens.border,
-                                ),
-                              ),
-                            ))
-                        .toList(),
-              ),
+              Builder(builder: (context) {
+                final l10n = AppLocalizations.of(context)!;
+                final badgeKeys = [
+                  'populaire',
+                  'nouveau',
+                  'spécialité',
+                  'chef',
+                  'saisonnier'
+                ];
+                final badgeLabels = [
+                  l10n.adminDishFormBadgePopular,
+                  l10n.adminDishFormBadgeNew,
+                  l10n.adminDishFormBadgeSpecialty,
+                  l10n.adminDishFormBadgeChef,
+                  l10n.adminDishFormBadgeSeasonal,
+                ];
+
+                return Wrap(
+                  spacing: 8,
+                  children: List.generate(badgeKeys.length, (index) {
+                    final badgeKey = badgeKeys[index];
+                    final badgeLabel = badgeLabels[index];
+
+                    return FilterChip(
+                      label: Text(badgeLabel),
+                      selected: _badges.contains(badgeKey),
+                      onSelected: (selected) {
+                        setState(() {
+                          if (selected) {
+                            _badges.add(badgeKey);
+                          } else {
+                            _badges.remove(badgeKey);
+                          }
+                        });
+                      },
+                      backgroundColor: Colors.white,
+                      selectedColor: AdminTokens.primary50,
+                      checkmarkColor: AdminTokens.primary600,
+                      labelStyle: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w500,
+                        color: _badges.contains(badgeKey)
+                            ? AdminTokens.primary600
+                            : AdminTokens.neutral700,
+                      ),
+                      shape: RoundedRectangleBorder(
+                        borderRadius:
+                            BorderRadius.circular(AdminTokens.radius12),
+                        side: BorderSide(
+                          color: _badges.contains(badgeKey)
+                              ? AdminTokens.primary600
+                              : AdminTokens.border,
+                        ),
+                      ),
+                    );
+                  }),
+                );
+              }),
               const SizedBox(height: 16),
               SwitchListTile(
-                title: const Text('Visible sur le menu'),
-                subtitle: const Text('Les clients peuvent voir ce plat'),
+                title: Text(l10n.adminDishFormVisible),
+                subtitle: Text(l10n.adminDishFormVisibleSubtitle),
                 value: _isVisible,
                 activeColor: AdminTokens.primary600,
                 onChanged: (value) {
@@ -800,7 +834,7 @@ class _MenuItemFormScreenState extends State<MenuItemFormScreen> {
           Expanded(
             child: OutlinedButton(
               onPressed: _isLoading ? null : () => Navigator.of(context).pop(),
-              child: const Text('Annuler'),
+              child: Text(l10n.commonCancel),
             ),
           ),
           const SizedBox(width: 16),
@@ -813,7 +847,9 @@ class _MenuItemFormScreenState extends State<MenuItemFormScreen> {
                       width: 20,
                       child: CircularProgressIndicator(strokeWidth: 2),
                     )
-                  : Text(widget.itemId != null ? 'Modifier' : 'Ajouter'),
+                  : Text(widget.itemId != null
+                      ? l10n.adminDishFormButtonSave
+                      : l10n.adminDishFormButtonAdd),
             ),
           ),
         ],
@@ -889,10 +925,15 @@ class _MenuItemFormScreenState extends State<MenuItemFormScreen> {
           _descriptionControllers[sourceLang]!.text;
     });
 
+    final l10n = AppLocalizations.of(context)!;
+    final langName = sourceLang == 'he'
+        ? 'Hebrew'
+        : sourceLang == 'en'
+            ? 'English'
+            : 'French';
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text(
-            'Contenu copié depuis ${sourceLang == 'he' ? 'hébreu' : sourceLang == 'en' ? 'anglais' : 'français'}'),
+        content: Text(l10n.adminDishFormCopiedFrom(langName)),
         backgroundColor: Colors.green,
         duration: const Duration(seconds: 2),
       ),
@@ -900,6 +941,8 @@ class _MenuItemFormScreenState extends State<MenuItemFormScreen> {
   }
 
   Widget _buildImageSection() {
+    final l10n = AppLocalizations.of(context)!;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -940,7 +983,7 @@ class _MenuItemFormScreenState extends State<MenuItemFormScreen> {
                     color: Colors.black54,
                     borderRadius: BorderRadius.circular(20),
                     child: IconButton(
-                      tooltip: 'Retirer la photo',
+                      tooltip: l10n.adminDishFormRemovePhoto,
                       icon:
                           const Icon(Icons.delete_outline, color: Colors.white),
                       onPressed: () {
@@ -969,8 +1012,8 @@ class _MenuItemFormScreenState extends State<MenuItemFormScreen> {
                 icon: const Icon(Icons.camera_alt, size: 18),
                 label: Text(
                   _pickedBytes != null || (_imageUrl?.isNotEmpty ?? false)
-                      ? 'Changer'
-                      : 'Ajouter',
+                      ? l10n.adminDishFormChangeButton
+                      : l10n.adminDishFormAddButton,
                 ),
                 style: OutlinedButton.styleFrom(
                   shape: RoundedRectangleBorder(
@@ -991,8 +1034,8 @@ class _MenuItemFormScreenState extends State<MenuItemFormScreen> {
                   });
                 },
                 icon: const Icon(Icons.delete_outline, color: Colors.red),
-                label:
-                    const Text('Retirer', style: TextStyle(color: Colors.red)),
+                label: Text(l10n.adminDishFormRemoveButton,
+                    style: const TextStyle(color: Colors.red)),
                 style: OutlinedButton.styleFrom(
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(AdminTokens.radius12),
@@ -1008,6 +1051,8 @@ class _MenuItemFormScreenState extends State<MenuItemFormScreen> {
   }
 
   Widget _buildImagePlaceholder() {
+    final l10n = AppLocalizations.of(context)!;
+
     return GestureDetector(
       onTap: () async {
         await _pickImage();
@@ -1034,7 +1079,7 @@ class _MenuItemFormScreenState extends State<MenuItemFormScreen> {
             ),
             const SizedBox(height: 8),
             Text(
-              'Ajouter une photo',
+              l10n.adminDishFormAddPhoto,
               style: TextStyle(
                 color: Colors.grey[500],
                 fontSize: 16,
@@ -1042,7 +1087,7 @@ class _MenuItemFormScreenState extends State<MenuItemFormScreen> {
             ),
             const SizedBox(height: 4),
             Text(
-              'Cliquez pour sélectionner',
+              l10n.adminDishFormClickToSelect,
               style: TextStyle(
                 color: Colors.grey[400],
                 fontSize: 12,

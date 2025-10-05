@@ -788,4 +788,356 @@ class AppLocalizationsHe extends AppLocalizations {
 
   @override
   String get adminBrandingRestaurantDefault => 'מסעדה';
+
+  @override
+  String get badgesGuideSubtitle => 'תגיות אלו מסייעות להדגיש מנות מיוחדות';
+
+  @override
+  String get adminReorderTitle => 'סידור התפריט מחדש ';
+
+  @override
+  String get adminReorderBreadcrumbReorganize => 'סידור מחדש';
+
+  @override
+  String get adminReorderSaving => 'שומר...';
+
+  @override
+  String get adminReorderSaved => 'נשמר';
+
+  @override
+  String adminReorderSavedAgo(String time) {
+    return 'נשמר • לפני $time';
+  }
+
+  @override
+  String get adminReorderError => 'שגיאה';
+
+  @override
+  String get adminReorderUnsaved => 'לא נשמר';
+
+  @override
+  String get adminReorderPreview => 'תצוגה מקדימה';
+
+  @override
+  String get adminReorderBulkActions => 'פעולות קבוצתיות';
+
+  @override
+  String adminReorderMoveItems(int count) {
+    return 'העבר ($count)';
+  }
+
+  @override
+  String adminReorderHideItems(int count) {
+    return 'הסתר ($count)';
+  }
+
+  @override
+  String adminReorderShowItems(int count) {
+    return 'הצג ($count)';
+  }
+
+  @override
+  String get adminReorderCancelSelection => 'בטל בחירה';
+
+  @override
+  String get adminReorderCategories => 'קטגוריות';
+
+  @override
+  String adminReorderDishCount(int count, String category) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count מנות',
+      one: 'מנה אחת',
+      zero: '0 מנות',
+    );
+    return '$_temp0 • $category';
+  }
+
+  @override
+  String get adminReorderSelect => 'בחר';
+
+  @override
+  String get adminReorderNoDishes => 'אין מנות בקטגוריה זו';
+
+  @override
+  String get adminReorderSignatureBadge => 'מיוחד';
+
+  @override
+  String adminReorderMoveDialogTitle(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count מנות',
+      one: 'מנה אחת',
+    );
+    return 'העבר $_temp0';
+  }
+
+  @override
+  String adminReorderLoadError(String error) {
+    return 'שגיאת טעינה: $error';
+  }
+
+  @override
+  String adminReorderPreviewError(String error) {
+    return 'לא ניתן לפתוח תצוגה מקדימה: $error';
+  }
+
+  @override
+  String adminReorderTimeSeconds(int seconds) {
+    return '$secondsש';
+  }
+
+  @override
+  String adminReorderTimeMinutes(int minutes) {
+    return '$minutesד';
+  }
+
+  @override
+  String get adminDishFormTitleEdit => 'עריכת מנה';
+
+  @override
+  String get adminDishFormTitleAdd => 'הוספת מנה';
+
+  @override
+  String get adminDishFormName => 'שם המנה *';
+
+  @override
+  String get adminDishFormDescription => 'תיאור';
+
+  @override
+  String get adminDishFormPrice => 'מחיר *';
+
+  @override
+  String get adminDishFormCategory => 'קטגוריה';
+
+  @override
+  String get adminDishFormNameRequired => 'שם בעברית הוא שדה חובה';
+
+  @override
+  String get adminDishFormPriceRequired => 'מחיר הוא שדה חובה';
+
+  @override
+  String get adminDishFormPriceInvalid => 'מחיר לא תקין';
+
+  @override
+  String get adminDishFormCopyFromFrench => 'העתק מצרפתית';
+
+  @override
+  String get adminDishFormCopyFromHebrew => 'העתק מעברית';
+
+  @override
+  String get adminDishFormCopyFromEnglish => 'העתק מאנגלית';
+
+  @override
+  String adminDishFormCopiedFrom(String language) {
+    return 'תוכן הועתק מ$language';
+  }
+
+  @override
+  String get adminDishFormOptions => 'אפשרויות';
+
+  @override
+  String get adminDishFormFeatured => 'הצג בראש';
+
+  @override
+  String get adminDishFormFeaturedSubtitle => 'נעץ בראש הקטגוריה';
+
+  @override
+  String get adminDishFormBadges => 'תגיות';
+
+  @override
+  String get adminDishFormBadgePopular => 'פופולרי';
+
+  @override
+  String get adminDishFormBadgeNew => 'חדש';
+
+  @override
+  String get adminDishFormBadgeSpecialty => 'מומחיות';
+
+  @override
+  String get adminDishFormBadgeChef => 'שף';
+
+  @override
+  String get adminDishFormBadgeSeasonal => 'עונתי';
+
+  @override
+  String get adminDishFormVisible => 'גלוי בתפריט';
+
+  @override
+  String get adminDishFormVisibleSubtitle => 'לקוחות יכולים לראות מנה זו';
+
+  @override
+  String get adminDishFormAddPhoto => 'הוסף תמונה';
+
+  @override
+  String get adminDishFormClickToSelect => 'לחץ לבחירה';
+
+  @override
+  String get adminDishFormAddButton => 'הוסף';
+
+  @override
+  String get adminDishFormChangeButton => 'שנה';
+
+  @override
+  String get adminDishFormRemoveButton => 'הסר';
+
+  @override
+  String get adminDishFormRemovePhoto => 'הסר תמונה';
+
+  @override
+  String get adminDishFormCannotSelectPhoto => 'לא ניתן לבחור תמונה';
+
+  @override
+  String adminDishFormSaveSuccess(String action) {
+    return 'המנה $action בהצלחה';
+  }
+
+  @override
+  String get adminDishFormActionModified => 'עודכנה';
+
+  @override
+  String get adminDishFormActionAdded => 'נוספה';
+
+  @override
+  String adminDishFormSaveError(String error) {
+    return 'שגיאה: $error';
+  }
+
+  @override
+  String get adminDishFormButtonSave => 'שמור';
+
+  @override
+  String get adminDishFormButtonAdd => 'הוסף';
+
+  @override
+  String get adminDishFormLanguageHebrew => '🇮🇱 עברית';
+
+  @override
+  String get adminDishFormLanguageEnglish => '🇬🇧 English';
+
+  @override
+  String get adminDishFormLanguageFrench => '🇫🇷 Français';
+
+  @override
+  String get adminCategoryManagerTitle => 'ניהול קטגוריות';
+
+  @override
+  String get adminCategoryManagerSubtitle => 'סדר מחדש והגדר';
+
+  @override
+  String get adminCategoryManagerSubtitleFull =>
+      'סדר מחדש והגדר את הקטגוריות שלך';
+
+  @override
+  String get adminCategoryManagerNew => 'חדש';
+
+  @override
+  String get adminCategoryManagerUnsaved => 'שינויים לא נשמרו';
+
+  @override
+  String get adminCategoryManagerSaving => 'שומר...';
+
+  @override
+  String get adminCategoryManagerSaved => 'נשמר';
+
+  @override
+  String adminCategoryManagerSavedAgo(String time) {
+    return 'נשמר • לפני $time';
+  }
+
+  @override
+  String get adminCategoryManagerError => 'נכשל. נסה שוב';
+
+  @override
+  String get adminCategoryManagerHiddenBadge => 'מוסתר';
+
+  @override
+  String get adminCategoryManagerShowAction => 'הצג';
+
+  @override
+  String get adminCategoryManagerHideAction => 'הסתר';
+
+  @override
+  String adminCategoryManagerShowSemantic(String category) {
+    return 'הצג $category';
+  }
+
+  @override
+  String adminCategoryManagerHideSemantic(String category) {
+    return 'הסתר $category';
+  }
+
+  @override
+  String get adminCategoryManagerRenameAction => 'שנה שם';
+
+  @override
+  String adminCategoryManagerRenameSemantic(String category) {
+    return 'שנה שם $category';
+  }
+
+  @override
+  String get adminCategoryManagerDeleteAction => 'מחק';
+
+  @override
+  String adminCategoryManagerDeleteSemantic(String category) {
+    return 'מחק $category';
+  }
+
+  @override
+  String get adminCategoryManagerDragHint => 'גרור ושחרר כדי לסדר מחדש';
+
+  @override
+  String adminCategoryManagerCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count קטגוריות',
+      one: 'קטגוריה אחת',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get adminCategoryManagerDeleteTitle => 'למחוק קטגוריה?';
+
+  @override
+  String adminCategoryManagerDeleteMessage(String category) {
+    return '\"$category\" תוסר מהרשימה.';
+  }
+
+  @override
+  String get adminCategoryManagerRenameTitle => 'שינוי שם קטגוריה';
+
+  @override
+  String adminCategoryManagerRenameMessage(
+      String oldName, String newName, int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count מנות',
+      one: 'מנה אחת',
+    );
+    return 'שנה שם מ\"$oldName\" ל\"$newName\" — $_temp0 יעודכנו.';
+  }
+
+  @override
+  String adminCategoryManagerRenameProgress(int percent) {
+    return 'מעדכן... $percent%';
+  }
+
+  @override
+  String get adminCategoryManagerConfirm => 'אשר';
+
+  @override
+  String adminCategoryManagerSaveError(String error) {
+    return 'שגיאת שמירה: $error';
+  }
+
+  @override
+  String get adminCategoryManagerRetry => 'נסה שוב';
+
+  @override
+  String get adminCategoryManagerDefaultName => 'קטגוריה חדשה';
 }
