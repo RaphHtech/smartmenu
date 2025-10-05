@@ -514,68 +514,179 @@ class _AdminShellState extends State<AdminShell> {
                   ),
                 ],
 
-                // MOBILE: Dropdown langue direct
+                // MOBILE: Dropdown langue compact premium
                 if (!isDesktop)
-                  PopupMenuButton<Locale>(
-                    icon: const Icon(Icons.language, size: 20),
-                    padding: EdgeInsets.zero,
-                    constraints: const BoxConstraints(
-                      minWidth: 40,
-                      minHeight: 40,
-                    ),
-                    tooltip: AppLocalizations.of(context)!.commonLanguage,
-                    onSelected: (locale) {
-                      context.read<LanguageProvider>().setLocale(locale);
-                    },
-                    itemBuilder: (context) {
+                  StatefulBuilder(
+                    builder: (context, setState) {
                       final currentLocale = Localizations.localeOf(context);
-                      return [
-                        PopupMenuItem<Locale>(
-                          value: const Locale('en'),
-                          child: Row(
-                            children: [
-                              const Text('🇬🇧',
-                                  style: TextStyle(fontSize: 20)),
-                              const SizedBox(width: 12),
-                              const Text('English'),
-                              const Spacer(),
-                              if (currentLocale.languageCode == 'en')
-                                const Icon(Icons.check,
-                                    size: 18, color: AdminTokens.primary600),
-                            ],
+
+                      return Theme(
+                        data: Theme.of(context).copyWith(
+                          popupMenuTheme: PopupMenuThemeData(
+                            elevation: 8,
+                            shape: RoundedRectangleBorder(
+                              borderRadius:
+                                  BorderRadius.circular(AdminTokens.radius12),
+                            ),
+                            color: Colors.white,
                           ),
                         ),
-                        PopupMenuItem<Locale>(
-                          value: const Locale('he'),
-                          child: Row(
-                            children: [
-                              const Text('🇮🇱',
-                                  style: TextStyle(fontSize: 20)),
-                              const SizedBox(width: 12),
-                              const Text('עברית'),
-                              const Spacer(),
-                              if (currentLocale.languageCode == 'he')
-                                const Icon(Icons.check,
-                                    size: 18, color: AdminTokens.primary600),
-                            ],
+                        child: PopupMenuButton<Locale>(
+                          icon: const Icon(Icons.language, size: 20),
+                          padding: EdgeInsets.zero,
+                          constraints: const BoxConstraints(
+                            minWidth: 40,
+                            minHeight: 40,
                           ),
+                          offset: const Offset(0, 45),
+                          tooltip: AppLocalizations.of(context)!.commonLanguage,
+                          onSelected: (locale) async {
+                            // ✅ Close menu immédiatement
+                            Navigator.of(context, rootNavigator: true).pop();
+
+                            // ✅ Attendre frame suivante
+                            await Future.delayed(
+                                const Duration(milliseconds: 50));
+
+                            // ✅ Change langue si widget toujours monté
+                            if (context.mounted) {
+                              final provider = Provider.of<LanguageProvider>(
+                                context,
+                                listen: false,
+                              );
+                              await provider.setLocale(locale);
+                            }
+                          },
+                          itemBuilder: (context) => [
+                            PopupMenuItem<Locale>(
+                              value: const Locale('en'),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: AdminTokens.space16,
+                                vertical: AdminTokens.space12,
+                              ),
+                              child: SizedBox(
+                                width: 150,
+                                child: Row(
+                                  children: [
+                                    const Text('🇬🇧',
+                                        style: TextStyle(fontSize: 22)),
+                                    const SizedBox(width: AdminTokens.space12),
+                                    Expanded(
+                                      child: Text(
+                                        'English',
+                                        style:
+                                            AdminTypography.bodyMedium.copyWith(
+                                          fontWeight:
+                                              currentLocale.languageCode == 'en'
+                                                  ? FontWeight.w600
+                                                  : FontWeight.w400,
+                                          color:
+                                              currentLocale.languageCode == 'en'
+                                                  ? AdminTokens.primary600
+                                                  : AdminTokens.neutral900,
+                                        ),
+                                      ),
+                                    ),
+                                    if (currentLocale.languageCode == 'en')
+                                      Container(
+                                        width: 6,
+                                        height: 6,
+                                        decoration: const BoxDecoration(
+                                          color: AdminTokens.primary600,
+                                          shape: BoxShape.circle,
+                                        ),
+                                      ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                            PopupMenuItem<Locale>(
+                              value: const Locale('he'),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: AdminTokens.space16,
+                                vertical: AdminTokens.space12,
+                              ),
+                              child: SizedBox(
+                                width: 150,
+                                child: Row(
+                                  children: [
+                                    const Text('🇮🇱',
+                                        style: TextStyle(fontSize: 22)),
+                                    const SizedBox(width: AdminTokens.space12),
+                                    Expanded(
+                                      child: Text(
+                                        'עברית',
+                                        style:
+                                            AdminTypography.bodyMedium.copyWith(
+                                          fontWeight:
+                                              currentLocale.languageCode == 'he'
+                                                  ? FontWeight.w600
+                                                  : FontWeight.w400,
+                                          color:
+                                              currentLocale.languageCode == 'he'
+                                                  ? AdminTokens.primary600
+                                                  : AdminTokens.neutral900,
+                                        ),
+                                      ),
+                                    ),
+                                    if (currentLocale.languageCode == 'he')
+                                      Container(
+                                        width: 6,
+                                        height: 6,
+                                        decoration: const BoxDecoration(
+                                          color: AdminTokens.primary600,
+                                          shape: BoxShape.circle,
+                                        ),
+                                      ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                            PopupMenuItem<Locale>(
+                              value: const Locale('fr'),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: AdminTokens.space16,
+                                vertical: AdminTokens.space12,
+                              ),
+                              child: SizedBox(
+                                width: 150,
+                                child: Row(
+                                  children: [
+                                    const Text('🇫🇷',
+                                        style: TextStyle(fontSize: 22)),
+                                    const SizedBox(width: AdminTokens.space12),
+                                    Expanded(
+                                      child: Text(
+                                        'Français',
+                                        style:
+                                            AdminTypography.bodyMedium.copyWith(
+                                          fontWeight:
+                                              currentLocale.languageCode == 'fr'
+                                                  ? FontWeight.w600
+                                                  : FontWeight.w400,
+                                          color:
+                                              currentLocale.languageCode == 'fr'
+                                                  ? AdminTokens.primary600
+                                                  : AdminTokens.neutral900,
+                                        ),
+                                      ),
+                                    ),
+                                    if (currentLocale.languageCode == 'fr')
+                                      Container(
+                                        width: 6,
+                                        height: 6,
+                                        decoration: const BoxDecoration(
+                                          color: AdminTokens.primary600,
+                                          shape: BoxShape.circle,
+                                        ),
+                                      ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
-                        PopupMenuItem<Locale>(
-                          value: const Locale('fr'),
-                          child: Row(
-                            children: [
-                              const Text('🇫🇷',
-                                  style: TextStyle(fontSize: 20)),
-                              const SizedBox(width: 12),
-                              const Text('Français'),
-                              const Spacer(),
-                              if (currentLocale.languageCode == 'fr')
-                                const Icon(Icons.check,
-                                    size: 18, color: AdminTokens.primary600),
-                            ],
-                          ),
-                        ),
-                      ];
+                      );
                     },
                   ),
               ],
