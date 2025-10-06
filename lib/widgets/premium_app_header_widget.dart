@@ -46,7 +46,7 @@ class PremiumAppHeaderWidget extends StatelessWidget {
     final showTagline = !isMobile && (tagline?.isNotEmpty == true);
 
     // LARGEURS FIXES pour centrage parfait
-    const double sideWidth = 56.0;
+    final double sideWidth = showAdminReturn ? 100.0 : 56.0;
 
     return SliverAppBar(
       pinned: true,
@@ -66,7 +66,6 @@ class PremiumAppHeaderWidget extends StatelessWidget {
       centerTitle: true,
       title: _buildRestaurantBranding(showTagline: showTagline),
       actions: [
-        // Ajouter ce bouton dans les actions du SliverAppBar
         IconButton(
           icon: const Icon(Icons.info_outline, color: Colors.white, size: 20),
           onPressed: onBadgesInfo,
@@ -165,24 +164,24 @@ class PremiumAppHeaderWidget extends StatelessWidget {
   }
 
   Widget _buildAdminButton() {
-    return Container(
-      height: 36,
-      width: 64,
-      decoration: BoxDecoration(
-        color: Colors.transparent,
-        border: Border.all(color: Colors.white.withOpacity(0.3)),
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onAdminReturn,
         borderRadius: BorderRadius.circular(18),
-      ),
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          onTap: onAdminReturn,
-          borderRadius: BorderRadius.circular(18),
+        child: Container(
+          height: 36,
+          width: 70,
+          decoration: BoxDecoration(
+            color: Colors.transparent,
+            border: Border.all(color: Colors.white.withOpacity(0.3)),
+            borderRadius: BorderRadius.circular(18),
+          ),
           child: const Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Icon(Icons.arrow_back, size: 14, color: Colors.white),
-              SizedBox(width: 2),
+              SizedBox(width: 4),
               Text('Admin',
                   style: TextStyle(
                       color: Colors.white,

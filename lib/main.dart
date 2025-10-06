@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:provider/provider.dart';
 import 'firebase_options.dart';
+import 'screens/admin/admin_dashboard_screen.dart';
 
 // Import i18n
 import 'l10n/app_localizations.dart';
@@ -15,7 +16,6 @@ import 'screens/home_screen.dart';
 import 'screens/admin/admin_login_screen.dart';
 import 'screens/admin/admin_signup_screen.dart';
 import 'package:smartmenu_app/screens/admin/auth/admin_reset_screen.dart';
-
 // Import core
 import 'core/constants/colors.dart';
 import 'widgets/ui/admin_themed.dart';
@@ -56,6 +56,8 @@ class SmartMenuApp extends StatelessWidget {
           onGenerateRoute: (settings) {
             final name = settings.name ?? '';
             final uri = Uri.tryParse(name);
+
+            // Routes restaurant /r/...
             if (uri != null &&
                 uri.pathSegments.isNotEmpty &&
                 uri.pathSegments.first == 'r') {
@@ -65,6 +67,48 @@ class SmartMenuApp extends StatelessWidget {
                 builder: (_) => ResolveRestaurantScreen(idOrSlug: idOrSlug),
               );
             }
+
+            // Routes admin /admin/...
+            if (uri != null &&
+                uri.pathSegments.isNotEmpty &&
+                uri.pathSegments.first == 'admin') {
+              final path = uri.path;
+              final rid = uri.queryParameters['restaurantId'];
+
+              if (path.startsWith('/admin/dashboard')) {
+                return MaterialPageRoute(
+                  builder: (_) =>
+                      _getAdminDashboard(rid), // ⬅️ Passe rid en paramètre
+                );
+              }
+
+              if (path == '/admin/login') {
+                final returnUrl = uri.queryParameters['returnUrl'];
+                return MaterialPageRoute(
+                  builder: (_) => AdminThemed(
+                    child: AdminLoginScreen(returnUrl: returnUrl),
+                  ),
+                );
+              }
+
+              if (path == '/admin/signup') {
+                return MaterialPageRoute(
+                  builder: (_) => const AdminThemed(child: AdminSignupScreen()),
+                );
+              }
+
+              if (path == '/admin/reset') {
+                return MaterialPageRoute(
+                  builder: (_) => const AdminThemed(child: AdminResetScreen()),
+                );
+              }
+
+              // Défaut : login
+              return MaterialPageRoute(
+                builder: (_) => const AdminThemed(child: AdminLoginScreen()),
+              );
+            }
+
             return null;
           },
         );
@@ -93,7 +137,8 @@ class SmartMenuApp extends StatelessWidget {
             case '/admin/login':
               return AdminThemed(child: AdminLoginScreen(returnUrl: returnUrl));
             case '/admin/dashboard':
-              return _getAdminDashboard();
+              final rid = Uri.base.queryParameters['restaurantId'];
+              return _getAdminDashboard(rid);
             default:
               return const AdminThemed(child: AdminLoginScreen());
           }
@@ -118,8 +163,16 @@ class SmartMenuApp extends StatelessWidget {
     return const HomeScreen();
   }
 
-  Widget _getAdminDashboard() {
-    return const AdminThemed(child: AdminLoginScreen());
+  Widget _getAdminDashboard(String? rid) {
+    debugPrint('🔵 _getAdminDashboard called with rid: $rid');
+
+    if (rid == null || rid.isEmpty) {
+      return const AdminThemed(
+        child: AdminLoginScreen(returnUrl: '/admin/dashboard'),
+      );
+    }
+
+    return AdminDashboardScreen(restaurantId: rid);
   }
 
   ThemeData _buildTheme() {

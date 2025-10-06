@@ -460,10 +460,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                       .collection('restaurants')
                       .doc(widget.restaurantId)
                       .collection('menus')
-                      .snapshots()
-                      .where((snapshot) =>
-                          snapshot.metadata.isFromCache ==
-                          false), // Ignore cache
+                      .snapshots(includeMetadataChanges: true),
                   builder: (context, snapshot) {
                     if (snapshot.hasError) {
                       return const Center(

@@ -16,6 +16,8 @@ import '../../services/server_call_service.dart';
 import '../../state/currency_scope.dart';
 import '../../widgets/common/top_toast.dart';
 import '../../l10n/app_localizations.dart';
+import 'package:flutter/foundation.dart';
+import '../admin/admin_dashboard_screen.dart';
 
 List<String> applyOrderAndHide(
   Set<String> allCats,
@@ -390,12 +392,16 @@ class SimpleMenuScreenState extends State<MenuScreen> {
   }
 
   void _handleAdminReturn(BuildContext context) {
-    if (Navigator.canPop(context)) {
-      Navigator.pop(context);
-      return;
+    debugPrint('🔴 ADMIN BUTTON CLICKED');
+
+    if (Navigator.of(context).canPop()) {
+      debugPrint('🟢 Popping navigator');
+      Navigator.of(context).pop();
+    } else {
+      debugPrint('🔵 Cannot pop, using pushNamed');
+      Navigator.of(context, rootNavigator: true).pushReplacementNamed(
+          '/admin/dashboard?restaurantId=${widget.restaurantId}');
     }
-    // Pour web, on pourrait ajouter un service d'abstraction
-    // Pour l'instant, on laisse vide pour compatibilité mobile
   }
 
   void _handleScroll() {
