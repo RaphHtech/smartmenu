@@ -253,13 +253,15 @@ class MenuItem extends StatelessWidget {
                       children: [
                         Text(
                           priceText,
-                          style: Theme.of(context)
-                              .textTheme
-                              .headlineSmall
-                              ?.copyWith(
-                                fontWeight: FontWeight.w800,
-                                color: Theme.of(context).colorScheme.primary,
-                              ),
+                          style:
+                              Theme.of(context).textTheme.bodyLarge?.copyWith(
+                                    fontWeight: FontWeight.w600, // ← Moins bold
+                                    color: Theme.of(context)
+                                        .colorScheme
+                                        .onSurface
+                                        .withOpacity(0.6), // ← Plus discret
+                                    letterSpacing: 0.5,
+                                  ),
                         ),
                         const Spacer(),
                         FilledButton(
@@ -364,9 +366,10 @@ class MenuItem extends StatelessWidget {
           const SizedBox(height: 24),
           Text(
             priceText,
-            style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                  fontWeight: FontWeight.w800,
-                  color: Theme.of(context).colorScheme.primary,
+            style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                  fontWeight: FontWeight.w700,
+                  color:
+                      Theme.of(context).colorScheme.onSurface.withOpacity(0.75),
                 ),
           ),
           const SizedBox(height: 24),
