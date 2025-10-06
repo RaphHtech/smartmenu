@@ -11,7 +11,7 @@ import '../../services/category_repository.dart';
 import '../../models/category.dart';
 import '../../widgets/ui/admin_themed.dart';
 import '../../screens/admin/category_manager_sheet.dart';
-import '../../services/migration_service.dart';
+// import '../../services/migration_service.dart';
 import '../../l10n/app_localizations.dart';
 
 List<String> applyOrderAndHide(
@@ -449,86 +449,6 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
           ],
           child: Column(
             children: [
-              // BOUTON MIGRATION - DÉBUT
-              Container(
-                padding: const EdgeInsets.all(16),
-                color: Colors.orange.shade50,
-                child: Center(
-                  child: ElevatedButton.icon(
-                    onPressed: () async {
-                      final restaurantId = widget.restaurantId;
-
-                      final confirm = await showDialog<bool>(
-                        context: context,
-                        builder: (context) => AlertDialog(
-                          title: const Text('Migration Multilingue'),
-                          content: Text(
-                              'Migrer le restaurant $restaurantId vers la structure multilingue ?\n\n'
-                              'Cette opération :\n'
-                              '• Copie name/description vers translations.fr\n'
-                              '• Ajoute defaultLocale = "he"\n'
-                              '• Ajoute enabledLocales = ["he", "en", "fr"]'),
-                          actions: [
-                            TextButton(
-                              onPressed: () => Navigator.pop(context, false),
-                              child: const Text('Annuler'),
-                            ),
-                            ElevatedButton(
-                              onPressed: () => Navigator.pop(context, true),
-                              child: const Text('Migrer'),
-                            ),
-                          ],
-                        ),
-                      );
-
-                      if (confirm != true) return;
-
-                      showDialog(
-                        context: context,
-                        barrierDismissible: false,
-                        builder: (context) => const Center(
-                          child: CircularProgressIndicator(),
-                        ),
-                      );
-
-                      try {
-                        await MigrationService.migrateRestaurantConfig(
-                            restaurantId);
-                        await MigrationService.migrateRestaurantMenuItems(
-                            restaurantId);
-
-                        Navigator.pop(context);
-
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text('Migration terminée avec succès'),
-                            backgroundColor: Colors.green,
-                          ),
-                        );
-                      } catch (e) {
-                        Navigator.pop(context);
-
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text('Erreur migration: $e'),
-                            backgroundColor: Colors.red,
-                          ),
-                        );
-                      }
-                    },
-                    icon: const Icon(Icons.language),
-                    label: const Text('MIGRER VERS MULTILINGUE'),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.orange,
-                      foregroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 32, vertical: 16),
-                    ),
-                  ),
-                ),
-              ),
-              // BOUTON MIGRATION - FIN
-
               // 1) Tuile infos + UI de recherche/tri/chips HORS StreamBuilder
               _buildSearchInterface(state),
               _buildEditableCategoryBar(state),

@@ -400,7 +400,7 @@ class SimpleMenuScreenState extends State<MenuScreen> {
 
   void _handleScroll() {
     final offset = _mainScrollController.offset;
-    final shouldCollapse = _isHeaderCollapsed ? offset > 32 : offset > 72;
+    final shouldCollapse = _isHeaderCollapsed ? offset > 32 : offset > 40;
 
     if (shouldCollapse != _isHeaderCollapsed) {
       setState(() {
@@ -504,6 +504,13 @@ class SimpleMenuScreenState extends State<MenuScreen> {
                         ? () => _handleAdminReturn(context)
                         : null,
                     logoUrl: _logoUrl,
+                    onBadgesInfo: () {
+                      showModalBottomSheet(
+                        context: context,
+                        backgroundColor: Colors.transparent,
+                        builder: (_) => const BadgesLegendWidget(),
+                      );
+                    },
                   ),
                   SliverToBoxAdapter(
                     child: AnimatedContainer(
@@ -542,17 +549,18 @@ class SimpleMenuScreenState extends State<MenuScreen> {
                       ),
                     ),
                     bottom: PreferredSize(
-                      preferredSize: const Size.fromHeight(88),
+                      preferredSize: const Size.fromHeight(60),
                       child: Container(
-                        height: 88,
-                        padding: const EdgeInsets.symmetric(vertical: 20),
+                        height: 60,
+                        alignment: Alignment.center,
                         child: SingleChildScrollView(
-                          controller: _categoryScrollController,
                           scrollDirection: Axis.horizontal,
                           physics: const AlwaysScrollableScrollPhysics(),
                           child: Padding(
-                            padding: const EdgeInsets.only(left: 20),
+                            padding: const EdgeInsets.symmetric(horizontal: 20),
                             child: Row(
+                              mainAxisAlignment:
+                                  MainAxisAlignment.center, // ← AJOUTEZ
                               children: [
                                 for (final cat in _orderedCategories)
                                   Padding(
@@ -564,7 +572,6 @@ class SimpleMenuScreenState extends State<MenuScreen> {
                                       onTap: () => _selectCategory(cat),
                                     ),
                                   ),
-                                const SizedBox(width: 20),
                               ],
                             ),
                           ),
@@ -572,54 +579,7 @@ class SimpleMenuScreenState extends State<MenuScreen> {
                       ),
                     ),
                   ),
-                  const SliverToBoxAdapter(child: SizedBox(height: 12)),
-                  SliverToBoxAdapter(
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 20, vertical: 12),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            _selectedCategory.isEmpty
-                                ? l10n.menu
-                                : _translateCategory(
-                                    context, _selectedCategory),
-                            style: Theme.of(context)
-                                .textTheme
-                                .titleLarge
-                                ?.copyWith(
-                                  fontWeight: FontWeight.w800,
-                                  letterSpacing: 0.1,
-                                  color:
-                                      Theme.of(context).colorScheme.onSurface,
-                                ),
-                          ),
-                          GestureDetector(
-                            onTap: () {
-                              showModalBottomSheet(
-                                context: context,
-                                backgroundColor: Colors.transparent,
-                                builder: (_) => const BadgesLegendWidget(),
-                              );
-                            },
-                            child: Container(
-                              padding: const EdgeInsets.all(8),
-                              decoration: BoxDecoration(
-                                color: Colors.white.withValues(alpha: 0.2),
-                                borderRadius: BorderRadius.circular(20),
-                              ),
-                              child: const Icon(
-                                Icons.info_outline,
-                                size: 20,
-                                color: Colors.white,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
+                  const SliverToBoxAdapter(child: SizedBox(height: 18)),
                   (() {
                     if (_isLoading) {
                       return const SliverToBoxAdapter(

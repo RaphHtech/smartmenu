@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:smartmenu_app/services/language_service.dart';
 import 'package:smartmenu_app/state/language_provider.dart';
-// import '../widgets/language_selector_widget.dart';
 import '../l10n/app_localizations.dart';
 
 class PremiumAppHeaderWidget extends StatelessWidget {
@@ -12,6 +11,7 @@ class PremiumAppHeaderWidget extends StatelessWidget {
   final String? tagline;
   final bool showAdminReturn;
   final VoidCallback? onAdminReturn;
+  final VoidCallback? onBadgesInfo;
 
   const PremiumAppHeaderWidget({
     super.key,
@@ -20,6 +20,7 @@ class PremiumAppHeaderWidget extends StatelessWidget {
     this.showAdminReturn = false,
     this.onAdminReturn,
     this.logoUrl,
+    this.onBadgesInfo,
   });
 
   Color _generateStableColor(String name) {
@@ -64,7 +65,15 @@ class PremiumAppHeaderWidget extends StatelessWidget {
       ),
       centerTitle: true,
       title: _buildRestaurantBranding(showTagline: showTagline),
-      actions: const [], // Vide car le bouton serveur sera un FAB
+      actions: [
+        // Ajouter ce bouton dans les actions du SliverAppBar
+        IconButton(
+          icon: const Icon(Icons.info_outline, color: Colors.white, size: 20),
+          onPressed: onBadgesInfo,
+          padding: EdgeInsets.zero,
+        ),
+        const SizedBox(width: 8),
+      ],
       flexibleSpace: IgnorePointer(
         ignoring: true,
         child: ClipRect(

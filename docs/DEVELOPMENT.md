@@ -612,6 +612,149 @@ testWidgets('Admin language selector updates all screens', (tester) async {
 });
 ```
 
+### Phase 6D-6F : Formulaires et Dialogs Admin (Janvier 2025)
+
+**Status** : 100% complété ✅
+
+#### Écrans traduits
+
+**✅ Dish Form Screen (menu_item_form_screen.dart) :**
+
+- Tabs multilingues (🇮🇱 עברית, 🇬🇧 English, 🇫🇷 Français)
+- Formulaire complet : nom, description, prix, catégorie
+- Boutons "Copier depuis [langue]" dynamiques
+- Section image : ajouter/changer/retirer
+- Options : featured, badges (populaire/nouveau/spécialité/chef/saisonnier), visibilité
+- Validation avec messages d'erreur traduits
+- 80 clés + traduction badges
+
+**✅ Menu Reorder Screen (admin_menu_reorder_screen.dart) :**
+
+- Interface drag & drop complète
+- Save indicators avec timestamps ("Enregistré • il y a 5s")
+- Bulk actions multilingues (déplacer/masquer/afficher)
+- Sidebar catégories avec compteurs
+- Dialog déplacement avec validation
+- Empty states et error messages
+- 80 clés + gestion temporelle (secondes/minutes)
+
+**✅ Category Manager Dialog (category_manager_sheet.dart) :**
+
+- Header responsive mobile/desktop
+- Save state indicators temps réel
+- Actions CRUD complètes : renommer, masquer/afficher, supprimer
+- Dialog confirmation avec progress bar
+- Footer avec drag hint et compteur catégories
+- Badge "Masquée" et tooltips traduits
+- 30 clés + semantic labels accessibilité
+
+#### Patterns avancés
+
+**Pluriels ICU complexes :**
+
+```json
+"adminReorderDishCount": "{count, plural, =0{0 plats} one{1 plat} other{{count} plats}} • {category}"
+```
+
+#### Placeholders multiples :
+
+```json
+"adminCategoryManagerRenameMessage": "Renommer \"{oldName}\" en \"{newName}\" — {count, plural, =1{1 plat} other{{count} plats}} seront mis à jour."
+```
+
+#### Timestamps dynamiques :
+
+```dart
+final diff = DateTime.now().difference(lastSaved);
+if (diff.inSeconds < 60) {
+  text = l10n.adminReorderSavedAgo(l10n.adminReorderTimeSeconds(diff.inSeconds));
+} else {
+  text = l10n.adminReorderSavedAgo(l10n.adminReorderTimeMinutes(diff.inMinutes));
+}
+```
+
+#### Migration technique
+
+**Suppression bandeau migration :**
+Retrait du bouton "MIGRER VERS MULTILINGUE" temporaire utilisé pour la migration initiale des restaurants vers la structure multilingue.
+
+**Architecture badges :**
+Séparation badgeKeys (stockage DB en français) et badgeLabels (affichage traduit) pour compatibilité données existantes.
+
+#### Testing i18n Admin
+
+```dart
+// Tester formulaire multilingue
+testWidgets('Dish form language tabs work correctly', (tester) async {
+  await tester.pumpWidget(AdminApp());
+
+  // Ouvrir formulaire
+  await tester.tap(find.byIcon(Icons.add));
+  await tester.pumpAndSettle();
+
+  // Tester tabs
+  await tester.tap(find.text('🇮🇱 עברית'));
+  await tester.pumpAndSettle();
+  expect(find.text('שם המנה *'), findsOneWidget);
+
+  await tester.tap(find.text('🇬🇧 English'));
+  await tester.pumpAndSettle();
+  expect(find.text('Dish name *'), findsOneWidget);
+});
+
+// Tester save indicators
+testWidgets('Reorder save state translates', (tester) async {
+  await tester.pumpWidget(AdminApp());
+
+  // Déclencher sauvegarde
+  await tester.drag(find.byType(ReorderableDragStartListener), Offset(0, 100));
+  await tester.pumpAndSettle();
+
+  // Vérifier états traduits
+  expect(find.text('Saving...'), findsOneWidget);
+  await tester.pump(Duration(seconds: 2));
+  expect(find.textContaining('Saved'), findsOneWidget);
+});
+```
+
+#### Améliorations UX
+
+**Responsive dialogs :**
+
+QR generator : preview adaptatif mobile (<400px) / desktop
+Category manager : vertical mobile / horizontal desktop
+Share dialog : max-height 400px avec scroll
+
+**Design system cohérent :**
+
+Migration Colors.red → Theme.of(context).colorScheme.error
+Utilisation const Color(0xFF10B981) pour success
+Tokens AdminTokens pour espacements
+
+#### Fichiers modifiés Phase 6D-6F
+
+lib/screens/admin/
+├── menu_item_form_screen.dart (+80 clés)
+├── admin_menu_reorder_screen.dart (+80 clés)
+└── category_manager_sheet.dart (+30 clés)
+
+lib/l10n/
+├── app_en.arb (+190 clés)
+├── app_he.arb (+190 clés)
+└── app_fr.arb (+190 clés)
+
+#### Production readiness
+
+Interface admin maintenant 100% multilingue avec :
+
+✅ Tous les formulaires traduits
+✅ Tous les dialogs traduits
+✅ Toutes les notifications traduites
+✅ Tous les états UI traduits
+✅ Support RTL complet
+✅ Pluriels ICU corrects
+✅ Timestamps localisés
+
 ### Règles Critiques
 
 #### Déclarer l10n dans chaque fonction :
