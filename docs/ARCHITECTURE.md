@@ -9,7 +9,7 @@ SmartMenu utilise une architecture en couches avec séparation claire entre l'in
 ```
 ┌─────────────────┐    ┌─────────────────┐
 │   Client PWA    │    │  Admin Dashboard│
-│   (/r/{rid})    │    │    (/admin)     │
+│   (/r/{slug})   │    │    (/admin)     │
 └─────────┬───────┘    └─────────┬───────┘
           │                      │
           └──────────┬───────────┘
@@ -112,7 +112,7 @@ class CategoryLiveState {
 
 Service centralisé de formatage monétaire avec support multi-locale.
 
-**Dépendances** : `intl: ^0.19.0`
+**Dépendances** : `intl: ^0.20.2`
 
 #### Configuration supportée
 

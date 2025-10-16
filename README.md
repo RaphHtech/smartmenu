@@ -71,7 +71,7 @@ flutter run -d chrome
 
 ### Système QR Code Complet ✅
 
-- **Scanner QR intégré** avec mobile_scanner et interface moderne
+- **Scanner QR intégré** (live sur desktop, fallback saisie manuelle sur mobile web) avec mobile_scanner et interface moderne
 - **Génération QR codes** personnalisables avec preview temps réel
 - **URLs propres** : `/r/nom-restaurant` automatiquement générées
 - **Résolution intelligente** slug → restaurant ID avec fallbacks
@@ -105,6 +105,8 @@ flutter run -d chrome
 - **Sécurité Firestore** : rules strictes, validation complète
 - **Architecture scalable** : prêt pour Web Push et intégrations POS
 
+→ **Documentation des règles production (RBAC owner/manager/staff)** : voir [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md)
+
 ### Admin Dashboard Premium
 
 - Interface SaaS inspirée Stripe/Notion/Linear
@@ -132,8 +134,9 @@ flutter run -d chrome
 - **Tests** : Unit tests avec mocks Firestore
 - **Cloud Functions** : Firebase Functions v2 (notifications Slack)
 - **Notifications** : Notifications API + AudioElement (Flutter Web)
-- **Currency** : intl ^0.19.0 (formatage multi-locale)
+- **Currency** : intl ^0.20.2 (formatage multi-locale)
 - **State** : InheritedWidget (CurrencyScope injection)
+- **i18n** : flutter_localizations + intl ^0.20.2 (EN/HE/FR avec RTL)
 
 ## État du projet
 
