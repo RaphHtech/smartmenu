@@ -71,7 +71,7 @@ flutter run -d chrome
 
 ### Système QR Code Complet ✅
 
-- **Scanner QR intégré** (live sur desktop, fallback saisie manuelle sur mobile web) avec mobile_scanner et interface moderne
+- **Scanner QR intégré** : live scan **desktop** (HTTPS) ; sur **mobile web** → saisie code manuel (limitation navigateur actuelle)
 - **Génération QR codes** personnalisables avec preview temps réel
 - **URLs propres** : `/r/nom-restaurant` automatiquement générées
 - **Résolution intelligente** slug → restaurant ID avec fallbacks
@@ -137,6 +137,17 @@ flutter run -d chrome
 - **Currency** : intl ^0.20.2 (formatage multi-locale)
 - **State** : InheritedWidget (CurrencyScope injection)
 - **i18n** : flutter_localizations + intl ^0.20.2 (EN/HE/FR avec RTL)
+
+## Compatibilité navigateurs
+
+| Fonction                 | Chrome Desktop | Safari Desktop | iOS Safari | Android Chrome |
+| ------------------------ | -------------- | -------------- | ---------- | -------------- |
+| PWA / Menu               | ✅             | ✅             | ✅         | ✅             |
+| Scan live (webcam)       | ✅             | ⚠️ limité      | ❌         | ❌             |
+| Saisie code manuel       | ✅             | ✅             | ✅         | ✅             |
+| Notifications navigateur | ✅             | ⚠️ permissions | ⚠️         | ⚠️             |
+
+**Légende :** ✅ Support complet · ⚠️ Support partiel · ❌ Non supporté
 
 ## État du projet
 

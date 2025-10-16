@@ -21,6 +21,11 @@ SmartMenu utilise une architecture en couches avec séparation claire entre l'in
             └─────────────────┘
 ```
 
+**Schéma d'URL**
+
+- Client PWA : `/r/{slug}` avec option `?t=table12` (identifiant table)
+- Admin : `/admin` (auth Firebase)
+
 ## Architecture Frontend
 
 ### Structure des dossiers
@@ -201,6 +206,8 @@ service cloud.firestore {
 ```
 
 **Production RBAC** - voir `docs/DEPLOYMENT.md` pour règles strictes
+
+→ Les règles complètes (Firestore + Storage) sont décrites dans **docs/DEPLOYMENT.md** (section RBAC Production).
 
 **Évolution prévue** - RBAC complet
 
