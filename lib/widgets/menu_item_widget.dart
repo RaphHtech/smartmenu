@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:smartmenu_app/services/translation_helper.dart';
 import '../../state/currency_scope.dart';
 import '../../l10n/app_localizations.dart';
+import 'package:shimmer/shimmer.dart';
 
 // petit helper robuste
 double _parsePrice(dynamic value) {
@@ -417,22 +418,21 @@ class MenuItem extends StatelessWidget {
   }
 
   Widget _categoryPlaceholder(String? category) {
-    final c = (category ?? '').toLowerCase();
-    final bg = c.contains('pizza')
-        ? const Color(0xFFE63946)
-        : c.contains('entrée')
-            ? const Color(0xFF2A9D8F)
-            : c.contains('pâte')
-                ? const Color(0xFFF4A261)
-                : c.contains('boisson')
-                    ? const Color(0xFF457B9D)
-                    : const Color(0xFF6C5CE7);
-
-    return Container(
-      color: bg.withValues(alpha: 0.9),
-      alignment: Alignment.center,
-      child: const Icon(Icons.restaurant_menu_rounded,
-          size: 18, color: Colors.white),
+    return Shimmer.fromColors(
+      baseColor: Color(0xFFE0E0E0),
+      highlightColor: Color(0xFFF5F5F5),
+      child: Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [
+              Color(0xFFF8F9FA),
+              Color(0xFFE9ECEF),
+            ],
+          ),
+        ),
+      ),
     );
   }
 

@@ -74,7 +74,7 @@ class SimpleMenuScreenState extends State<MenuScreen> {
       case 'Desserts':
         return '🍰';
       case 'Boissons':
-        return '🹹';
+        return '🥤';
       default:
         return '⭐';
     }
