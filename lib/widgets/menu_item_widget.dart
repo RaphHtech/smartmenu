@@ -419,8 +419,8 @@ class MenuItem extends StatelessWidget {
 
   Widget _categoryPlaceholder(String? category) {
     return Shimmer.fromColors(
-      baseColor: Color(0xFFE0E0E0),
-      highlightColor: Color(0xFFF5F5F5),
+      baseColor: const Color(0xFFE0E0E0),
+      highlightColor: const Color(0xFFF5F5F5),
       child: Container(
         decoration: const BoxDecoration(
           gradient: LinearGradient(

@@ -62,25 +62,69 @@ class SimpleMenuScreenState extends State<MenuScreen> {
 
   // Helper pour accéder facilement aux traductions
   AppLocalizations _l10n(BuildContext context) => AppLocalizations.of(context)!;
-
   String _emojiFor(String cat) {
-    switch (cat) {
-      case 'Pizzas':
-        return '🍕';
-      case 'Entrées':
-        return '🥗';
-      case 'Pâtes':
-        return '🍝';
-      case 'Desserts':
-        return '🍰';
-      case 'Boissons':
-        return '🥤';
-      default:
-        return '⭐';
-    }
-  }
+    final c = cat.toLowerCase();
 
-  // Traduit les catégories selon la langue active
+    // Détection intelligente par mots-clés
+    if (c.contains('pizza')) {
+      return '🍕';
+    }
+    if (c.contains('pâte') || c.contains('pasta')) {
+      return '🍝';
+    }
+    if (c.contains('salade') || c.contains('entrée') || c.contains('entree')) {
+      return '🥗';
+    }
+    if (c.contains('dessert') ||
+        c.contains('sucré') ||
+        c.contains('sucre') ||
+        c.contains('gâteau') ||
+        c.contains('gateau')) {
+      return '🍰';
+    }
+    if (c.contains('boisson') ||
+        c.contains('drink') ||
+        c.contains('beverage')) {
+      return '🥤';
+    }
+    if (c.contains('burger') || c.contains('sandwich')) {
+      return '🍔';
+    }
+    if (c.contains('sushi') || c.contains('japonais')) {
+      return '🍣';
+    }
+    if (c.contains('café') || c.contains('cafe') || c.contains('coffee')) {
+      return '☕';
+    }
+    if (c.contains('vin') || c.contains('wine') || c.contains('alcool')) {
+      return '🍷';
+    }
+    if (c.contains('petit déj') || c.contains('breakfast')) {
+      return '🥐';
+    }
+    if (c.contains('viande') || c.contains('meat') || c.contains('steak')) {
+      return '🥩';
+    }
+    if (c.contains('poisson') || c.contains('fish')) {
+      return '🐟';
+    }
+    if (c.contains('végé') || c.contains('vegan') || c.contains('vege')) {
+      return '🥬';
+    }
+    if (c.contains('soupe') || c.contains('soup')) {
+      return '🍲';
+    }
+    if (c.contains('taco') || c.contains('mexica')) {
+      return '🌮';
+    }
+    if (c.contains('glace') || c.contains('ice cream')) {
+      return '🍨';
+    }
+
+    // Fallback élégant et professionnel
+    return '🍽️';
+  } // Traduit les catégories selon la langue active
+
   String _translateCategory(BuildContext context, String category) {
     final l10n = _l10n(context);
     switch (category) {
