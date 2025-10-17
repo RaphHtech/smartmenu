@@ -51,7 +51,6 @@ class SimpleMenuScreenState extends State<MenuScreen> {
   String _selectedCategory = '';
   final ScrollController _categoryScrollController = ScrollController();
   Map<String, int> itemQuantities = {};
-  bool _showOrderModal = false;
   bool _promoEnabled = true;
   String _restaurantName = '';
   String _logoUrl = '';
@@ -77,7 +76,7 @@ class SimpleMenuScreenState extends State<MenuScreen> {
       case 'Desserts':
         return '🍰';
       case 'Boissons':
-        return '🍹¹';
+        return '🹹';
       default:
         return '⭐';
     }
@@ -310,9 +309,7 @@ class SimpleMenuScreenState extends State<MenuScreen> {
       persistent: persistent,
       onClose: persistent
           ? () {
-              setState(() {
-                _showOrderModal = false;
-              });
+              setState(() {});
             }
           : null,
     );
@@ -350,15 +347,65 @@ class SimpleMenuScreenState extends State<MenuScreen> {
       );
       return;
     }
-    setState(() {
-      _showOrderModal = true;
-    });
-  }
 
-  void _closeOrderReview() {
-    setState(() {
-      _showOrderModal = false;
-    });
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      isDismissible: true,
+      enableDrag: true,
+      useSafeArea: true,
+      builder: (context) => Padding(
+        padding: EdgeInsets.only(
+          bottom: MediaQuery.of(context).viewInsets.bottom,
+        ),
+        child: OrderReviewModal(
+          itemQuantities: itemQuantities,
+          menuData: _menuData,
+          cartTotal: _cartTotal,
+          currency: _restaurantCurrency,
+          onClose: () => Navigator.of(context).pop(),
+          onIncreaseQuantity: (itemName) {
+            setState(() {
+              itemQuantities[itemName] = itemQuantities[itemName]! + 1;
+              _cartItemCount++;
+              _cartTotal += _getItemPrice(itemName);
+            });
+          },
+          onDecreaseQuantity: (itemName) {
+            setState(() {
+              if (itemQuantities[itemName]! > 1) {
+                itemQuantities[itemName] = itemQuantities[itemName]! - 1;
+                _cartItemCount--;
+                _cartTotal -= _getItemPrice(itemName);
+              } else {
+                _cartItemCount -= itemQuantities[itemName]!;
+                _cartTotal -=
+                    _getItemPrice(itemName) * itemQuantities[itemName]!;
+                itemQuantities.remove(itemName);
+                if (itemQuantities.isEmpty) {
+                  Navigator.of(context).pop();
+                }
+              }
+            });
+          },
+          onRemoveItem: (itemName) {
+            setState(() {
+              _cartItemCount -= itemQuantities[itemName]!;
+              _cartTotal -= _getItemPrice(itemName) * itemQuantities[itemName]!;
+              itemQuantities.remove(itemName);
+              if (itemQuantities.isEmpty) {
+                Navigator.of(context).pop();
+              }
+            });
+          },
+          onConfirmOrder: () {
+            Navigator.of(context).pop();
+            _confirmOrder();
+          },
+        ),
+      ),
+    );
   }
 
   void _confirmOrder() async {
@@ -367,7 +414,6 @@ class SimpleMenuScreenState extends State<MenuScreen> {
         itemQuantities.clear();
         _cartItemCount = 0;
         _cartTotal = 0.0;
-        _showOrderModal = false;
       });
 
       TopToast.show(
@@ -565,8 +611,7 @@ class SimpleMenuScreenState extends State<MenuScreen> {
                           child: Padding(
                             padding: const EdgeInsets.symmetric(horizontal: 20),
                             child: Row(
-                              mainAxisAlignment:
-                                  MainAxisAlignment.center, // ← AJOUTEZ
+                              mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 for (final cat in _orderedCategories)
                                   Padding(
@@ -664,10 +709,11 @@ class SimpleMenuScreenState extends State<MenuScreen> {
               ),
             ),
           ),
+          // MODIFICATION 1 : Panier tout en bas (bottom: 16)
           Positioned(
             left: 0,
             right: 0,
-            bottom: 80 + MediaQuery.of(context).padding.bottom,
+            bottom: 16 + MediaQuery.of(context).padding.bottom,
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
               child: CartFloatingWidget(
@@ -677,10 +723,15 @@ class SimpleMenuScreenState extends State<MenuScreen> {
               ),
             ),
           ),
+          // MODIFICATION 2 : Bouton Serveur juste au-dessus (bottom: 88) avec adaptation RTL
           if (!_isAdminPreview)
             Positioned(
-              right: 16,
-              bottom: 160 + MediaQuery.of(context).padding.bottom,
+              // Adaptation RTL automatique
+              left: Directionality.of(context) == TextDirection.rtl ? 16 : null,
+              right:
+                  Directionality.of(context) == TextDirection.ltr ? 16 : null,
+              // Position au-dessus de la barre Commande
+              bottom: 88 + MediaQuery.of(context).padding.bottom,
               child: FloatingActionButton.extended(
                 onPressed: _isLoading
                     ? null
@@ -735,53 +786,53 @@ class SimpleMenuScreenState extends State<MenuScreen> {
                 label: Text(_l10n(context).waiter),
                 backgroundColor: const Color(0xFF6366F1),
                 foregroundColor: Colors.white,
-                elevation: 4,
+                elevation: 6,
               ),
             ),
-          if (_showOrderModal)
-            OrderReviewModal(
-              itemQuantities: itemQuantities,
-              menuData: _menuData,
-              cartTotal: _cartTotal,
-              currency: _restaurantCurrency,
-              onClose: _closeOrderReview,
-              onIncreaseQuantity: (itemName) {
-                setState(() {
-                  itemQuantities[itemName] = itemQuantities[itemName]! + 1;
-                  _cartItemCount++;
-                  _cartTotal += _getItemPrice(itemName);
-                });
-              },
-              onDecreaseQuantity: (itemName) {
-                setState(() {
-                  if (itemQuantities[itemName]! > 1) {
-                    itemQuantities[itemName] = itemQuantities[itemName]! - 1;
-                    _cartItemCount--;
-                    _cartTotal -= _getItemPrice(itemName);
-                  } else {
-                    _cartItemCount -= itemQuantities[itemName]!;
-                    _cartTotal -=
-                        _getItemPrice(itemName) * itemQuantities[itemName]!;
-                    itemQuantities.remove(itemName);
-                    if (itemQuantities.isEmpty) {
-                      _closeOrderReview();
-                    }
-                  }
-                });
-              },
-              onRemoveItem: (itemName) {
-                setState(() {
-                  _cartItemCount -= itemQuantities[itemName]!;
-                  _cartTotal -=
-                      _getItemPrice(itemName) * itemQuantities[itemName]!;
-                  itemQuantities.remove(itemName);
-                  if (itemQuantities.isEmpty) {
-                    _closeOrderReview();
-                  }
-                });
-              },
-              onConfirmOrder: _confirmOrder,
-            ),
+          // if (_showOrderModal)
+          //   OrderReviewModal(
+          //     itemQuantities: itemQuantities,
+          //     menuData: _menuData,
+          //     cartTotal: _cartTotal,
+          //     currency: _restaurantCurrency,
+          //     onClose: _closeOrderReview,
+          //     onIncreaseQuantity: (itemName) {
+          //       setState(() {
+          //         itemQuantities[itemName] = itemQuantities[itemName]! + 1;
+          //         _cartItemCount++;
+          //         _cartTotal += _getItemPrice(itemName);
+          //       });
+          //     },
+          //     onDecreaseQuantity: (itemName) {
+          //       setState(() {
+          //         if (itemQuantities[itemName]! > 1) {
+          //           itemQuantities[itemName] = itemQuantities[itemName]! - 1;
+          //           _cartItemCount--;
+          //           _cartTotal -= _getItemPrice(itemName);
+          //         } else {
+          //           _cartItemCount -= itemQuantities[itemName]!;
+          //           _cartTotal -=
+          //               _getItemPrice(itemName) * itemQuantities[itemName]!;
+          //           itemQuantities.remove(itemName);
+          //           if (itemQuantities.isEmpty) {
+          //             _closeOrderReview();
+          //           }
+          //         }
+          //       });
+          //     },
+          //     onRemoveItem: (itemName) {
+          //       setState(() {
+          //         _cartItemCount -= itemQuantities[itemName]!;
+          //         _cartTotal -=
+          //             _getItemPrice(itemName) * itemQuantities[itemName]!;
+          //         itemQuantities.remove(itemName);
+          //         if (itemQuantities.isEmpty) {
+          //           _closeOrderReview();
+          //         }
+          //       });
+          //     },
+          //     onConfirmOrder: _confirmOrder,
+          //   ),
         ],
       ),
     );

@@ -41,7 +41,6 @@ class MenuItem extends StatelessWidget {
   });
 
   AppLocalizations _l10n(BuildContext context) => AppLocalizations.of(context)!;
-
   void _openDetails(BuildContext context) {
     final String locale = Localizations.localeOf(context).languageCode;
     final String name = TranslationHelper.getTranslatedField(
@@ -57,7 +56,6 @@ class MenuItem extends StatelessWidget {
       restaurantDefaultLocale: 'he',
     );
     final double unitPrice = _parsePrice(pizza['price']);
-    final String priceText = _formatPrice(context, unitPrice);
     final String img = () {
       final candidates = [pizza['imageUrl'], pizza['image'], pizza['photoUrl']];
       for (final candidate in candidates) {
@@ -71,6 +69,10 @@ class MenuItem extends StatelessWidget {
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
+      constraints: BoxConstraints(
+        maxWidth:
+            MediaQuery.of(context).size.width > 600 ? 600 : double.infinity,
+      ),
       builder: (_) {
         return DraggableScrollableSheet(
           expand: false,
@@ -79,19 +81,239 @@ class MenuItem extends StatelessWidget {
           maxChildSize: 0.95,
           builder: (_, controller) {
             return Material(
-              elevation: 4,
+              elevation: 16,
               color: Theme.of(context).colorScheme.surface,
               borderRadius:
                   const BorderRadius.vertical(top: Radius.circular(24)),
-              child: SingleChildScrollView(
-                controller: controller,
-                child: _buildDetailCard(name, description, priceText, unitPrice,
-                    img, (pizza['category'] ?? '').toString(), context),
+              clipBehavior: Clip.antiAlias,
+              child: Stack(
+                children: [
+                  // Photo + texte
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      // Handle
+                      Padding(
+                        padding: const EdgeInsets.only(top: 12, bottom: 8),
+                        child: Center(
+                          child: Container(
+                            width: 40,
+                            height: 4,
+                            decoration: BoxDecoration(
+                              color: Theme.of(context)
+                                  .colorScheme
+                                  .onSurface
+                                  .withOpacity(0.30),
+                              borderRadius: BorderRadius.circular(2),
+                            ),
+                          ),
+                        ),
+                      ),
+                      // Photo avec gradient et texte
+                      Expanded(
+                        child: Stack(
+                          fit: StackFit.expand,
+                          children: [
+                            Hero(
+                              tag: 'dish-${pizza['id'] ?? pizza['name']}',
+                              child: img.isEmpty
+                                  ? _categoryPlaceholder(
+                                      (pizza['category'] ?? '').toString())
+                                  : Image.network(
+                                      img,
+                                      fit: BoxFit.cover,
+                                      errorBuilder: (_, __, ___) =>
+                                          _categoryPlaceholder(
+                                              (pizza['category'] ?? '')
+                                                  .toString()),
+                                    ),
+                            ),
+                            // Gradient du bas
+                            Positioned.fill(
+                              child: DecoratedBox(
+                                decoration: BoxDecoration(
+                                  gradient: LinearGradient(
+                                    begin: Alignment.topCenter,
+                                    end: Alignment.bottomCenter,
+                                    colors: [
+                                      Colors.transparent,
+                                      Colors.black.withOpacity(0.75),
+                                    ],
+                                    stops: const [0.4, 1.0],
+                                  ),
+                                ),
+                              ),
+                            ),
+                            // Texte par-dessus
+                            Positioned(
+                              left: 24,
+                              right: 24,
+                              bottom: 100,
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Text(
+                                    name,
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .headlineLarge
+                                        ?.copyWith(
+                                          fontWeight: FontWeight.w900,
+                                          color: Colors.white,
+                                          height: 1.1,
+                                        ),
+                                  ),
+                                  const SizedBox(height: 12),
+                                  Text(
+                                    description,
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .bodyLarge
+                                        ?.copyWith(
+                                          color: Colors.white.withOpacity(0.95),
+                                          height: 1.4,
+                                        ),
+                                    maxLines: 3,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                  // Bouton fixe en bas
+                  Positioned(
+                    left: 0,
+                    right: 0,
+                    bottom: 0,
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: Theme.of(context).colorScheme.surface,
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.1),
+                            blurRadius: 8,
+                            offset: const Offset(0, -2),
+                          ),
+                        ],
+                      ),
+                      child: SafeArea(
+                        top: false,
+                        child: Padding(
+                          padding: const EdgeInsets.all(16),
+                          child: _buildQuantitySelector(
+                              unitPrice, context, name, quantity),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
               ),
             );
           },
         );
       },
+    );
+  }
+
+  Widget _buildDesktopContent(String name, String description, double unitPrice,
+      String img, BuildContext context) {
+    return Stack(
+      children: [
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Expanded(
+              child: Stack(
+                fit: StackFit.expand,
+                children: [
+                  Hero(
+                    tag: 'dish-${pizza['id'] ?? pizza['name']}',
+                    child: img.isEmpty
+                        ? _categoryPlaceholder(
+                            (pizza['category'] ?? '').toString())
+                        : Image.network(img, fit: BoxFit.cover),
+                  ),
+                  // Gradient
+                  Positioned.fill(
+                    child: DecoratedBox(
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          begin: Alignment.topCenter,
+                          end: Alignment.bottomCenter,
+                          colors: [
+                            Colors.transparent,
+                            Colors.black.withOpacity(0.75)
+                          ],
+                          stops: const [0.4, 1.0],
+                        ),
+                      ),
+                    ),
+                  ),
+                  // Texte
+                  Positioned(
+                    left: 24,
+                    right: 24,
+                    bottom: 100,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(name,
+                            style: Theme.of(context)
+                                .textTheme
+                                .headlineLarge
+                                ?.copyWith(
+                                    fontWeight: FontWeight.w900,
+                                    color: Colors.white)),
+                        const SizedBox(height: 12),
+                        Text(description,
+                            style: Theme.of(context)
+                                .textTheme
+                                .bodyLarge
+                                ?.copyWith(
+                                    color: Colors.white.withOpacity(0.95)),
+                            maxLines: 3),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+        // Bouton fixe
+        Positioned(
+          left: 0,
+          right: 0,
+          bottom: 0,
+          child: Container(
+            decoration: BoxDecoration(
+              color: Theme.of(context).colorScheme.surface,
+              boxShadow: [
+                BoxShadow(
+                    color: Colors.black.withOpacity(0.1),
+                    blurRadius: 8,
+                    offset: const Offset(0, -2))
+              ],
+            ),
+            padding: const EdgeInsets.all(16),
+            child: _buildQuantitySelector(unitPrice, context, name, quantity),
+          ),
+        ),
+        // Bouton fermer en haut à droite
+        Positioned(
+          top: 16,
+          right: 16,
+          child: IconButton.filledTonal(
+            onPressed: () => Navigator.pop(context),
+            icon: const Icon(Icons.close),
+          ),
+        ),
+      ],
     );
   }
 
@@ -116,7 +338,7 @@ class MenuItem extends StatelessWidget {
                 const TextStyle(fontWeight: FontWeight.w700, fontSize: 16),
           ),
           child: Text(
-            '${_l10n(context).add} • ${context.money(unitPrice)}',
+            _l10n(context).add,
           ),
         ),
       );
@@ -312,74 +534,6 @@ class MenuItem extends StatelessWidget {
     );
   }
 
-  Widget _buildDetailCard(String name, String description, String priceText,
-      double unitPrice, String img, String category, BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(24),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Center(
-            child: Container(
-              width: 40,
-              height: 4,
-              decoration: BoxDecoration(
-                color:
-                    Theme.of(context).colorScheme.onSurface.withOpacity(0.30),
-                borderRadius: BorderRadius.circular(2),
-              ),
-            ),
-          ),
-          const SizedBox(height: 24),
-          Hero(
-            tag: 'dish-${pizza['id'] ?? pizza['name']}',
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(16),
-              child: AspectRatio(
-                aspectRatio: 16 / 9,
-                child: img.isEmpty
-                    ? _categoryPlaceholder(category)
-                    : Image.network(img,
-                        fit: BoxFit.cover,
-                        errorBuilder: (_, __, ___) =>
-                            _categoryPlaceholder(category)),
-              ),
-            ),
-          ),
-          const SizedBox(height: 24),
-          Text(
-            name,
-            style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                  fontWeight: FontWeight.w800,
-                  color: Theme.of(context).colorScheme.onSurface,
-                ),
-          ),
-          const SizedBox(height: 12),
-          Text(
-            description,
-            style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                  height: 1.5,
-                  color:
-                      Theme.of(context).colorScheme.onSurface.withOpacity(0.80),
-                ),
-          ),
-          const SizedBox(height: 24),
-          Text(
-            priceText,
-            style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                  fontWeight: FontWeight.w700,
-                  color:
-                      Theme.of(context).colorScheme.onSurface.withOpacity(0.75),
-                ),
-          ),
-          const SizedBox(height: 24),
-          _buildQuantitySelector(unitPrice, context, name, quantity),
-          SizedBox(height: 48 + MediaQuery.of(context).padding.bottom),
-        ],
-      ),
-    );
-  }
-
   List<Widget> _buildBadges(BuildContext context) {
     final List<String> badges = List<String>.from(pizza['badges'] ?? []);
     if (badges.isEmpty) return [];
@@ -539,20 +693,11 @@ class _QuantityStepperWidgetState extends State<_QuantityStepperWidget> {
                   .titleMedium
                   ?.copyWith(fontWeight: FontWeight.w800),
             ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(isInDeleteMode
-                    ? _l10n.removeFromCart
-                    : isUpdate
-                        ? _l10n.update
-                        : _l10n.add),
-                if (!isInDeleteMode) ...[
-                  const SizedBox(width: 8),
-                  Text('• ${CurrencyService.format(total, widget.currency)}'),
-                ],
-              ],
-            ),
+            child: Text(isInDeleteMode
+                ? _l10n.removeFromCart
+                : isUpdate
+                    ? _l10n.update
+                    : _l10n.add),
           ),
         ),
       ],

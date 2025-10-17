@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter/semantics.dart';
 import '../../core/design/client_tokens.dart';
 import '../../l10n/app_localizations.dart';
+import '../../services/currency_service.dart';
 
 class OrderReviewModal extends StatelessWidget {
   final Map<String, int> itemQuantities;
@@ -36,38 +37,44 @@ class OrderReviewModal extends StatelessWidget {
     return Semantics(
       container: true,
       label: _l10n(context).orderReview,
-      child: Center(
-        child: ConstrainedBox(
-          constraints: BoxConstraints(
-            maxWidth: 560,
-            maxHeight: MediaQuery.of(context).size.height * 0.65,
+      child: Container(
+        constraints: BoxConstraints(
+          maxHeight: MediaQuery.of(context).size.height * 0.85,
+        ),
+        decoration: BoxDecoration(
+          color: Theme.of(context).colorScheme.surface,
+          borderRadius: const BorderRadius.vertical(
+            top: Radius.circular(ClientTokens.radius20),
           ),
-          child: Material(
-            elevation: 12,
-            color: Theme.of(context).colorScheme.surface,
-            borderRadius: BorderRadius.circular(ClientTokens.radius20),
-            clipBehavior: Clip.antiAlias,
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                _buildHeader(context),
-                Flexible(
-                  child: SingleChildScrollView(
-                    padding:
-                        const EdgeInsetsDirectional.all(ClientTokens.space24),
-                    child: Column(
-                      children: [
-                        _buildOrderItems(context),
-                        const SizedBox(height: ClientTokens.space24),
-                        _buildTotalSection(context),
-                      ],
-                    ),
-                  ),
-                ),
-                _buildFooter(context),
-              ],
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            // Poignée de glissement
+            Container(
+              margin: const EdgeInsets.only(top: ClientTokens.space12),
+              width: 40,
+              height: 4,
+              decoration: BoxDecoration(
+                color: Theme.of(context).colorScheme.outlineVariant,
+                borderRadius: BorderRadius.circular(2),
+              ),
             ),
-          ),
+            _buildHeader(context),
+            Flexible(
+              child: SingleChildScrollView(
+                padding: const EdgeInsetsDirectional.all(ClientTokens.space24),
+                child: Column(
+                  children: [
+                    _buildOrderItems(context),
+                    const SizedBox(height: ClientTokens.space24),
+                    _buildTotalSection(context),
+                  ],
+                ),
+              ),
+            ),
+            _buildFooter(context),
+          ],
         ),
       ),
     );
@@ -104,17 +111,6 @@ class OrderReviewModal extends StatelessWidget {
               ),
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
-            ),
-          ),
-          IconButton(
-            tooltip: _l10n(context).close,
-            onPressed: onClose,
-            icon: Icon(
-              Icons.close_rounded,
-              color: colorScheme.onSurfaceVariant,
-            ),
-            style: IconButton.styleFrom(
-              minimumSize: const Size(44, 44),
             ),
           ),
         ],
@@ -166,7 +162,7 @@ class OrderReviewModal extends StatelessWidget {
             transitionBuilder: (child, animation) =>
                 FadeTransition(opacity: animation, child: child),
             child: Text(
-              context.money(cartTotal),
+              CurrencyService.format(cartTotal, currency),
               key: ValueKey(cartTotal.toStringAsFixed(2)),
               style: theme.textTheme.titleLarge?.copyWith(
                 fontWeight: FontWeight.w900,
@@ -203,12 +199,8 @@ class OrderReviewModal extends StatelessWidget {
                 flex: 5,
                 child: OutlinedButton.icon(
                   onPressed: onClose,
-                  icon: Icon(
-                    Directionality.of(context) == TextDirection.rtl
-                        ? Icons
-                            .arrow_back_rounded // RTL : flèche gauche (retour = sortir vers la gauche)
-                        : Icons
-                            .arrow_forward_rounded, // LTR : flèche droite (retour = sortir vers la droite)
+                  icon: const Icon(
+                    Icons.arrow_back, // S'adapte automatiquement RTL/LTR
                     size: 18,
                   ),
                   label: Text(
@@ -319,7 +311,7 @@ class OrderReviewModal extends StatelessWidget {
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      context.money(itemPrice * entry.value),
+                      CurrencyService.format(itemPrice * entry.value, currency),
                       style: Theme.of(context).textTheme.titleMedium?.copyWith(
                             fontWeight: FontWeight.w800,
                             color: Theme.of(context).colorScheme.primary,

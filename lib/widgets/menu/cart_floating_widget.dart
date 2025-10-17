@@ -169,7 +169,7 @@ class _CartFloatingWidgetState extends State<CartFloatingWidget>
                               ? Icons
                                   .arrow_forward_rounded // RTL : flèche droite (vers l'extérieur)
                               : Icons
-                                  .arrow_back_rounded, // LTR : flèche gauche (vers l'extérieur)
+                                  .arrow_forward_rounded, // LTR : flèche gauche (vers l'extérieur)
                           color: colorScheme.onPrimary,
                           size: 20,
                         ),
