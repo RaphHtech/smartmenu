@@ -226,21 +226,13 @@ class _AdminShellState extends State<AdminShell> {
       ),
       child: Row(
         children: [
-          Container(
-            width: 32,
-            height: 32,
-            decoration: BoxDecoration(
-              gradient: const LinearGradient(
-                colors: [AdminTokens.primary500, AdminTokens.primary600],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-              ),
-              borderRadius: BorderRadius.circular(AdminTokens.radius8),
-            ),
-            child: const Icon(
-              Icons.restaurant_menu,
-              color: Colors.white,
-              size: 18,
+          ClipRRect(
+            borderRadius: BorderRadius.circular(AdminTokens.radius8),
+            child: Image.asset(
+              'assets/images/logo.png',
+              width: 32,
+              height: 32,
+              fit: BoxFit.cover,
             ),
           ),
           const SizedBox(width: AdminTokens.space12),

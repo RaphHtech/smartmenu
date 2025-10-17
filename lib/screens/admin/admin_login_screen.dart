@@ -151,10 +151,10 @@ class _AdminLoginScreenState extends State<AdminLoginScreen> {
                               crossAxisAlignment: CrossAxisAlignment.stretch,
                               children: [
                                 // Logo et titre
-                                const Icon(
-                                  Icons.restaurant_menu,
-                                  size: 64,
-                                  color: AdminTokens.primary600,
+                                Image.asset(
+                                  'assets/images/logo.png',
+                                  width: 80,
+                                  height: 80,
                                 ),
                                 const SizedBox(height: AdminTokens.space24),
 

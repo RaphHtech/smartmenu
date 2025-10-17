@@ -508,7 +508,7 @@
     }
   },
 
-  "adminDashboardFix": "עדקן",
+  "adminDashboardFix": "עדכן",
   "@adminDashboardFix": {
     "description": "Fix button in alerts"
   },

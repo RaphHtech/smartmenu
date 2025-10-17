@@ -1192,6 +1192,11 @@ class _QRGeneratorDialogState extends State<_QRGeneratorDialog> {
                                   isMobile ? 150 : 200, // Plus petit sur mobile
                               backgroundColor: Colors.white,
                               padding: EdgeInsets.all(isMobile ? 12 : 16),
+                              embeddedImage:
+                                  const AssetImage('assets/images/logo.png'),
+                              embeddedImageStyle: const QrEmbeddedImageStyle(
+                                size: Size(40, 40),
+                              ),
                             ),
                           ),
 

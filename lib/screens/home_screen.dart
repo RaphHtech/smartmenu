@@ -195,10 +195,10 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ],
           ),
-          child: Icon(
-            Icons.restaurant_menu,
-            color: Colors.white,
-            size: logoSize * 0.5,
+          child: Image.asset(
+            'assets/images/logo.png',
+            width: logoSize,
+            height: logoSize,
           ),
         ),
 

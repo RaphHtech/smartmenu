@@ -313,7 +313,7 @@ class AppLocalizationsHe extends AppLocalizations {
   }
 
   @override
-  String get adminDashboardFix => 'עדקן';
+  String get adminDashboardFix => 'עדכן';
 
   @override
   String get adminDashboardMyRestaurant => 'המסעדה שלי';
