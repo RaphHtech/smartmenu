@@ -2,7 +2,7 @@ import 'package:flutter/foundation.dart';
 
 /// Contrôleur de breakpoint avec hystérésis large pour éviter les tremblotements
 class BreakpointController extends ValueNotifier<bool> {
-  BreakpointController(bool initial) : super(initial);
+  BreakpointController(super.initial);
 
   // Marges très larges pour stabilité maximale
   static const double desktopThreshold = 1100; // Active desktop
@@ -18,10 +18,5 @@ class BreakpointController extends ValueNotifier<bool> {
       value = true; // Passage en desktop
     }
     // Entre 950 et 1100 : on garde l'état actuel (zone d'hystérésis)
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
   }
 }

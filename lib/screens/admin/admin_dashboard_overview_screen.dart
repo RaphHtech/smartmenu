@@ -6,7 +6,6 @@ import 'package:smartmenu_app/screens/admin/admin_settings_screen.dart';
 import '../../widgets/ui/admin_shell.dart';
 import '../../widgets/ui/admin_themed.dart';
 import '../../core/design/admin_tokens.dart';
-import '../../core/design/admin_typography.dart';
 import 'menu_item_form_screen.dart';
 import 'admin_media_screen.dart';
 import 'admin_restaurant_info_screen.dart';
@@ -128,97 +127,6 @@ class AdminDashboardOverviewScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildDesktopLayout(BuildContext context, Map<String, int> metrics) {
-    final l10n = AppLocalizations.of(context)!;
-
-    // Ton code actuel desktop
-    return SingleChildScrollView(
-      padding: const EdgeInsets.all(AdminTokens.space24),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          // Métriques desktop (ton code actuel)
-          Wrap(
-            spacing: AdminTokens.space16,
-            runSpacing: AdminTokens.space16,
-            children: [
-              _MetricCard(
-                  label: l10n.adminDashboardMetricDishes,
-                  value: '${metrics['total']}',
-                  icon: Icons.restaurant),
-              _MetricCard(
-                  label: l10n.adminDashboardMetricCategories,
-                  value: '${metrics['categories']}',
-                  icon: Icons.category_outlined),
-              _MetricCard(
-                  label: l10n.adminDashboardMetricWithImage,
-                  value: '${metrics['withImage']}',
-                  icon: Icons.image_outlined),
-              _MetricCard(
-                  label: l10n.adminDashboardMetricSignature,
-                  value: '${metrics['signatures']}',
-                  icon: Icons.star_rate_rounded),
-              if (metrics['noImage']! > 0)
-                _MetricCard(
-                  label: l10n.adminDashboardMetricNoImage,
-                  value: '${metrics['noImage']}',
-                  icon: Icons.image_not_supported_outlined,
-                  tone: _MetricTone.warning,
-                ),
-            ],
-          ),
-          const SizedBox(height: AdminTokens.space24),
-
-          // Actions rapides desktop (ton code actuel)
-          const Text('Actions rapides', style: AdminTypography.headlineLarge),
-          const SizedBox(height: AdminTokens.space12),
-          LayoutBuilder(
-            builder: (context, c) {
-              final isWide = c.maxWidth >= 900;
-              return GridView(
-                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: isWide ? 4 : 2,
-                  crossAxisSpacing: AdminTokens.space16,
-                  mainAxisSpacing: AdminTokens.space16,
-                  mainAxisExtent: isWide ? 72.0 : 92.0, // ← Hauteur augmentée
-                ),
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                children: [
-                  _QuickAction(
-                    icon: Icons.add,
-                    label: l10n.adminDashboardAddDish,
-                    onTap: () => context.pushAdminScreen(
-                        MenuItemFormScreen(restaurantId: restaurantId)),
-                  ),
-                  _QuickAction(
-                    icon: Icons.photo_library_outlined,
-                    label: l10n.adminDashboardManageMedia,
-                    onTap: () => context.pushAdminScreen(
-                        AdminMediaScreen(restaurantId: restaurantId)),
-                  ),
-                  _QuickAction(
-                    icon: Icons.info_outline,
-                    label: l10n.adminDashboardEditInfo,
-                    onTap: () => context.pushAdminScreen(
-                      AdminRestaurantInfoScreen(
-                          restaurantId: restaurantId, showBack: true),
-                    ),
-                  ),
-                  _QuickAction(
-                    icon: Icons.visibility_outlined,
-                    label: l10n.adminDashboardPreviewMenu,
-                    onTap: () => _previewMenu(context),
-                  ),
-                ],
-              );
-            },
-          ),
-        ],
-      ),
-    );
-  }
-
   Widget _buildMobileHeader(BuildContext context) {
     return StreamBuilder<DocumentSnapshot>(
       stream: FirebaseFirestore.instance
@@ -256,7 +164,7 @@ class AdminDashboardOverviewScreen extends StatelessWidget {
               Text(
                 restaurantName,
                 style: TextStyle(
-                  color: Colors.white.withOpacity(0.9),
+                  color: Colors.white.withValues(alpha: 0.9),
                   fontSize: 14,
                   height: 1.43,
                 ),
@@ -564,102 +472,6 @@ class AdminDashboardOverviewScreen extends StatelessWidget {
             },
           );
         },
-      ),
-    );
-  }
-}
-
-enum _MetricTone { normal, warning }
-
-class _MetricCard extends StatelessWidget {
-  final String label;
-  final String value;
-  final IconData icon;
-  final _MetricTone tone;
-  const _MetricCard({
-    required this.label,
-    required this.value,
-    required this.icon,
-    this.tone = _MetricTone.normal,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final isWarn = tone == _MetricTone.warning;
-    return Container(
-      width: 220,
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: isWarn ? Colors.orange.shade50 : Colors.white,
-        borderRadius: BorderRadius.circular(AdminTokens.radius12),
-        border: Border.all(
-            color: isWarn ? Colors.orange.shade200 : AdminTokens.border),
-        boxShadow: AdminTokens.shadowMd,
-      ),
-      child: Row(
-        children: [
-          Icon(icon,
-              color: isWarn ? Colors.orange.shade600 : AdminTokens.primary600),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(value,
-                    style: const TextStyle(
-                        fontSize: 18, fontWeight: FontWeight.w700)),
-                const SizedBox(height: 2),
-                Text(label,
-                    style: const TextStyle(
-                        fontSize: 12, color: AdminTokens.neutral600)),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _QuickAction extends StatelessWidget {
-  final IconData icon;
-  final String label;
-  final VoidCallback onTap;
-  const _QuickAction(
-      {required this.icon, required this.label, required this.onTap});
-
-  @override
-  Widget build(BuildContext context) {
-    return Material(
-      color: Colors.white,
-      shape: RoundedRectangleBorder(
-        side: const BorderSide(color: AdminTokens.border),
-        borderRadius: BorderRadius.circular(AdminTokens.radius12),
-      ),
-      child: InkWell(
-        borderRadius: BorderRadius.circular(AdminTokens.radius12),
-        onTap: onTap,
-        child: Padding(
-          padding: const EdgeInsets.all(12),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(icon, color: AdminTokens.primary600, size: 24),
-              const SizedBox(height: 8),
-              Text(
-                label,
-                textAlign: TextAlign.center,
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-                style: const TextStyle(
-                  fontWeight: FontWeight.w600,
-                  fontSize: 12,
-                  height: 1.2,
-                ),
-              ),
-            ],
-          ),
-        ),
       ),
     );
   }

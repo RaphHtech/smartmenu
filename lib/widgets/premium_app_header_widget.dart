@@ -79,7 +79,7 @@ class PremiumAppHeaderWidget extends StatelessWidget {
           child: isMobile
               ? Container(
                   decoration: BoxDecoration(
-                    color: const Color(0xFF000000).withOpacity(0.75),
+                    color: const Color(0xFF000000).withValues(alpha: 0.75),
                     border: const Border(
                       bottom: BorderSide(
                         color: Color(0x20FFFFFF),
@@ -92,7 +92,7 @@ class PremiumAppHeaderWidget extends StatelessWidget {
                   filter: ImageFilter.blur(sigmaX: 8, sigmaY: 8),
                   child: Container(
                     decoration: BoxDecoration(
-                      color: const Color(0xFF000000).withOpacity(0.7),
+                      color: const Color(0xFF000000).withValues(alpha: 0.7),
                       border: const Border(
                         bottom: BorderSide(
                           color: Color(0x20FFFFFF),
@@ -118,7 +118,7 @@ class PremiumAppHeaderWidget extends StatelessWidget {
       color: const Color(0xFF1F1F1F),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
-        side: BorderSide(color: Colors.white.withOpacity(0.1)),
+        side: BorderSide(color: Colors.white.withValues(alpha: 0.1)),
       ),
       itemBuilder: (BuildContext context) {
         return LanguageService.supportedLocales.map((Locale locale) {
@@ -138,7 +138,7 @@ class PremiumAppHeaderWidget extends StatelessWidget {
                     fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
                     color: isSelected
                         ? const Color(0xFF6366F1)
-                        : Colors.white.withOpacity(0.9),
+                        : Colors.white.withValues(alpha: 0.9),
                   ),
                 ),
                 if (isSelected) ...[
@@ -174,7 +174,7 @@ class PremiumAppHeaderWidget extends StatelessWidget {
           width: 70,
           decoration: BoxDecoration(
             color: Colors.transparent,
-            border: Border.all(color: Colors.white.withOpacity(0.3)),
+            border: Border.all(color: Colors.white.withValues(alpha: 0.3)),
             borderRadius: BorderRadius.circular(18),
           ),
           child: const Row(
@@ -235,7 +235,7 @@ class PremiumAppHeaderWidget extends StatelessWidget {
             style: TextStyle(
               fontSize: 12,
               fontWeight: FontWeight.w400,
-              color: Colors.white.withOpacity(0.70),
+              color: Colors.white.withValues(alpha: 0.70),
               height: 1.0,
             ),
             maxLines: 1,
@@ -271,7 +271,7 @@ class PremiumAppHeaderWidget extends StatelessWidget {
         shape: BoxShape.circle,
         boxShadow: [
           BoxShadow(
-            color: _generateStableColor(restaurantName).withOpacity(0.3),
+            color: _generateStableColor(restaurantName).withValues(alpha: 0.3),
             blurRadius: 4,
             offset: const Offset(0, 1),
           ),
@@ -299,7 +299,7 @@ class PremiumAppHeaderWidget extends StatelessWidget {
           shape: BoxShape.circle,
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.2),
+              color: Colors.black.withValues(alpha: 0.2),
               blurRadius: 4,
               offset: const Offset(0, 1),
             ),

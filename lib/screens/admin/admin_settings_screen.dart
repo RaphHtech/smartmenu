@@ -365,7 +365,7 @@ class _AdminSettingsScreenState extends State<AdminSettingsScreen> {
                         final state = await CategoryManager.getLiveState(
                                 widget.restaurantId)
                             .first;
-                        if (mounted) {
+                        if (context.mounted) {
                           CategoryManagerSheet.show(
                               context, widget.restaurantId, state);
                         }
@@ -695,6 +695,7 @@ class _AdminSettingsScreenState extends State<AdminSettingsScreen> {
         .replaceAll(RegExp(r'^-|-$'), '');
 
     await doc.reference.update({'code': code});
+    if (!mounted) return;
 
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text(l10n.adminSettingsCodeGenerated(code))),
@@ -825,7 +826,14 @@ class _QRGeneratorDialogState extends State<_QRGeneratorDialog> {
               version: QrVersions.auto,
               size: _selectedSize.pixels.toDouble() - 40,
               backgroundColor: Colors.white,
-              foregroundColor: Colors.black,
+              eyeStyle: const QrEyeStyle(
+                eyeShape: QrEyeShape.square,
+                color: Colors.black,
+              ),
+              dataModuleStyle: const QrDataModuleStyle(
+                dataModuleShape: QrDataModuleShape.square,
+                color: Colors.black,
+              ),
             ),
             const SizedBox(height: 16),
             Text(
@@ -863,7 +871,7 @@ class _QRGeneratorDialogState extends State<_QRGeneratorDialog> {
           child: RepaintBoundary(
             key: boundary,
             child: Material(
-              child: Container(
+              child: SizedBox(
                 width: _selectedSize.pixels.toDouble(),
                 child: qrWidget,
               ),
@@ -949,9 +957,9 @@ class _QRGeneratorDialogState extends State<_QRGeneratorDialog> {
       }
 
       // QR Code centré (250x250)
-      final qrSize = 250;
-      final qrX = (595 - qrSize) / 2;
-      final qrY = 120;
+      const qrSize = 250;
+      const qrX = (595 - qrSize) / 2;
+      const qrY = 120;
 
       // Bordure QR
       ctx.strokeStyle = '#ddd';
@@ -959,7 +967,7 @@ class _QRGeneratorDialogState extends State<_QRGeneratorDialog> {
       ctx.strokeRect(qrX - 10, qrY - 10, qrSize + 20, qrSize + 20);
 
       // Pattern QR simplifié mais plus dense
-      final moduleSize = qrSize / 33; // 33x33 grille pour plus de réalisme
+      const moduleSize = qrSize / 33; // 33x33 grille pour plus de réalisme
       ctx.fillStyle = 'black';
 
       for (int i = 0; i < 33; i++) {
@@ -978,7 +986,7 @@ class _QRGeneratorDialogState extends State<_QRGeneratorDialog> {
       }
 
       // Instructions bilingues (centré, sous le QR)
-      final instructionsY = qrY + qrSize + 60;
+      const instructionsY = qrY + qrSize + 60;
 
       // Ligne de séparation
       ctx.strokeStyle = '#ccc';
@@ -1016,14 +1024,6 @@ class _QRGeneratorDialogState extends State<_QRGeneratorDialog> {
       ctx.font = 'bold 10px Arial';
       ctx.fillStyle = '#999';
       ctx.fillText('Powered by SmartMenu', 297, 820);
-
-      // Téléchargement
-      final dataUrl = canvas.toDataUrl('image/png');
-      final anchor = html.AnchorElement()
-        ..href = dataUrl
-        ..download = 'template-a5-${widget.slug}.png'
-        ..click();
-
       canvas.remove();
 
       if (mounted) {

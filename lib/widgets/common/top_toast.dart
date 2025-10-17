@@ -39,14 +39,15 @@ class TopToast {
     // Fermer le toast précédent
     await dismiss();
 
+    await Future.delayed(const Duration(milliseconds: 100));
+    if (!context.mounted) return;
     final overlay = Overlay.of(context);
-    if (overlay == null) return;
-
     final theme = Theme.of(context);
+
     final colorScheme = theme.colorScheme;
 
     // Couleurs premium par variante
-    Color _getAccentColor(ToastVariant v) {
+    Color getAccentColor(ToastVariant v) {
       switch (v) {
         case ToastVariant.success:
           return const Color(0xFF059669); // Vert moderne
@@ -59,7 +60,7 @@ class TopToast {
       }
     }
 
-    IconData _getIcon(ToastVariant v) {
+    IconData getIcon(ToastVariant v) {
       switch (v) {
         case ToastVariant.success:
           return Icons.check_circle_rounded;
@@ -72,7 +73,7 @@ class TopToast {
       }
     }
 
-    final accentColor = _getAccentColor(variant);
+    final accentColor = getAccentColor(variant);
     final backgroundColor = colorScheme.inverseSurface;
     final textColor = colorScheme.onInverseSurface;
 
@@ -137,11 +138,11 @@ class TopToast {
                                   padding:
                                       const EdgeInsets.all(ClientTokens.space8),
                                   decoration: BoxDecoration(
-                                    color: accentColor.withOpacity(0.1),
+                                    color: accentColor.withValues(alpha: 0.1),
                                     shape: BoxShape.circle,
                                   ),
                                   child: Icon(
-                                    _getIcon(variant),
+                                    getIcon(variant),
                                     color: accentColor,
                                     size: 20,
                                   ),
@@ -172,7 +173,8 @@ class TopToast {
                                           subtitle,
                                           style: theme.textTheme.bodyMedium
                                               ?.copyWith(
-                                            color: textColor.withOpacity(0.8),
+                                            color: textColor.withValues(
+                                                alpha: 0.8),
                                           ),
                                           maxLines: 1,
                                           overflow: TextOverflow.ellipsis,
@@ -186,7 +188,7 @@ class TopToast {
                                 Icon(
                                   Icons.close,
                                   size: 16,
-                                  color: textColor.withOpacity(0.5),
+                                  color: textColor.withValues(alpha: 0.5),
                                 ),
                               ],
                             ),

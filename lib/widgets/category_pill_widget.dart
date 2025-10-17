@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:smartmenu_app/core/design/client_tokens.dart';
 
 class CategoryPill extends StatelessWidget {
   final String label;
@@ -25,7 +24,7 @@ class CategoryPill extends StatelessWidget {
         decoration: BoxDecoration(
           color: isActive
               ? Theme.of(context).colorScheme.primaryContainer
-              : Theme.of(context).colorScheme.surface.withOpacity(0.72),
+              : Theme.of(context).colorScheme.surface.withValues(alpha: 0.72),
           borderRadius: BorderRadius.circular(100),
           border: isActive
               ? Border(
@@ -44,7 +43,10 @@ class CategoryPill extends StatelessWidget {
                 fontWeight: isActive ? FontWeight.w700 : FontWeight.w600,
                 color: isActive
                     ? Theme.of(context).colorScheme.onPrimaryContainer
-                    : Theme.of(context).colorScheme.onSurface.withOpacity(0.9),
+                    : Theme.of(context)
+                        .colorScheme
+                        .onSurface
+                        .withValues(alpha: 0.9),
               ),
         ),
       ),

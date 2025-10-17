@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import '../../state/currency_scope.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/semantics.dart';
 import '../../core/design/client_tokens.dart';
@@ -128,7 +127,7 @@ class OrderReviewModal extends StatelessWidget {
       width: double.infinity,
       padding: const EdgeInsetsDirectional.all(ClientTokens.space16),
       decoration: BoxDecoration(
-        color: colorScheme.surfaceVariant.withOpacity(0.5),
+        color: colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
         borderRadius: BorderRadius.circular(ClientTokens.radius16),
         border: Border.all(
           color: colorScheme.outlineVariant,
@@ -289,8 +288,10 @@ class OrderReviewModal extends StatelessWidget {
           margin: const EdgeInsets.only(bottom: ClientTokens.space12),
           padding: const EdgeInsets.all(ClientTokens.space12),
           decoration: BoxDecoration(
-            color:
-                Theme.of(context).colorScheme.surfaceVariant.withOpacity(0.3),
+            color: Theme.of(context)
+                .colorScheme
+                .surfaceContainerHighest
+                .withValues(alpha: 0.3),
             borderRadius: BorderRadius.circular(12),
             border: Border.all(
               color: Theme.of(context).colorScheme.outlineVariant,

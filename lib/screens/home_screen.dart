@@ -398,8 +398,6 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _buildScannerSection(bool isMobile, [bool isSmallMobile = false]) {
-    final screenWidth = MediaQuery.of(context).size.width;
-
     return Container(
       padding: EdgeInsets.all(isSmallMobile ? 20 : (isMobile ? 24 : 28)),
       decoration: BoxDecoration(

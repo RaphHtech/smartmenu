@@ -16,6 +16,8 @@ import '../../screens/admin/admin_settings_screen.dart';
 import '../../screens/admin/admin_restaurant_info_screen.dart';
 import '../../widgets/ui/admin_themed.dart';
 import '../../widgets/language_selector_widget.dart';
+import 'package:flutter/foundation.dart';
+import 'package:logger/logger.dart';
 
 /// Layout principal pour l'interface admin avec sidebar + topbar
 /// Interface SaaS professionnelle inspirée de Notion, Linear, Stripe
@@ -42,6 +44,10 @@ class AdminShell extends StatefulWidget {
 }
 
 class _AdminShellState extends State<AdminShell> {
+  static final _logger = Logger(
+    printer: PrettyPrinter(methodCount: 0),
+    level: kDebugMode ? Level.debug : Level.off,
+  );
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   String _selectedRoute = '/dashboard';
   String get _currentRoute => widget.activeRoute ?? _selectedRoute;
@@ -60,7 +66,7 @@ class _AdminShellState extends State<AdminShell> {
   @override
   void didUpdateWidget(covariant AdminShell oldWidget) {
     super.didUpdateWidget(oldWidget);
-    print(
+    _logger.d(
         'AdminShell didUpdateWidget - old: ${oldWidget.activeRoute}, new: ${widget.activeRoute}');
     if (widget.activeRoute != null &&
         widget.activeRoute != oldWidget.activeRoute) {
@@ -129,7 +135,7 @@ class _AdminShellState extends State<AdminShell> {
 
   @override
   Widget build(BuildContext context) {
-    print(
+    _logger.d(
         'AdminShell rebuild ${DateTime.now().millisecond} - route: $_currentRoute');
 
     return LayoutBuilder(

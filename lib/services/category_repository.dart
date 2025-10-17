@@ -1,5 +1,4 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/foundation.dart';
 import 'package:rxdart/rxdart.dart';
 import '../models/category.dart';
 
@@ -246,16 +245,5 @@ class CategoryManager {
         'updatedAt': FieldValue.serverTimestamp(),
       });
     });
-  }
-
-// Réconciliation automatique (fire-and-forget)
-  static void _reconcileCategories(String restaurantId, List<String> newOrder) {
-    _db
-        .collection('restaurants')
-        .doc(restaurantId)
-        .collection('info')
-        .doc('details')
-        .update({'categoriesOrder': newOrder}).catchError(
-            (e) => debugPrint('Erreur réconciliation: $e'));
   }
 }

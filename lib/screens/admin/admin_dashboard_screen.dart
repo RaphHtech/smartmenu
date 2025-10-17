@@ -178,7 +178,8 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
 
   Widget _buildAllCategoriesChip(CategoryLiveState state) {
     final l10n = AppLocalizations.of(context)!;
-    final totalCount = state.counts.values.fold(0, (sum, count) => sum + count);
+    final totalCount = state.counts.values
+        .fold(0, (accumulator, current) => accumulator + current);
     final isSelected = _selectedCategory == null;
 
     return Padding(

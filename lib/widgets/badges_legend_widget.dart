@@ -110,7 +110,7 @@ class BadgesLegendWidget extends StatelessWidget {
             width: 24,
             height: 24,
             decoration: BoxDecoration(
-              color: (item['color'] as Color).withOpacity(0.15),
+              color: (item['color'] as Color).withValues(alpha: 0.15),
               borderRadius: BorderRadius.circular(4),
             ),
             child: Icon(

@@ -16,8 +16,6 @@ import '../../services/server_call_service.dart';
 import '../../state/currency_scope.dart';
 import '../../widgets/common/top_toast.dart';
 import '../../l10n/app_localizations.dart';
-import 'package:flutter/foundation.dart';
-import '../admin/admin_dashboard_screen.dart';
 
 List<String> applyOrderAndHide(
   Set<String> allCats,
@@ -752,7 +750,7 @@ class SimpleMenuScreenState extends State<MenuScreen> {
                           rid: widget.restaurantId,
                           table: 'table$tableId',
                         ).then((_) {
-                          if (mounted) {
+                          if (context.mounted) {
                             TopToast.show(
                               context,
                               message: _l10n(context).waiterCalled,
@@ -761,7 +759,7 @@ class SimpleMenuScreenState extends State<MenuScreen> {
                             );
                           }
                         }).catchError((e) {
-                          if (mounted) {
+                          if (context.mounted) {
                             final error = e.toString();
                             if (error.contains('COOLDOWN_ACTIVE:')) {
                               final seconds = error.split(':')[1];
@@ -789,50 +787,6 @@ class SimpleMenuScreenState extends State<MenuScreen> {
                 elevation: 6,
               ),
             ),
-          // if (_showOrderModal)
-          //   OrderReviewModal(
-          //     itemQuantities: itemQuantities,
-          //     menuData: _menuData,
-          //     cartTotal: _cartTotal,
-          //     currency: _restaurantCurrency,
-          //     onClose: _closeOrderReview,
-          //     onIncreaseQuantity: (itemName) {
-          //       setState(() {
-          //         itemQuantities[itemName] = itemQuantities[itemName]! + 1;
-          //         _cartItemCount++;
-          //         _cartTotal += _getItemPrice(itemName);
-          //       });
-          //     },
-          //     onDecreaseQuantity: (itemName) {
-          //       setState(() {
-          //         if (itemQuantities[itemName]! > 1) {
-          //           itemQuantities[itemName] = itemQuantities[itemName]! - 1;
-          //           _cartItemCount--;
-          //           _cartTotal -= _getItemPrice(itemName);
-          //         } else {
-          //           _cartItemCount -= itemQuantities[itemName]!;
-          //           _cartTotal -=
-          //               _getItemPrice(itemName) * itemQuantities[itemName]!;
-          //           itemQuantities.remove(itemName);
-          //           if (itemQuantities.isEmpty) {
-          //             _closeOrderReview();
-          //           }
-          //         }
-          //       });
-          //     },
-          //     onRemoveItem: (itemName) {
-          //       setState(() {
-          //         _cartItemCount -= itemQuantities[itemName]!;
-          //         _cartTotal -=
-          //             _getItemPrice(itemName) * itemQuantities[itemName]!;
-          //         itemQuantities.remove(itemName);
-          //         if (itemQuantities.isEmpty) {
-          //           _closeOrderReview();
-          //         }
-          //       });
-          //     },
-          //     onConfirmOrder: _confirmOrder,
-          //   ),
         ],
       ),
     );

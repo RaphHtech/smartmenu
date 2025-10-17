@@ -72,7 +72,7 @@ class _AdminOrdersScreenState extends State<AdminOrdersScreen>
       if (_lastSeenOrderId != id) {
         _lastSeenOrderId = id;
 
-        final data = doc.data() as Map<String, dynamic>;
+        final data = doc.data();
         final table =
             (data['table'] ?? 'table?').toString().replaceFirst('table', '');
         final items = (data['items'] as List? ?? []).length;
@@ -80,9 +80,15 @@ class _AdminOrdersScreenState extends State<AdminOrdersScreen>
         final currency = (data['currency'] ?? '').toString();
 
         _playDing();
+
+        // ✅ Ajoute cette vérification avant d'utiliser context
+        if (!mounted) return;
+
         final l10n = AppLocalizations.of(context)!;
-        _notifyDesktop(l10n.adminOrdersTitle,
-            '${l10n.adminOrdersTable(table)} · ${l10n.adminOrdersItems(items)} · $total $currency');
+        _notifyDesktop(
+          l10n.adminOrdersTitle,
+          '${l10n.adminOrdersTable(table)} · ${l10n.adminOrdersItems(items)} · $total $currency',
+        );
       }
     });
   }
@@ -287,6 +293,8 @@ class _AdminOrdersScreenState extends State<AdminOrdersScreen>
     try {
       await ServerCallService.acknowledgeCall(widget.restaurantId, callId);
     } catch (e) {
+      if (!mounted) return;
+
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
             content: Text(l10n.commonError(e.toString())),
@@ -301,6 +309,8 @@ class _AdminOrdersScreenState extends State<AdminOrdersScreen>
     try {
       await ServerCallService.closeCall(widget.restaurantId, callId);
     } catch (e) {
+      if (!mounted) return;
+
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
             content: Text(l10n.commonError(e.toString())),
@@ -328,7 +338,7 @@ class _AdminOrdersScreenState extends State<AdminOrdersScreen>
   void _playServerCallSound() {
     try {
       // Son différent des commandes
-      html.AudioElement('assets/sounds/server_call.mp3')..play();
+      html.AudioElement('assets/sounds/server_call.mp3').play();
     } catch (e) {
       debugPrint('Erreur son serveur: $e');
     }
@@ -348,8 +358,6 @@ class _AdminOrdersScreenState extends State<AdminOrdersScreen>
 
   @override
   Widget build(BuildContext context) {
-    final isCompact = MediaQuery.of(context).size.width < 420;
-
     final l10n = AppLocalizations.of(context)!;
     return AdminShell(
       title: l10n.adminOrdersTitle,
@@ -474,7 +482,7 @@ class _AdminOrdersScreenState extends State<AdminOrdersScreen>
 
     // Son d'alerte
     try {
-      html.AudioElement('/assets/sounds/new_order.mp3')..play();
+      html.AudioElement('/assets/sounds/new_order.mp3').play();
     } catch (e) {
       debugPrint('Erreur son: $e');
     }
@@ -487,6 +495,8 @@ class _AdminOrdersScreenState extends State<AdminOrdersScreen>
 
       if (html.Notification.permission == 'granted') {
         final latestOrder = orders.first;
+        if (!mounted) return;
+
         final l10n = AppLocalizations.of(context)!;
         html.Notification(
           l10n.adminOrdersTitle,
@@ -626,7 +636,7 @@ class _AdminOrdersScreenState extends State<AdminOrdersScreen>
                   ],
                 ),
               );
-            }).toList(),
+            }),
             const SizedBox(height: AdminTokens.space16),
 
             // Actions
@@ -677,7 +687,7 @@ class _AdminOrdersScreenState extends State<AdminOrdersScreen>
               child: Text(_getStatusLabel(context, status)),
             ),
           );
-        }).toList(),
+        }),
 
         const Spacer(),
 

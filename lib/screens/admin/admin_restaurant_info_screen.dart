@@ -115,7 +115,7 @@ class _AdminRestaurantInfoScreenState extends State<AdminRestaurantInfoScreen> {
       activeRoute: '/info',
       breadcrumbs: [l10n.adminDashboardTitle, l10n.adminRestaurantInfoTitle],
       child: _loading
-          ? Center(child: CircularProgressIndicator())
+          ? const Center(child: CircularProgressIndicator())
           : SingleChildScrollView(
               padding: const EdgeInsets.all(24),
               child: Form(

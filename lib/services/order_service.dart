@@ -20,7 +20,7 @@ class OrderService {
     final timeslot = (now.millisecondsSinceEpoch / 30000).floor();
 
     // Empreinte du panier : nombre d'items + total arrondi
-    final itemCount = items.values.fold(0, (sum, qty) => sum + qty);
+    final itemCount = items.values.fold(0, (total, qty) => total + qty);
     final totalRounded = total.round();
 
     // Hash des composants

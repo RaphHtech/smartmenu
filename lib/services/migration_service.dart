@@ -1,9 +1,16 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/foundation.dart';
+import 'package:logger/logger.dart';
 
 class MigrationService {
+  static final _logger = Logger(
+    printer: PrettyPrinter(methodCount: 0),
+    level: kDebugMode ? Level.info : Level.off,
+  );
+
   /// Migre les plats d'un restaurant vers la structure multilingue
   static Future<void> migrateRestaurantMenuItems(String restaurantId) async {
-    print('🔄 Migration restaurant: $restaurantId');
+    _logger.i('🔄 Migration restaurant: $restaurantId');
 
     final snapshot = await FirebaseFirestore.instance
         .collection('restaurants')
@@ -44,12 +51,12 @@ class MigrationService {
       migrated++;
     }
 
-    print('✅ Migration terminée: $migrated migrés, $skipped déjà faits');
+    _logger.i('✅ Migration terminée: $migrated migrés, $skipped déjà faits');
   }
 
   /// Migre la config du restaurant pour ajouter defaultLocale
   static Future<void> migrateRestaurantConfig(String restaurantId) async {
-    print('🔄 Migration config restaurant: $restaurantId');
+    _logger.i('🔄 Migration config restaurant: $restaurantId');
 
     final docRef = FirebaseFirestore.instance
         .collection('restaurants')
@@ -61,13 +68,13 @@ class MigrationService {
     final data = doc.data();
 
     if (data == null) {
-      print('❌ Document details introuvable');
+      _logger.e('❌ Document details introuvable');
       return;
     }
 
     // Skip si déjà migré
     if (data.containsKey('defaultLocale')) {
-      print('⏭️  Déjà migré');
+      _logger.i('⏭️  Déjà migré');
       return;
     }
 
@@ -77,6 +84,6 @@ class MigrationService {
       'updated_at': FieldValue.serverTimestamp(),
     });
 
-    print('✅ Config migrée');
+    _logger.i('✅ Config migrée');
   }
 }

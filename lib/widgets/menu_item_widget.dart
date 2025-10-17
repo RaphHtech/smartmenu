@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:smartmenu_app/services/translation_helper.dart';
 import '../../state/currency_scope.dart';
-import '../../services/currency_service.dart';
 import '../../l10n/app_localizations.dart';
 
 // petit helper robuste
@@ -14,11 +13,6 @@ double _parsePrice(dynamic value) {
       .replaceAll(RegExp(r'[^\d,.\-]'), '')
       .replaceAll(',', '.');
   return double.tryParse(s) ?? 0.0;
-}
-
-String _formatPrice(BuildContext context, double price) {
-  final code = CurrencyScope.of(context).code;
-  return CurrencyService.format(price, code);
 }
 
 // Widget helper pour les items de menu
@@ -103,7 +97,7 @@ class MenuItem extends StatelessWidget {
                               color: Theme.of(context)
                                   .colorScheme
                                   .onSurface
-                                  .withOpacity(0.30),
+                                  .withValues(alpha: 0.30),
                               borderRadius: BorderRadius.circular(2),
                             ),
                           ),
@@ -137,7 +131,7 @@ class MenuItem extends StatelessWidget {
                                     end: Alignment.bottomCenter,
                                     colors: [
                                       Colors.transparent,
-                                      Colors.black.withOpacity(0.75),
+                                      Colors.black.withValues(alpha: 0.75),
                                     ],
                                     stops: const [0.4, 1.0],
                                   ),
@@ -171,7 +165,8 @@ class MenuItem extends StatelessWidget {
                                         .textTheme
                                         .bodyLarge
                                         ?.copyWith(
-                                          color: Colors.white.withOpacity(0.95),
+                                          color: Colors.white
+                                              .withValues(alpha: 0.95),
                                           height: 1.4,
                                         ),
                                     maxLines: 3,
@@ -195,7 +190,7 @@ class MenuItem extends StatelessWidget {
                         color: Theme.of(context).colorScheme.surface,
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.black.withOpacity(0.1),
+                            color: Colors.black.withValues(alpha: 0.1),
                             blurRadius: 8,
                             offset: const Offset(0, -2),
                           ),
@@ -217,103 +212,6 @@ class MenuItem extends StatelessWidget {
           },
         );
       },
-    );
-  }
-
-  Widget _buildDesktopContent(String name, String description, double unitPrice,
-      String img, BuildContext context) {
-    return Stack(
-      children: [
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Expanded(
-              child: Stack(
-                fit: StackFit.expand,
-                children: [
-                  Hero(
-                    tag: 'dish-${pizza['id'] ?? pizza['name']}',
-                    child: img.isEmpty
-                        ? _categoryPlaceholder(
-                            (pizza['category'] ?? '').toString())
-                        : Image.network(img, fit: BoxFit.cover),
-                  ),
-                  // Gradient
-                  Positioned.fill(
-                    child: DecoratedBox(
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          begin: Alignment.topCenter,
-                          end: Alignment.bottomCenter,
-                          colors: [
-                            Colors.transparent,
-                            Colors.black.withOpacity(0.75)
-                          ],
-                          stops: const [0.4, 1.0],
-                        ),
-                      ),
-                    ),
-                  ),
-                  // Texte
-                  Positioned(
-                    left: 24,
-                    right: 24,
-                    bottom: 100,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(name,
-                            style: Theme.of(context)
-                                .textTheme
-                                .headlineLarge
-                                ?.copyWith(
-                                    fontWeight: FontWeight.w900,
-                                    color: Colors.white)),
-                        const SizedBox(height: 12),
-                        Text(description,
-                            style: Theme.of(context)
-                                .textTheme
-                                .bodyLarge
-                                ?.copyWith(
-                                    color: Colors.white.withOpacity(0.95)),
-                            maxLines: 3),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
-        // Bouton fixe
-        Positioned(
-          left: 0,
-          right: 0,
-          bottom: 0,
-          child: Container(
-            decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.surface,
-              boxShadow: [
-                BoxShadow(
-                    color: Colors.black.withOpacity(0.1),
-                    blurRadius: 8,
-                    offset: const Offset(0, -2))
-              ],
-            ),
-            padding: const EdgeInsets.all(16),
-            child: _buildQuantitySelector(unitPrice, context, name, quantity),
-          ),
-        ),
-        // Bouton fermer en haut à droite
-        Positioned(
-          top: 16,
-          right: 16,
-          child: IconButton.filledTonal(
-            onPressed: () => Navigator.pop(context),
-            icon: const Icon(Icons.close),
-          ),
-        ),
-      ],
     );
   }
 
@@ -411,8 +309,10 @@ class MenuItem extends StatelessWidget {
       clipBehavior: Clip.antiAlias,
       child: InkWell(
         onTap: onTap,
-        splashColor: Theme.of(context).colorScheme.primary.withOpacity(0.1),
-        highlightColor: Theme.of(context).colorScheme.primary.withOpacity(0.05),
+        splashColor:
+            Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
+        highlightColor:
+            Theme.of(context).colorScheme.primary.withValues(alpha: 0.05),
         child: Padding(
           padding: const EdgeInsets.all(8),
           child: Row(
@@ -467,7 +367,7 @@ class MenuItem extends StatelessWidget {
                               color: Theme.of(context)
                                   .colorScheme
                                   .onSurface
-                                  .withOpacity(0.80),
+                                  .withValues(alpha: 0.80),
                             ),
                       ),
                     const SizedBox(height: 4),
@@ -475,15 +375,17 @@ class MenuItem extends StatelessWidget {
                       children: [
                         Text(
                           priceText,
-                          style:
-                              Theme.of(context).textTheme.bodyLarge?.copyWith(
-                                    fontWeight: FontWeight.w600, // ← Moins bold
-                                    color: Theme.of(context)
-                                        .colorScheme
-                                        .onSurface
-                                        .withOpacity(0.6), // ← Plus discret
-                                    letterSpacing: 0.5,
-                                  ),
+                          style: Theme.of(context)
+                              .textTheme
+                              .bodyLarge
+                              ?.copyWith(
+                                fontWeight: FontWeight.w600, // ← Moins bold
+                                color: Theme.of(context)
+                                    .colorScheme
+                                    .onSurface
+                                    .withValues(alpha: 0.6), // ← Plus discret
+                                letterSpacing: 0.5,
+                              ),
                         ),
                         const Spacer(),
                         FilledButton(
@@ -527,7 +429,7 @@ class MenuItem extends StatelessWidget {
                     : const Color(0xFF6C5CE7);
 
     return Container(
-      color: bg.withOpacity(0.9),
+      color: bg.withValues(alpha: 0.9),
       alignment: Alignment.center,
       child: const Icon(Icons.restaurant_menu_rounded,
           size: 18, color: Colors.white),
@@ -629,7 +531,6 @@ class _QuantityStepperWidgetState extends State<_QuantityStepperWidget> {
 
   @override
   Widget build(BuildContext context) {
-    final total = localQuantity * widget.unitPrice;
     final isUpdate = widget.initialQuantity > 0;
     final isInDeleteMode = localQuantity == 0;
 

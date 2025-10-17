@@ -151,7 +151,8 @@ class _CartFloatingWidgetState extends State<CartFloatingWidget>
                             vertical: ClientTokens.space4,
                           ),
                           decoration: BoxDecoration(
-                            color: colorScheme.onPrimary.withOpacity(0.15),
+                            color:
+                                colorScheme.onPrimary.withValues(alpha: 0.15),
                             borderRadius:
                                 BorderRadius.circular(ClientTokens.radius12),
                           ),
