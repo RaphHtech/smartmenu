@@ -1978,5 +1978,41 @@
 "adminSettingsDefaultLanguageUpdated": "שפת ברירת המחדל עודכנה",
 "@adminSettingsDefaultLanguageUpdated": {
   "description": "Default language updated message"
-}
+},
+
+"adminSettingsMenuFeatures": "תכונות התפריט",
+"@adminSettingsMenuFeatures": {
+  "description": "Menu features section title"
+},
+"adminSettingsEnableOrders": "הפעל הזמנות",
+"@adminSettingsEnableOrders": {
+  "description": "Enable orders toggle"
+},
+"adminSettingsEnableOrdersSubtitle": "אפשר ללקוחות לבצע הזמנות",
+"@adminSettingsEnableOrdersSubtitle": {
+  "description": "Enable orders subtitle"
+},
+"adminSettingsOrdersUpdated": "הגדרת הזמנות עודכנה",
+"@adminSettingsOrdersUpdated": {
+  "description": "Orders setting updated message"
+},
+"adminSettingsEnableServerCall": "הפעל קריאה למלצר",
+"@adminSettingsEnableServerCall": {
+  "description": "Enable server call toggle"
+},
+"adminSettingsEnableServerCallSubtitle": "הצג כפתור קריאה למלצר ללקוחות",
+"@adminSettingsEnableServerCallSubtitle": {
+  "description": "Enable server call subtitle"
+},
+"adminSettingsServerCallUpdated": "הגדרת קריאה למלצר עודכנה",
+"@adminSettingsServerCallUpdated": {
+  "description": "Server call setting updated message"
+},
+
+"cartVisualOnly": "הראה סל זה למלצר כדי להזמין",
+"@cartVisualOnly": {
+  "description": "Visual cart message when orders are disabled"
+},
+
+"viewOrder": "צפה בהזמנה"
 }

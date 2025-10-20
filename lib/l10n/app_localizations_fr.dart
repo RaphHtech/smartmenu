@@ -1230,4 +1230,35 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String get adminSettingsDefaultLanguageUpdated =>
       'Langue par défaut mise à jour';
+
+  @override
+  String get adminSettingsMenuFeatures => 'Fonctionnalités du menu';
+
+  @override
+  String get adminSettingsEnableOrders => 'Activer les commandes';
+
+  @override
+  String get adminSettingsEnableOrdersSubtitle =>
+      'Permettre aux clients de passer des commandes';
+
+  @override
+  String get adminSettingsOrdersUpdated => 'Paramètre des commandes mis à jour';
+
+  @override
+  String get adminSettingsEnableServerCall => 'Activer l\'appel serveur';
+
+  @override
+  String get adminSettingsEnableServerCallSubtitle =>
+      'Afficher le bouton d\'appel serveur aux clients';
+
+  @override
+  String get adminSettingsServerCallUpdated =>
+      'Paramètre d\'appel serveur mis à jour';
+
+  @override
+  String get cartVisualOnly =>
+      'Montrez ce panier au serveur pour passer commande';
+
+  @override
+  String get viewOrder => 'Voir commande';
 }

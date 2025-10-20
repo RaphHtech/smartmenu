@@ -1212,4 +1212,34 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get adminSettingsDefaultLanguageUpdated => 'Default language updated';
+
+  @override
+  String get adminSettingsMenuFeatures => 'Menu features';
+
+  @override
+  String get adminSettingsEnableOrders => 'Enable orders';
+
+  @override
+  String get adminSettingsEnableOrdersSubtitle =>
+      'Allow customers to place orders';
+
+  @override
+  String get adminSettingsOrdersUpdated => 'Orders setting updated';
+
+  @override
+  String get adminSettingsEnableServerCall => 'Enable server call';
+
+  @override
+  String get adminSettingsEnableServerCallSubtitle =>
+      'Show server call button to customers';
+
+  @override
+  String get adminSettingsServerCallUpdated => 'Server call setting updated';
+
+  @override
+  String get cartVisualOnly =>
+      'Show this cart to the waiter to place your order';
+
+  @override
+  String get viewOrder => 'View order';
 }

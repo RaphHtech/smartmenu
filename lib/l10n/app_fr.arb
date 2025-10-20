@@ -1978,5 +1978,41 @@
 "adminSettingsDefaultLanguageUpdated": "Langue par défaut mise à jour",
 "@adminSettingsDefaultLanguageUpdated": {
   "description": "Default language updated message"
-}
+},
+
+"adminSettingsMenuFeatures": "Fonctionnalités du menu",
+"@adminSettingsMenuFeatures": {
+  "description": "Menu features section title"
+},
+"adminSettingsEnableOrders": "Activer les commandes",
+"@adminSettingsEnableOrders": {
+  "description": "Enable orders toggle"
+},
+"adminSettingsEnableOrdersSubtitle": "Permettre aux clients de passer des commandes",
+"@adminSettingsEnableOrdersSubtitle": {
+  "description": "Enable orders subtitle"
+},
+"adminSettingsOrdersUpdated": "Paramètre des commandes mis à jour",
+"@adminSettingsOrdersUpdated": {
+  "description": "Orders setting updated message"
+},
+"adminSettingsEnableServerCall": "Activer l'appel serveur",
+"@adminSettingsEnableServerCall": {
+  "description": "Enable server call toggle"
+},
+"adminSettingsEnableServerCallSubtitle": "Afficher le bouton d'appel serveur aux clients",
+"@adminSettingsEnableServerCallSubtitle": {
+  "description": "Enable server call subtitle"
+},
+"adminSettingsServerCallUpdated": "Paramètre d'appel serveur mis à jour",
+"@adminSettingsServerCallUpdated": {
+  "description": "Server call setting updated message"
+},
+
+"cartVisualOnly": "Montrez ce panier au serveur pour passer commande",
+"@cartVisualOnly": {
+  "description": "Visual cart message when orders are disabled"
+},
+
+"viewOrder": "Voir commande"
 }

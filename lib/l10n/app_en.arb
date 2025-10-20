@@ -1978,5 +1978,41 @@
 "adminSettingsDefaultLanguageUpdated": "Default language updated",
 "@adminSettingsDefaultLanguageUpdated": {
   "description": "Default language updated message"
-}
+},
+
+"adminSettingsMenuFeatures": "Menu features",
+"@adminSettingsMenuFeatures": {
+  "description": "Menu features section title"
+},
+"adminSettingsEnableOrders": "Enable orders",
+"@adminSettingsEnableOrders": {
+  "description": "Enable orders toggle"
+},
+"adminSettingsEnableOrdersSubtitle": "Allow customers to place orders",
+"@adminSettingsEnableOrdersSubtitle": {
+  "description": "Enable orders subtitle"
+},
+"adminSettingsOrdersUpdated": "Orders setting updated",
+"@adminSettingsOrdersUpdated": {
+  "description": "Orders setting updated message"
+},
+"adminSettingsEnableServerCall": "Enable server call",
+"@adminSettingsEnableServerCall": {
+  "description": "Enable server call toggle"
+},
+"adminSettingsEnableServerCallSubtitle": "Show server call button to customers",
+"@adminSettingsEnableServerCallSubtitle": {
+  "description": "Enable server call subtitle"
+},
+"adminSettingsServerCallUpdated": "Server call setting updated",
+"@adminSettingsServerCallUpdated": {
+  "description": "Server call setting updated message"
+},
+
+"cartVisualOnly": "Show this cart to the waiter to place your order",
+"@cartVisualOnly": {
+  "description": "Visual cart message when orders are disabled"
+},
+
+"viewOrder": "View order"
 }

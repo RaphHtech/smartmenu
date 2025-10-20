@@ -10,6 +10,8 @@ class OrderReviewModal extends StatelessWidget {
   final Map<String, dynamic> menuData;
   final double cartTotal;
   final String currency;
+  final bool enableOrders;
+
   final VoidCallback onClose;
   final Function(String itemName) onIncreaseQuantity;
   final Function(String itemName) onDecreaseQuantity;
@@ -22,6 +24,7 @@ class OrderReviewModal extends StatelessWidget {
     required this.menuData,
     required this.cartTotal,
     required this.currency,
+    this.enableOrders = true,
     required this.onClose,
     required this.onIncreaseQuantity,
     required this.onDecreaseQuantity,
@@ -222,34 +225,68 @@ class OrderReviewModal extends StatelessWidget {
               const SizedBox(width: ClientTokens.space16),
               Expanded(
                 flex: 7,
-                child: FocusableActionDetector(
-                  shortcuts: const {
-                    SingleActivator(LogicalKeyboardKey.enter): ActivateIntent(),
-                    SingleActivator(LogicalKeyboardKey.space): ActivateIntent(),
-                  },
-                  actions: {
-                    ActivateIntent: CallbackAction<ActivateIntent>(
-                      onInvoke: (_) {
-                        _confirmOrder(context);
-                        return null;
-                      },
-                    ),
-                  },
-                  child: FilledButton(
-                    onPressed: () => _confirmOrder(context),
-                    style: FilledButton.styleFrom(
-                      minimumSize: const Size(160, 52),
-                      shape: RoundedRectangleBorder(
-                        borderRadius:
-                            BorderRadius.circular(ClientTokens.radius12),
+                child: enableOrders // ✅ CONDITION ICI
+                    ? FocusableActionDetector(
+                        shortcuts: const {
+                          SingleActivator(LogicalKeyboardKey.enter):
+                              ActivateIntent(),
+                          SingleActivator(LogicalKeyboardKey.space):
+                              ActivateIntent(),
+                        },
+                        actions: {
+                          ActivateIntent: CallbackAction<ActivateIntent>(
+                            onInvoke: (_) {
+                              _confirmOrder(context);
+                              return null;
+                            },
+                          ),
+                        },
+                        child: FilledButton(
+                          onPressed: () => _confirmOrder(context),
+                          style: FilledButton.styleFrom(
+                            minimumSize: const Size(160, 52),
+                            shape: RoundedRectangleBorder(
+                              borderRadius:
+                                  BorderRadius.circular(ClientTokens.radius12),
+                            ),
+                            textStyle: theme.textTheme.titleMedium?.copyWith(
+                              fontWeight: FontWeight.w800,
+                            ),
+                          ),
+                          child: Text(l10n.confirm),
+                        ),
+                      )
+                    : Container(
+                        // ✅ SI enableOrders = false
+                        padding: const EdgeInsets.all(ClientTokens.space12),
+                        decoration: BoxDecoration(
+                          color: colorScheme.surfaceContainerHighest,
+                          borderRadius:
+                              BorderRadius.circular(ClientTokens.radius12),
+                          border: Border.all(
+                            color: colorScheme.outlineVariant,
+                          ),
+                        ),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(
+                              Icons.info_outline,
+                              color: colorScheme.primary,
+                              size: 20,
+                            ),
+                            const SizedBox(height: ClientTokens.space4),
+                            Text(
+                              l10n.cartVisualOnly,
+                              textAlign: TextAlign.center,
+                              style: theme.textTheme.bodySmall?.copyWith(
+                                color: colorScheme.onSurfaceVariant,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
-                      textStyle: theme.textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.w800,
-                      ),
-                    ),
-                    child: Text(l10n.confirm),
-                  ),
-                ),
               ),
             ],
           ),

@@ -37,6 +37,8 @@ class _AdminSettingsScreenState extends State<AdminSettingsScreen> {
   String? _currentName;
   String? _error;
   String _selectedLanguage = 'en';
+  bool _enableOrders = true;
+  bool _enableServerCall = true;
 
   @override
   void initState() {
@@ -66,20 +68,28 @@ class _AdminSettingsScreenState extends State<AdminSettingsScreen> {
           .get();
 
       if (doc.exists && mounted) {
-        // ✅ SYNTAXE ORIGINALE (qui marchait)
-        final name = doc.data()?['name'] as String? ?? 'Mon Restaurant';
-        final defaultLang = doc.data()?['defaultLanguage'] as String? ?? 'en';
+        final data = doc.data(); // ✅ Déclare 'data' d'abord
+
+        // ✅ Ensuite utilise 'data'
+        final name = data?['name'] as String? ?? 'Mon Restaurant';
+        final defaultLang = data?['defaultLanguage'] as String? ?? 'en';
+        final enableOrders = data?['enableOrders'] as bool? ?? true;
+        final enableServerCall = data?['enableServerCall'] as bool? ?? true;
 
         setState(() {
           _currentName = name;
           _nameController.text = name;
           _selectedLanguage = defaultLang;
+          _enableOrders = enableOrders; // ✅ Ajoute
+          _enableServerCall = enableServerCall; // ✅ Ajoute
         });
       } else if (mounted) {
         setState(() {
           _currentName = 'Mon Restaurant';
           _nameController.text = 'Mon Restaurant';
           _selectedLanguage = 'en';
+          _enableOrders = true; // ✅ Valeur par défaut
+          _enableServerCall = true; // ✅ Valeur par défaut
         });
       }
     } catch (e) {
@@ -88,6 +98,8 @@ class _AdminSettingsScreenState extends State<AdminSettingsScreen> {
         setState(() {
           _error = l10n.adminSettingsLoadError;
           _selectedLanguage = 'en';
+          _enableOrders = true; // ✅ Valeur par défaut
+          _enableServerCall = true; // ✅ Valeur par défaut
         });
       }
     }
@@ -149,8 +161,6 @@ class _AdminSettingsScreenState extends State<AdminSettingsScreen> {
   }
 
   Future<void> _updateDefaultLanguage(String languageCode) async {
-    final l10n = AppLocalizations.of(context)!;
-
     try {
       await FirebaseFirestore.instance
           .collection('restaurants')
@@ -159,13 +169,80 @@ class _AdminSettingsScreenState extends State<AdminSettingsScreen> {
           .doc('details')
           .update({'defaultLanguage': languageCode});
 
+      if (!mounted) return;
+
       setState(() {
         _selectedLanguage = languageCode;
       });
 
+      final l10n = AppLocalizations.of(context)!;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(l10n.adminSettingsDefaultLanguageUpdated),
+          backgroundColor: Theme.of(context).colorScheme.primaryContainer,
+        ),
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Erreur: $e'),
+          backgroundColor: Theme.of(context).colorScheme.error,
+        ),
+      );
+    }
+  }
+
+  Future<void> _updateEnableOrders(bool value) async {
+    try {
+      await FirebaseFirestore.instance
+          .collection('restaurants')
+          .doc(widget.restaurantId)
+          .collection('info')
+          .doc('details')
+          .update({'enableOrders': value});
+
+      if (!mounted) return;
+
+      setState(() {
+        _enableOrders = value;
+      });
+
+      final l10n = AppLocalizations.of(context)!;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(l10n.adminSettingsOrdersUpdated),
+          backgroundColor: Theme.of(context).colorScheme.primaryContainer,
+        ),
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Erreur: $e'),
+          backgroundColor: Theme.of(context).colorScheme.error,
+        ),
+      );
+    }
+  }
+
+  Future<void> _updateEnableServerCall(bool value) async {
+    try {
+      await FirebaseFirestore.instance
+          .collection('restaurants')
+          .doc(widget.restaurantId)
+          .collection('info')
+          .doc('details')
+          .update({'enableServerCall': value});
+
+      if (!mounted) return;
+
+      setState(() {
+        _enableServerCall = value;
+      });
+
+      final l10n = AppLocalizations.of(context)!;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(l10n.adminSettingsServerCallUpdated),
           backgroundColor: Theme.of(context).colorScheme.primaryContainer,
         ),
       );
@@ -443,6 +520,88 @@ class _AdminSettingsScreenState extends State<AdminSettingsScreen> {
                             ),
                           );
                         },
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+
+            const SizedBox(height: AdminTokens.space24),
+
+            // Fonctionnalités du menu
+            Card(
+              elevation: 0,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(AdminTokens.radius16),
+                side: const BorderSide(color: AdminTokens.border),
+              ),
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(AdminTokens.radius16),
+                  boxShadow: AdminTokens.shadowMd,
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(AdminTokens.space20),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          const Icon(
+                            Icons.settings,
+                            color: AdminTokens.primary600,
+                          ),
+                          const SizedBox(width: AdminTokens.space12),
+                          Text(
+                            l10n.adminSettingsMenuFeatures,
+                            style: AdminTypography.headlineMedium,
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: AdminTokens.space16),
+
+                      // Toggle Commandes
+                      SwitchListTile(
+                        value: _enableOrders,
+                        onChanged: _updateEnableOrders,
+                        title: Text(
+                          l10n.adminSettingsEnableOrders,
+                          style: AdminTypography.bodyLarge,
+                        ),
+                        subtitle: Text(
+                          l10n.adminSettingsEnableOrdersSubtitle,
+                          style: AdminTypography.bodySmall.copyWith(
+                            color: AdminTokens.neutral600,
+                          ),
+                        ),
+                        secondary: const Icon(
+                          Icons.shopping_cart_outlined,
+                          color: AdminTokens.primary600,
+                        ),
+                      ),
+
+                      const Divider(height: 32),
+
+                      // Toggle Appel Serveur
+                      SwitchListTile(
+                        value: _enableServerCall,
+                        onChanged: _updateEnableServerCall,
+                        title: Text(
+                          l10n.adminSettingsEnableServerCall,
+                          style: AdminTypography.bodyLarge,
+                        ),
+                        subtitle: Text(
+                          l10n.adminSettingsEnableServerCallSubtitle,
+                          style: AdminTypography.bodySmall.copyWith(
+                            color: AdminTokens.neutral600,
+                          ),
+                        ),
+                        secondary: const Icon(
+                          Icons.room_service,
+                          color: AdminTokens.primary600,
+                        ),
                       ),
                     ],
                   ),

@@ -1208,4 +1208,32 @@ class AppLocalizationsHe extends AppLocalizations {
 
   @override
   String get adminSettingsDefaultLanguageUpdated => 'שפת ברירת המחדל עודכנה';
+
+  @override
+  String get adminSettingsMenuFeatures => 'תכונות התפריט';
+
+  @override
+  String get adminSettingsEnableOrders => 'הפעל הזמנות';
+
+  @override
+  String get adminSettingsEnableOrdersSubtitle => 'אפשר ללקוחות לבצע הזמנות';
+
+  @override
+  String get adminSettingsOrdersUpdated => 'הגדרת הזמנות עודכנה';
+
+  @override
+  String get adminSettingsEnableServerCall => 'הפעל קריאה למלצר';
+
+  @override
+  String get adminSettingsEnableServerCallSubtitle =>
+      'הצג כפתור קריאה למלצר ללקוחות';
+
+  @override
+  String get adminSettingsServerCallUpdated => 'הגדרת קריאה למלצר עודכנה';
+
+  @override
+  String get cartVisualOnly => 'הראה סל זה למלצר כדי להזמין';
+
+  @override
+  String get viewOrder => 'צפה בהזמנה';
 }

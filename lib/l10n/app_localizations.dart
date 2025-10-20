@@ -2200,6 +2200,60 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Default language updated'**
   String get adminSettingsDefaultLanguageUpdated;
+
+  /// Menu features section title
+  ///
+  /// In en, this message translates to:
+  /// **'Menu features'**
+  String get adminSettingsMenuFeatures;
+
+  /// Enable orders toggle
+  ///
+  /// In en, this message translates to:
+  /// **'Enable orders'**
+  String get adminSettingsEnableOrders;
+
+  /// Enable orders subtitle
+  ///
+  /// In en, this message translates to:
+  /// **'Allow customers to place orders'**
+  String get adminSettingsEnableOrdersSubtitle;
+
+  /// Orders setting updated message
+  ///
+  /// In en, this message translates to:
+  /// **'Orders setting updated'**
+  String get adminSettingsOrdersUpdated;
+
+  /// Enable server call toggle
+  ///
+  /// In en, this message translates to:
+  /// **'Enable server call'**
+  String get adminSettingsEnableServerCall;
+
+  /// Enable server call subtitle
+  ///
+  /// In en, this message translates to:
+  /// **'Show server call button to customers'**
+  String get adminSettingsEnableServerCallSubtitle;
+
+  /// Server call setting updated message
+  ///
+  /// In en, this message translates to:
+  /// **'Server call setting updated'**
+  String get adminSettingsServerCallUpdated;
+
+  /// Visual cart message when orders are disabled
+  ///
+  /// In en, this message translates to:
+  /// **'Show this cart to the waiter to place your order'**
+  String get cartVisualOnly;
+
+  /// No description provided for @viewOrder.
+  ///
+  /// In en, this message translates to:
+  /// **'View order'**
+  String get viewOrder;
 }
 
 class _AppLocalizationsDelegate

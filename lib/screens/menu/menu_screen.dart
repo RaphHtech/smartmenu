@@ -10,7 +10,6 @@ import '../../widgets/category_pill_widget.dart';
 import '../../widgets/menu_item_widget.dart';
 import '../../widgets/modals/order_review_modal.dart';
 import '../../widgets/notifications/custom_notification.dart';
-import '../../widgets/menu/cart_floating_widget.dart';
 import '../../services/cart_service.dart';
 import '../../widgets/premium_app_header_widget.dart';
 import '../../services/server_call_service.dart';
@@ -62,6 +61,8 @@ class SimpleMenuScreenState extends State<MenuScreen> {
   List<String> _orderedCategories = [];
   final ScrollController _mainScrollController = ScrollController();
   bool _isHeaderCollapsed = false;
+  bool _enableOrders = true;
+  bool _enableServerCall = true;
 
   // Helper pour accéder facilement aux traductions
   AppLocalizations _l10n(BuildContext context) => AppLocalizations.of(context)!;
@@ -280,7 +281,25 @@ class SimpleMenuScreenState extends State<MenuScreen> {
         .doc('details')
         .get();
 
-    return snap.data() ?? {};
+    final data = snap.data() ?? {};
+
+    debugPrint('🔍 Restaurant data loaded: $data'); // ✅ AJOUTE
+
+    // ✅ Charge les settings
+    if (mounted) {
+      final enableOrders = data['enableOrders'] as bool? ?? true;
+      final enableServerCall = data['enableServerCall'] as bool? ?? true;
+
+      debugPrint('🔍 enableOrders: $enableOrders'); // ✅ AJOUTE
+      debugPrint('🔍 enableServerCall: $enableServerCall'); // ✅ AJOUTE
+
+      setState(() {
+        _enableOrders = enableOrders;
+        _enableServerCall = enableServerCall;
+      });
+    }
+
+    return data;
   }
 
   Future<void> _loadLanguage() async {
@@ -303,8 +322,13 @@ class SimpleMenuScreenState extends State<MenuScreen> {
       }
       _cartItemCount++;
       _cartTotal += price;
+
+      debugPrint('🔍 AFTER ADD: _cartItemCount = $_cartItemCount'); // ✅ DEBUG
     });
 
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) setState(() {});
+    });
     AnalyticsService.logAddToCart(widget.restaurantId, itemName,
         tableId: TableService.getTableId());
 
@@ -421,6 +445,7 @@ class SimpleMenuScreenState extends State<MenuScreen> {
           menuData: _menuData,
           cartTotal: _cartTotal,
           currency: _restaurantCurrency,
+          enableOrders: _enableOrders,
           onClose: () => Navigator.of(context).pop(),
           onIncreaseQuantity: (itemName) {
             setState(() {
@@ -575,6 +600,209 @@ class SimpleMenuScreenState extends State<MenuScreen> {
     );
   }
 
+  Widget _buildBottomActions() {
+    final l10n = _l10n(context);
+    final hasItems = _cartItemCount > 0;
+
+    // Cas 1 : Les 2 activés + panier a des items
+    if (_enableServerCall && hasItems) {
+      return SizedBox(
+        height: 58,
+        child: Row(
+          children: [
+            // Bouton Serveur (38%) - Blanc pur, secondaire
+            Expanded(
+              flex: 38,
+              child: ElevatedButton.icon(
+                onPressed: _isLoading ? null : _handleServerCall,
+                icon: const Icon(Icons.room_service, size: 20),
+                label: Text(
+                  l10n.waiter,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w700,
+                    letterSpacing: 0.3,
+                  ),
+                ),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.white,
+                  foregroundColor: const Color(0xFFDC2626),
+                  elevation: 4,
+                  shadowColor: Colors.black.withValues(alpha: 0.15),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(ClientTokens.radius12),
+                  ),
+                  padding: const EdgeInsets.symmetric(horizontal: 12),
+                ),
+              ),
+            ),
+
+            const SizedBox(width: 12),
+
+            // Bouton Commande (62%) - Rouge vif, dominant
+            Expanded(
+              flex: 62,
+              child: ElevatedButton(
+                onPressed: _showOrderReview,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFFDC2626),
+                  foregroundColor: Colors.white,
+                  elevation: 8,
+                  shadowColor: const Color(0xFFDC2626).withValues(alpha: 0.4),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(ClientTokens.radius12),
+                  ),
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Icon(Icons.shopping_cart_rounded, size: 22),
+                    const SizedBox(width: 10),
+                    Flexible(
+                      child: Text(
+                        '${l10n.viewOrder} (${_cartItemCount})',
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w800,
+                          letterSpacing: 0.5,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                    const SizedBox(width: 6),
+                    const Icon(Icons.arrow_forward_rounded, size: 20),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+
+    // Cas 2 : Serveur seul
+    if (_enableServerCall && !hasItems) {
+      return SizedBox(
+        width: double.infinity,
+        height: 58,
+        child: ElevatedButton.icon(
+          onPressed: _isLoading ? null : _handleServerCall,
+          icon: const Icon(Icons.room_service, size: 22),
+          label: Text(
+            l10n.waiter,
+            style: const TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.w700,
+              letterSpacing: 0.5,
+            ),
+          ),
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Colors.white,
+            foregroundColor: const Color(0xFFDC2626),
+            elevation: 6,
+            shadowColor: Colors.black.withValues(alpha: 0.15),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(ClientTokens.radius12),
+            ),
+          ),
+        ),
+      );
+    }
+
+    // Cas 3 : Commande seule
+    if (!_enableServerCall && hasItems) {
+      return SizedBox(
+        width: double.infinity,
+        height: 58,
+        child: ElevatedButton(
+          onPressed: _showOrderReview,
+          style: ElevatedButton.styleFrom(
+            backgroundColor: const Color(0xFFDC2626),
+            foregroundColor: Colors.white,
+            elevation: 8,
+            shadowColor: const Color(0xFFDC2626).withValues(alpha: 0.4),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(ClientTokens.radius12),
+            ),
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Icon(Icons.shopping_cart_rounded, size: 22),
+              const SizedBox(width: 10),
+              Text(
+                '${l10n.viewOrder} (${_cartItemCount})',
+                style: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w800,
+                  letterSpacing: 0.5,
+                ),
+              ),
+              const SizedBox(width: 6),
+              const Icon(Icons.arrow_forward_rounded, size: 20),
+            ],
+          ),
+        ),
+      );
+    }
+
+    // Cas 4 : Rien
+    return const SizedBox.shrink();
+  }
+
+  void _handleServerCall() {
+    final l10n = _l10n(context);
+    final tableId = TableService.getTableId();
+
+    if (tableId == null) {
+      TopToast.show(
+        context,
+        message: l10n.tableNotIdentified,
+        variant: ToastVariant.warning,
+      );
+      return;
+    }
+
+    setState(() => _isLoading = true);
+
+    ServerCallService.callServer(
+      rid: widget.restaurantId,
+      table: 'table$tableId',
+    ).then((_) {
+      if (context.mounted) {
+        TopToast.show(
+          context,
+          message: l10n.waiterCalled,
+          subtitle: l10n.staffComing,
+          variant: ToastVariant.info,
+        );
+      }
+    }).catchError((e) {
+      if (context.mounted) {
+        final error = e.toString();
+        if (error.contains('COOLDOWN_ACTIVE:')) {
+          final seconds = error.split(':')[1];
+          TopToast.show(
+            context,
+            message: l10n.cooldownWait(seconds),
+            variant: ToastVariant.warning,
+          );
+        } else {
+          TopToast.show(
+            context,
+            message: l10n.error(e.toString()),
+            variant: ToastVariant.error,
+          );
+        }
+      }
+    }).whenComplete(() {
+      if (mounted) setState(() => _isLoading = false);
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final code = _restaurantCurrency.toUpperCase();
@@ -688,61 +916,59 @@ class SimpleMenuScreenState extends State<MenuScreen> {
                     ),
                   ),
                   const SliverToBoxAdapter(child: SizedBox(height: 18)),
-                  (() {
-                    if (_isLoading) {
-                      return const SliverToBoxAdapter(
-                        child: Center(
-                          child: Padding(
-                            padding: EdgeInsets.all(40),
-                            child: CircularProgressIndicator(
-                              color: AppColors.accent,
-                            ),
+                  if (_isLoading)
+                    const SliverToBoxAdapter(
+                      child: Center(
+                        child: Padding(
+                          padding: EdgeInsets.all(40),
+                          child: CircularProgressIndicator(
+                            color: AppColors.accent,
                           ),
                         ),
-                      );
-                    } else {
-                      final currentItems = _selectedCategory.isEmpty
-                          ? _menuData.values.expand((v) => v).toList()
-                          : (_menuData[_selectedCategory] ??
-                              const <Map<String, dynamic>>[]);
-                      return SliverPadding(
-                        padding: const EdgeInsets.symmetric(horizontal: 20)
-                            .copyWith(bottom: 96),
-                        sliver: SliverList(
-                          delegate: SliverChildBuilderDelegate(
-                            (context, index) {
-                              final item = currentItems[index];
+                      ),
+                    )
+                  else
+                    SliverPadding(
+                      padding: const EdgeInsets.symmetric(horizontal: 20)
+                          .copyWith(bottom: 96),
+                      sliver: SliverList(
+                        delegate: SliverChildBuilderDelegate(
+                          (context, index) {
+                            final currentItems = _selectedCategory.isEmpty
+                                ? _menuData.values.expand((v) => v).toList()
+                                : (_menuData[_selectedCategory] ??
+                                    const <Map<String, dynamic>>[]);
 
-                              final adapted = {
-                                ...item,
-                                'image': (item['imageUrl'] ?? item['image'])
-                                        as String? ??
-                                    '',
-                                'imageUrl': (item['imageUrl'] ?? item['image'])
-                                        as String? ??
-                                    '',
-                              };
+                            final item = currentItems[index];
+                            final adapted = {
+                              ...item,
+                              'image': (item['imageUrl'] ?? item['image'])
+                                      as String? ??
+                                  '',
+                              'imageUrl': (item['imageUrl'] ?? item['image'])
+                                      as String? ??
+                                  '',
+                            };
+                            final nameKey = (item['name'] ?? '') as String;
 
-                              final nameKey = (item['name'] ?? '') as String;
-
-                              return Padding(
-                                padding: const EdgeInsets.only(bottom: 16),
-                                child: MenuItem(
-                                  pizza: adapted,
-                                  quantity: itemQuantities[nameKey] ?? 0,
-                                  onAddToCart: addToCart,
-                                  onSetQuantity: setItemQuantity,
-                                  onIncreaseQuantity: increaseQuantity,
-                                  onDecreaseQuantity: decreaseQuantity,
-                                ),
-                              );
-                            },
-                            childCount: currentItems.length,
-                          ),
+                            return Padding(
+                              padding: const EdgeInsets.only(bottom: 16),
+                              child: MenuItem(
+                                pizza: adapted,
+                                quantity: itemQuantities[nameKey] ?? 0,
+                                onAddToCart: addToCart,
+                                onSetQuantity: setItemQuantity,
+                                onIncreaseQuantity: increaseQuantity,
+                                onDecreaseQuantity: decreaseQuantity,
+                              ),
+                            );
+                          },
+                          childCount: _selectedCategory.isEmpty
+                              ? _menuData.values.expand((v) => v).length
+                              : (_menuData[_selectedCategory] ?? []).length,
                         ),
-                      );
-                    }
-                  })(),
+                      ),
+                    ),
                   if (!_isAdminPreview)
                     SliverToBoxAdapter(
                       child: Container(
@@ -766,86 +992,32 @@ class SimpleMenuScreenState extends State<MenuScreen> {
               ),
             ),
           ),
-          // MODIFICATION 1 : Panier tout en bas (bottom: 16)
+
+          // Barre d'actions en bas (Serveur + Commande)
           Positioned(
             left: 0,
             right: 0,
-            bottom: 16 + MediaQuery.of(context).padding.bottom,
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: CartFloatingWidget(
-                cartItemCount: _cartItemCount,
-                cartTotal: _cartTotal,
-                onViewOrder: _showOrderReview,
+            bottom: 0,
+            child: Container(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [
+                    Colors.transparent,
+                    Colors.black.withValues(alpha: 0.05),
+                  ],
+                ),
+              ),
+              child: SafeArea(
+                top: false,
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: _buildBottomActions(),
+                ),
               ),
             ),
           ),
-          // MODIFICATION 2 : Bouton Serveur juste au-dessus (bottom: 88) avec adaptation RTL
-          if (!_isAdminPreview)
-            Positioned(
-              // Adaptation RTL automatique
-              left: Directionality.of(context) == TextDirection.rtl ? 16 : null,
-              right:
-                  Directionality.of(context) == TextDirection.ltr ? 16 : null,
-              // Position au-dessus de la barre Commande
-              bottom: 88 + MediaQuery.of(context).padding.bottom,
-              child: FloatingActionButton.extended(
-                onPressed: _isLoading
-                    ? null
-                    : () {
-                        final tableId = TableService.getTableId();
-                        if (tableId == null) {
-                          TopToast.show(
-                            context,
-                            message: _l10n(context).tableNotIdentified,
-                            variant: ToastVariant.warning,
-                          );
-                          return;
-                        }
-
-                        setState(() => _isLoading = true);
-
-                        ServerCallService.callServer(
-                          rid: widget.restaurantId,
-                          table: 'table$tableId',
-                        ).then((_) {
-                          if (context.mounted) {
-                            TopToast.show(
-                              context,
-                              message: _l10n(context).waiterCalled,
-                              subtitle: _l10n(context).staffComing,
-                              variant: ToastVariant.info,
-                            );
-                          }
-                        }).catchError((e) {
-                          if (context.mounted) {
-                            final error = e.toString();
-                            if (error.contains('COOLDOWN_ACTIVE:')) {
-                              final seconds = error.split(':')[1];
-                              TopToast.show(
-                                context,
-                                message: _l10n(context).cooldownWait(seconds),
-                                variant: ToastVariant.warning,
-                              );
-                            } else {
-                              TopToast.show(
-                                context,
-                                message: _l10n(context).error(e.toString()),
-                                variant: ToastVariant.error,
-                              );
-                            }
-                          }
-                        }).whenComplete(() {
-                          if (mounted) setState(() => _isLoading = false);
-                        });
-                      },
-                icon: const Icon(Icons.room_service, size: 20),
-                label: Text(_l10n(context).waiter),
-                backgroundColor: const Color(0xFF6366F1),
-                foregroundColor: Colors.white,
-                elevation: 6,
-              ),
-            ),
         ],
       ),
     );
