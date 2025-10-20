@@ -2068,6 +2068,138 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'New category'**
   String get adminCategoryManagerDefaultName;
+
+  /// Admin signup screen title
+  ///
+  /// In en, this message translates to:
+  /// **'Create your space'**
+  String get adminSignupTitle;
+
+  /// Admin signup subtitle
+  ///
+  /// In en, this message translates to:
+  /// **'Start managing your restaurant in minutes'**
+  String get adminSignupSubtitle;
+
+  /// Email field label
+  ///
+  /// In en, this message translates to:
+  /// **'Professional email'**
+  String get adminSignupEmailLabel;
+
+  /// Email field placeholder
+  ///
+  /// In en, this message translates to:
+  /// **'restaurant@example.com'**
+  String get adminSignupEmailPlaceholder;
+
+  /// Password field label
+  ///
+  /// In en, this message translates to:
+  /// **'Password'**
+  String get adminSignupPasswordLabel;
+
+  /// Password field placeholder
+  ///
+  /// In en, this message translates to:
+  /// **'••••••••'**
+  String get adminSignupPasswordPlaceholder;
+
+  /// Signup button
+  ///
+  /// In en, this message translates to:
+  /// **'Create my account'**
+  String get adminSignupButton;
+
+  /// Already have account text
+  ///
+  /// In en, this message translates to:
+  /// **'Already have an account?'**
+  String get adminSignupAlreadyHaveAccount;
+
+  /// Login link
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in'**
+  String get adminSignupLoginLink;
+
+  /// No description provided for @adminSignupEmailRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter your email'**
+  String get adminSignupEmailRequired;
+
+  /// No description provided for @adminSignupPasswordHint.
+  ///
+  /// In en, this message translates to:
+  /// **'8+ characters recommended'**
+  String get adminSignupPasswordHint;
+
+  /// No description provided for @adminSignupPasswordRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter a password'**
+  String get adminSignupPasswordRequired;
+
+  /// No description provided for @adminSignupPasswordTooShort.
+  ///
+  /// In en, this message translates to:
+  /// **'Password must be at least 8 characters'**
+  String get adminSignupPasswordTooShort;
+
+  /// No description provided for @adminSignupConfirmPasswordLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm password'**
+  String get adminSignupConfirmPasswordLabel;
+
+  /// No description provided for @adminSignupConfirmPasswordRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Please confirm your password'**
+  String get adminSignupConfirmPasswordRequired;
+
+  /// No description provided for @adminSignupPasswordMismatch.
+  ///
+  /// In en, this message translates to:
+  /// **'Passwords do not match'**
+  String get adminSignupPasswordMismatch;
+
+  /// No description provided for @adminSignupButtonLoading.
+  ///
+  /// In en, this message translates to:
+  /// **'Creating account...'**
+  String get adminSignupButtonLoading;
+
+  /// No description provided for @adminSignupErrorGeneric.
+  ///
+  /// In en, this message translates to:
+  /// **'Unable to create account. Check your information.'**
+  String get adminSignupErrorGeneric;
+
+  /// No description provided for @adminSignupErrorUnknown.
+  ///
+  /// In en, this message translates to:
+  /// **'An error occurred. Please try again.'**
+  String get adminSignupErrorUnknown;
+
+  /// Default menu language setting
+  ///
+  /// In en, this message translates to:
+  /// **'Default menu language'**
+  String get adminSettingsDefaultLanguage;
+
+  /// Default language subtitle
+  ///
+  /// In en, this message translates to:
+  /// **'Language shown to clients by default'**
+  String get adminSettingsDefaultLanguageSubtitle;
+
+  /// Default language updated message
+  ///
+  /// In en, this message translates to:
+  /// **'Default language updated'**
+  String get adminSettingsDefaultLanguageUpdated;
 }
 
 class _AppLocalizationsDelegate

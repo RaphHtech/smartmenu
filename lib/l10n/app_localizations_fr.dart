@@ -1156,4 +1156,78 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get adminCategoryManagerDefaultName => 'Nouvelle catégorie';
+
+  @override
+  String get adminSignupTitle => 'Créer votre espace';
+
+  @override
+  String get adminSignupSubtitle =>
+      'Commencez à gérer votre restaurant en quelques minutes';
+
+  @override
+  String get adminSignupEmailLabel => 'Email professionnel';
+
+  @override
+  String get adminSignupEmailPlaceholder => 'restaurant@exemple.com';
+
+  @override
+  String get adminSignupPasswordLabel => 'Mot de passe';
+
+  @override
+  String get adminSignupPasswordPlaceholder => '••••••••';
+
+  @override
+  String get adminSignupButton => 'Créer mon espace';
+
+  @override
+  String get adminSignupAlreadyHaveAccount => 'Déjà un compte ?';
+
+  @override
+  String get adminSignupLoginLink => 'Se connecter';
+
+  @override
+  String get adminSignupEmailRequired => 'Veuillez saisir votre email';
+
+  @override
+  String get adminSignupPasswordHint => '8+ caractères recommandés';
+
+  @override
+  String get adminSignupPasswordRequired => 'Veuillez saisir un mot de passe';
+
+  @override
+  String get adminSignupPasswordTooShort =>
+      'Le mot de passe doit contenir au moins 8 caractères';
+
+  @override
+  String get adminSignupConfirmPasswordLabel => 'Confirmer le mot de passe';
+
+  @override
+  String get adminSignupConfirmPasswordRequired =>
+      'Veuillez confirmer votre mot de passe';
+
+  @override
+  String get adminSignupPasswordMismatch =>
+      'Les mots de passe ne correspondent pas';
+
+  @override
+  String get adminSignupButtonLoading => 'Création en cours...';
+
+  @override
+  String get adminSignupErrorGeneric =>
+      'Impossible de créer le compte. Vérifiez vos informations.';
+
+  @override
+  String get adminSignupErrorUnknown =>
+      'Une erreur est survenue. Veuillez réessayer.';
+
+  @override
+  String get adminSettingsDefaultLanguage => 'Langue par défaut du menu';
+
+  @override
+  String get adminSettingsDefaultLanguageSubtitle =>
+      'Langue affichée aux clients par défaut';
+
+  @override
+  String get adminSettingsDefaultLanguageUpdated =>
+      'Langue par défaut mise à jour';
 }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class LanguageService {
   static const String _languageKey = 'app_language';
@@ -21,7 +22,40 @@ class LanguageService {
     }
 
     // Si pas de langue sauvegardée, retourne null (système par défaut)
-    return const Locale('he'); // Fallback hebreu
+    return const Locale('fr'); // Fallback français
+  }
+
+// Récupère la langue par défaut du restaurant (pour le menu client)
+  static Future<Locale> getRestaurantDefaultLanguage(
+      String? restaurantId) async {
+    // 1. Si l'utilisateur a déjà choisi une langue, utilise-la
+    final prefs = await SharedPreferences.getInstance();
+    final savedLang = prefs.getString(_languageKey);
+    if (savedLang != null) {
+      return Locale(savedLang);
+    }
+
+    // 2. Si on a un restaurantId, récupère la langue par défaut de l'admin
+    if (restaurantId != null && restaurantId.isNotEmpty) {
+      try {
+        final doc = await FirebaseFirestore.instance
+            .collection('restaurants')
+            .doc(restaurantId)
+            .collection('info')
+            .doc('details')
+            .get();
+
+        final defaultLang = doc.data()?['defaultLanguage'] as String?;
+        if (defaultLang != null && ['fr', 'en', 'he'].contains(defaultLang)) {
+          return Locale(defaultLang);
+        }
+      } catch (e) {
+        debugPrint('Erreur chargement langue restaurant: $e');
+      }
+    }
+
+    // 3. Sinon, fallback anglais
+    return const Locale('en');
   }
 
   // Sauvegarde la langue choisie

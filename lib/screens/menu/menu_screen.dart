@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:smartmenu_app/core/design/client_tokens.dart';
 import 'package:smartmenu_app/services/analytics_service.dart';
 import 'package:smartmenu_app/services/table_service.dart';
+import 'package:smartmenu_app/state/language_provider.dart';
 import 'package:smartmenu_app/widgets/badges_legend_widget.dart';
 import '../../core/constants/colors.dart';
 import '../../widgets/category_pill_widget.dart';
@@ -16,6 +17,8 @@ import '../../services/server_call_service.dart';
 import '../../state/currency_scope.dart';
 import '../../widgets/common/top_toast.dart';
 import '../../l10n/app_localizations.dart';
+import 'package:provider/provider.dart';
+import '../../services/language_service.dart';
 
 List<String> applyOrderAndHide(
   Set<String> allCats,
@@ -254,6 +257,7 @@ class SimpleMenuScreenState extends State<MenuScreen> {
       TableService.setTableId(tableId);
     }
 
+    _loadLanguage();
     _hydrate();
     AnalyticsService.logMenuOpen(widget.restaurantId,
         tableId: TableService.getTableId());
@@ -277,6 +281,17 @@ class SimpleMenuScreenState extends State<MenuScreen> {
         .get();
 
     return snap.data() ?? {};
+  }
+
+  Future<void> _loadLanguage() async {
+    final locale =
+        await LanguageService.getRestaurantDefaultLanguage(widget.restaurantId);
+    if (mounted) {
+      // Applique la langue au Provider
+      final languageProvider =
+          Provider.of<LanguageProvider>(context, listen: false);
+      await languageProvider.setLocale(locale);
+    }
   }
 
   void addToCart(String itemName, double price) {

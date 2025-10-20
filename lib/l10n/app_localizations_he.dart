@@ -1140,4 +1140,72 @@ class AppLocalizationsHe extends AppLocalizations {
 
   @override
   String get adminCategoryManagerDefaultName => 'קטגוריה חדשה';
+
+  @override
+  String get adminSignupTitle => 'צור את המרחב שלך';
+
+  @override
+  String get adminSignupSubtitle => 'התחל לנהל את המסעדה שלך תוך דקות';
+
+  @override
+  String get adminSignupEmailLabel => 'אימייל מקצועי';
+
+  @override
+  String get adminSignupEmailPlaceholder => 'restaurant@example.com';
+
+  @override
+  String get adminSignupPasswordLabel => 'סיסמה';
+
+  @override
+  String get adminSignupPasswordPlaceholder => '••••••••';
+
+  @override
+  String get adminSignupButton => 'צור חשבון';
+
+  @override
+  String get adminSignupAlreadyHaveAccount => 'כבר יש לך חשבון?';
+
+  @override
+  String get adminSignupLoginLink => 'התחבר';
+
+  @override
+  String get adminSignupEmailRequired => 'נא להזין את האימייל שלך';
+
+  @override
+  String get adminSignupPasswordHint => 'מומלץ 8+ תווים';
+
+  @override
+  String get adminSignupPasswordRequired => 'נא להזין סיסמה';
+
+  @override
+  String get adminSignupPasswordTooShort => 'הסיסמה חייבת להכיל לפחות 8 תווים';
+
+  @override
+  String get adminSignupConfirmPasswordLabel => 'אשר סיסמה';
+
+  @override
+  String get adminSignupConfirmPasswordRequired => 'נא לאשר את הסיסמה שלך';
+
+  @override
+  String get adminSignupPasswordMismatch => 'הסיסמאות אינן תואמות';
+
+  @override
+  String get adminSignupButtonLoading => 'יוצר חשבון...';
+
+  @override
+  String get adminSignupErrorGeneric =>
+      'לא ניתן ליצור חשבון. בדוק את המידע שלך.';
+
+  @override
+  String get adminSignupErrorUnknown => 'אירעה שגיאה. אנא נסה שוב.';
+
+  @override
+  String get adminSettingsDefaultLanguage => 'שפת תפריט ברירת מחדל';
+
+  @override
+  String get adminSettingsDefaultLanguageSubtitle =>
+      'שפה המוצגת ללקוחות כברירת מחדל';
+
+  @override
+  String get adminSettingsDefaultLanguageUpdated => 'שפת ברירת המחדל עודכנה';
 }

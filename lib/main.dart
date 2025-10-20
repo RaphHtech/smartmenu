@@ -50,6 +50,18 @@ class SmartMenuApp extends StatelessWidget {
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
           locale: languageProvider.locale, // Langue du provider
+          builder: (context, child) {
+            final locale = languageProvider.locale;
+            // Force LTR pour français et anglais, garde RTL pour hébreu
+            final textDirection = locale.languageCode == 'he'
+                ? TextDirection.rtl
+                : TextDirection.ltr;
+
+            return Directionality(
+              textDirection: textDirection,
+              child: child!,
+            );
+          },
 
           home: _getInitialScreen(),
           theme: _buildTheme(),

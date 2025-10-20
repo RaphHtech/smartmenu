@@ -1,6 +1,9 @@
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:provider/provider.dart';
+import 'package:smartmenu_app/l10n/app_localizations.dart';
+import 'package:smartmenu_app/state/language_provider.dart';
 import '../../core/design/admin_tokens.dart';
 import 'create_restaurant_screen.dart';
 
@@ -53,12 +56,11 @@ class _AdminSignupScreenState extends State<AdminSignupScreen> {
       // Log détaillé en debug seulement
       debugPrint('Signup error: ${e.code}');
       setState(() {
-        _errorMessage =
-            'Impossible de créer le compte. Vérifiez vos informations.';
+        _errorMessage = AppLocalizations.of(context)!.adminSignupErrorGeneric;
       });
     } catch (_) {
-      setState(
-          () => _errorMessage = 'Une erreur est survenue. Veuillez réessayer.');
+      setState(() => _errorMessage =
+          AppLocalizations.of(context)!.adminSignupErrorUnknown);
     } finally {
       if (mounted) setState(() => _isLoading = false);
     }
@@ -117,8 +119,51 @@ class _AdminSignupScreenState extends State<AdminSignupScreen> {
                                 ),
                                 const SizedBox(height: AdminTokens.space24),
 
+                                const Text(
+                                  'Langue / Language / שפה',
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w600,
+                                    color: AdminTokens.neutral700,
+                                  ),
+                                ),
+                                const SizedBox(height: AdminTokens.space12),
+
+                                Consumer<LanguageProvider>(
+                                  builder: (context, languageProvider, _) {
+                                    return SegmentedButton<Locale>(
+                                      selected: {languageProvider.locale},
+                                      onSelectionChanged:
+                                          (Set<Locale> selection) async {
+                                        await languageProvider
+                                            .setLocale(selection.first);
+                                        if (context.mounted) {
+                                          setState(() {});
+                                        }
+                                      },
+                                      segments: const [
+                                        ButtonSegment(
+                                          value: Locale('fr'),
+                                          label: Text('🇫🇷 FR'),
+                                        ),
+                                        ButtonSegment(
+                                          value: Locale('en'),
+                                          label: Text('🇬🇧 EN'),
+                                        ),
+                                        ButtonSegment(
+                                          value: Locale('he'),
+                                          label: Text('🇮🇱 HE'),
+                                        ),
+                                      ],
+                                    );
+                                  },
+                                ),
+
+                                const SizedBox(height: AdminTokens.space32),
+
                                 Text(
-                                  'Créer votre espace',
+                                  AppLocalizations.of(context)!
+                                      .adminSignupTitle,
                                   textAlign: TextAlign.center,
                                   style: TextStyle(
                                     fontSize:
@@ -132,10 +177,11 @@ class _AdminSignupScreenState extends State<AdminSignupScreen> {
                                 ),
                                 const SizedBox(height: AdminTokens.space8),
 
-                                const Text(
-                                  'Rejoignez des milliers de restaurateurs',
+                                Text(
+                                  AppLocalizations.of(context)!
+                                      .adminSignupSubtitle,
                                   textAlign: TextAlign.center,
-                                  style: TextStyle(
+                                  style: const TextStyle(
                                     fontSize: 16,
                                     color: AdminTokens.neutral600,
                                     height: 1.4,
@@ -157,7 +203,8 @@ class _AdminSignupScreenState extends State<AdminSignupScreen> {
                                     color: AdminTokens.neutral900,
                                   ),
                                   decoration: InputDecoration(
-                                    labelText: 'Email professionnel',
+                                    labelText: AppLocalizations.of(context)!
+                                        .adminSignupEmailLabel,
                                     labelStyle: const TextStyle(
                                         color: AdminTokens.neutral600),
                                     prefixIcon: const Icon(
@@ -185,13 +232,15 @@ class _AdminSignupScreenState extends State<AdminSignupScreen> {
                                     ),
                                   ),
                                   validator: (v) => (v == null || v.isEmpty)
-                                      ? 'Veuillez saisir votre email'
+                                      ? AppLocalizations.of(context)!
+                                          .adminSignupEmailRequired
                                       : null,
                                 ),
                                 const SizedBox(height: AdminTokens.space4),
-                                const Text(
-                                  '8+ caractères recommandés',
-                                  style: TextStyle(
+                                Text(
+                                  AppLocalizations.of(context)!
+                                      .adminSignupPasswordHint,
+                                  style: const TextStyle(
                                     fontSize: 12,
                                     color: AdminTokens.neutral500,
                                   ),
@@ -211,7 +260,8 @@ class _AdminSignupScreenState extends State<AdminSignupScreen> {
                                     color: AdminTokens.neutral900,
                                   ),
                                   decoration: InputDecoration(
-                                    labelText: 'Mot de passe',
+                                    labelText: AppLocalizations.of(context)!
+                                        .adminSignupPasswordLabel,
                                     labelStyle: const TextStyle(
                                         color: AdminTokens.neutral600),
                                     prefixIcon: const Icon(
@@ -254,10 +304,12 @@ class _AdminSignupScreenState extends State<AdminSignupScreen> {
                                   ),
                                   validator: (v) {
                                     if (v == null || v.isEmpty) {
-                                      return 'Veuillez saisir un mot de passe';
+                                      return AppLocalizations.of(context)!
+                                          .adminSignupPasswordRequired;
                                     }
                                     if (v.length < 8) {
-                                      return 'Le mot de passe doit contenir au moins 8 caractères';
+                                      return AppLocalizations.of(context)!
+                                          .adminSignupPasswordTooShort;
                                     }
                                     return null;
                                   },
@@ -278,7 +330,8 @@ class _AdminSignupScreenState extends State<AdminSignupScreen> {
                                     color: AdminTokens.neutral900,
                                   ),
                                   decoration: InputDecoration(
-                                    labelText: 'Confirmer le mot de passe',
+                                    labelText: AppLocalizations.of(context)!
+                                        .adminSignupConfirmPasswordLabel,
                                     labelStyle: const TextStyle(
                                         color: AdminTokens.neutral600),
                                     prefixIcon: const Icon(
@@ -322,10 +375,12 @@ class _AdminSignupScreenState extends State<AdminSignupScreen> {
                                   ),
                                   validator: (v) {
                                     if (v == null || v.isEmpty) {
-                                      return 'Veuillez confirmer votre mot de passe';
+                                      return AppLocalizations.of(context)!
+                                          .adminSignupConfirmPasswordRequired;
                                     }
                                     if (v != _passwordController.text) {
-                                      return 'Les mots de passe ne correspondent pas';
+                                      return AppLocalizations.of(context)!
+                                          .adminSignupPasswordMismatch;
                                     }
                                     return null;
                                   },
@@ -387,11 +442,11 @@ class _AdminSignupScreenState extends State<AdminSignupScreen> {
                                       ),
                                     ),
                                     child: _isLoading
-                                        ? const Row(
+                                        ? Row(
                                             mainAxisAlignment:
                                                 MainAxisAlignment.center,
                                             children: [
-                                              SizedBox(
+                                              const SizedBox(
                                                 height: 20,
                                                 width: 20,
                                                 child:
@@ -404,16 +459,19 @@ class _AdminSignupScreenState extends State<AdminSignupScreen> {
                                                   ),
                                                 ),
                                               ),
-                                              SizedBox(
+                                              const SizedBox(
                                                   width: AdminTokens.space8),
                                               Text(
-                                                'Création en cours...',
-                                                semanticsLabel:
-                                                    'Création en cours',
+                                                AppLocalizations.of(context)!
+                                                    .adminSignupButtonLoading,
+                                                semanticsLabel: AppLocalizations
+                                                        .of(context)!
+                                                    .adminSignupButtonLoading,
                                               ),
                                             ],
                                           )
-                                        : const Text('Créer mon espace'),
+                                        : Text(AppLocalizations.of(context)!
+                                            .adminSignupButton),
                                   ),
                                 ),
                                 const SizedBox(height: AdminTokens.space16),
@@ -426,8 +484,9 @@ class _AdminSignupScreenState extends State<AdminSignupScreen> {
                                       foregroundColor: AdminTokens.neutral600,
                                       textStyle: const TextStyle(fontSize: 14),
                                     ),
-                                    child: const Text(
-                                        'Déjà un compte ? Se connecter'),
+                                    child: Text(
+                                      '${AppLocalizations.of(context)!.adminSignupAlreadyHaveAccount} ${AppLocalizations.of(context)!.adminSignupLoginLink}',
+                                    ),
                                   ),
                                 ),
                               ],

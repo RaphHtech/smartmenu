@@ -1904,5 +1904,79 @@
   "adminCategoryManagerDefaultName": "New category",
   "@adminCategoryManagerDefaultName": {
     "description": "Default new category name"
-  }
+  },
+
+"adminSignupTitle": "Create your space",
+"@adminSignupTitle": {
+  "description": "Admin signup screen title"
+},
+
+"adminSignupSubtitle": "Start managing your restaurant in minutes",
+"@adminSignupSubtitle": {
+  "description": "Admin signup subtitle"
+},
+
+"adminSignupEmailLabel": "Professional email",
+"@adminSignupEmailLabel": {
+  "description": "Email field label"
+},
+
+"adminSignupEmailPlaceholder": "restaurant@example.com",
+"@adminSignupEmailPlaceholder": {
+  "description": "Email field placeholder"
+},
+
+"adminSignupPasswordLabel": "Password",
+"@adminSignupPasswordLabel": {
+  "description": "Password field label"
+},
+
+"adminSignupPasswordPlaceholder": "••••••••",
+"@adminSignupPasswordPlaceholder": {
+  "description": "Password field placeholder"
+},
+
+"adminSignupButton": "Create my account",
+"@adminSignupButton": {
+  "description": "Signup button"
+},
+
+"adminSignupAlreadyHaveAccount": "Already have an account?",
+"@adminSignupAlreadyHaveAccount": {
+  "description": "Already have account text"
+},
+
+"adminSignupLoginLink": "Sign in",
+"@adminSignupLoginLink": {
+  "description": "Login link"
+},
+
+"adminSignupEmailLabel": "Professional email",
+"adminSignupEmailRequired": "Please enter your email",
+"adminSignupPasswordLabel": "Password",
+"adminSignupPasswordHint": "8+ characters recommended",
+"adminSignupPasswordRequired": "Please enter a password",
+"adminSignupPasswordTooShort": "Password must be at least 8 characters",
+"adminSignupConfirmPasswordLabel": "Confirm password",
+"adminSignupConfirmPasswordRequired": "Please confirm your password",
+"adminSignupPasswordMismatch": "Passwords do not match",
+"adminSignupButton": "Create my account",
+"adminSignupButtonLoading": "Creating account...",
+"adminSignupAlreadyHaveAccount": "Already have an account?",
+"adminSignupLoginLink": "Sign in",
+"adminSignupErrorGeneric": "Unable to create account. Check your information.",
+"adminSignupErrorUnknown": "An error occurred. Please try again.",
+
+"adminSettingsDefaultLanguage": "Default menu language",
+"@adminSettingsDefaultLanguage": {
+  "description": "Default menu language setting"
+},
+"adminSettingsDefaultLanguageSubtitle": "Language shown to clients by default",
+"@adminSettingsDefaultLanguageSubtitle": {
+  "description": "Default language subtitle"
+},
+"adminSettingsDefaultLanguageUpdated": "Default language updated",
+"@adminSettingsDefaultLanguageUpdated": {
+  "description": "Default language updated message"
+}
 }

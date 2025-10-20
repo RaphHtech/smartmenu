@@ -1904,5 +1904,79 @@
   "adminCategoryManagerDefaultName": "קטגוריה חדשה",
   "@adminCategoryManagerDefaultName": {
     "description": "Default new category name"
-  }
+  },
+
+"adminSignupTitle": "צור את המרחב שלך",
+"@adminSignupTitle": {
+  "description": "Admin signup screen title"
+},
+
+"adminSignupSubtitle": "התחל לנהל את המסעדה שלך תוך דקות",
+"@adminSignupSubtitle": {
+  "description": "Admin signup subtitle"
+},
+
+"adminSignupEmailLabel": "אימייל מקצועי",
+"@adminSignupEmailLabel": {
+  "description": "Email field label"
+},
+
+"adminSignupEmailPlaceholder": "restaurant@example.com",
+"@adminSignupEmailPlaceholder": {
+  "description": "Email field placeholder"
+},
+
+"adminSignupPasswordLabel": "סיסמה",
+"@adminSignupPasswordLabel": {
+  "description": "Password field label"
+},
+
+"adminSignupPasswordPlaceholder": "••••••••",
+"@adminSignupPasswordPlaceholder": {
+  "description": "Password field placeholder"
+},
+
+"adminSignupButton": "צור חשבון",
+"@adminSignupButton": {
+  "description": "Signup button"
+},
+
+"adminSignupAlreadyHaveAccount": "כבר יש לך חשבון?",
+"@adminSignupAlreadyHaveAccount": {
+  "description": "Already have account text"
+},
+
+"adminSignupLoginLink": "התחבר",
+"@adminSignupLoginLink": {
+  "description": "Login link"
+},
+
+"adminSignupEmailLabel": "אימייל מקצועי",
+"adminSignupEmailRequired": "נא להזין את האימייל שלך",
+"adminSignupPasswordLabel": "סיסמה",
+"adminSignupPasswordHint": "מומלץ 8+ תווים",
+"adminSignupPasswordRequired": "נא להזין סיסמה",
+"adminSignupPasswordTooShort": "הסיסמה חייבת להכיל לפחות 8 תווים",
+"adminSignupConfirmPasswordLabel": "אשר סיסמה",
+"adminSignupConfirmPasswordRequired": "נא לאשר את הסיסמה שלך",
+"adminSignupPasswordMismatch": "הסיסמאות אינן תואמות",
+"adminSignupButton": "צור חשבון",
+"adminSignupButtonLoading": "יוצר חשבון...",
+"adminSignupAlreadyHaveAccount": "כבר יש לך חשבון?",
+"adminSignupLoginLink": "התחבר",
+"adminSignupErrorGeneric": "לא ניתן ליצור חשבון. בדוק את המידע שלך.",
+"adminSignupErrorUnknown": "אירעה שגיאה. אנא נסה שוב.",
+
+"adminSettingsDefaultLanguage": "שפת תפריט ברירת מחדל",
+"@adminSettingsDefaultLanguage": {
+  "description": "Default menu language setting"
+},
+"adminSettingsDefaultLanguageSubtitle": "שפה המוצגת ללקוחות כברירת מחדל",
+"@adminSettingsDefaultLanguageSubtitle": {
+  "description": "Default language subtitle"
+},
+"adminSettingsDefaultLanguageUpdated": "שפת ברירת המחדל עודכנה",
+"@adminSettingsDefaultLanguageUpdated": {
+  "description": "Default language updated message"
+}
 }

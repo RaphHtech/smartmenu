@@ -1904,5 +1904,79 @@
   "adminCategoryManagerDefaultName": "Nouvelle catégorie",
   "@adminCategoryManagerDefaultName": {
     "description": "Default new category name"
-  }
+  },
+
+"adminSignupTitle": "Créer votre espace",
+"@adminSignupTitle": {
+  "description": "Admin signup screen title"
+},
+
+"adminSignupSubtitle": "Commencez à gérer votre restaurant en quelques minutes",
+"@adminSignupSubtitle": {
+  "description": "Admin signup subtitle"
+},
+
+"adminSignupEmailLabel": "Email professionnel",
+"@adminSignupEmailLabel": {
+  "description": "Email field label"
+},
+
+"adminSignupEmailPlaceholder": "restaurant@exemple.com",
+"@adminSignupEmailPlaceholder": {
+  "description": "Email field placeholder"
+},
+
+"adminSignupPasswordLabel": "Mot de passe",
+"@adminSignupPasswordLabel": {
+  "description": "Password field label"
+},
+
+"adminSignupPasswordPlaceholder": "••••••••",
+"@adminSignupPasswordPlaceholder": {
+  "description": "Password field placeholder"
+},
+
+"adminSignupButton": "Créer mon compte",
+"@adminSignupButton": {
+  "description": "Signup button"
+},
+
+"adminSignupAlreadyHaveAccount": "Vous avez déjà un compte ?",
+"@adminSignupAlreadyHaveAccount": {
+  "description": "Already have account text"
+},
+
+"adminSignupLoginLink": "Se connecter",
+"@adminSignupLoginLink": {
+  "description": "Login link"
+},
+
+"adminSignupEmailLabel": "Email professionnel",
+"adminSignupEmailRequired": "Veuillez saisir votre email",
+"adminSignupPasswordLabel": "Mot de passe",
+"adminSignupPasswordHint": "8+ caractères recommandés",
+"adminSignupPasswordRequired": "Veuillez saisir un mot de passe",
+"adminSignupPasswordTooShort": "Le mot de passe doit contenir au moins 8 caractères",
+"adminSignupConfirmPasswordLabel": "Confirmer le mot de passe",
+"adminSignupConfirmPasswordRequired": "Veuillez confirmer votre mot de passe",
+"adminSignupPasswordMismatch": "Les mots de passe ne correspondent pas",
+"adminSignupButton": "Créer mon espace",
+"adminSignupButtonLoading": "Création en cours...",
+"adminSignupAlreadyHaveAccount": "Déjà un compte ?",
+"adminSignupLoginLink": "Se connecter",
+"adminSignupErrorGeneric": "Impossible de créer le compte. Vérifiez vos informations.",
+"adminSignupErrorUnknown": "Une erreur est survenue. Veuillez réessayer.",
+
+"adminSettingsDefaultLanguage": "Langue par défaut du menu",
+"@adminSettingsDefaultLanguage": {
+  "description": "Default menu language setting"
+},
+"adminSettingsDefaultLanguageSubtitle": "Langue affichée aux clients par défaut",
+"@adminSettingsDefaultLanguageSubtitle": {
+  "description": "Default language subtitle"
+},
+"adminSettingsDefaultLanguageUpdated": "Langue par défaut mise à jour",
+"@adminSettingsDefaultLanguageUpdated": {
+  "description": "Default language updated message"
+}
 }

@@ -36,12 +36,16 @@ class _AdminSettingsScreenState extends State<AdminSettingsScreen> {
   bool _isEditing = false;
   String? _currentName;
   String? _error;
+  String _selectedLanguage = 'en';
 
   @override
   void initState() {
     super.initState();
-    _loadRestaurantName();
-    _addCodeToExistingRestaurant();
+    // ✅ Appeler APRÈS que le contexte soit prêt
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _loadRestaurantName();
+      _addCodeToExistingRestaurant();
+    });
   }
 
   @override
@@ -62,16 +66,30 @@ class _AdminSettingsScreenState extends State<AdminSettingsScreen> {
           .get();
 
       if (doc.exists && mounted) {
+        // ✅ SYNTAXE ORIGINALE (qui marchait)
         final name = doc.data()?['name'] as String? ?? 'Mon Restaurant';
+        final defaultLang = doc.data()?['defaultLanguage'] as String? ?? 'en';
+
         setState(() {
           _currentName = name;
           _nameController.text = name;
+          _selectedLanguage = defaultLang;
+        });
+      } else if (mounted) {
+        setState(() {
+          _currentName = 'Mon Restaurant';
+          _nameController.text = 'Mon Restaurant';
+          _selectedLanguage = 'en';
         });
       }
     } catch (e) {
-      setState(() {
-        _error = l10n.adminSettingsLoadError;
-      });
+      debugPrint('Erreur chargement restaurant: $e');
+      if (mounted) {
+        setState(() {
+          _error = l10n.adminSettingsLoadError;
+          _selectedLanguage = 'en';
+        });
+      }
     }
   }
 
@@ -128,6 +146,37 @@ class _AdminSettingsScreenState extends State<AdminSettingsScreen> {
       _isEditing = false;
       _error = null;
     });
+  }
+
+  Future<void> _updateDefaultLanguage(String languageCode) async {
+    final l10n = AppLocalizations.of(context)!;
+
+    try {
+      await FirebaseFirestore.instance
+          .collection('restaurants')
+          .doc(widget.restaurantId)
+          .collection('info')
+          .doc('details')
+          .update({'defaultLanguage': languageCode});
+
+      setState(() {
+        _selectedLanguage = languageCode;
+      });
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(l10n.adminSettingsDefaultLanguageUpdated),
+          backgroundColor: Theme.of(context).colorScheme.primaryContainer,
+        ),
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Erreur: $e'),
+          backgroundColor: Theme.of(context).colorScheme.error,
+        ),
+      );
+    }
   }
 
   @override
@@ -308,6 +357,100 @@ class _AdminSettingsScreenState extends State<AdminSettingsScreen> {
 
             const SizedBox(height: AdminTokens.space24),
 
+            // Langue par défaut du menu
+            Card(
+              elevation: 0,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(AdminTokens.radius16),
+                side: const BorderSide(color: AdminTokens.border),
+              ),
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(AdminTokens.radius16),
+                  boxShadow: AdminTokens.shadowMd,
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(AdminTokens.space20),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          const Icon(
+                            Icons.language,
+                            color: AdminTokens.primary600,
+                          ),
+                          const SizedBox(width: AdminTokens.space12),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  l10n.adminSettingsDefaultLanguage,
+                                  style: AdminTypography.headlineMedium,
+                                ),
+                                const SizedBox(height: 4),
+                                Text(
+                                  l10n.adminSettingsDefaultLanguageSubtitle,
+                                  style: AdminTypography.bodySmall.copyWith(
+                                    color: AdminTokens.neutral600,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: AdminTokens.space16),
+                      LayoutBuilder(
+                        builder: (context, constraints) {
+                          final isMobile = constraints.maxWidth < 400;
+
+                          return SizedBox(
+                            width: double.infinity,
+                            child: SegmentedButton<String>(
+                              selected: {_selectedLanguage},
+                              onSelectionChanged: (Set<String> selection) {
+                                _updateDefaultLanguage(selection.first);
+                              },
+                              segments: [
+                                ButtonSegment(
+                                  value: 'fr',
+                                  label: Text(
+                                    isMobile ? '🇫🇷 FR' : '🇫🇷 Français',
+                                    style:
+                                        TextStyle(fontSize: isMobile ? 12 : 14),
+                                  ),
+                                ),
+                                ButtonSegment(
+                                  value: 'en',
+                                  label: Text(
+                                    isMobile ? '🇬🇧 EN' : '🇬🇧 English',
+                                    style:
+                                        TextStyle(fontSize: isMobile ? 12 : 14),
+                                  ),
+                                ),
+                                ButtonSegment(
+                                  value: 'he',
+                                  label: Text(
+                                    isMobile ? '🇮🇱 HE' : '🇮🇱 עברית',
+                                    style:
+                                        TextStyle(fontSize: isMobile ? 12 : 14),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          );
+                        },
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+
+            const SizedBox(height: AdminTokens.space24),
             // Autres paramètres
             Card(
               elevation: 0,

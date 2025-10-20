@@ -1142,4 +1142,74 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get adminCategoryManagerDefaultName => 'New category';
+
+  @override
+  String get adminSignupTitle => 'Create your space';
+
+  @override
+  String get adminSignupSubtitle => 'Start managing your restaurant in minutes';
+
+  @override
+  String get adminSignupEmailLabel => 'Professional email';
+
+  @override
+  String get adminSignupEmailPlaceholder => 'restaurant@example.com';
+
+  @override
+  String get adminSignupPasswordLabel => 'Password';
+
+  @override
+  String get adminSignupPasswordPlaceholder => '••••••••';
+
+  @override
+  String get adminSignupButton => 'Create my account';
+
+  @override
+  String get adminSignupAlreadyHaveAccount => 'Already have an account?';
+
+  @override
+  String get adminSignupLoginLink => 'Sign in';
+
+  @override
+  String get adminSignupEmailRequired => 'Please enter your email';
+
+  @override
+  String get adminSignupPasswordHint => '8+ characters recommended';
+
+  @override
+  String get adminSignupPasswordRequired => 'Please enter a password';
+
+  @override
+  String get adminSignupPasswordTooShort =>
+      'Password must be at least 8 characters';
+
+  @override
+  String get adminSignupConfirmPasswordLabel => 'Confirm password';
+
+  @override
+  String get adminSignupConfirmPasswordRequired =>
+      'Please confirm your password';
+
+  @override
+  String get adminSignupPasswordMismatch => 'Passwords do not match';
+
+  @override
+  String get adminSignupButtonLoading => 'Creating account...';
+
+  @override
+  String get adminSignupErrorGeneric =>
+      'Unable to create account. Check your information.';
+
+  @override
+  String get adminSignupErrorUnknown => 'An error occurred. Please try again.';
+
+  @override
+  String get adminSettingsDefaultLanguage => 'Default menu language';
+
+  @override
+  String get adminSettingsDefaultLanguageSubtitle =>
+      'Language shown to clients by default';
+
+  @override
+  String get adminSettingsDefaultLanguageUpdated => 'Default language updated';
 }
