@@ -4,6 +4,7 @@ import 'package:flutter/semantics.dart';
 import '../../core/design/client_tokens.dart';
 import '../../l10n/app_localizations.dart';
 import '../../services/currency_service.dart';
+import '../../core/constants/colors.dart';
 
 class OrderReviewModal extends StatelessWidget {
   final Map<String, int> itemQuantities;
@@ -58,7 +59,7 @@ class OrderReviewModal extends StatelessWidget {
               width: 40,
               height: 4,
               decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.outlineVariant,
+                color: AppColors.grey300,
                 borderRadius: BorderRadius.circular(2),
               ),
             ),
@@ -98,9 +99,9 @@ class OrderReviewModal extends StatelessWidget {
       ),
       child: Row(
         children: [
-          Icon(
+          const Icon(
             Icons.receipt_long_rounded,
-            color: colorScheme.primary,
+            color: AppColors.primary,
             size: 24,
           ),
           const SizedBox(width: ClientTokens.space12),
@@ -130,10 +131,10 @@ class OrderReviewModal extends StatelessWidget {
       width: double.infinity,
       padding: const EdgeInsetsDirectional.all(ClientTokens.space16),
       decoration: BoxDecoration(
-        color: colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
+        color: AppColors.grey100,
         borderRadius: BorderRadius.circular(ClientTokens.radius16),
         border: Border.all(
-          color: colorScheme.outlineVariant,
+          color: AppColors.grey200,
           width: 1,
         ),
       ),
@@ -168,7 +169,7 @@ class OrderReviewModal extends StatelessWidget {
               key: ValueKey(cartTotal.toStringAsFixed(2)),
               style: theme.textTheme.titleLarge?.copyWith(
                 fontWeight: FontWeight.w900,
-                color: colorScheme.primary,
+                color: AppColors.primary,
               ),
             ),
           ),
@@ -183,10 +184,10 @@ class OrderReviewModal extends StatelessWidget {
     final l10n = _l10n(context);
 
     return Container(
-      decoration: BoxDecoration(
+      decoration: const BoxDecoration(
         border: Border(
-          top: BorderSide(
-            color: colorScheme.outlineVariant,
+          bottom: BorderSide(
+            color: AppColors.grey200,
             width: 1,
           ),
         ),
@@ -211,6 +212,7 @@ class OrderReviewModal extends StatelessWidget {
                     overflow: TextOverflow.ellipsis,
                   ),
                   style: OutlinedButton.styleFrom(
+                    foregroundColor: AppColors.textPrimary,
                     minimumSize: const Size(120, 52),
                     shape: RoundedRectangleBorder(
                       borderRadius:
@@ -244,6 +246,9 @@ class OrderReviewModal extends StatelessWidget {
                         child: FilledButton(
                           onPressed: () => _confirmOrder(context),
                           style: FilledButton.styleFrom(
+                            backgroundColor: AppColors.primary,
+                            foregroundColor: AppColors.textOnColor,
+                            elevation: 0,
                             minimumSize: const Size(160, 52),
                             shape: RoundedRectangleBorder(
                               borderRadius:
@@ -325,13 +330,11 @@ class OrderReviewModal extends StatelessWidget {
           margin: const EdgeInsets.only(bottom: ClientTokens.space12),
           padding: const EdgeInsets.all(ClientTokens.space12),
           decoration: BoxDecoration(
-            color: Theme.of(context)
-                .colorScheme
-                .surfaceContainerHighest
-                .withValues(alpha: 0.3),
+            color: AppColors.surface,
             borderRadius: BorderRadius.circular(12),
             border: Border.all(
-              color: Theme.of(context).colorScheme.outlineVariant,
+              color: AppColors.grey200,
+              width: 1,
             ),
           ),
           child: Row(
@@ -352,7 +355,7 @@ class OrderReviewModal extends StatelessWidget {
                       CurrencyService.format(itemPrice * entry.value, currency),
                       style: Theme.of(context).textTheme.titleMedium?.copyWith(
                             fontWeight: FontWeight.w800,
-                            color: Theme.of(context).colorScheme.primary,
+                            color: AppColors.primary,
                           ),
                     ),
                   ],
@@ -364,10 +367,8 @@ class OrderReviewModal extends StatelessWidget {
                     onPressed: () => onDecreaseQuantity(entry.key),
                     icon: const Icon(Icons.remove_rounded),
                     style: IconButton.styleFrom(
-                      backgroundColor:
-                          Theme.of(context).colorScheme.primaryContainer,
-                      foregroundColor:
-                          Theme.of(context).colorScheme.onPrimaryContainer,
+                      backgroundColor: AppColors.grey100,
+                      foregroundColor: AppColors.textPrimary,
                     ),
                   ),
                   Padding(
@@ -383,10 +384,8 @@ class OrderReviewModal extends StatelessWidget {
                     onPressed: () => onIncreaseQuantity(entry.key),
                     icon: const Icon(Icons.add_rounded),
                     style: IconButton.styleFrom(
-                      backgroundColor:
-                          Theme.of(context).colorScheme.primaryContainer,
-                      foregroundColor:
-                          Theme.of(context).colorScheme.onPrimaryContainer,
+                      backgroundColor: AppColors.grey100,
+                      foregroundColor: AppColors.textPrimary,
                     ),
                   ),
                   const SizedBox(width: 8),
@@ -394,10 +393,8 @@ class OrderReviewModal extends StatelessWidget {
                     onPressed: () => onRemoveItem(entry.key),
                     icon: const Icon(Icons.delete_outline_rounded),
                     style: IconButton.styleFrom(
-                      backgroundColor:
-                          Theme.of(context).colorScheme.errorContainer,
-                      foregroundColor:
-                          Theme.of(context).colorScheme.onErrorContainer,
+                      backgroundColor: AppColors.error.withValues(alpha: 0.1),
+                      foregroundColor: AppColors.error,
                     ),
                   ),
                 ],

@@ -1236,4 +1236,26 @@ class AppLocalizationsHe extends AppLocalizations {
 
   @override
   String get viewOrder => 'צפה בהזמנה';
+
+  @override
+  String get adminResetTitle => 'שכחת סיסמה';
+
+  @override
+  String get adminResetSubtitle => 'הזן את המייל שלך לקבלת קישור לאיפוס';
+
+  @override
+  String get adminResetButton => 'שלח קישור';
+
+  @override
+  String get adminResetSending => 'שולח...';
+
+  @override
+  String get adminResetBackToLogin => 'חזרה להתחברות';
+
+  @override
+  String get adminResetEmailSentTitle => 'המייל נשלח';
+
+  @override
+  String get adminResetEmailSentMessage =>
+      'קישור לאיפוס סיסמה נשלח לכתובת המייל שלך.';
 }

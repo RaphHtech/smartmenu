@@ -2014,5 +2014,13 @@
   "description": "Visual cart message when orders are disabled"
 },
 
-"viewOrder": "Voir commande"
+"viewOrder": "Voir commande",
+
+"adminResetTitle": "Mot de passe oublié",
+"adminResetSubtitle": "Entrez votre email pour recevoir un lien de réinitialisation",
+"adminResetButton": "Envoyer le lien",
+"adminResetSending": "Envoi en cours...",
+"adminResetBackToLogin": "Retour à la connexion",
+"adminResetEmailSentTitle": "Email envoyé",
+"adminResetEmailSentMessage": "Un lien de réinitialisation a été envoyé à votre adresse email."
 }

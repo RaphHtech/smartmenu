@@ -1261,4 +1261,27 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get viewOrder => 'Voir commande';
+
+  @override
+  String get adminResetTitle => 'Mot de passe oublié';
+
+  @override
+  String get adminResetSubtitle =>
+      'Entrez votre email pour recevoir un lien de réinitialisation';
+
+  @override
+  String get adminResetButton => 'Envoyer le lien';
+
+  @override
+  String get adminResetSending => 'Envoi en cours...';
+
+  @override
+  String get adminResetBackToLogin => 'Retour à la connexion';
+
+  @override
+  String get adminResetEmailSentTitle => 'Email envoyé';
+
+  @override
+  String get adminResetEmailSentMessage =>
+      'Un lien de réinitialisation a été envoyé à votre adresse email.';
 }

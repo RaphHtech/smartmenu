@@ -9,7 +9,7 @@ import 'package:smartmenu_app/state/language_provider.dart';
 import '../../screens/admin/admin_dashboard_overview_screen.dart';
 import '../../core/design/admin_tokens.dart';
 import '../../core/design/admin_typography.dart';
-import '../../screens/admin/admin_login_screen.dart';
+import '../../screens/admin/auth/admin_login_screen.dart';
 import '../../screens/admin/admin_dashboard_screen.dart';
 import '../../screens/admin/admin_media_screen.dart';
 import '../../screens/admin/admin_settings_screen.dart';

@@ -2014,5 +2014,13 @@
   "description": "Visual cart message when orders are disabled"
 },
 
-"viewOrder": "צפה בהזמנה"
+"viewOrder": "צפה בהזמנה",
+
+"adminResetTitle": "שכחת סיסמה",
+"adminResetSubtitle": "הזן את המייל שלך לקבלת קישור לאיפוס",
+"adminResetButton": "שלח קישור",
+"adminResetSending": "שולח...",
+"adminResetBackToLogin": "חזרה להתחברות",
+"adminResetEmailSentTitle": "המייל נשלח",
+"adminResetEmailSentMessage": "קישור לאיפוס סיסמה נשלח לכתובת המייל שלך."
 }

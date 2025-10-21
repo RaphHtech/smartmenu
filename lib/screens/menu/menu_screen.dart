@@ -283,15 +283,10 @@ class SimpleMenuScreenState extends State<MenuScreen> {
 
     final data = snap.data() ?? {};
 
-    debugPrint('🔍 Restaurant data loaded: $data'); // ✅ AJOUTE
-
     // ✅ Charge les settings
     if (mounted) {
       final enableOrders = data['enableOrders'] as bool? ?? true;
       final enableServerCall = data['enableServerCall'] as bool? ?? true;
-
-      debugPrint('🔍 enableOrders: $enableOrders'); // ✅ AJOUTE
-      debugPrint('🔍 enableServerCall: $enableServerCall'); // ✅ AJOUTE
 
       setState(() {
         _enableOrders = enableOrders;
@@ -322,8 +317,6 @@ class SimpleMenuScreenState extends State<MenuScreen> {
       }
       _cartItemCount++;
       _cartTotal += price;
-
-      debugPrint('🔍 AFTER ADD: _cartItemCount = $_cartItemCount'); // ✅ DEBUG
     });
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -436,31 +429,46 @@ class SimpleMenuScreenState extends State<MenuScreen> {
       isDismissible: true,
       enableDrag: true,
       useSafeArea: true,
-      builder: (context) => Padding(
-        padding: EdgeInsets.only(
-          bottom: MediaQuery.of(context).viewInsets.bottom,
-        ),
-        child: OrderReviewModal(
-          itemQuantities: itemQuantities,
-          menuData: _menuData,
-          cartTotal: _cartTotal,
-          currency: _restaurantCurrency,
-          enableOrders: _enableOrders,
-          onClose: () => Navigator.of(context).pop(),
-          onIncreaseQuantity: (itemName) {
-            setState(() {
-              itemQuantities[itemName] = itemQuantities[itemName]! + 1;
-              _cartItemCount++;
-              _cartTotal += _getItemPrice(itemName);
-            });
-          },
-          onDecreaseQuantity: (itemName) {
-            setState(() {
-              if (itemQuantities[itemName]! > 1) {
-                itemQuantities[itemName] = itemQuantities[itemName]! - 1;
-                _cartItemCount--;
-                _cartTotal -= _getItemPrice(itemName);
-              } else {
+      builder: (context) => StatefulBuilder(
+        builder: (context, setModalState) => Padding(
+          padding: EdgeInsets.only(
+            bottom: MediaQuery.of(context).viewInsets.bottom,
+          ),
+          child: OrderReviewModal(
+            itemQuantities: itemQuantities,
+            menuData: _menuData,
+            cartTotal: _cartTotal,
+            currency: _restaurantCurrency,
+            enableOrders: _enableOrders,
+            onClose: () => Navigator.of(context).pop(),
+            onIncreaseQuantity: (itemName) {
+              setState(() {
+                itemQuantities[itemName] = itemQuantities[itemName]! + 1;
+                _cartItemCount++;
+                _cartTotal += _getItemPrice(itemName);
+              });
+              setModalState(() {}); // ← REBUILD LE MODAL
+            },
+            onDecreaseQuantity: (itemName) {
+              setState(() {
+                if (itemQuantities[itemName]! > 1) {
+                  itemQuantities[itemName] = itemQuantities[itemName]! - 1;
+                  _cartItemCount--;
+                  _cartTotal -= _getItemPrice(itemName);
+                } else {
+                  _cartItemCount -= itemQuantities[itemName]!;
+                  _cartTotal -=
+                      _getItemPrice(itemName) * itemQuantities[itemName]!;
+                  itemQuantities.remove(itemName);
+                  if (itemQuantities.isEmpty) {
+                    Navigator.of(context).pop();
+                  }
+                }
+              });
+              setModalState(() {}); // ← REBUILD LE MODAL
+            },
+            onRemoveItem: (itemName) {
+              setState(() {
                 _cartItemCount -= itemQuantities[itemName]!;
                 _cartTotal -=
                     _getItemPrice(itemName) * itemQuantities[itemName]!;
@@ -468,23 +476,14 @@ class SimpleMenuScreenState extends State<MenuScreen> {
                 if (itemQuantities.isEmpty) {
                   Navigator.of(context).pop();
                 }
-              }
-            });
-          },
-          onRemoveItem: (itemName) {
-            setState(() {
-              _cartItemCount -= itemQuantities[itemName]!;
-              _cartTotal -= _getItemPrice(itemName) * itemQuantities[itemName]!;
-              itemQuantities.remove(itemName);
-              if (itemQuantities.isEmpty) {
-                Navigator.of(context).pop();
-              }
-            });
-          },
-          onConfirmOrder: () {
-            Navigator.of(context).pop();
-            _confirmOrder();
-          },
+              });
+              setModalState(() {}); // ← REBUILD LE MODAL
+            },
+            onConfirmOrder: () {
+              Navigator.of(context).pop();
+              _confirmOrder();
+            },
+          ),
         ),
       ),
     );
@@ -550,34 +549,34 @@ class SimpleMenuScreenState extends State<MenuScreen> {
       margin: const EdgeInsets.symmetric(
           horizontal: ClientTokens.space16, vertical: ClientTokens.space8),
       decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [
-            Colors.white.withValues(alpha: 0.15),
-            Colors.white.withValues(alpha: 0.10),
-          ],
-        ),
+        color: AppColors.primary, // Rouge tomate uni
         borderRadius: BorderRadius.circular(ClientTokens.radius16),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.08),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
+            color: AppColors.primary.withValues(alpha: 0.20),
+            blurRadius: 12,
+            offset: const Offset(0, 4),
           ),
         ],
       ),
       child: Padding(
-        padding: const EdgeInsets.all(ClientTokens.space16),
+        padding: const EdgeInsets.symmetric(
+          horizontal: ClientTokens.space16,
+          vertical: ClientTokens.space12,
+        ),
         child: Row(
           children: [
             Container(
-              width: 24,
-              height: 24,
+              padding: const EdgeInsets.all(6),
               decoration: BoxDecoration(
-                color: Colors.amber.withValues(alpha: 0.2),
+                color: Colors.white.withValues(alpha: 0.2),
                 shape: BoxShape.circle,
               ),
-              child: const Icon(Icons.local_offer_rounded,
-                  size: 14, color: Colors.white),
+              child: const Icon(
+                Icons.local_offer_rounded,
+                size: 16,
+                color: Colors.white,
+              ),
             ),
             const SizedBox(width: ClientTokens.space12),
             Expanded(
@@ -591,7 +590,6 @@ class SimpleMenuScreenState extends State<MenuScreen> {
                 ),
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
-                textAlign: TextAlign.center,
               ),
             ),
           ],
@@ -607,7 +605,7 @@ class SimpleMenuScreenState extends State<MenuScreen> {
     // Cas 1 : Les 2 activés + panier a des items
     if (_enableServerCall && hasItems) {
       return SizedBox(
-        height: 58,
+        height: 48,
         child: Row(
           children: [
             // Bouton Serveur (38%) - Blanc pur, secondaire
@@ -627,14 +625,16 @@ class SimpleMenuScreenState extends State<MenuScreen> {
                   ),
                 ),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.white,
-                  foregroundColor: const Color(0xFFDC2626),
-                  elevation: 4,
-                  shadowColor: Colors.black.withValues(alpha: 0.15),
+                  backgroundColor: AppColors.surface,
+                  foregroundColor: AppColors.primary,
+                  elevation: 0,
+                  side: const BorderSide(
+                    color: AppColors.primary,
+                    width: 2,
+                  ),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(ClientTokens.radius12),
                   ),
-                  padding: const EdgeInsets.symmetric(horizontal: 12),
                 ),
               ),
             ),
@@ -647,10 +647,10 @@ class SimpleMenuScreenState extends State<MenuScreen> {
               child: ElevatedButton(
                 onPressed: _showOrderReview,
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFFDC2626),
-                  foregroundColor: Colors.white,
-                  elevation: 8,
-                  shadowColor: const Color(0xFFDC2626).withValues(alpha: 0.4),
+                  backgroundColor: AppColors.primary,
+                  foregroundColor: AppColors.textOnColor,
+                  elevation: 4,
+                  shadowColor: AppColors.primary.withValues(alpha: 0.30),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(ClientTokens.radius12),
                   ),
@@ -687,10 +687,10 @@ class SimpleMenuScreenState extends State<MenuScreen> {
     if (_enableServerCall && !hasItems) {
       return SizedBox(
         width: double.infinity,
-        height: 58,
+        height: 48,
         child: ElevatedButton.icon(
           onPressed: _isLoading ? null : _handleServerCall,
-          icon: const Icon(Icons.room_service, size: 22),
+          icon: const Icon(Icons.room_service, size: 20),
           label: Text(
             l10n.waiter,
             style: const TextStyle(
@@ -700,10 +700,13 @@ class SimpleMenuScreenState extends State<MenuScreen> {
             ),
           ),
           style: ElevatedButton.styleFrom(
-            backgroundColor: Colors.white,
-            foregroundColor: const Color(0xFFDC2626),
-            elevation: 6,
-            shadowColor: Colors.black.withValues(alpha: 0.15),
+            backgroundColor: AppColors.surface,
+            foregroundColor: AppColors.primary,
+            elevation: 0,
+            side: const BorderSide(
+              color: AppColors.primary,
+              width: 2,
+            ),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(ClientTokens.radius12),
             ),
@@ -716,7 +719,7 @@ class SimpleMenuScreenState extends State<MenuScreen> {
     if (!_enableServerCall && hasItems) {
       return SizedBox(
         width: double.infinity,
-        height: 58,
+        height: 48,
         child: ElevatedButton(
           onPressed: _showOrderReview,
           style: ElevatedButton.styleFrom(
@@ -816,13 +819,8 @@ class SimpleMenuScreenState extends State<MenuScreen> {
           const Positioned.fill(
             child: DecoratedBox(
               decoration: BoxDecoration(
-                gradient: AppColors.bgGradientWarm,
+                color: AppColors.background, // Flat gris clair
               ),
-            ),
-          ),
-          const Positioned.fill(
-            child: DecoratedBox(
-              decoration: BoxDecoration(gradient: AppColors.pageOverlay),
             ),
           ),
           Scaffold(
@@ -922,7 +920,7 @@ class SimpleMenuScreenState extends State<MenuScreen> {
                         child: Padding(
                           padding: EdgeInsets.all(40),
                           child: CircularProgressIndicator(
-                            color: AppColors.accent,
+                            color: AppColors.primary,
                           ),
                         ),
                       ),
@@ -999,14 +997,13 @@ class SimpleMenuScreenState extends State<MenuScreen> {
             right: 0,
             bottom: 0,
             child: Container(
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                  colors: [
-                    Colors.transparent,
-                    Colors.black.withValues(alpha: 0.05),
-                  ],
+              decoration: const BoxDecoration(
+                color: AppColors.background,
+                border: Border(
+                  top: BorderSide(
+                    color: AppColors.grey200,
+                    width: 1,
+                  ),
                 ),
               ),
               child: SafeArea(

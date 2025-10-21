@@ -428,7 +428,7 @@ class _AdminBrandingScreenState extends State<AdminBrandingScreen> {
           width: double.infinity,
           padding: const EdgeInsets.all(20),
           decoration: BoxDecoration(
-            gradient: AppColors.bgGradientWarm,
+            color: AppColors.secondary, // Bleu ardoise uni
             borderRadius: BorderRadius.circular(AdminTokens.radius12),
             border: Border.all(color: AdminTokens.neutral200),
           ),
@@ -489,7 +489,7 @@ class _AdminBrandingScreenState extends State<AdminBrandingScreen> {
           width: double.infinity,
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
           decoration: BoxDecoration(
-            gradient: AppColors.bgGradientWarm,
+            color: AppColors.secondary, // Bleu ardoise uni
             borderRadius: BorderRadius.circular(AdminTokens.radius12),
             border: Border.all(color: AdminTokens.neutral200),
           ),

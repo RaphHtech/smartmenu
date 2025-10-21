@@ -1,7 +1,7 @@
-// lib/widgets/common/top_toast.dart
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../../core/design/client_tokens.dart';
+import '../../core/constants/colors.dart';
 
 enum ToastVariant { success, info, warning, error }
 
@@ -44,19 +44,16 @@ class TopToast {
     final overlay = Overlay.of(context);
     final theme = Theme.of(context);
 
-    final colorScheme = theme.colorScheme;
-
-    // Couleurs premium par variante
     Color getAccentColor(ToastVariant v) {
       switch (v) {
         case ToastVariant.success:
-          return const Color(0xFF059669); // Vert moderne
+          return AppColors.success;
         case ToastVariant.info:
-          return const Color(0xFF2563EB); // Bleu premium
+          return AppColors.info;
         case ToastVariant.warning:
-          return const Color(0xFFF59E0B); // Orange warning
+          return AppColors.warning;
         case ToastVariant.error:
-          return const Color(0xFFDC2626); // Rouge erreur
+          return AppColors.error;
       }
     }
 
@@ -74,9 +71,8 @@ class TopToast {
     }
 
     final accentColor = getAccentColor(variant);
-    final backgroundColor = colorScheme.inverseSurface;
-    final textColor = colorScheme.onInverseSurface;
-
+    const backgroundColor = AppColors.surface; // Blanc au lieu de noir
+    const textColor = AppColors.textPrimary; // Texte foncé
     final controller = AnimationController(
       duration: ClientTokens.durationNormal,
       reverseDuration: ClientTokens.durationFast,

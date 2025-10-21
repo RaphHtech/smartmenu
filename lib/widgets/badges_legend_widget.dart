@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../l10n/app_localizations.dart';
 import '../../core/design/admin_tokens.dart';
 import '../../core/design/admin_typography.dart';
+import '../../core/constants/colors.dart';
 
 class BadgesLegendWidget extends StatelessWidget {
   const BadgesLegendWidget({super.key});
@@ -78,8 +79,8 @@ class BadgesLegendWidget extends StatelessWidget {
             child: ElevatedButton(
               onPressed: () => Navigator.pop(context),
               style: ElevatedButton.styleFrom(
-                backgroundColor: AdminTokens.primary600,
-                foregroundColor: Colors.white,
+                backgroundColor: AppColors.primary,
+                foregroundColor: AppColors.textOnColor,
                 elevation: 0,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(AdminTokens.radius8),
@@ -158,31 +159,31 @@ class BadgesLegendWidget extends StatelessWidget {
       {
         'title': l10n.badgePopular,
         'desc': l10n.badgeDescPopular,
-        'color': const Color(0xFFFF8C00),
-        'icon': Icons.local_fire_department_rounded,
+        'color': AppColors.badgePopular, // Orange
+        'icon': Icons.star_rounded,
       },
       {
         'title': l10n.badgeNew,
         'desc': l10n.badgeDescNew,
-        'color': const Color(0xFF4F46E5),
+        'color': AppColors.badgeNew, // Rouge
         'icon': Icons.fiber_new_rounded,
       },
       {
         'title': l10n.badgeSpecialty,
         'desc': l10n.badgeDescSpecialty,
-        'color': const Color(0xFF7C3AED),
+        'color': AppColors.badgeSpecialty, // Violet
         'icon': Icons.restaurant_rounded,
       },
       {
         'title': l10n.badgeChef,
         'desc': l10n.badgeDescChef,
-        'color': const Color(0xFF0891B2),
+        'color': AppColors.badgeChef, // Turquoise
         'icon': Icons.star_rounded,
       },
       {
         'title': l10n.badgeSeasonal,
         'desc': l10n.badgeDescSeasonal,
-        'color': const Color(0xFF059669),
+        'color': AppColors.badgeSeasonal, // Vert
         'icon': Icons.eco_rounded,
       },
     ];

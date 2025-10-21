@@ -1,9 +1,9 @@
-import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:smartmenu_app/services/language_service.dart';
 import 'package:smartmenu_app/state/language_provider.dart';
 import '../l10n/app_localizations.dart';
+import '../core/constants/colors.dart';
 
 class PremiumAppHeaderWidget extends StatelessWidget {
   final String restaurantName;
@@ -75,33 +75,16 @@ class PremiumAppHeaderWidget extends StatelessWidget {
       ],
       flexibleSpace: IgnorePointer(
         ignoring: true,
-        child: ClipRect(
-          child: isMobile
-              ? Container(
-                  decoration: BoxDecoration(
-                    color: const Color(0xFF000000).withValues(alpha: 0.75),
-                    border: const Border(
-                      bottom: BorderSide(
-                        color: Color(0x20FFFFFF),
-                        width: 0.5,
-                      ),
-                    ),
-                  ),
-                )
-              : BackdropFilter(
-                  filter: ImageFilter.blur(sigmaX: 8, sigmaY: 8),
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: const Color(0xFF000000).withValues(alpha: 0.7),
-                      border: const Border(
-                        bottom: BorderSide(
-                          color: Color(0x20FFFFFF),
-                          width: 0.5,
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
+        child: Container(
+          decoration: BoxDecoration(
+            color: AppColors.secondary, // Bleu ardoise uni
+            border: Border(
+              bottom: BorderSide(
+                color: AppColors.grey700.withValues(alpha: 0.3),
+                width: 1,
+              ),
+            ),
+          ),
         ),
       ),
     );
@@ -115,10 +98,10 @@ class PremiumAppHeaderWidget extends StatelessWidget {
       icon: const Icon(Icons.language, color: Colors.white, size: 24),
       tooltip: AppLocalizations.of(context)!.commonLanguage,
       offset: const Offset(0, 50),
-      color: const Color(0xFF1F1F1F),
+      color: AppColors.grey800,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
-        side: BorderSide(color: Colors.white.withValues(alpha: 0.1)),
+        side: const BorderSide(color: AppColors.grey600),
       ),
       itemBuilder: (BuildContext context) {
         return LanguageService.supportedLocales.map((Locale locale) {
@@ -137,7 +120,7 @@ class PremiumAppHeaderWidget extends StatelessWidget {
                   style: TextStyle(
                     fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
                     color: isSelected
-                        ? const Color(0xFF6366F1)
+                        ? AppColors.primary
                         : Colors.white.withValues(alpha: 0.9),
                   ),
                 ),
@@ -147,7 +130,7 @@ class PremiumAppHeaderWidget extends StatelessWidget {
                     width: 6,
                     height: 6,
                     decoration: const BoxDecoration(
-                      color: Color(0xFF6366F1),
+                      color: AppColors.primary,
                       shape: BoxShape.circle,
                     ),
                   ),
@@ -174,7 +157,7 @@ class PremiumAppHeaderWidget extends StatelessWidget {
           width: 70,
           decoration: BoxDecoration(
             color: Colors.transparent,
-            border: Border.all(color: Colors.white.withValues(alpha: 0.3)),
+            border: Border.all(color: AppColors.grey400),
             borderRadius: BorderRadius.circular(18),
           ),
           child: const Row(

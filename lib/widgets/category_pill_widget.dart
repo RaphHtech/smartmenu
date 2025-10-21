@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../core/constants/colors.dart';
 
 class CategoryPill extends StatelessWidget {
   final String label;
@@ -14,8 +15,6 @@ class CategoryPill extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
     return GestureDetector(
       onTap: onTap,
       child: AnimatedContainer(
@@ -27,51 +26,25 @@ class CategoryPill extends StatelessWidget {
         ),
         decoration: BoxDecoration(
           color: isActive
-              ? theme.colorScheme.primaryContainer
-              : theme.colorScheme.surface.withValues(alpha: 0.72),
+              ? AppColors.primary // Rouge tomate
+              : AppColors.surface.withValues(alpha: 0.72),
           borderRadius: BorderRadius.circular(100),
           border: Border.all(
-            color: isActive ? theme.colorScheme.primary : Colors.transparent,
-            width: 2,
+            color: isActive ? AppColors.primary : AppColors.grey200,
+            width: isActive ? 0 : 1,
           ),
-          boxShadow: isActive
-              ? [
-                  BoxShadow(
-                    color: theme.colorScheme.primary.withValues(alpha: 0.25),
-                    blurRadius: 8,
-                    spreadRadius: 0,
-                    offset: const Offset(0, 2),
-                  ),
-                ]
-              : null,
         ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(
-              label,
-              maxLines: 1,
-              overflow: TextOverflow.fade,
-              style: theme.textTheme.labelLarge?.copyWith(
-                fontWeight: isActive ? FontWeight.w700 : FontWeight.w600,
-                color: isActive
-                    ? theme.colorScheme.onPrimaryContainer
-                    : theme.colorScheme.onSurface.withValues(alpha: 0.9),
-              ),
-            ),
-            // Indicateur en bas
-            if (isActive) ...[
-              const SizedBox(height: 4),
-              Container(
-                height: 3,
-                width: 24,
-                decoration: BoxDecoration(
-                  color: theme.colorScheme.primary,
-                  borderRadius: BorderRadius.circular(2),
-                ),
-              ),
-            ],
-          ],
+        child: Text(
+          label,
+          maxLines: 1,
+          overflow: TextOverflow.fade,
+          style: TextStyle(
+            fontSize: 15,
+            fontWeight: isActive ? FontWeight.w700 : FontWeight.w600,
+            color: isActive
+                ? AppColors.textOnColor // Blanc
+                : AppColors.textSecondary,
+          ),
         ),
       ),
     );

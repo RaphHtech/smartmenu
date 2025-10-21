@@ -1242,4 +1242,26 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get viewOrder => 'View order';
+
+  @override
+  String get adminResetTitle => 'Forgot Password';
+
+  @override
+  String get adminResetSubtitle => 'Enter your email to receive a reset link';
+
+  @override
+  String get adminResetButton => 'Send Link';
+
+  @override
+  String get adminResetSending => 'Sending...';
+
+  @override
+  String get adminResetBackToLogin => 'Back to Login';
+
+  @override
+  String get adminResetEmailSentTitle => 'Email Sent';
+
+  @override
+  String get adminResetEmailSentMessage =>
+      'A reset link has been sent to your email address.';
 }

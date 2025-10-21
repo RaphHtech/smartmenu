@@ -2254,6 +2254,48 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'View order'**
   String get viewOrder;
+
+  /// No description provided for @adminResetTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Forgot Password'**
+  String get adminResetTitle;
+
+  /// No description provided for @adminResetSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter your email to receive a reset link'**
+  String get adminResetSubtitle;
+
+  /// No description provided for @adminResetButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Send Link'**
+  String get adminResetButton;
+
+  /// No description provided for @adminResetSending.
+  ///
+  /// In en, this message translates to:
+  /// **'Sending...'**
+  String get adminResetSending;
+
+  /// No description provided for @adminResetBackToLogin.
+  ///
+  /// In en, this message translates to:
+  /// **'Back to Login'**
+  String get adminResetBackToLogin;
+
+  /// No description provided for @adminResetEmailSentTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Email Sent'**
+  String get adminResetEmailSentTitle;
+
+  /// No description provided for @adminResetEmailSentMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'A reset link has been sent to your email address.'**
+  String get adminResetEmailSentMessage;
 }
 
 class _AppLocalizationsDelegate

@@ -2014,5 +2014,13 @@
   "description": "Visual cart message when orders are disabled"
 },
 
-"viewOrder": "View order"
+"viewOrder": "View order",
+
+"adminResetTitle": "Forgot Password",
+"adminResetSubtitle": "Enter your email to receive a reset link",
+"adminResetButton": "Send Link",
+"adminResetSending": "Sending...",
+"adminResetBackToLogin": "Back to Login",
+"adminResetEmailSentTitle": "Email Sent",
+"adminResetEmailSentMessage": "A reset link has been sent to your email address."
 }

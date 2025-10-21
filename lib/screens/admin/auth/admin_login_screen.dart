@@ -5,10 +5,10 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:smartmenu_app/screens/admin/admin_dashboard_overview_screen.dart';
 import 'package:smartmenu_app/screens/admin/auth/admin_reset_screen.dart';
 
-import '../../core/design/admin_tokens.dart';
-import 'admin_signup_screen.dart';
-import 'create_restaurant_screen.dart';
-import '../../widgets/ui/admin_themed.dart';
+import '../../../core/design/admin_tokens.dart';
+import '../admin_signup_screen.dart';
+import '../create_restaurant_screen.dart';
+import '../../../widgets/ui/admin_themed.dart';
 
 class AdminLoginScreen extends StatefulWidget {
   final String? returnUrl;

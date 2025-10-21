@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:smartmenu_app/core/constants/colors.dart';
 import 'package:smartmenu_app/services/translation_helper.dart';
 import '../../state/currency_scope.dart';
 import '../../l10n/app_localizations.dart';
@@ -76,8 +77,8 @@ class MenuItem extends StatelessWidget {
           maxChildSize: 0.95,
           builder: (_, controller) {
             return Material(
-              elevation: 16,
-              color: Theme.of(context).colorScheme.surface,
+              elevation: 0,
+              color: AppColors.surface,
               borderRadius:
                   const BorderRadius.vertical(top: Radius.circular(24)),
               clipBehavior: Clip.antiAlias,
@@ -95,20 +96,19 @@ class MenuItem extends StatelessWidget {
                             width: 40,
                             height: 4,
                             decoration: BoxDecoration(
-                              color: Theme.of(context)
-                                  .colorScheme
-                                  .onSurface
-                                  .withValues(alpha: 0.30),
+                              color: AppColors.grey300,
                               borderRadius: BorderRadius.circular(2),
                             ),
                           ),
                         ),
                       ),
-                      // Photo avec gradient et texte
+
+                      // Photo avec gradient et texte OPTIMISÉ
                       Expanded(
                         child: Stack(
                           fit: StackFit.expand,
                           children: [
+                            // Photo
                             Hero(
                               tag: 'dish-${pizza['id'] ?? pizza['name']}',
                               child: img.isEmpty
@@ -123,7 +123,8 @@ class MenuItem extends StatelessWidget {
                                                   .toString()),
                                     ),
                             ),
-                            // Gradient du bas
+
+                            // Gradient SUBTIL pour lisibilité
                             Positioned.fill(
                               child: DecoratedBox(
                                 decoration: BoxDecoration(
@@ -134,46 +135,76 @@ class MenuItem extends StatelessWidget {
                                       Colors.transparent,
                                       Colors.black.withValues(alpha: 0.75),
                                     ],
-                                    stops: const [0.4, 1.0],
+                                    stops: const [
+                                      0.4,
+                                      1.0
+                                    ], // Commence plus haut
                                   ),
                                 ),
                               ),
                             ),
-                            // Texte par-dessus
+
+                            // Texte COMPACT en bas
                             Positioned(
-                              left: 24,
-                              right: 24,
-                              bottom: 100,
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  Text(
-                                    name,
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .headlineLarge
-                                        ?.copyWith(
-                                          fontWeight: FontWeight.w900,
-                                          color: Colors.white,
-                                          height: 1.1,
-                                        ),
-                                  ),
-                                  const SizedBox(height: 12),
-                                  Text(
-                                    description,
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .bodyLarge
-                                        ?.copyWith(
+                              left: 20,
+                              right: 20,
+                              bottom: quantity == 0 ? 90 : 180, // ✅ DYNAMIQUE !
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 12, vertical: 8),
+                                decoration: BoxDecoration(
+                                  color: Colors.black.withValues(
+                                      alpha: 0.4), // Scrim additionnel
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    // Titre COMPACT
+                                    Text(
+                                      name,
+                                      style: const TextStyle(
+                                        fontSize: 24,
+                                        fontWeight: FontWeight.w800,
+                                        color: Colors.white,
+                                        height: 1.2,
+                                        shadows: [
+                                          Shadow(
+                                            offset: Offset(0, 2),
+                                            blurRadius: 4,
+                                            color: Colors.black87,
+                                          ),
+                                        ],
+                                      ),
+                                      maxLines: 2,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+
+                                    // Description COMPACTE
+                                    if (description.isNotEmpty) ...[
+                                      const SizedBox(height: 4),
+                                      Text(
+                                        description,
+                                        style: TextStyle(
+                                          fontSize: 13,
                                           color: Colors.white
                                               .withValues(alpha: 0.95),
-                                          height: 1.4,
+                                          height: 1.3,
+                                          shadows: const [
+                                            Shadow(
+                                              offset: Offset(0, 1),
+                                              blurRadius: 3,
+                                              color: Colors.black87,
+                                            ),
+                                          ],
                                         ),
-                                    maxLines: 3,
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
-                                ],
+                                        maxLines: 2,
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                    ],
+                                  ],
+                                ),
                               ),
                             ),
                           ],
@@ -181,6 +212,7 @@ class MenuItem extends StatelessWidget {
                       ),
                     ],
                   ),
+
                   // Bouton fixe en bas
                   Positioned(
                     left: 0,
@@ -230,6 +262,9 @@ class MenuItem extends StatelessWidget {
             }
           },
           style: FilledButton.styleFrom(
+            backgroundColor: AppColors.primary,
+            foregroundColor: AppColors.textOnColor,
+            elevation: 0,
             padding: const EdgeInsets.symmetric(vertical: 16),
             shape:
                 RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
@@ -303,114 +338,119 @@ class MenuItem extends StatelessWidget {
     VoidCallback? onTap,
     VoidCallback? onAdd,
   }) {
-    return Material(
-      elevation: 4,
-      color: Theme.of(context).colorScheme.surface,
-      borderRadius: BorderRadius.circular(16),
-      clipBehavior: Clip.antiAlias,
-      child: InkWell(
-        onTap: onTap,
-        splashColor:
-            Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
-        highlightColor:
-            Theme.of(context).colorScheme.primary.withValues(alpha: 0.05),
-        child: Padding(
-          padding: const EdgeInsets.all(8),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Hero(
-                tag: 'dish-${pizza['id'] ?? pizza['name']}',
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(12),
-                  child: SizedBox(
-                    width: 72,
-                    height: 72,
-                    child: (imageUrl == null || imageUrl.isEmpty)
-                        ? _categoryPlaceholder(category)
-                        : Image.network(imageUrl,
-                            fit: BoxFit.cover,
-                            errorBuilder: (_, __, ___) =>
-                                _categoryPlaceholder(category)),
+    return Container(
+      decoration: BoxDecoration(
+        color: AppColors.surface,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: AppColors.grey200,
+          width: 1,
+        ),
+        boxShadow: [AppColors.cardShadow],
+      ),
+      child: Material(
+        color: Colors.transparent,
+        borderRadius: BorderRadius.circular(16),
+        clipBehavior: Clip.antiAlias,
+        child: InkWell(
+          onTap: onTap,
+          splashColor: AppColors.primary.withValues(alpha: 0.1),
+          highlightColor: AppColors.primary.withValues(alpha: 0.05),
+          child: Padding(
+            padding: const EdgeInsets.all(8),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Hero(
+                  tag: 'dish-${pizza['id'] ?? pizza['name']}',
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(12),
+                    child: SizedBox(
+                      width: 72,
+                      height: 72,
+                      child: (imageUrl == null || imageUrl.isEmpty)
+                          ? _categoryPlaceholder(category)
+                          : Image.network(imageUrl,
+                              fit: BoxFit.cover,
+                              errorBuilder: (_, __, ___) =>
+                                  _categoryPlaceholder(category)),
+                    ),
                   ),
                 ),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Wrap(
-                      spacing: 8,
-                      runSpacing: 6,
-                      crossAxisAlignment: WrapCrossAlignment.center,
-                      children: [
-                        Text(
-                          name,
-                          style: Theme.of(context)
-                              .textTheme
-                              .titleMedium
-                              ?.copyWith(
-                                fontWeight: FontWeight.w700,
-                                color: Theme.of(context).colorScheme.onSurface,
-                              ),
-                        ),
-                        ..._buildBadges(context),
-                      ],
-                    ),
-                    const SizedBox(height: 4),
-                    if (description.isNotEmpty)
-                      Text(
-                        description,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                              color: Theme.of(context)
-                                  .colorScheme
-                                  .onSurface
-                                  .withValues(alpha: 0.80),
-                            ),
-                      ),
-                    const SizedBox(height: 4),
-                    Row(
-                      children: [
-                        Text(
-                          priceText,
-                          style: Theme.of(context)
-                              .textTheme
-                              .bodyLarge
-                              ?.copyWith(
-                                fontWeight: FontWeight.w600, // ← Moins bold
-                                color: Theme.of(context)
-                                    .colorScheme
-                                    .onSurface
-                                    .withValues(alpha: 0.6), // ← Plus discret
-                                letterSpacing: 0.5,
-                              ),
-                        ),
-                        const Spacer(),
-                        FilledButton(
-                          onPressed: () {
-                            HapticFeedback.selectionClick();
-                            onAdd?.call();
-                          },
-                          style: FilledButton.styleFrom(
-                            minimumSize: const Size(96, 40),
-                            padding: const EdgeInsets.symmetric(horizontal: 14),
-                            shape: const StadiumBorder(),
-                            textStyle: Theme.of(context)
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Wrap(
+                        spacing: 8,
+                        runSpacing: 6,
+                        crossAxisAlignment: WrapCrossAlignment.center,
+                        children: [
+                          Text(
+                            name,
+                            style: Theme.of(context)
                                 .textTheme
-                                .labelLarge
-                                ?.copyWith(fontWeight: FontWeight.w700),
+                                .titleMedium
+                                ?.copyWith(
+                                  fontWeight: FontWeight.w700,
+                                  color: AppColors.textPrimary,
+                                ),
                           ),
-                          child: Text(_l10n(context).add),
+                          ..._buildBadges(context),
+                        ],
+                      ),
+                      const SizedBox(height: 4),
+                      if (description.isNotEmpty)
+                        Text(
+                          description,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style:
+                              Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                    color: AppColors.textSecondary,
+                                  ),
                         ),
-                      ],
-                    ),
-                  ],
+                      const SizedBox(height: 4),
+                      Row(
+                        children: [
+                          Text(
+                            priceText,
+                            style:
+                                Theme.of(context).textTheme.bodyLarge?.copyWith(
+                                      fontWeight: FontWeight.w600,
+                                      color: AppColors.textSecondary,
+                                      letterSpacing: 0.5,
+                                    ),
+                          ),
+                          const Spacer(),
+                          FilledButton(
+                            onPressed: () {
+                              HapticFeedback.selectionClick();
+                              onAdd?.call();
+                            },
+                            style: FilledButton.styleFrom(
+                              backgroundColor: AppColors.primary,
+                              foregroundColor: AppColors.textOnColor,
+                              minimumSize: const Size(96, 40),
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 14),
+                              shape: const StadiumBorder(),
+                              elevation: 0,
+                              textStyle: Theme.of(context)
+                                  .textTheme
+                                  .labelLarge
+                                  ?.copyWith(fontWeight: FontWeight.w700),
+                            ),
+                            child: Text(_l10n(context).add),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
@@ -449,30 +489,59 @@ class MenuItem extends StatelessWidget {
 
   Widget _badgePill(BuildContext context, String label,
       {required String tone}) {
-    final cs = Theme.of(context).colorScheme;
-    final Color bg =
-        tone == 'tertiary' ? cs.tertiaryContainer : cs.primaryContainer;
-    final Color fg =
-        tone == 'tertiary' ? cs.onTertiaryContainer : cs.onPrimaryContainer;
-    final IconData icon = label == _l10n(context).badgePopular
-        ? Icons.star_rounded
-        : Icons.fiber_new_rounded;
+    // Détermine les couleurs selon le type de badge
+    final Color bg;
+    final Color fg;
+    final IconData icon;
+
+    final l10n = _l10n(context);
+
+    if (label == l10n.badgePopular) {
+      bg = AppColors.badgePopularBg;
+      fg = AppColors.badgePopular;
+      icon = Icons.star_rounded;
+    } else if (label == l10n.badgeNew) {
+      bg = AppColors.badgeNewBg;
+      fg = AppColors.badgeNew;
+      icon = Icons.fiber_new_rounded;
+    } else if (label == l10n.badgeSpecialty) {
+      bg = AppColors.badgeSpecialtyBg;
+      fg = AppColors.badgeSpecialty;
+      icon = Icons.restaurant_rounded;
+    } else if (label == l10n.badgeChef) {
+      bg = AppColors.badgeChefBg;
+      fg = AppColors.badgeChef;
+      icon = Icons.star_rounded;
+    } else if (label == l10n.badgeSeasonal) {
+      bg = AppColors.badgeSeasonalBg;
+      fg = AppColors.badgeSeasonal;
+      icon = Icons.eco_rounded;
+    } else {
+      // Fallback
+      bg = AppColors.grey200;
+      fg = AppColors.grey700;
+      icon = Icons.label_rounded;
+    }
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-      decoration:
-          BoxDecoration(color: bg, borderRadius: BorderRadius.circular(999)),
+      decoration: BoxDecoration(
+        color: bg,
+        borderRadius: BorderRadius.circular(999),
+      ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
           Icon(icon, size: 14, color: fg),
           const SizedBox(width: 4),
-          Text(label,
-              style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                    fontWeight: FontWeight.w700,
-                    color: fg,
-                    letterSpacing: 0.2,
-                  )),
+          Text(
+            label,
+            style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                  fontWeight: FontWeight.w700,
+                  color: fg,
+                  letterSpacing: 0.2,
+                ),
+          ),
         ],
       ),
     );
@@ -536,47 +605,58 @@ class _QuantityStepperWidgetState extends State<_QuantityStepperWidget> {
 
     return Column(
       children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            _qtyButton(context, Icons.remove_rounded,
-                onTap: () => setState(() {
-                      if (localQuantity > 1) {
-                        localQuantity--;
-                      } else if (localQuantity == 1) {
-                        localQuantity = 0;
-                      }
-                    })),
-            const SizedBox(width: 12),
-            Text(
-              '$localQuantity',
-              style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+        // Stepper ULTRA COMPACT sur une seule ligne tendue
+        Container(
+          padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              _qtyButtonUltraCompact(context, Icons.remove_rounded,
+                  onTap: () => setState(() {
+                        if (localQuantity > 1) {
+                          localQuantity--;
+                        } else if (localQuantity == 1) {
+                          localQuantity = 0;
+                        }
+                      })),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 24),
+                child: Text(
+                  '$localQuantity',
+                  style: const TextStyle(
+                    fontSize: 22,
                     fontWeight: FontWeight.w800,
-                    color: Theme.of(context).colorScheme.onSurface,
+                    color: AppColors.textPrimary,
                   ),
-            ),
-            const SizedBox(width: 12),
-            _qtyButton(context, Icons.add_rounded,
-                onTap: localQuantity < 20
-                    ? () => setState(() => localQuantity++)
-                    : null),
-          ],
-        ),
-        if (isInDeleteMode) ...[
-          const SizedBox(height: 12),
-          Text(
-            _l10n.removeThisItem,
-            style: TextStyle(
-              fontSize: 14,
-              color: Colors.red.shade300,
-              fontWeight: FontWeight.w500,
-            ),
+                ),
+              ),
+              _qtyButtonUltraCompact(context, Icons.add_rounded,
+                  onTap: localQuantity < 20
+                      ? () => setState(() => localQuantity++)
+                      : null),
+            ],
           ),
-        ],
-        const SizedBox(height: 24),
-        SafeArea(
-          top: false,
-          minimum: const EdgeInsets.fromLTRB(16, 12, 16, 16),
+        ),
+
+        // Message suppression - COMPACT
+        if (isInDeleteMode)
+          Padding(
+            padding: const EdgeInsets.only(bottom: 12, top: 4),
+            child: Text(
+              _l10n.removeThisItem,
+              style: const TextStyle(
+                fontSize: 12,
+                color: AppColors.error,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          )
+        else
+          const SizedBox(height: 8),
+
+        // Bouton principal - MOINS DE PADDING
+        Padding(
+          padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
           child: FilledButton(
             onPressed: () {
               HapticFeedback.selectionClick();
@@ -587,40 +667,54 @@ class _QuantityStepperWidgetState extends State<_QuantityStepperWidget> {
               Navigator.pop(context);
             },
             style: FilledButton.styleFrom(
+              backgroundColor:
+                  isInDeleteMode ? AppColors.error : AppColors.primary,
+              foregroundColor: AppColors.textOnColor,
+              elevation: 0,
               minimumSize: const Size.fromHeight(48),
-              shape: const StadiumBorder(),
-              textStyle: Theme.of(context)
-                  .textTheme
-                  .titleMedium
-                  ?.copyWith(fontWeight: FontWeight.w800),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+              textStyle: const TextStyle(
+                fontWeight: FontWeight.w700,
+                fontSize: 16,
+              ),
             ),
-            child: Text(isInDeleteMode
-                ? _l10n.removeFromCart
-                : isUpdate
-                    ? _l10n.update
-                    : _l10n.add),
+            child: Text(
+              isInDeleteMode
+                  ? _l10n.removeFromCart
+                  : isUpdate
+                      ? _l10n.update
+                      : _l10n.add,
+            ),
           ),
         ),
       ],
     );
   }
 
-  Widget _qtyButton(BuildContext context, IconData icon,
+// Bouton ULTRA compact - 32x32px
+  Widget _qtyButtonUltraCompact(BuildContext context, IconData icon,
       {VoidCallback? onTap}) {
-    final cs = Theme.of(context).colorScheme;
     final isAdd = icon == Icons.add_rounded;
     return Semantics(
       button: true,
       label: isAdd ? _l10n.increaseQuantity : _l10n.decreaseQuantity,
-      child: IconButton.filledTonal(
-        tooltip: isAdd ? _l10n.increase : _l10n.decrease,
-        onPressed: onTap,
-        icon: Icon(icon, size: 20),
-        style: IconButton.styleFrom(
-          minimumSize: const Size(44, 44),
-          shape: const StadiumBorder(),
-          backgroundColor: cs.primaryContainer,
-          foregroundColor: cs.onPrimaryContainer,
+      child: Material(
+        color: AppColors.grey100,
+        shape: const CircleBorder(),
+        child: InkWell(
+          onTap: onTap,
+          customBorder: const CircleBorder(),
+          child: SizedBox(
+            width: 32,
+            height: 32,
+            child: Icon(
+              icon,
+              size: 16,
+              color: onTap == null ? AppColors.grey400 : AppColors.textPrimary,
+            ),
+          ),
         ),
       ),
     );
